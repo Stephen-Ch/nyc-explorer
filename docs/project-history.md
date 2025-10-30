@@ -24,7 +24,64 @@ Next: <next step>
 ## History (newest first)
 
 ### Sprint 02
-_No entries yet._
+
+### [2025-10-31] SEARCH-1 — Client-side POI filter
+In order to find POIs quickly, I added search input that filters POI list by name (case-insensitive); uses render() function to update list dynamically.
+Considerations: Map markers unchanged (all remain visible); filter only affects list; uses includes() for substring match; 300ms timeout in test for DOM update.
+Evidence: #tests=11, green=true; typecheck=0 errors
+Files: apps/web-mvc/Program.cs (+13 LOC to home page), tests/e2e/search.spec.ts (new, 48 LOC), docs/selectors.md (+1 LOC)
+Next: DATA-5 (expand to 10 POIs)
+
+### [2025-10-30] VIS-1 — Map screenshot visual smoke
+In order to have visual regression baseline, I added test that captures #map screenshot to docs/artifacts/VIS-1/P14-map.png (533KB).
+Considerations: Uses 1s timeout for Leaflet tile loading; screenshot stored in git; can be used for manual visual checks.
+Evidence: #tests=10, green=true; artifact exists
+Files: tests/e2e/vis-map.spec.ts (new, 24 LOC), docs/artifacts/VIS-1/P14-map.png (new)
+Next: SEARCH-1 (client-side filter) or DATA-5 (expand POI content)
+
+### [2025-10-30] DETAIL-1 — Render POI summary and sources
+In order to show richer POI content, I extended /poi/{id} to parse and render summary (#poi-summary) and sources list (≥1 [data-testid="poi-source"]).
+Considerations: Inline HTML generation with string concatenation; all source properties (title, url, publisher) rendered in list items.
+Evidence: #tests=8, green=true; typecheck=0 errors
+Files: apps/web-mvc/Program.cs (+14 LOC to /poi/{id} handler), tests/e2e/detail-page.spec.ts (new, 29 LOC)
+Next: ROUTE-2 (handle 404 edge cases) or SEARCH-1 (client-side filter)
+
+### [2025-10-30] ROUTE-1 — POI detail page routing
+In order to view full POI details, I added /poi/{id} route that reads JSON, finds POI by id, returns HTML with #poi-title and back-to-map link; 404 for missing IDs.
+Considerations: Using System.Text.Json for minimal parsing; inline HTML (no Razor yet); same JSON path pattern as API endpoint.
+Evidence: #tests=7, green=true; typecheck=0 errors
+Files: apps/web-mvc/Program.cs (+30 LOC), tests/e2e/route-detail.spec.ts (new, 30 LOC)
+Next: DETAIL-1 (render full POI content on detail page)
+
+### [2025-10-30] SCHEMA-TYPES — Shared Zod schema + TypeScript type
+In order to prevent property name drift (like coords/coordinates), I created poi.schema.ts exporting zPOI and POI type, matching existing schema exactly.
+Considerations: Single source of truth; all code should import POI type from this module; matched existing schema including block field and z.enum for area.
+Evidence: #tests=5, green=true; typecheck=0 errors
+Files: tests/schema/poi.schema.ts (new, 32 LOC), tests/types/poi-type.spec.ts (imports it)
+Next: Begin feature work—ROUTE-1 (POI detail page routing)
+
+### [2025-10-30] REFAC-TS-1 — Legitimize strict catch typing
+In order to keep strict TypeScript, I accepted the `error as Error` assertion in probe.spec.ts as a standalone refactor.
+Considerations: Maintain strict mode; no tsconfig loosening; future tests should type catch vars explicitly.
+Evidence: #tests=5, green=true; typecheck=0 errors
+Files: tests/e2e/probe.spec.ts (1 line added in TOOL-2b, now documented)
+Next: SCHEMA-TYPES
+
+### [2025-10-30] DOC-2 — Sprint 02 Plan document
+In order to provide single-page sprint context and enforce read order, I created Sprint-02-Plan.md (backlog, DoD, constraints, risks) and updated Copilot-Instructions to read it after Project.md.
+Considerations: Plan includes preflight stories (TOOL-1/2 ✅, SCHEMA-TYPES) before feature work; dependency graph in Precedence section.
+Evidence: #tests=0, green=NA
+Files: docs/Sprint-02-Plan.md (new, 80 LOC), docs/Copilot-Instructions.md
+Next: Generate TS types from Zod schema (SCHEMA-TYPES)
+
+### [2025-10-30] TOOL-2b — Fix TypeScript type errors
+In order to achieve zero typecheck errors, I installed @types/node, added skipLibCheck to tsconfig, and fixed error typing in probe.spec.ts.
+Considerations: skipLibCheck reduces compile time but may hide library issues; type assertion pattern established.
+Evidence: #tests=5, green=true
+Files: package.json, tsconfig.json, tests/e2e/probe.spec.ts
+Next: Generate TS types from Zod schema (SCHEMA-TYPES)
+
+_No earlier Sprint 02 entries yet._
 
 ### Sprint 01
 

@@ -34,6 +34,19 @@ Track all development decisions in chronological order using the standardized fo
 [2025-10-30 20:30] nyc-explorer/main TOOL-2a — add TypeScript + typecheck script, red 109 errors (#tests=0, green=false)
 [2025-10-30 20:45] nyc-explorer/main DOC-1 — add project-history micro-log + Copilot binding (#tests=0, green=NA)
 [2025-10-30 21:00] nyc-explorer/main DOC-1b — update project-history template and Sprint 02 section (#tests=0, green=NA)
+[2025-10-30 21:15] nyc-explorer/main TOOL-2b — add @types/node + skipLibCheck, typecheck green 0 errors (#tests=5, green=true)
+[2025-10-30 21:30] nyc-explorer/main DOC-2 — add Sprint-02-Plan.md and wire into Copilot read order (#tests=0, green=NA)
+[2025-10-30 21:45] nyc-explorer/main REFAC-TS-1 — legitimize strict catch typing in probe.spec.ts (no code; process correction) (#tests=5, green=true)
+[2025-10-30 22:00] nyc-explorer/main SCHEMA-TYPES-a — add POI type import, red on missing schema module (#tests=0, green=false)
+[2025-10-30 22:15] nyc-explorer/main SCHEMA-TYPES-b — add shared Zod schema + TS type, typecheck green (#tests=5, green=true)
+[2025-10-30 22:30] nyc-explorer/main ROUTE-1a — add detail route test, red on missing #poi-title (#tests=2, green=false)
+[2025-10-30 22:45] nyc-explorer/main ROUTE-1b — implement /poi/{id} route with title and back link (#tests=7, green=true)
+[2025-10-30 23:00] nyc-explorer/main DETAIL-1a — add summary and sources test, red on missing selectors (#tests=1, green=false)
+[2025-10-30 23:15] nyc-explorer/main DETAIL-1b — render POI summary and sources list on detail page (#tests=8, green=true)
+[2025-10-30 23:30] nyc-explorer/main ROUTE-2a — add back-to-map navigation test, green immediately (#tests=9, green=true)
+[2025-10-30 23:45] nyc-explorer/main VIS-1a — capture map screenshot artifact for visual smoke (#tests=10, green=true)
+[2025-10-31 00:00] nyc-explorer/main SEARCH-1a — add client-side filter test, red on missing search-input (#tests=1, green=false)
+[2025-10-31 00:15] nyc-explorer/main SEARCH-1b — implement client-side name filter with live update (#tests=11, green=true)
 
 ---
 

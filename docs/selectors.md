@@ -4,6 +4,7 @@
 
 ## Global
 - Map container: `#map`
+- Search input: `[data-testid="search-input"]`
 
 ## Lists
 - POI list item: `[data-testid="poi-item"]`

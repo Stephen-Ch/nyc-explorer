@@ -4,8 +4,9 @@
 
 ## Read Order (every prompt)
 1) `/docs/Project.md`
-2) `/docs/Code-Review-Guide.md`
-3) `/docs/code-review.md` (last 3 lines)
+2) `/docs/Sprint-02-Plan.md`
+3) `/docs/Code-Review-Guide.md`
+4) `/docs/code-review.md` (last 3 lines)
 
 ## Prompt Skeleton (strict)
 - **TITLE**: `P<NN> — <STORY-ID + slice>`
