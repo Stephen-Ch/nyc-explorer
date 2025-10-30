@@ -2,11 +2,20 @@
 
 > **Read this before every prompt.** Enforces prompt‑only, tiny‑step TDD with zero guessing.
 
-## Read Order (every prompt)
-1) `/docs/Project.md`
-2) `/docs/Sprint-02-Plan.md`
-3) `/docs/Code-Review-Guide.md`
-4) `/docs/code-review.md` (last 3 lines)
+## Read Order (each prompt)
+Project.md → Sprint-03-Plan.md → Protocol.md → Copilot-Instructions.md → selectors.md → code-review.md (last 3)
+
+## Response Schema (every reply)
+- Assumptions: <none|list>
+- Allowed-Edits Fence: planned=<files/LOC>, actual=<files/LOC>
+- Commands run: <ordered list>
+- Tests: passed=<n>/<N>; suite=<N>; typecheck=<green|errors>; artifacts=<paths+sizes|none>
+- Selectors touched: <list|none>; Schema keys: <OK|mismatch>
+- Outcome: <RED|GREEN + one-liner why>
+- Logs: code-review.md <appended|skipped>; project-history.md <appended|n/a>
+- Next step: <one tiny step> or Ambiguity Card
+
+**Logging Policy:** Project-History.md is updated **after GREEN** only; RED steps are logged in code-review.md.
 
 ## Prompt Skeleton (strict)
 - **TITLE**: `P<NN> — <STORY-ID + slice>`

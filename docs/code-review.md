@@ -47,6 +47,17 @@ Track all development decisions in chronological order using the standardized fo
 [2025-10-30 23:45] nyc-explorer/main VIS-1a — capture map screenshot artifact for visual smoke (#tests=10, green=true)
 [2025-10-31 00:00] nyc-explorer/main SEARCH-1a — add client-side filter test, red on missing search-input (#tests=1, green=false)
 [2025-10-31 00:15] nyc-explorer/main SEARCH-1b — implement client-side name filter with live update (#tests=11, green=true)
+[2025-10-31 00:30] nyc-explorer/main DATA-5a — add POI count test, red on 3 POIs expecting 5+ (#tests=1, green=false)
+[2025-10-31 00:45] nyc-explorer/main DATA-5b — add 2 Union Square/Flatiron POIs, now 5 total (#tests=12, green=true)
+[2025-10-30 01:00] nyc-explorer/main DOC-3a — add Response Schema + logging policy to Copilot-Instructions (#tests=12, green=true)
+[2025-10-30 01:15] nyc-explorer/main DOC-3b — add 6-step execution loop + LOC overflow rule to Protocol (#tests=12, green=true)
+[2025-10-30 01:30] nyc-explorer/main DOC-3c — create Sprint-03-Plan.md with backlog and working agreements (#tests=12, green=true)
+[2025-10-30 01:45] nyc-explorer/main DOC-3d — predeclare selectors for list links, images, tags, results (#tests=12, green=true)
+[2025-10-30 02:00] nyc-explorer/main DOC-3e — add Quickstart simplified commands and Scope to README (#tests=12, green=true)
+[2025-10-30 02:15] nyc-explorer/main DOC-3f — create CONTRIBUTING.md with commit message format and workflow (#tests=12, green=true)
+[2025-10-30 02:30] nyc-explorer/main DOC-3g — add CI-1 note to Sprint-03-Plan about GitHub Actions (#tests=12, green=true)
+[2025-10-30 02:45] nyc-explorer/main LIST-1a — add list-to-detail link test, red on missing poi-link (#tests=1, green=false)
+[2025-10-30 03:00] nyc-explorer/main LIST-1b — add poi-link to list items, navigates to detail (#tests=13, green=true)
 
 ---
 

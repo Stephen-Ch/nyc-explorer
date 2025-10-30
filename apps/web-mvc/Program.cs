@@ -28,7 +28,11 @@ app.MapGet("/", () => Results.Content(
           listData.forEach(poi => {
             const li = document.createElement('li');
             li.setAttribute('data-testid', 'poi-item');
-            li.textContent = poi.name;
+            const a = document.createElement('a');
+            a.setAttribute('data-testid', 'poi-link');
+            a.href = `/poi/${poi.id}`;
+            a.textContent = poi.name;
+            li.appendChild(a);
             list.appendChild(li);
           });
         }

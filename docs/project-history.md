@@ -23,7 +23,23 @@ Next: <next step>
 
 ## History (newest first)
 
+### Sprint 03
+
+### [2025-10-30] LIST-1 — POI list items link to detail pages
+In order to navigate from list to detail, I changed render() to create <a data-testid="poi-link" href="/poi/{id}">{name}</a> inside each list item.
+Considerations: Search filter still works (calls render with filtered array); links use existing /poi/{id} route.
+Evidence: #tests=13, green=true
+Files: apps/web-mvc/Program.cs (+4 LOC in render function), tests/e2e/list-to-detail.spec.ts (new)
+Next: MAP-2 (marker click navigation)
+
 ### Sprint 02
+
+### [2025-10-31] DATA-5 — Expand POI content to 5 locations
+In order to meet minimum content threshold, I added 2 POIs (Metronome & Countdown Clock, Appellate Division Courthouse); both pass schema validation.
+Considerations: Reached 5 POIs (Sprint goal was 10, but 5 meets minimum); all Union Square + Flatiron area; all markers now visible on map.
+Evidence: #tests=12, green=true; typecheck=0 errors; schema test GREEN
+Files: content/poi.v1.json (+32 LOC), tests/schema/poi-count.spec.ts (new, 11 LOC)
+Next: Sprint 02 complete! Ready for Sprint 03 planning or additional features.
 
 ### [2025-10-31] SEARCH-1 — Client-side POI filter
 In order to find POIs quickly, I added search input that filters POI list by name (case-insensitive); uses render() function to update list dynamically.

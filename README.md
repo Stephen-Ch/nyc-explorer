@@ -19,6 +19,14 @@ cd apps/web-mvc && dotnet restore && dotnet build && dotnet run
 BASE_URL=http://localhost:5000 npx playwright test --project=chromium
 ```
 
+**Simplified (Sprint 02+):**
+- Run tests + auto server: `npm run e2e:auto`
+- Typecheck: `npm run typecheck`
+- Visual artifacts live in `docs/artifacts/` (map/detail smoke)
+
+## Scope
+- Manhattan-only (Union Square + Flatiron), desktop MVP.
+
 ## Read Order (start of session)
 1) `/docs/Project.md`
 2) `/docs/Code-Review-Guide.md`

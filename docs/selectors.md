@@ -8,6 +8,7 @@
 
 ## Lists
 - POI list item: `[data-testid="poi-item"]`
+- List link: `[data-testid="poi-link"]`
 
 ## Leaflet
 - Marker: `.leaflet-marker-icon`
@@ -17,8 +18,16 @@
 - Title: `#poi-title`
 - Summary: `#poi-summary`
 - Image: `#poi-image`
+- Images container: `#poi-images`
+- Detail image item: `[data-testid="poi-image"]`
 - Sources list item: `[data-testid="poi-source"]`
 - Back link: `[data-testid="back-to-map"]`
+
+## Future Selectors (Sprint 03+)
+- Tag chip: `[data-testid="tag-chip"]`
+- Results counter: `#results-count`
+
+> Note: `.leaflet-marker-icon` is external (do not rename/style)
 
 ## Naming conventions
 - `data-testid` values use **kebab-case** (e.g., `search-input`, `poi-name`, `back-to-map`).

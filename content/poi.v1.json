@@ -49,5 +49,39 @@
     "block": "Madison Ave 23rd→24th",
     "route_id": "USQ-core-001",
     "order": 3
+  },
+  {
+    "id": "metronome-union-square",
+    "name": "Metronome & Countdown Clock",
+    "summary": "Public art and digital clock on Union Square South.",
+    "description": "Installed in 1999, the Metronome's digital display has shown various time concepts and climate messaging.",
+    "coords": { "lat": 40.7353, "lng": -73.9904 },
+    "neighborhood": "Union Square",
+    "tags": ["art", "clock", "public"],
+    "year": 1999,
+    "sources": [{ "title": "Union Square South Art", "url": "https://example.com/metronome", "publisher": "Example" }],
+    "images": [{ "src": "/images/metronome.jpg", "credit": "Public domain", "license": "CC-BY-SA" }],
+    "borough": "Manhattan",
+    "area": "Union Square",
+    "block": "E 14th St & Broadway",
+    "route_id": "USQ-core-001",
+    "order": 4
+  },
+  {
+    "id": "appellate-division-courthouse",
+    "name": "Appellate Division Courthouse (Manhattan)",
+    "summary": "Beaux-Arts courthouse facing Madison Square.",
+    "description": "Opened c.1900 with notable rooftop statuary and rich interior murals.",
+    "coords": { "lat": 40.7420, "lng": -73.9877 },
+    "neighborhood": "Flatiron District",
+    "tags": ["architecture", "civic"],
+    "year": 1900,
+    "sources": [{ "title": "NY Courts History", "url": "https://example.com/appellate-division", "publisher": "Example" }],
+    "images": [{ "src": "/images/appellate-courthouse.jpg", "credit": "Public domain", "license": "CC-BY-SA" }],
+    "borough": "Manhattan",
+    "area": "Flatiron District",
+    "block": "Madison Ave & E 25th St",
+    "route_id": "USQ-core-001",
+    "order": 5
   }
 ]

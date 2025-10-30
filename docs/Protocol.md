@@ -33,4 +33,11 @@
 ## Commit Policy
 - One commit per prompt, message: `STORY — <12 words> (#tests=<N>, green=<true|false>)`.
 
+## Execution Loop (Sprint 03)
+RED → GREEN → VERIFY (full suite + typecheck) → COMMIT (one story = one commit) → LOG (Decisions + Project-History) → PAUSE.
+
+### LOC Overflow Rule
+- If estimate >50 LOC → split before starting.
+- If during work you exceed 60 LOC or 2 files → REVISE or SPLIT and stop.
+
 **End.**
