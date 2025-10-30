@@ -1,0 +1,20 @@
+{
+  "name": "nyc-explorer",
+  "version": "0.1.0",
+  "description": "Manhattan walking guide with curated routes (Union Square + Flatiron)",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "e2e": "playwright test",
+    "schema": "playwright test tests/schema/poi.spec.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "zod": "^3.23.8"
+  },
+  "keywords": ["manhattan", "walking-guide", "poi"],
+  "author": "",
+  "license": "UNLICENSED"
+}

@@ -1,0 +1,53 @@
+[
+  {
+    "id": "flatiron-001",
+    "name": "Flatiron Building",
+    "summary": "1902 steel-frame landmark at 23rd & 5th/Broadway.",
+    "description": "Iconic triangular skyscraper at the intersection of Fifth Ave and Broadway.",
+    "coords": { "lat": 40.74106, "lng": -73.98970 },
+    "neighborhood": "Flatiron District",
+    "tags": ["architecture","landmark"],
+    "year": 1902,
+    "sources": [{ "title": "Placeholder", "url": "https://example.org/flatiron", "publisher": "Placeholder" }],
+    "images": [{ "src": "/images/flatiron.jpg", "credit": "Placeholder", "license": "placeholder" }],
+    "borough": "Manhattan",
+    "area": "Flatiron District",
+    "block": "5th Ave 22nd→23rd",
+    "route_id": "USQ-core-001",
+    "order": 1
+  },
+  {
+    "id": "union-square-park-001",
+    "name": "Union Square Park",
+    "summary": "Historic public square and gathering place.",
+    "description": "A central Manhattan park and transit hub known for markets and events.",
+    "coords": { "lat": 40.73590, "lng": -73.99110 },
+    "neighborhood": "Union Square",
+    "tags": ["park","public-space"],
+    "year": 1839,
+    "sources": [{ "title": "Placeholder", "url": "https://example.org/union-square-park", "publisher": "Placeholder" }],
+    "images": [{ "src": "/images/union-square-park.jpg", "credit": "Placeholder", "license": "placeholder" }],
+    "borough": "Manhattan",
+    "area": "Union Square",
+    "block": "Broadway 14th→15th",
+    "route_id": "USQ-core-001",
+    "order": 2
+  },
+  {
+    "id": "madison-square-park-001",
+    "name": "Madison Square Park",
+    "summary": "Leafy urban park north of the Flatiron Building.",
+    "description": "Public park bordered by Fifth Ave, Madison Ave, and 23rd Street.",
+    "coords": { "lat": 40.74200, "lng": -73.98700 },
+    "neighborhood": "Flatiron District",
+    "tags": ["park","public-space"],
+    "year": 1847,
+    "sources": [{ "title": "Placeholder", "url": "https://example.org/madison-square-park", "publisher": "Placeholder" }],
+    "images": [{ "src": "/images/madison-square-park.jpg", "credit": "Placeholder", "license": "placeholder" }],
+    "borough": "Manhattan",
+    "area": "Flatiron District",
+    "block": "Madison Ave 23rd→24th",
+    "route_id": "USQ-core-001",
+    "order": 3
+  }
+]

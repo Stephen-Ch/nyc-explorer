@@ -1,0 +1,7 @@
+node_modules/
+bin/
+obj/
+test-results/
+.vs/
+*.user
+*.suo
