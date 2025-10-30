@@ -8,10 +8,13 @@
   },
   "scripts": {
     "e2e": "playwright test",
-    "schema": "playwright test tests/schema/poi.spec.ts"
+    "e2e:auto": "playwright test",
+    "schema": "playwright test tests/schema/poi.spec.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.0",
+    "typescript": "^5.6.3",
     "zod": "^3.23.8"
   },
   "keywords": ["manhattan", "walking-guide", "poi"],

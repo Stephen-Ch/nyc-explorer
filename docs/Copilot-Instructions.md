@@ -1,59 +1,76 @@
-# Copilot-Instructions — 10-30-25
+# Copilot-Instructions — UPDATED for Sprint 02 (v2)
 
-> **Keep this short.** This file sets hard guardrails to prevent guessing and scope creep. Full rules live in `/docs/Project.md` and `/docs/Code-Review-Guide.md`. Read those first.
-
----
+> **Read this before every prompt.** Enforces prompt‑only, tiny‑step TDD with zero guessing.
 
 ## Read Order (every prompt)
 1) `/docs/Project.md`
 2) `/docs/Code-Review-Guide.md`
 3) `/docs/code-review.md` (last 3 lines)
-4) <story file>, <test file> (if present)
 
----
-
-## Prompt Skeleton (strict order)
-1) **Title**: `P<NN> — <STORY-ID + slice>`
-2) **READ**: list paths above
-3) **STORY + GOAL**: one-sentence scope for this slice
-4) **BEHAVIOR**: 3–6 Given/When/Then (must include **edge + error**)
-5) **CONSTRAINTS**: ≤2 files, ≤60 LOC; **Manhattan-only**, **Union Square + Flatiron**; **≤3 POIs/block**
-6) **ARTIFACTS**: screenshot/log paths (e.g., `docs/artifacts/<ID>/P<NN>/`)
-7) **AFTER-GREEN**: append Decisions line; reply **PROCEED/REVISE/BLOCK**
-
----
+## Prompt Skeleton (strict)
+- **TITLE**: `P<NN> — <STORY-ID + slice>`
+- **READ**: list the 3 paths above
+- **STORY + GOAL**: one sentence
+- **BEHAVIOR**: 3–6 Given/When/Then (**include edge + error**)
+- **CONSTRAINTS**: name **exact files** + **≤ 2 files / ≤ 60 LOC**
+- **ARTIFACTS**: screenshots/log paths if any
+- **AFTER-GREEN**: 
+  - Append one line to `/docs/code-review.md`
+  - Append a micro-entry to `/docs/project-history.md` using the template (≤5 lines)
+- **OUTCOME**: **PROCEED / REVISE / BLOCK**
+- **Assumptions**: *none* (if any → BLOCK with Ambiguity Card)
 
 ## Hard Guardrails (no exceptions)
-- **No‑Guessing Contract:** If anything is unclear, return an **Ambiguity Card** and **BLOCK**. Do not write code.
-- **Allowed‑Edits Fence:** Only touch files explicitly named in the prompt; **≤ 2 files / ≤ 60 LOC** (unless the story is tagged *refactor*).
-- **Tests‑First Gate:** First response is a failing, explicit test/spec only. Await “OK, implement.”
-- **Assumptions Table = empty:** If you list any assumption, outcome must be **BLOCK**.
-- **Schema/Selector Freeze:** Do not change schema keys, routes, or selectors unless a separate story authorizes it.
-- **Diff Preview Before Commit:** Show a **unified diff** and wait for “APPLY” before committing.
-- **Decisions Log Binding:** After GREEN, append one line to `/docs/code-review.md` and echo it.
+- **No‑Guessing Contract** → unclear? return **Ambiguity Card** and **BLOCK** (no code).
+- **Allowed‑Edits Fence** → touch only named files; honor LOC/file limits.
+- **Tests‑First Gate** → first reply is RED spec; await "OK, implement."
+- **Schema/Selector Freeze** → don't rename keys/routes/selectors without a new story.
+- **Diff Preview Before Commit** → show **unified diff** (inline `git diff` style, not side‑by‑side) and include per‑file LOC delta; await "APPLY."
+- **Decisions Log Binding** → after GREEN, append one line to `/docs/code-review.md`.
+- **Project History Binding** → after GREEN, append one ≤5-line micro-entry to `/docs/project-history.md` (newest on top, follow template).
 
-### Ambiguity Card (template)
+## Pause Rule
+After a backlog item is GREEN and logged, **STOP**. Await explicit user cue (“NEXT” or “PROCEED — P##”). Do not propose or begin the next prompt.
+
+## Definition of Ready (per prompt)
+- Title + READ paths present
+- Behavior includes **edge + error** cases
+- Allowed **files + LOC** listed
+- **UPDATE targets** listed
+- Outcome declared (PROCEED/REVISE/BLOCK)
+- **Assumptions: none**
+
+## Deterministic E2E (UI stories)
+- Fix viewport (e.g., `1280×800`) and prefer `await expect(...).toBeVisible()` over manual throws.
+- For async DOM (fetch), rely on Playwright’s built‑in waiting (no sleeps).
+
+## Optional Visual Smoke (UI stories)
+- After GREEN, run once in **headed** mode and capture `#map` screenshot to `docs/artifacts/<STORY-ID>/P<NN>-map.png` (no pixel diff). Store in git; keep ≤1 image per story, ≤500KB.
+
+## Selectors Guidance (data-testid vs id/class)
+- **Use `data-testid`** for test‑targeted list items/controls (kebab‑case, e.g., `poi-item`, `back-to-map`).
+- **Use `id`** for unique structural containers (e.g., `#map`).
+- **Use `class`** for styling only; don’t test on classes unless from a third‑party lib.
+- **Leaflet classes** (`.leaflet-*`) are external; do **not** customize/rename them. It’s OK to assert their presence (e.g., `.leaflet-marker-icon`).
+
+## Ambiguity Card — example
 ```
-Ambiguity Card — P<NN>
+Ambiguity Card — P12 ROUTE-1
 Questions:
-- Q1 …
-- Q2 …
-Intended approach if approved (summary only):
-- …
+- Q1: Route to detail page is server `/poi/{id}` or client `/#/poi/{id}`?
+- Q2: Selector for “Back to Map” link? (proposal: [data-testid="back-to-map"])
+Intended approach if approved:
+- Server route `/poi/{id}` with Razor view that fetches POI by id.
 Files to touch (≤2) + approx LOC (≤60):
-- …
+- apps/web-mvc/Program.cs (~20), apps/web-mvc/Views/Poi/Detail.cshtml (~40)
 Risk notes:
-- …
-Outcome: BLOCK (awaiting answers)
+- Selector drift if names differ from selectors.md
+Outcome: **BLOCK** (awaiting answers)
 ```
 
-### Probe‑First (when routes/selectors unknown)
-- Explore minimal candidate routes (e.g., `/`, `/Home`, `/Map`), collect screenshots + final URLs under `docs/artifacts/probe/`.
-- Do **not** build helpers/components until selectors/ids are confirmed by tests.
+## Sprint‑02 Preflight (stories to add before features)
+- **TOOL-1**: Playwright `webServer` auto‑start/stop (command: `dotnet run`, port 5000; `reuseExistingServer: true`).
+- **TOOL-2**: `tsconfig.json` + `@types/node` to remove TS warnings in tests.
+- **SCHEMA-TYPES**: Generate or define TS types that mirror the Zod schema (prevents `coords`/`coordinates` mismatches).
 
-### Outcomes
-- **PROCEED** – ready to merge when GREEN + Decisions appended.
-- **REVISE** – failing spec or constraint breach; include failing title + error.
-- **BLOCK** – ambiguity, assumptions present, or scope exceeds fence.
-
-**End**
+**End.**
