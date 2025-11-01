@@ -21,6 +21,16 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] ROUTE-FIND-1d — Route segment type guard
+In order to keep tests lightweight, I relaxed `routeSegment` to accept a minimal POI shape without touching runtime logic.
+Considerations: Sorting fallback still favors names when orders are missing.
+Evidence: #tests=28, green=true; files: apps/web-mvc/route.ts.
+
+### [2025-11-01] ROUTE-FIND-1b — Deterministic From/To segment helper
+In order to return precise route slices, I implemented `routeSegment()` with route safeguards and inclusive slicing.
+Considerations: Coordinates remain required; UI wiring waits for ROUTE-FIND-1c.
+Evidence: #tests=4, green=true; files: apps/web-mvc/route.ts.
+
 ### [2025-11-01] ROUTE-FIND-1a — Contract tests for From/To
 In order to define routing behavior, I added unit+e2e tests for From/To segmenting and mismatch UX.
 Considerations: routeSegment export missing and UI handler absent, so tests remain RED by design.
