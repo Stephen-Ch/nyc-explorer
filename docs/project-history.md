@@ -25,6 +25,11 @@ Next: <next step>
 
 ### Sprint 03
 
+### [2025-10-31] DOC-MVP — README run/test checklist
+In order to keep MVP validation obvious, I added a Run & Test section listing local commands and GREEN criteria.
+Considerations: Commands limited to three lines; criteria call out ≥10 POIs, navigation, and image-credit visibility.
+Evidence: #tests=0, green=NA; files: docs/README.md (Run & Test block).
+
 ### [2025-10-31] DETAIL-IMG-b — Render POI images
 In order to surface provenance, I now emit figure/img + credit markup on /poi/{id} whenever images exist.
 Considerations: Alt text uses the POI name, multiple images supported, layout styling still pending; touched apps/web-mvc/Program.cs.

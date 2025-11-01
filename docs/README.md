@@ -19,6 +19,17 @@ cd apps/web-mvc && dotnet restore && dotnet build && dotnet run
 BASE_URL=http://localhost:5000 npx playwright test --project=chromium
 ```
 
+## Run & Test (MVP)
+```bash
+dotnet run --urls http://localhost:5000
+npm run e2e:auto
+npm run typecheck
+```
+- Pass when Playwright suite reports GREEN (21/21).
+- Map homepage shows ≥10 POIs with interactive markers/list.
+- List item navigation reaches detail view with working back link.
+- Detail image renders with visible credit for POIs that include media.
+
 ## Read Order (start of session)
 1) `/docs/Project.md`
 2) `/docs/Code-Review-Guide.md`
