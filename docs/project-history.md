@@ -7,16 +7,12 @@
 - Keep ≤4 lines per entry
 - Format: see template below
 
----
-
-## Template
 ```
 ### [YYYY-MM-DD] STORY-ID — Short title
 In order to <goal>, I <change>.
 Considerations: <tech-debt/risks/gotchas>.
-Evidence: #tests=<N>, green=<true|false>
-Files: main files touched (e.g., Program.cs, leaflet.spec.ts)
-Next: <next step>
+Evidence: #tests=<N>, green=<true|false> (typecheck=<status>)
+Files: <main files touched>
 ```
 
 ---
