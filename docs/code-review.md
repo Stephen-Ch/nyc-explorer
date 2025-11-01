@@ -101,6 +101,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 01:45] nyc-explorer/main ROUTE-FIND-1a — add unit+e2e contracts for From/To segmenting, RED as expected (#tests=2, green=false)
 [2025-11-01 02:05] nyc-explorer/main ROUTE-FIND-1b — implement deterministic routeSegment helper (#tests=4, green=true)
 [2025-11-01 02:40] nyc-explorer/main ROUTE-FIND-1d — relax routeSegment type to minimal shape; unit+e2e+typecheck green (#tests=28, green=true)
+[2025-11-01 03:05] nyc-explorer/main ROUTE-FIND-2a — add e2e for active marker highlight & step indices, RED as expected (#tests=1, green=false)
 
 
 **Parked Items**
