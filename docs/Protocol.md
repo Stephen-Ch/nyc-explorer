@@ -30,6 +30,16 @@
 ## Selectors Contract
 - Canonical selectors live in `/docs/selectors.md`. Do not invent new ones without a story.
 
+## Leaflet Map Interaction (Canonical Pattern)
+- Place an overlay container above `#map` and position button elements per POI using `map.latLngToContainerPoint`.
+- Overlay controls must expose `data-testid="poi-marker"`, `role="button"`, `tabindex="0"`, and handle Enter/Space to navigate to `/poi/{id}`.
+- Keep Leaflet markers for visuals only; never rely on `.leaflet-marker-icon` for navigation or testing.
+- Tests target `[data-testid="poi-marker"]`; list navigation continues through `[data-testid="poi-link"]`.
+- Accessibility baseline: ensure a visible `:focus-visible` ring (2px, high contrast, 2px offset) for overlay buttons.
+- Prefer `await expect(locator).toBeVisible()` / `toHaveCount(n)` with Playwright defaults; avoid sleeps and keep timeouts ≤5s.
+- When debugging, first check overlay counts (`locator('[data-testid="poi-marker"]').count()`), then inspect DOM via `page.evaluate`—do not mutate Leaflet internals.
+- As markup grows, migrate inline HTML to Razor views while retaining selectors and behavior.
+
 ## Commit Policy
 - One commit per prompt, message: `STORY — <12 words> (#tests=<N>, green=<true|false>)`.
 

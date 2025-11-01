@@ -25,6 +25,11 @@ Next: <next step>
 
 ### Sprint 03
 
+### [2025-10-31] DOC-PROT-Leaflet-Pattern — Codify overlay approach
+In order to reduce debugging loops, I documented the canonical Leaflet overlay button pattern and testing heuristics in Protocol.md.
+Considerations: Reinforces focus styling, selector usage, and Razor-first guidance for growing views.
+Evidence: #tests=0, green=NA; files: docs/Protocol.md (Leaflet Map Interaction section).
+
 ### [2025-10-31] REFAC-HTML-1a — Razor detail shell
 In order to make /poi/{id} maintainable, I swapped the inline HTML for an MVC controller + Razor view while preserving all selectors.
 Considerations: JSON parsing now feeds a view model; controllers registered via AddControllersWithViews; future slices can extract shared helpers.
