@@ -117,6 +117,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 15:31] nyc-explorer/main TOOL-ARTIFACTS-1a — ignore docs/artifacts; stop VIS churn (#tests=full, green=true)
 [2025-11-01 15:41] nyc-explorer/main ENC-PLACEHOLDER-1a — add UTF-8 placeholder contract, RED as expected (#tests=1, green=false)
 [2025-11-01 16:19] nyc-explorer/main ENC-PLACEHOLDER-1b — add UTF-8 meta+header; placeholders render correctly (#tests=37, green=true)
+[2025-11-01 16:34] nyc-explorer/main FORM-A11Y-1a — add a11y label contract for Search/From/To, RED as expected (#tests=1, green=false)
 
 
 **Parked Items**
