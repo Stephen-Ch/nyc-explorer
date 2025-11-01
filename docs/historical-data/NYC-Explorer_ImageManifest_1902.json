@@ -1,0 +1,52 @@
+{
+  "union-square-park-1902": [],
+  "george-washington-statue-1902": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:Nyc_union_square_equestrian_statue_of_george_washington_nov.2024.jpg",
+      "credit": "Wikimedia Commons uploader",
+      "license": "CC0"
+    },
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:GWashington_Union_Sq_jeh.jpg",
+      "credit": "Jim.henderson (Wikimedia)",
+      "license": "CC-BY-SA"
+    }
+  ],
+  "lafayette-statue-1902": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:Lafayette_statue_Union_Square.jpg",
+      "credit": "Wikimedia Commons",
+      "license": "CC-BY-SA"
+    },
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:(King1893NYC)_pg186_LAFAYETTE_STATUE,_IN_UNION_SQARE.jpg",
+      "credit": "King\u2019s Handbook of New York (1893)",
+      "license": "Public Domain"
+    }
+  ],
+  "flatiron-building-1902": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:Flatiron_Building_1902.jpg",
+      "credit": "Wikimedia Commons (early 1900s photo)",
+      "license": "Public Domain"
+    },
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:FlatIronBuildingPostcardTramsEarlyCentury.JPG",
+      "credit": "Wikimedia Commons (early postcard)",
+      "license": "Public Domain"
+    }
+  ],
+  "worth-monument-1902": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:William_Jenkins_Worth_monument_4,_from_Robert_N._Dennis_collection_of_stereoscopic_views.jpg",
+      "credit": "NYPL Robert N. Dennis collection (via Commons)",
+      "license": "Public Domain"
+    },
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:WJWorthMonumentFull.JPG",
+      "credit": "Wikimedia Commons",
+      "license": "CC-BY-SA"
+    }
+  ],
+  "madison-square-park-1902": []
+}

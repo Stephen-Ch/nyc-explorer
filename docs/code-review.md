@@ -58,8 +58,25 @@ Track all development decisions in chronological order using the standardized fo
 [2025-10-30 02:30] nyc-explorer/main DOC-3g — add CI-1 note to Sprint-03-Plan about GitHub Actions (#tests=12, green=true)
 [2025-10-30 02:45] nyc-explorer/main LIST-1a — add list-to-detail link test, red on missing poi-link (#tests=1, green=false)
 [2025-10-30 03:00] nyc-explorer/main LIST-1b — add poi-link to list items, navigates to detail (#tests=13, green=true)
+[2025-10-30 03:15] nyc-explorer/main MAP-2a — add marker-to-detail test, red on no navigation (#tests=1, green=false)
+[2025-10-31 12:30] nyc-explorer/main DOC-SEL-marker — add [data-testid="poi-marker"] to selectors.md (docs-only, #tests=NA, green=NA)
+[2025-10-31 12:45] nyc-explorer/main MAP-2a’ — revise marker test to use [data-testid="poi-marker"], red as expected (#tests=1, green=false)
+[2025-10-31 13:30] nyc-explorer/main MAP-2e — overlay above panes + containerPoint; marker nav green (#tests=all, green=true)
+[2025-10-31 13:45] nyc-explorer/main A11Y-1a — add keyboard activation test for [data-testid="poi-marker"], unexpectedly green (#tests=1, green=true)
+[2025-10-31 13:55] nyc-explorer/main A11Y-1b — add focus outline test for [data-testid="poi-marker"], unexpectedly green (#tests=1, green=true)
+[2025-10-31 14:05] nyc-explorer/main A11Y-1c — explicit :focus-visible ring for [data-testid="poi-marker"], green→green (#tests=all, green=true)
+[2025-10-31 14:15] nyc-explorer/main DATA-10a — add test requiring ≥10 POIs in poi.v1.json, red as expected (#tests=1, green=false)
+[2025-10-31 14:25] nyc-explorer/main DATA-10b — add 5 Union Square/Flatiron POIs (minified), count≥10 + schema green (#tests=all, green=true)
+[2025-10-31 14:35] nyc-explorer/main ROUTE-CAP-a — add unit test for buildRoute per-block ≤3 (import fails RED) (#tests=1, green=false)
+[2025-10-31 14:45] nyc-explorer/main ROUTE-CAP-b — add buildRoute enforcing ≤3 per block; route-build.spec green (#tests=all, green=true)
+[2025-10-31 14:50] nyc-explorer/main DOC-LOG — add project-history entry for ROUTE-CAP-b (docs-only, #tests=0, green=NA)
+[2025-10-31 15:00] nyc-explorer/main ROUTE-CORE-UI-a — add e2e for route steps from buildRoute, RED missing #route-steps (#tests=1, green=false)
+[2025-10-31 15:15] nyc-explorer/main ROUTE-CORE-UI-b — render #route-steps from inline buildRoute; route-ui.spec green (#tests=all, green=true)
+[2025-10-31 15:25] nyc-explorer/main DOC-SEL — add route selectors (#route-steps, route-step), docs-only (#tests=0, green=NA)
+[2025-10-31 15:35] nyc-explorer/main ROUTE-FILTER-a — add e2e for route recompute on search, RED (route not updating) (#tests=1, green=false)
+[2025-10-31 15:50] nyc-explorer/main ROUTE-FILTER-b — recompute #route-steps after search filter (#tests=20, green=true)
+[2025-10-31 16:10] nyc-explorer/main DATA-10b — add 5 POIs to reach ≥10, tests green (#tests=20, green=true)
 
----
 
 **Parked Items**
 - (None currently)

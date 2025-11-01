@@ -1,0 +1,44 @@
+{
+  "george-washington-statue-1877": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:GWashington_Union_Sq_jeh.jpg",
+      "credit": "Jim.henderson (Wikimedia)",
+      "license": "CC-BY-SA"
+    }
+  ],
+  "abraham-lincoln-statue-1877": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:Abraham_Lincoln_statue,_Union_Square,_NYC.jpg",
+      "credit": "Wikimedia Commons",
+      "license": "CC-BY-SA"
+    }
+  ],
+  "lafayette-statue-1877": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:Lafayette_statue_Union_Square.jpg",
+      "credit": "Wikimedia Commons",
+      "license": "CC-BY-SA"
+    }
+  ],
+  "liberty-arm-torch-1877": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:Arm_and_torch_of_the_Statue_of_Liberty_in_Madison_Square_Park,_New_York,_c._1876.jpg",
+      "credit": "Wikimedia Commons (c.1876 photo)",
+      "license": "Public Domain"
+    }
+  ],
+  "william-h-seward-statue-1877": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:William_Henry_Seward_statue,_Madison_Square_Park.jpg",
+      "credit": "Wikimedia Commons",
+      "license": "CC-BY-SA"
+    }
+  ],
+  "fifth-avenue-hotel-1877": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:Fifth_Avenue_Hotel,_New_York_(NYPL_b11707585-G90F212_006F).tiff",
+      "credit": "NYPL via Wikimedia Commons",
+      "license": "Public Domain"
+    }
+  ]
+}

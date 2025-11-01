@@ -1,0 +1,38 @@
+{
+  "george-washington-statue-1927": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:GWashington_Union_Sq_jeh.jpg",
+      "credit": "Jim.henderson (Wikimedia)",
+      "license": "CC-BY-SA"
+    }
+  ],
+  "abraham-lincoln-statue-1927": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:Abraham_Lincoln_statue,_Union_Square,_NYC.jpg",
+      "credit": "Wikimedia Commons",
+      "license": "CC-BY-SA"
+    }
+  ],
+  "lafayette-statue-1927": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:Lafayette_statue_Union_Square.jpg",
+      "credit": "Wikimedia Commons",
+      "license": "CC-BY-SA"
+    }
+  ],
+  "madison-square-park-1927": [],
+  "worth-monument-1927": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:William_Jenkins_Worth_monument_4,_from_Robert_N._Dennis_collection_of_stereoscopic_views.jpg",
+      "credit": "NYPL Robert N. Dennis collection (via Commons)",
+      "license": "Public Domain"
+    }
+  ],
+  "metropolitan-life-tower-1927": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:Metropolitan_Life_Tower_c1911.jpg",
+      "credit": "Wikimedia Commons (c.1911 photo)",
+      "license": "Public Domain"
+    }
+  ]
+}

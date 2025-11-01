@@ -25,6 +25,30 @@ Next: <next step>
 
 ### Sprint 03
 
+### [2025-10-31] DATA-10b — Reach ten POIs for launch
+In order to meet the ≥10 POI requirement, I appended five Union Square/Flatiron entries to `content/poi.v1.json` with sequential `USQ-core-001` routing.
+Considerations: kept updates to a single file under 60 LOC; placeholder media links remain until final assets land.
+Evidence: #tests=20, green=true; typecheck=green.
+Files: content/poi.v1.json (+5 POIs).
+
+### [2025-10-31] ROUTE-FILTER-b — Route steps follow filters
+In order to keep route guidance aligned with search results, I reused `buildRoute()` and now call `renderRoute(buildRoute(filtered))` inside the search handler.
+Considerations: Overlay marker buttons still update via `placeButtons`; logging for route interactions remains TODO.
+Evidence: #tests=20, green=true; typecheck=0 errors.
+Files: apps/web-mvc/Program.cs (~80 LOC), tests/e2e/route-filter.spec.ts (touches assertions).
+
+### [2025-10-31] ROUTE-CAP-b — Enforce per-block ≤3 in route builder
+In order to honor the routing density cap at runtime (not during data collection), I implemented `buildRoute()` in `apps/web-mvc/route.ts` and sorted results stably before capping.
+Considerations: tags are inclusive OR; `era` placeholder (ignored for now); cap enforced per `block` = 3; future: era filter, tie-breakers, pagination.
+Evidence: route-build.spec.ts GREEN; full suite 18/18; typecheck 0 errors.
+Files: apps/web-mvc/route.ts (~42 LOC).
+
+### [2025-10-31] ROUTE-CORE-UI-b — Steps list from route
+In order to expose the computed route, I added #route-steps and render it via an inline buildRoute mirroring the TS logic.
+Considerations: cap ≤3 per block; sort by route_id/order/name; era ignored for now; selectors unchanged.
+Evidence: route-ui.spec GREEN; full suite GREEN; typecheck 0 errors.
+Files: apps/web-mvc/Program.cs (~58 LOC).
+
 ### [2025-10-30] LIST-1 — POI list items link to detail pages
 In order to navigate from list to detail, I changed render() to create <a data-testid="poi-link" href="/poi/{id}">{name}</a> inside each list item.
 Considerations: Search filter still works (calls render with filtered array); links use existing /poi/{id} route.

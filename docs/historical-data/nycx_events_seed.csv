@@ -1,0 +1,89 @@
+event_id,title,start_date,end_date,category,people,tags,address,neighborhood,boro,sources
+1,Astor Place Riot,1849-05-10,,civil_unrest,"Edwin Forrest, William Macready","theatre,riot",Astor Place (Lafayette St & E 8th St),NoHo (MN02),Manhattan,https://en.wikipedia.org/wiki/Astor_Place_riot
+2,Tearing Down of King George III Statue,1776-07-09,,politics,,"revolution,independence",Bowling Green Park,Financial District (MN01),Manhattan,https://en.wikipedia.org/wiki/Bowling_Green_(New_York_City)#History
+3,Wall Street Crash (Black Tuesday),1929-10-29,,economy,,"stock_market,crash,great_depression",11 Wall St (New York Stock Exchange),Financial District (MN01),Manhattan,https://en.wikipedia.org/wiki/Wall_Street_Crash_of_1929
+4,Opening of the Holland Tunnel,1927-11-13,,infrastructure,,,Canal St & Hudson St (Manhattan Portal),SoHo/Tribeca (MN01),Manhattan,https://en.wikipedia.org/wiki/Holland_Tunnel
+5,Triangle Shirtwaist Factory Fire,1911-03-25,,labor,,"factory_fire,worker_safety,reform",23–29 Washington Pl (Brown Building),Greenwich Village (MN02),Manhattan,https://trianglefire.ilr.cornell.edu/primary/ | https://en.wikipedia.org/wiki/Triangle_Shirtwaist_Factory_fire
+6,Greenwich Village Folk Singers' Permit Protest,1961-04-09,,music,"Dave Van Ronk, Izzy Young","folk,protest,free_speech",Washington Square Park,Greenwich Village (MN02),Manhattan,https://en.wikipedia.org/wiki/Washington_Square_Park#Folk_music_scene
+7,Billie Holiday first performs “Strange Fruit”,1939-03-01,,music,"Billie Holiday, Barney Josephson, Abel Meeropol","civil_rights,jazz",Café Society (2 Sheridan Sq),Greenwich Village (MN02),Manhattan,https://www.pbs.org/wnet/americanmasters/the-story-behind-billie-holidays-strange-fruit/17738/ | https://en.wikipedia.org/wiki/Strange_Fruit
+8,Julius’ ‘Sip-In’ (Mattachine Society),1966-04-21,,lgbtq,"Dick Leitsch, Craig Rodwell, Randy Wicker","civil_rights,bar",159 W 10th St,Greenwich Village (MN02),Manhattan,https://www.nyclgbtsites.org/site/julius-bar/
+9,Stonewall Uprising begins,1969-06-28,,lgbtq,,"uprising,police_raid,civil_rights",51–53 Christopher St (Stonewall Inn) & Christopher Park,Greenwich Village (MN02),Manhattan,https://www.nyclgbtsites.org/site/stonewall-inn-christopher-park/ | https://en.wikipedia.org/wiki/Stonewall_riots
+10,First Christopher Street Liberation Day March (first Pride),1970-06-28,,lgbtq,,"pride_march,parade",Route: Christopher St → 6th Ave → Central Park,Village/Midtown (MN02–MN05),Manhattan,https://en.wikipedia.org/wiki/Christopher_Street_Liberation_Day
+11,CBGB opens,1973-12-10,,music,Hilly Kristal,"punk,new_wave",315 Bowery,East Village (MN03),Manhattan,https://en.wikipedia.org/wiki/CBGB
+12,Ramones early sets at CBGB,1974-08-16,,music,Ramones,punk,315 Bowery,East Village (MN03),Manhattan,https://en.wikipedia.org/wiki/Ramones#1974:_Formation_and_early_years
+13,Tompkins Square Park Riot,1988-08-06,,civil_unrest,,"police,curfew,protest",Tompkins Square Park (Ave A & E 7th St),East Village (MN03),Manhattan,https://en.wikipedia.org/wiki/Tompkins_Square_Park_police_riot
+14,Fillmore East opens,1968-03-08,,music,Bill Graham,"rock,psychedelia",105 Second Ave,East Village (MN03),Manhattan,https://en.wikipedia.org/wiki/Fillmore_East
+15,Fillmore East closes,1971-06-27,,music,The Allman Brothers Band,rock,105 Second Ave,East Village (MN03),Manhattan,https://en.wikipedia.org/wiki/Fillmore_East
+16,ACT UP ‘Stop the Church’,1989-12-10,,activism,"Cardinal O’Connor, ACT UP, WHAM!","aids,protest",St. Patrick’s Cathedral (5th Ave & 50th St),Midtown (MN05),Manhattan,https://www.actuporalhistory.org/actions/stop-the-church | https://en.wikipedia.org/wiki/Stop_the_Church
+17,Mudd Club opens,1978-10-01,,music,Steve Mass,"new_wave,art_scene",77 White St,TriBeCa (MN01),Manhattan,https://en.wikipedia.org/wiki/Mudd_Club
+18,Cafe Wha? early Dylan sets,1961-01-01,,music,Bob Dylan,folk,115 MacDougal St,Greenwich Village (MN02),Manhattan,https://en.wikipedia.org/wiki/Cafe_Wha%3F
+19,Gerde’s Folk City debut of Bob Dylan,1961-09-26,,music,Bob Dylan,folk,11 W 4th St,Greenwich Village (MN02),Manhattan,https://en.wikipedia.org/wiki/Gerde%27s_Folk_City
+20,Paradise Garage opens,1977-01-01,,music,Larry Levan,"disco,house,club",84 King St,Hudson Square (MN02),Manhattan,https://www.nyclgbtsites.org/site/paradise-garage/ | https://en.wikipedia.org/wiki/Paradise_Garage
+21,Paradise Garage closes (final party),1987-09-26,,music,Larry Levan,club_finale,84 King St,Hudson Square (MN02),Manhattan,https://www.nyclgbtsites.org/site/paradise-garage/
+22,Cafe Society opens (integrated nightclub),1938-12-01,,music,Barney Josephson,"jazz,civil_rights",2 Sheridan Sq,Greenwich Village (MN02),Manhattan,https://en.wikipedia.org/wiki/Caf%C3%A9_Society
+23,First Times Square Ball Drop,1907-12-31,,culture,,new_years_eve,One Times Square (Broadway & 42nd St),Midtown (MN05),Manhattan,https://www.timessquarenyc.org/history/new-years-eve
+24,Grand Central Terminal opens,1913-02-01,,infrastructure,,,89 E 42nd St,Midtown East (MN05),Manhattan,https://en.wikipedia.org/wiki/Grand_Central_Terminal
+25,Empire State Building opens,1931-05-01,,architecture,,,350 Fifth Ave,Midtown (MN05),Manhattan,https://en.wikipedia.org/wiki/Empire_State_Building
+26,Armory Show (International Exhibition of Modern Art),1913-02-17,,art,,modern_art,"69th Regiment Armory, 68 Lexington Ave",Kips Bay/Flatiron (MN05),Manhattan,https://en.wikipedia.org/wiki/Armory_Show
+27,Stop-and-Frisk decision Floyd v. City of New York protests,2013-08-12,,activism,,"civil_rights,policing",Foley Square,Civic Center (MN01),Manhattan,https://en.wikipedia.org/wiki/Floyd_v._City_of_New_York
+28,Women’s March on NYC,2017-01-21,,activism,,"womens_rights,protest",5th Ave corridor (42nd–55th St),Midtown (MN05),Manhattan,https://en.wikipedia.org/wiki/2017_Women%27s_March#New_York_City
+29,Occupy Wall Street encampment begins,2011-09-17,,activism,,"economy,protest",Zuccotti Park (Liberty St & Trinity Pl),Financial District (MN01),Manhattan,https://en.wikipedia.org/wiki/Occupy_Wall_Street
+30,9/11 Attacks (World Trade Center),2001-09-11,,disaster,,,World Trade Center site,Financial District (MN01),Manhattan,https://www.911memorial.org/learn/resources/faq | https://en.wikipedia.org/wiki/September_11_attacks
+31,Battery Tunnel flooded during Hurricane Sandy,2012-10-29,,disaster,,,Brooklyn-Battery Tunnel / FDR Drive,FiDi (MN01),Manhattan,https://en.wikipedia.org/wiki/Hurricane_Sandy_in_New_York
+32,Little Island opens,2021-05-21,,architecture,,,Pier 55 at W 13th St (Hudson River Park),Meatpacking/West Village (MN02),Manhattan,https://en.wikipedia.org/wiki/Little_Island_at_Pier_55
+33,Savoy Ballroom opens (Lindy Hop home),1926-03-12,,music,,"dance,jazz",596 Lenox Ave (Malcolm X Blvd & W 140th St),Harlem (MN10),Manhattan,https://en.wikipedia.org/wiki/Savoy_Ballroom
+34,Apollo Theater Amateur Night launches,1934-01-26,,music,,,253 W 125th St,Harlem (MN10),Manhattan,https://www.apollotheater.org/history/
+35,Harlem Riot of 1935,1935-03-19,,civil_unrest,,,125th St corridor,Harlem (MN10),Manhattan,https://en.wikipedia.org/wiki/Harlem_riot_of_1935
+36,Harlem Riot of 1943,1943-08-01,,civil_unrest,,,W 125th St & 7th Ave,Harlem (MN10),Manhattan,https://en.wikipedia.org/wiki/Harlem_riot_of_1943
+37,Columbia University student occupation begins,1968-04-23,,activism,,,Broadway & 116th St (Morningside Heights campus),Morningside Heights (MN09),Manhattan,https://en.wikipedia.org/wiki/Columbia_University_protests_of_1968
+38,Harlem Cultural Festival (1969 series),1969-07-13,,music,"Stevie Wonder, Nina Simone, Sly & The Family Stone","soul,festival",Mount Morris Park (Marcus Garvey Park),Harlem (MN10),Manhattan,https://en.wikipedia.org/wiki/Harlem_Cultural_Festival
+39,Million Youth March (Harlem),1998-09-05,,activism,,,Malcolm X Blvd & 118th St area,Harlem (MN10),Manhattan,https://en.wikipedia.org/wiki/Million_Youth_March
+40,The Public Theater premieres ‘A Chorus Line’ (workshop → 1975 Broadway),1975-04-16,,theatre,Michael Bennett,musical_theatre,"The Public Theater, 425 Lafayette St",NoHo (MN02),Manhattan,https://en.wikipedia.org/wiki/A_Chorus_Line#Production_history
+41,‘Hamilton’ Off-Broadway premiere,2015-02-17,,theatre,Lin-Manuel Miranda,musical_theatre,"The Public Theater, 425 Lafayette St",NoHo (MN02),Manhattan,https://en.wikipedia.org/wiki/Hamilton_(musical)#Productions
+42,The Village Voice founded,1955-10-26,,media,,,36 Cooper Sq (later offices),NoHo (MN02),Manhattan,https://en.wikipedia.org/wiki/The_Village_Voice
+43,The New Yorker founded,1925-02-21,,media,,,25 W 45th St (original offices; later moved),Midtown (MN05),Manhattan,https://en.wikipedia.org/wiki/The_New_Yorker
+44,MoMA opens (midtown location),1939-05-10,,art,,,11 W 53rd St,Midtown (MN05),Manhattan,https://en.wikipedia.org/wiki/Museum_of_Modern_Art
+45,Yankees ticker-tape parade (1996 champions),1996-10-29,,sports,,,"Canyon of Heroes (Broadway, FiDi)",Financial District (MN01),Manhattan,https://www.nycgo.com/articles/ticker-tape-parades-nyc/
+46,NYC Marathon first five-borough course/Manhattan finish,1976-10-24,,sports,,,Central Park,UWS/UES (MN05–MN08),Manhattan,https://en.wikipedia.org/wiki/New_York_City_Marathon
+47,Murder of Stanford White at Madison Square Garden (II),1906-06-25,,true_crime,"Stanford White, Harry K. Thaw","gilded_age,trial",Madison Square Garden (26th St & Madison Ave),NoMad (MN05),Manhattan,https://en.wikipedia.org/wiki/Murder_of_Stanford_White
+48,Wall Street bombing (J.P. Morgan & Co.),1920-09-16,,true_crime,,terrorism_bombing,23 Wall St,Financial District (MN01),Manhattan,https://en.wikipedia.org/wiki/Wall_Street_bombing
+49,Lexington Avenue Explosion (Anarchists),1914-07-04,,true_crime,,"anarchism,bomb_making",1626 Lexington Ave (at 103rd St),East Harlem (MN11),Manhattan,https://en.wikipedia.org/wiki/1914_Lexington_Avenue_explosion
+50,Film Forum opens (original iteration),1970-06-01,,cinema,,,15 Vandam St (later 209 W Houston St),SoHo/Hudson Sq (MN02),Manhattan,https://en.wikipedia.org/wiki/Film_Forum
+51,New York Film Festival inaugural screenings,1963-09-10,,cinema,,,Alice Tully Hall (10 Lincoln Center Plaza),Upper West Side (MN07),Manhattan,https://en.wikipedia.org/wiki/New_York_Film_Festival
+52,Funeral procession of Abraham Lincoln passes through Union Square,1865-04-25,,politics,,,Union Square,Union Square (MN05),Manhattan,https://en.wikipedia.org/wiki/Funeral_and_burial_of_Abraham_Lincoln#New_York_City
+53,Draft Riots clashes (citywide),1863-07-13,,civil_unrest,,,Multiple sites incl. 3rd Ave & 46th St; downtown targets,Manhattan (citywide),Manhattan,https://en.wikipedia.org/wiki/New_York_City_draft_riots
+54,The Five Spot Café major jazz run,1957-01-01,,music,"Thelonious Monk, John Coltrane","jazz,beat",5 Cooper Sq (later 2 St. Marks Pl),East Village (MN03),Manhattan,https://en.wikipedia.org/wiki/Five_Spot_Café
+55,Birdland (original) opens,1949-12-15,,music,Charlie Parker (namesake),bebop,1674 Broadway (at 52nd St),Midtown (MN05),Manhattan,https://en.wikipedia.org/wiki/Birdland_(New_York_jazz_club)#History
+56,Miles Davis assaulted outside Birdland,1959-08-25,,true_crime,,,Broadway & W 52nd St,Midtown (MN05),Manhattan,"https://en.wikipedia.org/wiki/Miles_Davis#1959:_Kind_of_Blue,_sketches_and_assault"
+57,Christopher Street Pier queer social hub (representative),1978-06-01,,lgbtq,,,Pier 45 / Christopher St Pier,West Village (MN02),Manhattan,https://www.nyclgbtsites.org/site/christopher-street-piers/
+58,Whitney Museum opens (original Village home),1931-01-01,,art,,,8–12 W 8th St,Greenwich Village (MN02),Manhattan,https://en.wikipedia.org/wiki/Whitney_Museum_of_American_Art
+59,Lincoln Center groundbreaking,1959-05-14,,architecture,,,Lincoln Center Plaza,Upper West Side (MN07),Manhattan,https://en.wikipedia.org/wiki/Lincoln_Center
+60,Carnegie Hall opens,1891-05-05,,music,Tchaikovsky,classical,881 7th Ave,Midtown (MN05),Manhattan,https://en.wikipedia.org/wiki/Carnegie_Hall
+61,New Amsterdam Theatre reopens (Disney restoration),1997-04-02,,theatre,,,214 W 42nd St,Times Square (MN05),Manhattan,https://en.wikipedia.org/wiki/New_Amsterdam_Theatre
+62,ACT UP founded meeting,1987-03-10,,activism,,,"The LGBT Center, 208 W 13th St",West Village (MN02),Manhattan,https://en.wikipedia.org/wiki/ACT_UP
+63,BLM / George Floyd protests—major rally at Washington Square,2020-06-06,,activism,,,Washington Square Park,Greenwich Village (MN02),Manhattan,https://en.wikipedia.org/wiki/George_Floyd_protests_in_New_York_City
+64,WorldPride NYC / Stonewall 50 March,2019-06-30,,lgbtq,,,5th Ave → Greenwich Village,Midtown/Village (MN05–MN02),Manhattan,https://en.wikipedia.org/wiki/WorldPride#2019:_New_York_City
+65,NYC Pride March (annual – example 1981),1981-06-28,,lgbtq,,,5th Ave route,Midtown/Village (MN05–MN02),Manhattan,https://en.wikipedia.org/wiki/New_York_City_Pride_March
+66,New York City Hall completed/dedicated,1812-07-12,,civics,,,"City Hall Park, Broadway & Murray St",Civic Center (MN01),Manhattan,https://en.wikipedia.org/wiki/New_York_City_Hall
+67,IRT Subway opens (first line),1904-10-27,,transport,,,City Hall station (now closed),Civic Center (MN01),Manhattan,https://en.wikipedia.org/wiki/History_of_the_New_York_City_Subway#Inception
+68,Titanic survivors arrive at Pier 54,1912-04-18,,disaster,,,Pier 54 (W 13th St/Hudson River),Meatpacking (MN02),Manhattan,https://en.wikipedia.org/wiki/Chelsea_Piers#History
+69,Cedar Tavern Beat gatherings,1950-01-01,,literature,"Jackson Pollock, Allen Ginsberg, Jack Kerouac","beat,abstract_expressionism",24 University Pl,Greenwich Village (MN02),Manhattan,https://en.wikipedia.org/wiki/Cedar_Tavern
+70,Exploding Plastic Inevitable at The Dom,1966-01-01,,music,"Andy Warhol, The Velvet Underground","multimedia,avant_garde",19–25 St. Marks Pl (The Dom),East Village (MN03),Manhattan,https://en.wikipedia.org/wiki/Exploding_Plastic_Inevitable
+71,The Kitchen founded (SoHo; later Chelsea),1971-01-01,,art,,,240 Mercer St (original); later 512 W 19th St,SoHo/Chelsea (MN02/MN04),Manhattan,https://en.wikipedia.org/wiki/The_Kitchen
+72,Morris–Jumel Mansion Washington’s HQ,1776-09-16,,history,George Washington,revolution,65 Jumel Terrace,Washington Heights (MN12),Manhattan,https://en.wikipedia.org/wiki/Morris%E2%80%93Jumel_Mansion
+73,Columbia-Barnard anti-apartheid divestment encampment,1985-04-01,,activism,,,Columbia University campus,Morningside Heights (MN09),Manhattan,https://en.wikipedia.org/wiki/Columbia_University_divestment_from_South_Africa
+74,Rucker Park streetball era (representative),1977-07-01,,sports,,,"Rucker Park, 155th St & 8th Ave",Harlem (MN10),Manhattan,https://en.wikipedia.org/wiki/Rucker_Park
+75,Chinese New Year Firecracker Festival (modern LES era begins),1999-02-16,,culture,,,Sara D. Roosevelt Park (Eldridge & Hester),Lower East Side/Chinatown (MN03),Manhattan,https://www.chinatownnyc.org/
+76,Young Lords ‘Garbage Offensive’,1969-07-17,,activism,,,3rd Ave & 110th St area,East Harlem (MN11),Manhattan,https://en.wikipedia.org/wiki/Young_Lords#Garbage_Offensive
+77,‘Today’ show debuts,1952-01-14,,media,,,30 Rockefeller Plaza,Midtown (MN05),Manhattan,https://en.wikipedia.org/wiki/Today_(American_TV_program)
+78,NYSE reopens after 9/11,2001-09-17,,economy,,,11 Wall St,Financial District (MN01),Manhattan,"https://en.wikipedia.org/wiki/New_York_Stock_Exchange#September_11,_2001_attacks"
+79,Chelsea Hotel artistic heyday (representative),1960-01-01,,literature,"Dylan Thomas, Leonard Cohen, Patti Smith","poetry,rock",222 W 23rd St,Chelsea (MN04),Manhattan,https://en.wikipedia.org/wiki/Chelsea_Hotel
+80,New York Dolls at Mercer Arts Center,1971-12-01,,music,,,240 Mercer St,Greenwich Village (MN02),Manhattan,https://en.wikipedia.org/wiki/New_York_Dolls
+81,Easter Sunday Be-In (Central Park),1967-03-26,,activism,,,"Sheep Meadow, Central Park",Central Park (MN05/07/08),Manhattan,https://en.wikipedia.org/wiki/Human_Be-In#New_York_City
+82,Dylan’s ‘Freewheelin’’ cover photo,1963-02-01,,music,"Bob Dylan, Suze Rotolo",album_art,Jones St & W 4th St,Greenwich Village (MN02),Manhattan,https://www.atlasobscura.com/places/the-freewheelin-bob-dylan-album-cover-location
+83,Empire State Building cornerstone ceremony (Al Smith),1930-09-01,,architecture,Al Smith,,350 Fifth Ave,Midtown (MN05),Manhattan,https://en.wikipedia.org/wiki/Empire_State_Building#Construction
+84,NY Philharmonic moves to Lincoln Center,1962-09-23,,music,,,David Geffen Hall,Upper West Side (MN07),Manhattan,https://en.wikipedia.org/wiki/New_York_Philharmonic#Home_venues
+85,Central Park summer concerts (historic free shows),1967-07-01,,music,,,Central Park (various lawns),Central Park (MN05/07/08),Manhattan,https://www.nycgovparks.org/parks/central-park/highlights/12687
+86,V-J Day celebrations (iconic Times Square photo),1945-08-14,,culture,,,Times Square,Midtown (MN05),Manhattan,https://en.wikipedia.org/wiki/V-J_Day_in_Times_Square
+87,NYC Pride route variant (1980s along 5th Ave),1984-06-24,,lgbtq,,,5th Ave (route variant),Midtown/Village,Manhattan,https://en.wikipedia.org/wiki/New_York_City_Pride_March
+88,NYC Pride returns post-COVID (2021 hybrid),2021-06-27,,lgbtq,,,5th Ave / virtual hybrid,Midtown/Village,Manhattan,https://en.wikipedia.org/wiki/New_York_City_Pride_March#2021_event

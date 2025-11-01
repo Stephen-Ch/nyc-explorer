@@ -1,0 +1,33 @@
+name,address,cd_id,neighborhood,block,lot,bbl10,lat,lng,status,sources
+Hotel Chelsea,222 W 23rd St,MN04,Chelsea,,,,,,needs_verification,LPC PDF
+The High Line (Park),Gansevoort to W 30 St,MN04,West Chelsea,,,,,,needs_verification,NYC Parks; multi‑lot
+The Shed,545 W 30th St,MN04,Hudson Yards,,,,,,needs_verification,
+The Vessel (Hudson Yards),20 Hudson Yards,MN04,Hudson Yards,,,,,,needs_verification,
+Empire State Building,20 W 34th St,MN05,Midtown,,,,,,needs_verification,LPC; DOF
+New York Public Library (Main),476 5th Ave,MN05,Midtown/Bryant Park,,,,,,needs_verification,LPC; DOF
+Grand Central Terminal,89 E 42nd St,MN05,Midtown,,,,,,needs_verification,LPC; MTA
+Chrysler Building,405 Lexington Ave,MN05,Midtown,,,,,,needs_verification,LPC
+Rockefeller Center (30 Rock),30 Rockefeller Plaza,MN05,Rockefeller Center,,,,,,needs_verification,LPC
+United Nations Headquarters,405 E 42nd St,MN06,Turtle Bay,,,,,,needs_verification,UN; multi‑lot
+Gramercy Park (Private Park),E 20th–21st St,MN06,Gramercy,,,,,,needs_verification,Park BBL
+The Morgan Library & Museum,225 Madison Ave,MN06,Murray Hill,,,,,,needs_verification,LPC
+Lincoln Center for the Performing Arts,Broadway & W 65th St,MN07,Lincoln Square,,,,,,needs_verification,"Multiple halls, multiple lots"
+American Museum of Natural History,Central Park West at 79th,MN07,Upper West Side,,,,,,needs_verification,LPC
+The Dakota,1 W 72nd St,MN07,Upper West Side,,,,,,needs_verification,LPC
+The Metropolitan Museum of Art,1000 5th Ave,MN08,Upper East Side,,,,,,needs_verification,LPC
+Solomon R. Guggenheim Museum,1071 5th Ave,MN08,Upper East Side,,,,,,needs_verification,LPC
+Park Avenue Armory,643 Park Ave,MN08,Upper East Side,,,,,,needs_verification,LPC
+Gracie Mansion,East End Ave at 88th St,MN08,Yorkville,,,,,,needs_verification,NYC Parks
+Columbia University (Low Library),535 W 116th St,MN09,Morningside Heights,,,,,,needs_verification,Campus lots
+Cathedral Church of St. John the Divine,1047 Amsterdam Ave,MN09,Morningside Heights,,,,,,needs_verification,LPC
+Riverside Church,490 Riverside Dr,MN09,Morningside Heights,,,,,,needs_verification,LPC
+General Grant National Memorial,Riverside Dr & 122nd St,MN09,Morningside Heights,,,,,,needs_verification,NPS
+Apollo Theater,253 W 125th St,MN10,Central Harlem,,,,,,needs_verification,LPC
+Abyssinian Baptist Church,132 W 138th St,MN10,Central Harlem,,,,,,needs_verification,LPC
+Schomburg Center for Research in Black Culture,515 Malcolm X Blvd,MN10,Central Harlem,,,,,,needs_verification,
+El Museo del Barrio,1230 5th Ave,MN11,East Harlem,,,,,,needs_verification,
+Museum of the City of New York,1220 5th Ave,MN11,East Harlem,,,,,,needs_verification,LPC
+La Marqueta,Park Ave at 116th St,MN11,East Harlem,,,,,,needs_verification,
+The Cloisters (Met Cloisters),99 Margaret Corbin Dr,MN12,Inwood,,,,,,needs_verification,NPS/Met
+United Palace,4140 Broadway,MN12,Washington Heights,,,,,,needs_verification,LPC
+Dyckman Farmhouse Museum,4881 Broadway,MN12,Inwood,,,,,,needs_verification,LPC

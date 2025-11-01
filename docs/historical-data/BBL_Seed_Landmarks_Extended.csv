@@ -1,0 +1,33 @@
+name,address,neighborhood,cd_id,block,lot,bbl10,lat,lng,status,sources
+Stonewall Inn,51–53 Christopher St,Greenwich Village,MN02,610,1,1006100001,40.73389,-74.00222,verified,LPC Stonewall; NPS
+Federal Hall National Memorial,26 Wall St,Financial District,MN01,43,6,1000430006,40.7074,-74.01027,verified,LPC Federal Hall
+Trinity Church,75 Broadway,Financial District,MN01,49,1,1000490001,40.7081,-74.012,verified,LPC Trinity
+New York Stock Exchange,11 Wall St,Financial District,MN01,26,14,1000260014,40.70757,-74.01137,verified,LPC NYSE
+Woolworth Building,233 Broadway,Civic Center,MN01,123,22,1001230022,40.71256,-74.00931,verified,LPC Woolworth
+St. Paul's Chapel,209 Broadway,Financial District,MN01,87,1,1000870001,40.71135,-74.00903,verified,LPC St. Paul's
+Fraunces Tavern,54 Pearl St,Financial District,MN01,7,35,1000070035,40.70338,-74.01193,verified,LPC Fraunces
+Cooper Union Foundation Building,7 E 7th St / Cooper Sq,East Village,MN03,465,1,1004650001,40.72912,-73.99041,verified,LPC Cooper Union
+Tenement Museum (97 Orchard),97 Orchard St,Lower East Side,MN03,310,2,1003100002,40.71879,-73.99007,verified,Tenement Museum; NYC records
+Eldridge Street Synagogue,12 Eldridge St,Lower East Side/Chinatown,MN03,297,10,1002970010,40.71437,-73.99304,verified,Museum at Eldridge Street
+St. Mark's Church in-the-Bowery,131 E 10th St,East Village,MN03,457,1,1004570001,40.72979,-73.98768,verified,LPC St. Mark's
+CBGB Building,315 Bowery,Bowery/East Village,MN03,448,1,1004480001,40.72574,-73.99255,verified,LPC Bowery HD
+Fillmore East (former),105 Second Ave,East Village,MN03,450,58,1004500058,40.7276,-73.9886,verified,Venue histories
+McSorley's Old Ale House,15 E 7th St,East Village,MN03,463,5,1004630005,40.72856,-73.98946,verified,PLUTO; histories
+Puck Building,295 Lafayette St,Nolita/SoHo,MN02,510,45,1005100045,40.72401,-73.99645,verified,LPC Puck
+Washington Square Arch,Washington Sq N & 5th Ave,Greenwich Village,MN02,,,,40.73136,-73.99702,needs_verification,LPC Washington Square Park; verify block/lot
+Washington Square Park (Park interior),Washington Square Park,Greenwich Village,MN02,,,,40.73085,-73.99733,needs_verification,NYC Parks; verify park BBL
+St. Patrick’s Old Cathedral,263 Mulberry St,Nolita,MN02,,,,40.72384,-73.99506,needs_verification,LPC St. Patrick’s Old Cathedral; verify
+Bowery Ballroom,6 Delancey St,Lower East Side,MN03,,,,40.72165,-73.99253,needs_verification,Venue records; verify BBL
+Katz’s Delicatessen,205 E Houston St,Lower East Side,MN03,,,,40.72231,-73.9874,needs_verification,Business records; verify BBL
+Angel Orensanz Foundation (Former Ansche Chesed),172 Norfolk St,Lower East Side,MN03,,,,40.72056,-73.98765,needs_verification,LPC/venue; verify
+The Public Theater (Astor Library),425 Lafayette St,NoHo,MN02,,,,40.72955,-73.99151,needs_verification,LPC Astor Library; verify
+Merchant’s House Museum Neighbors,21–27 E 4th St,NoHo,MN02,,,,40.72762,-73.99296,needs_verification,LPC NoHo; verify
+Old St. Patrick’s Basilica Cemetery Gate,Mott St & Prince St,Nolita,MN02,,,,40.72366,-73.99592,needs_verification,LPC; verify
+Judson Memorial Church,55 Washington Square S,Greenwich Village,MN02,,,,40.73033,-73.99782,needs_verification,LPC; verify
+Old Police Headquarters,240 Centre St,Little Italy/SoHo,MN02,,,,40.72027,-73.99846,needs_verification,LPC Police HQ; verify
+New Museum (site),235 Bowery,Bowery,MN02,,,,40.72239,-73.99351,needs_verification,Museum; verify
+The Bitter End,147 Bleecker St,Greenwich Village,MN02,,,,40.72851,-73.99984,needs_verification,Venue; verify
+Blue Note Jazz Club,131 W 3rd St,Greenwich Village,MN02,,,,40.73054,-74.00062,needs_verification,Venue; verify
+La MaMa Experimental Theatre Club,66 E 4th St,East Village/NoHo,MN03,,,,40.72689,-73.99028,needs_verification,Theatre; verify
+Public Theater — Joe’s Pub Entrance,425 Lafayette (Joe’s Pub),NoHo,MN02,,,,40.72937,-73.99145,needs_verification,Venue; verify
+Merchant’s House Museum,29 E 4th St,NoHo,MN02,544,71,1005440071,40.72738,-73.99266,verified,LPC Old Merchant’s House

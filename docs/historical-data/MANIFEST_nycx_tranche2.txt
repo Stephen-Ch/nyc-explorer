@@ -1,0 +1,18 @@
+NYC Explorer — Tranche 2 Bundle
+Date: 2025-10-31
+
+Included files:
+- nycx_seed_landmarks_bbl.sql — BBL-verified inserts for key Lower Manhattan landmarks (plus notes).
+- nycx_events_tranche2.csv — 34 event rows across MN01–MN12; primary + secondary source columns included.
+- NOTES: University Settlement (184 Eldridge) BBL still pending a primary-source verification; leave blank or add after DOF/PIP check.
+
+Import guidance:
+- Landmarks SQL: run against your seed schema; adjust table/columns if needed.
+- Events CSV: load into `events` table (matching your schema) or a staging table then merge.
+
+Provenance (per-row citations live in file comments or CSV columns):
+- DOF NOPV / Statements (BBL proof), LPC designation reports, NYC LL97 Covered Buildings lists, PropertyShark (block/lot), NPS, Cornell ILR, Cooper Union archives, ACT UP Oral History, NYC LGBT Historic Sites, Apollo Theater archives, etc.
+
+BBL density rules:
+- Keep ≤3 attractions per block per era; overflow flagged as “more available” in your UI layer.
+

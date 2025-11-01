@@ -1,4 +1,4 @@
-# Selectors — Canonical (v0.1)
+# Selectors — Canonical (v0.2)
 
 **Purpose:** Lock stable selectors so tests and UI don’t drift mid‑sprint.
 
@@ -13,6 +13,8 @@
 ## Leaflet
 - Marker: `.leaflet-marker-icon`
 > Note: `.leaflet-*` classes come from Leaflet — do **not** modify. You may assert their presence in tests.
+- Marker handle: `[data-testid="poi-marker"]`
+> Use for deterministic marker interaction (click/keyboard). Must exist on every POI marker; add without renaming during sprint.
 
 ## Detail Page (reserved for Sprint 02+)
 - Title: `#poi-title`
@@ -26,6 +28,19 @@
 ## Future Selectors (Sprint 03+)
 - Tag chip: `[data-testid="tag-chip"]`
 - Results counter: `#results-count`
+
+## Route Steps
+- Ordered list: `#route-steps`
+- Step item: `[data-testid="route-step"]`
+
+## Stability Rules
+- Do not rename selectors mid-sprint.
+- Add new selectors via story + same-PR doc update.
+- Use kebab-case for all `data-testid` values.
+
+## Notes
+- `.leaflet-marker-icon` remains a Leaflet-provided class.
+- `[data-testid="poi-marker"]` stays our overlay handle for marker interactions.
 
 > Note: `.leaflet-marker-icon` is external (do not rename/style)
 
