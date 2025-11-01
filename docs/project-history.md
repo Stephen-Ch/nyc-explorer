@@ -21,6 +21,11 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-10-31] REFAC-JS-SPLIT-1a — Extract home script
+In order to improve maintainability, I moved the home-page logic into `wwwroot/js/home.js` and enabled static file serving while preserving selectors/behavior.
+Considerations: Route-inputs spec remains RED by design; other Playwright specs unaffected.
+Evidence: #tests=1, green=true; typecheck=green; files: apps/web-mvc/Program.cs, apps/web-mvc/wwwroot/js/home.js.
+
 ### [2025-10-31] DOC-PROT-Leaflet-Pattern — Codify overlay approach
 In order to reduce debugging loops, I documented the canonical Leaflet overlay button pattern and testing heuristics in Protocol.md.
 Considerations: Reinforces focus styling, selector usage, and Razor-first guidance for growing views.
