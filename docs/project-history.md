@@ -21,6 +21,10 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] TOOL-ARTIFACTS-1a — Ignore VIS artifacts
+In order to keep commits clean, I ignored docs/artifacts/* with a .gitkeep to preserve the folder. Full suite + typecheck remain green.
+Evidence: e2e=all green; typecheck=0 errors.
+
 ### [2025-11-01] TOOL-DEV-LOOP-2c — Restore Razor baseline
 In order to keep the hot-reload probe reliable, I restored Detail.cshtml to HEAD and reran the full verification loop.
 Considerations: Avoid manual tweaks to Razor views while probes execute to prevent false failures.

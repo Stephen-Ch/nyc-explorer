@@ -114,6 +114,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 08:45] nyc-explorer/main ROUTE-FIND-3b — wire pushState+popstate; history/back-forward synced (#tests=36, green=true)
 [2025-11-01 13:29] nyc-explorer/main TOOL-DEV-LOOP-2b — dev:probe triggers & detects hot reload; green (#tests=full, green=true)
 [2025-11-01 15:21] nyc-explorer/main TOOL-DEV-LOOP-2c — restore Razor baseline; dev:probe/typecheck/e2e green (#tests=full, green=true)
+[2025-11-01 15:31] nyc-explorer/main TOOL-ARTIFACTS-1a — ignore docs/artifacts; stop VIS churn (#tests=full, green=true)
 
 
 **Parked Items**
