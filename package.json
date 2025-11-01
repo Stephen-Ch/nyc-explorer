@@ -10,7 +10,10 @@
     "e2e": "playwright test",
     "e2e:auto": "playwright test",
     "schema": "playwright test tests/schema/poi.spec.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "e2e:ui": "playwright test --ui --project=chromium",
+    "dev:api": "dotnet watch --project apps/web-mvc run --urls http://localhost:5000",
+    "dev": "npm run e2e:ui"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.0",

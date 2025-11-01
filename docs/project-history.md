@@ -21,6 +21,10 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-10-31] TOOL-DEV-LOOP-1b — Dev loop scripts
+In order to speed the dev loop, I added e2e:ui (Playwright UI), dev:api (dotnet watch), and dev (alias).
+Evidence: #tests=22, green=true; typecheck=green; files: package.json.
+
 ### [2025-10-31] DOC-S4-Fixes-1 — Sprint 4 docs tightened
 In order to bake in review feedback, I updated selectors, Protocol, and the Sprint 04 plan with dev-loop gating, new hooks, and routeSegment edge cases.
 Considerations: No code changes yet; selectors now predeclare active marker + route message hooks.
