@@ -30,6 +30,11 @@ In order to reduce debugging loops, I documented the canonical Leaflet overlay b
 Considerations: Reinforces focus styling, selector usage, and Razor-first guidance for growing views.
 Evidence: #tests=0, green=NA; files: docs/Protocol.md (Leaflet Map Interaction section).
 
+### [2025-10-31] CI-SMOKE-1a — GitHub Actions CI workflow
+In order to catch regressions on push/PR, I added a workflow running npm ci, typecheck, and Playwright with trace artifacts on failure.
+Considerations: Uses Node 18 + .NET 8; relies on existing Playwright webServer config; artifact retention defaults in Actions.
+Evidence: #tests=0, green=NA; files: .github/workflows/ci.yml.
+
 ### [2025-10-31] REFAC-HTML-1a — Razor detail shell
 In order to make /poi/{id} maintainable, I swapped the inline HTML for an MVC controller + Razor view while preserving all selectors.
 Considerations: JSON parsing now feeds a view model; controllers registered via AddControllersWithViews; future slices can extract shared helpers.
