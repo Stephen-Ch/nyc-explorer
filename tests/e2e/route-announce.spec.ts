@@ -24,7 +24,7 @@ test('route message announces route state changes', async ({ page }) => {
   const route = pickRoute(pois);
   expect(route.length).toBeGreaterThanOrEqual(2);
   const segment = routeSegment(route[0].id, route[route.length - 1].id, pois);
-  const resetCopy = 'Select both From and To to see a route.';
+  const resetCopy = 'Select both From and To to see steps.';
 
   await page.goto('/');
   const msg = page.locator(SELECTOR.msg);

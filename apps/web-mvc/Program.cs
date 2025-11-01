@@ -99,13 +99,12 @@ app.MapGet("/", () => Results.Content(
                 routeSteps.appendChild(li);
               });
             },
-            showRouteMessage = (text) => {
-              routeMsg.textContent = text ?? '';
-              routeMsg.style.removeProperty('display');
-            },
-            hideRouteMessage = () => {
-              routeMsg.textContent = '';
-              routeMsg.style.display = 'none';
+            setRouteMessage = (text) => {
+              const next = text ?? '';
+              if (routeMsg.textContent === next) return;
+              routeMsg.textContent = next;
+              if (next.length) routeMsg.style.removeProperty('display');
+              else routeMsg.style.display = 'none';
             },
             setAttrs = (el, attrs) => Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, String(value))),
             createSvgEl = (name, attrs) => { const el = document.createElementNS('http://www.w3.org/2000/svg', name); setAttrs(el, attrs); return el; },
@@ -122,7 +121,7 @@ app.MapGet("/", () => Results.Content(
               points.forEach((pt, index) => svg.appendChild(createSvgEl('circle', { 'data-testid': 'route-node', 'data-step-index': index, 'aria-hidden': 'true', cx: pt.x, cy: pt.y, r: 4, fill: '#ffffff', stroke: '#1a73e8', 'stroke-width': '2', 'pointer-events': 'none' })));
               overlayContainer.appendChild(svg);
             },
-            clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); lastSegment = []; showRouteMessage(message); },
+            clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); lastSegment = []; setRouteMessage(message); },
             scheduleDeepLink = () => {
               if (!deepLinkPending) return;
               deepLinkPending = false;
@@ -158,14 +157,14 @@ app.MapGet("/", () => Results.Content(
               const fromValue = (fromInput.value ?? '').trim();
               const toValue = (toInput.value ?? '').trim();
               if (!fromValue || !toValue) {
-                clearRouteUI('Select both From and To to see a route.');
+                clearRouteUI('Select both From and To to see steps.');
                 return;
               }
               const base = currentList.length ? currentList : (typeof pois !== 'undefined' && Array.isArray(pois) ? pois : []);
               const fromPoi = base.find((poi) => matchesValue(poi, fromValue));
               const toPoi = base.find((poi) => matchesValue(poi, toValue));
               if (!fromPoi || !toPoi) {
-                clearRouteUI('Select both From and To to see a route.');
+                clearRouteUI('Select both From and To to see steps.');
                 return;
               }
               const seg = segment(base, fromValue, toValue);
@@ -173,18 +172,20 @@ app.MapGet("/", () => Results.Content(
                 clearRouteUI('No matching route segment.');
                 return;
               }
-              hideRouteMessage();
+              const fromName = seg[0]?.name ?? seg[0]?.id ?? fromValue;
+              const toName = seg[seg.length - 1]?.name ?? seg[seg.length - 1]?.id ?? toValue;
               showSteps(seg);
               applyActiveMarkers(seg);
               drawRouteGraphics(seg);
+              setRouteMessage(`Route: ${seg.length} steps from ${fromName} to ${toName}.`);
             };
 
-          hideRouteMessage();
+          setRouteMessage('');
           const originalRender = typeof render === 'function' ? render : null;
           if (originalRender) {
             window.render = function wrappedRender(list) {
               currentList = Array.isArray(list) ? list : [];
-              hideRouteMessage();
+              setRouteMessage('');
               scheduleDeepLink();
               return originalRender(list);
             };

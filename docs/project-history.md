@@ -21,6 +21,11 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] ROUTE-ANNOUNCE-1b — Live route messaging
+In order to improve a11y, I wired the route live region to announce success, reset, and mismatch states.
+Considerations: Deterministic copy runs through shared Find/deep-link paths so every trigger updates consistently.
+Evidence: #tests=35, green=true; typecheck=green; files: apps/web-mvc/Program.cs; tests/e2e/route-announce.spec.ts; tests/e2e/route-reset.spec.ts; tests/e2e/route-share.spec.ts.
+
 ### [2025-11-01] ROUTE-PATH-1b — Route path overlay
 In order to visualize active segments, I draw an SVG polyline with step nodes atop the marker overlay when a route matches.
 Considerations: Map move/zoom events trigger a redraw so markers stay aligned while pointer-events remain disabled for the path.

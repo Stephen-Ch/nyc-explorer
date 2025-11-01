@@ -18,6 +18,9 @@ const pickSegment = (pois: any[]) => {
   return list.slice(0, 3);
 };
 
+const successMessage = (segment: any[]) =>
+  `Route: ${segment.length} steps from ${segment[0].name ?? segment[0].id} to ${segment[segment.length - 1].name ?? segment[segment.length - 1].id}.`;
+
 test('applies deep-linked segment on load', async ({ page }) => {
   const res = await page.request.get('/content/poi.v1.json');
   const pois = await res.json();
@@ -28,7 +31,7 @@ test('applies deep-linked segment on load', async ({ page }) => {
   const actives = page.locator(SELECTOR.activeMarker);
   await expect(actives).toHaveCount(segment.length);
   await expect(actives.first()).toHaveAttribute('data-step-index', '0');
-  await expect(page.locator(SELECTOR.message)).toBeHidden();
+  await expect(page.locator(SELECTOR.message)).toHaveText(successMessage(segment));
 });
 
 test('shows message when deep link cannot resolve segment', async ({ page }) => {

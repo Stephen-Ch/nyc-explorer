@@ -20,6 +20,9 @@ const pickRoute = (pois: any[]) => {
   return [...grouped.values()].find((list) => list.length >= 2) ?? [];
 };
 
+const successMessage = (segment: any[]) =>
+  `Route: ${segment.length} steps from ${segment[0].name ?? segment[0].id} to ${segment[segment.length - 1].name ?? segment[segment.length - 1].id}.`;
+
 test('route UI resets when inputs are cleared or invalid', async ({ page }) => {
   const res = await page.request.get('/content/poi.v1.json');
   const pois = await res.json();
@@ -32,7 +35,7 @@ test('route UI resets when inputs are cleared or invalid', async ({ page }) => {
   await page.click(SELECTOR.find);
   await expect(page.locator(SELECTOR.steps)).toHaveCount(segment.length);
   await expect(page.locator(SELECTOR.active)).toHaveCount(segment.length);
-  await expect(page.locator(SELECTOR.msg)).toBeHidden();
+  await expect(page.locator(SELECTOR.msg)).toHaveText(successMessage(segment));
 
   await page.fill(SELECTOR.to, '');
   await page.click(SELECTOR.find);
@@ -53,4 +56,5 @@ test('route UI resets when inputs are cleared or invalid', async ({ page }) => {
   const refreshed = routeSegment(route[0].id, route[1].id, pois);
   await expect(page.locator(SELECTOR.steps)).toHaveCount(refreshed.length);
   await expect(page.locator(SELECTOR.active)).toHaveCount(refreshed.length);
+  await expect(page.locator(SELECTOR.msg)).toHaveText(successMessage(refreshed));
 });
