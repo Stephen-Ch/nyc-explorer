@@ -21,6 +21,10 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] DOC-READ-ORDER — Copilot read order synced
+Inserted the canonical “Read Order (always)” list so prompts reference the same sequence as Protocol.
+Evidence: #tests=0, green=NA; files: docs/Copilot-Instructions.md.
+
 ### [2025-11-01] DOC-PROT-CanonRevert — Removed dead canonical banner reference.
 
 ### [2025-11-01] TOOL-DEV-LOOP-1c — Hot reload verified

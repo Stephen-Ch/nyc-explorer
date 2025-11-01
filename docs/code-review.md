@@ -94,6 +94,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-10-31 23:58] nyc-explorer/main TOOL-DEV-LOOP-1b — add dev loop scripts (e2e:ui, dev:api, dev), suites green (#tests=22, green=true)
 [2025-11-01 00:20] nyc-explorer/main TOOL-DEV-LOOP-1c — verify dotnet watch hot-reload, no-op change reverted (#tests=0, green=NA)
 [2025-11-01 00:45] nyc-explorer/main DOC-PROT-CanonRevert — remove invalid canonical banner (#tests=0, green=NA)
+[2025-11-01 01:05] nyc-explorer/main DOC-READ-ORDER — add canonical read order list (#tests=0, green=NA)
 
 
 **Parked Items**

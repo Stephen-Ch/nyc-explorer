@@ -5,6 +5,17 @@
 ## Read Order (each prompt)
 Project.md → Sprint-03-Plan.md → Protocol.md → Copilot-Instructions.md → selectors.md → code-review.md (last 3)
 
+## Read Order (always)
+
+1) docs/Protocol.md
+2) docs/Copilot-Instructions.md (Prompt Skeleton, Hard Guardrails, Allowed-Edits Fence)
+3) docs/selectors.md
+4) docs/Sprint-04-Plan.md (or latest Sprint-XX-Plan.md)
+5) docs/code-review.md (read last 3 Decisions lines only)
+6) docs/project-history.md (read last 2 micro-entries only)
+7) docs/Project.md
+8) docs/Working-With-Stephen.md (skim headings + Do/Don’t)
+
 ## Response Schema (every reply)
 - Assumptions: <none|list>
 - Allowed-Edits Fence: planned=<files/LOC>, actual=<files/LOC>
