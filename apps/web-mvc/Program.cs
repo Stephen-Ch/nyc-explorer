@@ -39,11 +39,11 @@ app.MapGet("/", () => Results.Content(
             toInput = document.querySelector('[data-testid="route-to"]'),
             findButton = document.querySelector('[data-testid="route-find"]'),
             routeMsg = document.querySelector('[data-testid="route-msg"]'),
-            routeSteps = document.getElementById('route-steps');
+            routeSteps = document.getElementById('route-steps'),
+            overlayContainer = document.getElementById('poi-overlay');
           if (!fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
 
-          let currentList = [];
-          let deepLinkPending = true;
+          let currentList = [], deepLinkPending = true, lastSegment = [], mapEventsBound = false;
 
           const normalize = (value) => (typeof value === 'string' ? value.trim().toLowerCase() : ''),
             hasRouteId = (poi) => {
@@ -99,9 +99,30 @@ app.MapGet("/", () => Results.Content(
                 routeSteps.appendChild(li);
               });
             },
-            updateMessage = (text) => {
+            showRouteMessage = (text) => {
               routeMsg.textContent = text ?? '';
+              routeMsg.style.removeProperty('display');
             },
+            hideRouteMessage = () => {
+              routeMsg.textContent = '';
+              routeMsg.style.display = 'none';
+            },
+            setAttrs = (el, attrs) => Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, String(value))),
+            createSvgEl = (name, attrs) => { const el = document.createElementNS('http://www.w3.org/2000/svg', name); setAttrs(el, attrs); return el; },
+            clearRouteGraphics = () => overlayContainer?.querySelectorAll('[data-testid="route-path"], [data-testid="route-node"]').forEach((node) => node.remove()),
+            drawRouteGraphics = (list) => {
+              clearRouteGraphics();
+              const mapInstance = typeof map !== 'undefined' ? map : null, filtered = overlayContainer && Array.isArray(list) ? list.filter(hasCoords) : [];
+              if (!overlayContainer || filtered.length < 2 || !mapInstance || typeof mapInstance.latLngToContainerPoint !== 'function') { lastSegment = []; return; }
+              if (!mapEventsBound && typeof mapInstance.on === 'function') { ['move', 'zoom', 'resize'].forEach((evt) => mapInstance.on(evt, () => lastSegment.length >= 2 && drawRouteGraphics(lastSegment))); mapEventsBound = true; }
+              lastSegment = filtered.map((poi) => poi);
+              const bounds = overlayContainer.getBoundingClientRect(), w = bounds.width || overlayContainer.clientWidth || 1, h = bounds.height || overlayContainer.clientHeight || 1, points = filtered.map((poi) => mapInstance.latLngToContainerPoint([poi.coords.lat, poi.coords.lng]));
+              const svg = createSvgEl('svg', { 'data-testid': 'route-path', 'aria-hidden': 'true', style: 'position:absolute; inset:0; width:100%; height:100%; pointer-events:none;', viewBox: `0 0 ${w} ${h}`, preserveAspectRatio: 'none' });
+              svg.appendChild(createSvgEl('polyline', { points: points.map((pt) => `${pt.x},${pt.y}`).join(' '), fill: 'none', stroke: '#1a73e8', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'pointer-events': 'none' }));
+              points.forEach((pt, index) => svg.appendChild(createSvgEl('circle', { 'data-testid': 'route-node', 'data-step-index': index, 'aria-hidden': 'true', cx: pt.x, cy: pt.y, r: 4, fill: '#ffffff', stroke: '#1a73e8', 'stroke-width': '2', 'pointer-events': 'none' })));
+              overlayContainer.appendChild(svg);
+            },
+            clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); lastSegment = []; showRouteMessage(message); },
             scheduleDeepLink = () => {
               if (!deepLinkPending) return;
               deepLinkPending = false;
@@ -134,24 +155,36 @@ app.MapGet("/", () => Results.Content(
               return start <= end ? slice : slice.reverse();
             },
             applySegment = () => {
-              const base = currentList.length ? currentList : (typeof pois !== 'undefined' && Array.isArray(pois) ? pois : []);
-              const seg = segment(base, fromInput.value, toInput.value);
-              if (!seg.length) {
-                clearSteps();
-                updateMessage('No matching route segment.');
-                clearActiveMarkers();
+              const fromValue = (fromInput.value ?? '').trim();
+              const toValue = (toInput.value ?? '').trim();
+              if (!fromValue || !toValue) {
+                clearRouteUI('Select both From and To to see a route.');
                 return;
               }
-              updateMessage('');
+              const base = currentList.length ? currentList : (typeof pois !== 'undefined' && Array.isArray(pois) ? pois : []);
+              const fromPoi = base.find((poi) => matchesValue(poi, fromValue));
+              const toPoi = base.find((poi) => matchesValue(poi, toValue));
+              if (!fromPoi || !toPoi) {
+                clearRouteUI('Select both From and To to see a route.');
+                return;
+              }
+              const seg = segment(base, fromValue, toValue);
+              if (!seg.length) {
+                clearRouteUI('No matching route segment.');
+                return;
+              }
+              hideRouteMessage();
               showSteps(seg);
               applyActiveMarkers(seg);
+              drawRouteGraphics(seg);
             };
 
+          hideRouteMessage();
           const originalRender = typeof render === 'function' ? render : null;
           if (originalRender) {
             window.render = function wrappedRender(list) {
               currentList = Array.isArray(list) ? list : [];
-              updateMessage('');
+              hideRouteMessage();
               scheduleDeepLink();
               return originalRender(list);
             };

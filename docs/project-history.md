@@ -21,6 +21,11 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] ROUTE-PATH-1b — Route path overlay
+In order to visualize active segments, I draw an SVG polyline with step nodes atop the marker overlay when a route matches.
+Considerations: Map move/zoom events trigger a redraw so markers stay aligned while pointer-events remain disabled for the path.
+Evidence: #tests=34, green=true; typecheck=green; files: apps/web-mvc/Program.cs.
+
 ### [2025-11-01] ROUTE-SHARE-1b — Deep link From/To
 In order to share specific segments, I reused the Find handler on load when ?from&to exist so steps and markers hydrate instantly.
 Considerations: Fallback handles missing/invalid params by clearing highlights and showing the existing route message.
