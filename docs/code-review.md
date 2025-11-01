@@ -77,6 +77,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-10-31 15:50] nyc-explorer/main ROUTE-FILTER-b — recompute #route-steps after search filter (#tests=20, green=true)
 [2025-10-31 16:10] nyc-explorer/main DATA-10b — add 5 POIs to reach ≥10, tests green (#tests=20, green=true)
 [2025-10-31 16:30] nyc-explorer/main ROUTE-FILTER-b-verify — no changes; route steps already recompute on search (#tests=20, green=true)
+[2025-10-31 16:45] nyc-explorer/main DETAIL-IMG-a — add detail image/credit test, red as expected (#tests=1, green=false)
 
 
 **Parked Items**
