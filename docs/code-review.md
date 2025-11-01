@@ -98,6 +98,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 01:15] nyc-explorer/main DOC-SEL-S4 — document active route selectors (#tests=0, green=NA)
 [2025-11-01 01:25] nyc-explorer/main DOC-PLAYBOOK-4 — add decisions format link and example (#tests=0, green=NA)
 [2025-11-01 01:35] nyc-explorer/main DOC-DEV-LOOP-SNIPPET — document dev loop command aliases (#tests=0, green=NA)
+[2025-11-01 01:45] nyc-explorer/main ROUTE-FIND-1a — add unit+e2e contracts for From/To segmenting, RED as expected (#tests=2, green=false)
 
 
 **Parked Items**

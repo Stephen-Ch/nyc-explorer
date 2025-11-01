@@ -21,6 +21,11 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] ROUTE-FIND-1a — Contract tests for From/To
+In order to define routing behavior, I added unit+e2e tests for From/To segmenting and mismatch UX.
+Considerations: routeSegment export missing and UI handler absent, so tests remain RED by design.
+Evidence: #tests=2, green=false.
+
 ### [2025-11-01] DOC-DEV-LOOP-SNIPPET — Dev loop commands clarified
 Documented the `npm run e2e:ui` and `npm run dev:api` aliases under Playwright Usage so the loop mirrors our tooling.
 Evidence: #tests=0, green=NA; files: docs/Protocol.md.
