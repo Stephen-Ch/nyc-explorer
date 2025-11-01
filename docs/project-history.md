@@ -21,6 +21,10 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] DOC-DEV-LOOP-SNIPPET — Dev loop commands clarified
+Documented the `npm run e2e:ui` and `npm run dev:api` aliases under Playwright Usage so the loop mirrors our tooling.
+Evidence: #tests=0, green=NA; files: docs/Protocol.md.
+
 ### [2025-11-01] DOC-PLAYBOOK-4 — Decisions rule links format
 Updated Playbook Rule #4 with a link to the Decisions guide plus an inline example entry so new contributors see the format instantly.
 Evidence: #tests=0, green=NA; files: docs/Playbook.md.

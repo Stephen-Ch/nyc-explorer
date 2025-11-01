@@ -26,6 +26,9 @@
 ### Playwright Usage
 - Primary loop: `npm run e2e:auto` (headless).
 - UI loop (Sprint 04+): run `playwright test --ui --project=chromium` (exposed via `npm run e2e:ui` once TOOL-DEV-LOOP-1b lands). Keep the dev server running via `npm run dev:server`; `reuseExistingServer: true` prevents duplicate launches.
+- Command snippets:
+  - `npm run e2e:ui` → `playwright test --ui --project=chromium` (auto-starts the configured Playwright webServer).
+  - `npm run dev:api` → `dotnet watch --project apps/web-mvc run --urls http://localhost:5000` (hot reload; stop with Ctrl+C when finished).
 
 ## Server Lifecycle (Sprint‑02 target)
 - Configure Playwright `webServer` to auto‑start/stop the ASP.NET app on port **5000**; block until ready. (Add as a Sprint‑02 story.)
