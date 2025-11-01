@@ -96,6 +96,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 00:45] nyc-explorer/main DOC-PROT-CanonRevert — remove invalid canonical banner (#tests=0, green=NA)
 [2025-11-01 01:05] nyc-explorer/main DOC-READ-ORDER — add canonical read order list (#tests=0, green=NA)
 [2025-11-01 01:15] nyc-explorer/main DOC-SEL-S4 — document active route selectors (#tests=0, green=NA)
+[2025-11-01 01:25] nyc-explorer/main DOC-PLAYBOOK-4 — add decisions format link and example (#tests=0, green=NA)
 
 
 **Parked Items**

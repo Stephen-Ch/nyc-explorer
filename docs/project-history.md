@@ -21,6 +21,10 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] DOC-PLAYBOOK-4 — Decisions rule links format
+Updated Playbook Rule #4 with a link to the Decisions guide plus an inline example entry so new contributors see the format instantly.
+Evidence: #tests=0, green=NA; files: docs/Playbook.md.
+
 ### [2025-11-01] DOC-SEL-S4 — Active route selectors captured
 Documented the Sprint 04 selectors (`poi-marker-active`, `route-msg`, `data-step-index`, `aria-current="step"`) under a dedicated Active Routes section.
 Evidence: #tests=0, green=NA; files: docs/selectors.md.
