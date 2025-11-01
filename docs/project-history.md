@@ -25,6 +25,12 @@ Next: <next step>
 
 ### Sprint 03
 
+### [2025-10-31] ROUTE-FILTER-b-verify — Route steps already aligned
+In order to confirm search updates guidance, I re-ran route filter and full suites with no code changes.
+Considerations: Verified empty results clear #route-steps; existing buildRoute/renderRoute wiring intact.
+Evidence: #tests=20, green=true; typecheck=green.
+Files: none (verification only).
+
 ### [2025-10-31] DATA-10b — Reach ten POIs for launch
 In order to meet the ≥10 POI requirement, I appended five Union Square/Flatiron entries to `content/poi.v1.json` with sequential `USQ-core-001` routing.
 Considerations: kept updates to a single file under 60 LOC; placeholder media links remain until final assets land.
