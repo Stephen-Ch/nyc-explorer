@@ -21,6 +21,15 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] ENC-PLACEHOLDER-1a — UTF-8 placeholder contract
+In order to lock placeholder encoding, I added a Playwright RED spec covering search/from/to inputs.
+Considerations: Currently fails because Search placeholder renders mojibake (`Search POIsâ€¦`).
+Evidence: #tests=1, green=false; typecheck=not-run.
+
+### [2025-11-01] ENC-PLACEHOLDER-1b — UTF-8 meta+header
+In order to serve real ellipses, I added a UTF-8 meta tag plus charset header and reran the suite.
+Evidence: placeholder-encoding=green; e2e=37/37; typecheck=green.
+
 ### [2025-11-01] TOOL-ARTIFACTS-1a — Ignore VIS artifacts
 In order to keep commits clean, I ignored docs/artifacts/* with a .gitkeep to preserve the folder. Full suite + typecheck remain green.
 Evidence: e2e=all green; typecheck=0 errors.

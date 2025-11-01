@@ -115,6 +115,8 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 13:29] nyc-explorer/main TOOL-DEV-LOOP-2b — dev:probe triggers & detects hot reload; green (#tests=full, green=true)
 [2025-11-01 15:21] nyc-explorer/main TOOL-DEV-LOOP-2c — restore Razor baseline; dev:probe/typecheck/e2e green (#tests=full, green=true)
 [2025-11-01 15:31] nyc-explorer/main TOOL-ARTIFACTS-1a — ignore docs/artifacts; stop VIS churn (#tests=full, green=true)
+[2025-11-01 15:41] nyc-explorer/main ENC-PLACEHOLDER-1a — add UTF-8 placeholder contract, RED as expected (#tests=1, green=false)
+[2025-11-01 16:19] nyc-explorer/main ENC-PLACEHOLDER-1b — add UTF-8 meta+header; placeholders render correctly (#tests=37, green=true)
 
 
 **Parked Items**

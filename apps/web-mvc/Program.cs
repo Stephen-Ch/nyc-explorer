@@ -4,11 +4,21 @@ builder.Services.AddControllersWithViews();
 var app = builder.Build();
 
 app.UseStaticFiles();
+app.Use(async (context, next) =>
+{
+  await next();
+  var contentType = context.Response.ContentType;
+  if (!string.IsNullOrEmpty(contentType) && contentType.StartsWith("text/html", StringComparison.OrdinalIgnoreCase) && !contentType.Contains("charset", StringComparison.OrdinalIgnoreCase))
+  {
+    context.Response.ContentType = "text/html; charset=utf-8";
+  }
+});
 
 app.MapGet("/", () => Results.Content(
     """
     <html>
     <head>
+      <meta charset="utf-8">
       <title>NYC Explorer</title>
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
       <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -224,7 +234,7 @@ app.MapGet("/", () => Results.Content(
     </body>
     </html>
     """,
-    "text/html"));
+  "text/html; charset=utf-8"));
 
 app.MapGet("/content/poi.v1.json", async () =>
 {
