@@ -43,6 +43,7 @@ app.MapGet("/", () => Results.Content(
           if (!fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
 
           let currentList = [];
+          let deepLinkPending = true;
 
           const normalize = (value) => (typeof value === 'string' ? value.trim().toLowerCase() : ''),
             hasRouteId = (poi) => {
@@ -101,6 +102,22 @@ app.MapGet("/", () => Results.Content(
             updateMessage = (text) => {
               routeMsg.textContent = text ?? '';
             },
+            scheduleDeepLink = () => {
+              if (!deepLinkPending) return;
+              deepLinkPending = false;
+              const run = () => {
+                const params = new URLSearchParams(window.location.search);
+                const fromParam = params.get('from');
+                const toParam = params.get('to');
+                if (!fromParam || !toParam) return;
+                fromInput.value = fromParam;
+                toInput.value = toParam;
+                findButton.dispatchEvent(new Event('click', { bubbles: true }));
+              };
+              if (typeof queueMicrotask === 'function') queueMicrotask(run);
+              else if (typeof Promise !== 'undefined') Promise.resolve().then(run);
+              else setTimeout(run, 0);
+            },
             segment = (list, fromValue, toValue) => {
               const fromPoi = list.find((poi) => matchesValue(poi, fromValue));
               const toPoi = list.find((poi) => matchesValue(poi, toValue));
@@ -135,6 +152,7 @@ app.MapGet("/", () => Results.Content(
             window.render = function wrappedRender(list) {
               currentList = Array.isArray(list) ? list : [];
               updateMessage('');
+              scheduleDeepLink();
               return originalRender(list);
             };
           }

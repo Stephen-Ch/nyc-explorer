@@ -104,6 +104,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 03:05] nyc-explorer/main ROUTE-FIND-2a — add e2e for active marker highlight & step indices, RED as expected (#tests=1, green=false)
 [2025-11-01 03:35] nyc-explorer/main ROUTE-FIND-2b — highlight active markers w/ indices & a11y; tests green (#tests=29, green=true)
 [2025-11-01 04:10] nyc-explorer/main ROUTE-SHARE-1a — add deep-link route tests, red as expected (#tests=3, green=false)
+[schur 2025-11-01 04:35] nyc-explorer/main ROUTE-SHARE-1b — implement deep-link from/to; tests green (#tests=32, green=true)
 
 
 **Parked Items**

@@ -21,6 +21,11 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] ROUTE-SHARE-1b — Deep link From/To
+In order to share specific segments, I reused the Find handler on load when ?from&to exist so steps and markers hydrate instantly.
+Considerations: Fallback handles missing/invalid params by clearing highlights and showing the existing route message.
+Evidence: #tests=32, green=true; files: apps/web-mvc/Program.cs.
+
 ### [2025-11-01] ROUTE-FIND-2b — Active marker highlight
 In order to verify route order on the map, I toggled overlay markers with `data-step-index` and `aria-current="step"` per segment.
 Considerations: Clear markers on each run so stale highlights drop when spans change.
