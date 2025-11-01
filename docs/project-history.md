@@ -25,6 +25,11 @@ Next: <next step>
 
 ### Sprint 03
 
+### [2025-10-31] DETAIL-IMG-b — Render POI images
+In order to surface provenance, I now emit figure/img + credit markup on /poi/{id} whenever images exist.
+Considerations: Alt text uses the POI name, multiple images supported, layout styling still pending; touched apps/web-mvc/Program.cs.
+Evidence: #tests=21, green=true; typecheck=green; detail-images.spec.ts now passes.
+
 ### [2025-10-31] ROUTE-FILTER-b-verify — Route steps already aligned
 In order to confirm search updates guidance, I re-ran route filter and full suites with no code changes.
 Considerations: Verified empty results clear #route-steps; existing buildRoute/renderRoute wiring intact.

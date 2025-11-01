@@ -159,8 +159,8 @@ app.MapGet("/poi/{id}", async (string id) =>
     {
         if (element.TryGetProperty("id", out var poiId) && poiId.GetString() == id)
         {
-            var name = element.GetProperty("name").GetString();
-            var summary = element.GetProperty("summary").GetString();
+    var name = element.GetProperty("name").GetString();
+    var summary = element.GetProperty("summary").GetString();
             
             var sourcesHtml = "";
             if (element.TryGetProperty("sources", out var sources))
@@ -173,6 +173,30 @@ app.MapGet("/poi/{id}", async (string id) =>
                     sourcesHtml += $"""<li data-testid="poi-source"><a href="{url}">{title}</a> — {publisher}</li>""";
                 }
             }
+
+            var imagesHtml = "";
+            if (element.TryGetProperty("images", out var images))
+            {
+                foreach (var image in images.EnumerateArray())
+                {
+                    if (!image.TryGetProperty("src", out var srcProp))
+                    {
+                        continue;
+                    }
+
+                    var src = srcProp.GetString();
+                    if (string.IsNullOrWhiteSpace(src))
+                    {
+                        continue;
+                    }
+
+                    var credit = image.TryGetProperty("credit", out var creditProp) ? creditProp.GetString() : null;
+                    var captionHtml = string.IsNullOrEmpty(credit) ? "" : $"""<figcaption data-testid="img-credit">{credit}</figcaption>""";
+                    imagesHtml += $"""<figure><img data-testid="poi-image" src="{src}" alt="{name ?? "POI image"}"/>{captionHtml}</figure>""";
+                }
+            }
+
+            var imagesSection = string.IsNullOrEmpty(imagesHtml) ? string.Empty : $"""<div id="poi-images">{imagesHtml}</div>""";
             
             var html = $$"""
                 <html>
@@ -181,6 +205,7 @@ app.MapGet("/poi/{id}", async (string id) =>
                   <a data-testid="back-to-map" href="/">← Back to Map</a>
                   <h1 id="poi-title">{{name}}</h1>
                   <p id="poi-summary">{{summary}}</p>
+                  {{imagesSection}}
                   <ul id="poi-sources">{{sourcesHtml}}</ul>
                 </body>
                 </html>
