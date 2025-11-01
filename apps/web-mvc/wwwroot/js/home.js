@@ -50,8 +50,9 @@ function placeButtons() {
   overlay.innerHTML = '';
   pois.forEach((poi) => {
     const point = map.latLngToContainerPoint([poi.coords.lat, poi.coords.lng]);
-    const btn = document.createElement('button');
+  const btn = document.createElement('button');
     btn.setAttribute('data-testid', 'poi-marker');
+  btn.setAttribute('data-poi-id', poi.id);
     btn.setAttribute('data-id', poi.id);
     btn.setAttribute('aria-label', poi.name);
     btn.setAttribute('role', 'button');

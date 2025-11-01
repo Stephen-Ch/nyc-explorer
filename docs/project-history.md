@@ -21,6 +21,11 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] ROUTE-FIND-2b — Active marker highlight
+In order to verify route order on the map, I toggled overlay markers with `data-step-index` and `aria-current="step"` per segment.
+Considerations: Clear markers on each run so stale highlights drop when spans change.
+Evidence: #tests=29, green=true; files: apps/web-mvc/Program.cs, apps/web-mvc/wwwroot/js/home.js.
+
 ### [2025-11-01] ROUTE-FIND-1d — Route segment type guard
 In order to keep tests lightweight, I relaxed `routeSegment` to accept a minimal POI shape without touching runtime logic.
 Considerations: Sorting fallback still favors names when orders are missing.

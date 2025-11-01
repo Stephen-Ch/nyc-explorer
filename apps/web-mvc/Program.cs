@@ -51,6 +51,23 @@ app.MapGet("/", () => Results.Content(
               return value.length ? value : null;
             },
             hasCoords = (poi) => Boolean(poi && poi.coords && typeof poi.coords.lat === 'number' && typeof poi.coords.lng === 'number'),
+            clearActiveMarkers = () => {
+              document.querySelectorAll('[data-testid="poi-marker-active"]').forEach((el) => {
+                el.setAttribute('data-testid', 'poi-marker');
+                el.removeAttribute('data-step-index');
+                el.removeAttribute('aria-current');
+              });
+            },
+            applyActiveMarkers = (list) => {
+              clearActiveMarkers();
+              list.forEach((item, index) => {
+                const el = document.querySelector(`[data-testid="poi-marker"][data-poi-id="${item.id}"]`);
+                if (!el) return;
+                el.setAttribute('data-testid', 'poi-marker-active');
+                el.setAttribute('data-step-index', String(index));
+                el.setAttribute('aria-current', 'step');
+              });
+            },
             compareRouteOrder = (a, b) => {
               const orderA = typeof a.order === 'number' ? a.order : Number.POSITIVE_INFINITY;
               const orderB = typeof b.order === 'number' ? b.order : Number.POSITIVE_INFINITY;
@@ -105,10 +122,12 @@ app.MapGet("/", () => Results.Content(
               if (!seg.length) {
                 clearSteps();
                 updateMessage('No matching route segment.');
+                clearActiveMarkers();
                 return;
               }
               updateMessage('');
               showSteps(seg);
+              applyActiveMarkers(seg);
             };
 
           const originalRender = typeof render === 'function' ? render : null;
