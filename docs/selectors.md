@@ -43,6 +43,8 @@
 - Active marker: `[data-testid="poi-marker-active"]`
 - Active marker order attribute: `data-step-index` (mirrors route step index)
 - Route status message: `[data-testid="route-msg"]`
+- Route path overlay: `[data-testid="route-path"]`
+- Route path node (optional): `[data-testid="route-node"]`
 - Accessibility: Active markers set `aria-current="step"` and remain keyboard focusable.
 
 ## Stability Rules

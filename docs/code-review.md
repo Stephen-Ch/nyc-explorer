@@ -106,6 +106,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 04:10] nyc-explorer/main ROUTE-SHARE-1a — add deep-link route tests, red as expected (#tests=3, green=false)
 [schur 2025-11-01 04:35] nyc-explorer/main ROUTE-SHARE-1b — implement deep-link from/to; tests green (#tests=32, green=true)
 [2025-11-01 05:05] nyc-explorer/main ROUTE-FIND-RESET-a — add reset contract test, red as expected (#tests=1, green=false)
+[2025-11-01 06:20] nyc-explorer/main ROUTE-PATH-1a — add route path visual contract, RED (#tests=1, green=false)
 
 
 **Parked Items**
