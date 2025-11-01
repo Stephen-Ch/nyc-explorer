@@ -1,4 +1,4 @@
-# Selectors — Canonical (v0.2)
+# Selectors — Canonical (v0.3)
 
 **Purpose:** Lock stable selectors so tests and UI don’t drift mid‑sprint.
 
@@ -32,11 +32,18 @@
 ## Route Steps
 - Ordered list: `#route-steps`
 - Step item: `[data-testid="route-step"]`
+- Step order badge: `data-step-index` (0-based; prefer assertions on this attribute)
 
 ## Route Inputs
 - From input: `[data-testid="route-from"]`
 - To input: `[data-testid="route-to"]`
 - Find button: `[data-testid="route-find"]`
+
+## Route Highlights (Sprint 04)
+- Active marker: `[data-testid="poi-marker-active"]`
+- Active marker order: `data-step-index` (mirrors route step index)
+- Route status message: `[data-testid="route-msg"]`
+- A11Y: Active markers also set `aria-current="step"` and remain keyboard focusable.
 
 ## Stability Rules
 - Do not rename selectors mid-sprint.
@@ -46,6 +53,7 @@
 ## Notes
 - `.leaflet-marker-icon` remains a Leaflet-provided class.
 - `[data-testid="poi-marker"]` stays our overlay handle for marker interactions.
+- `[data-testid="poi-marker-active"]` decorates the same button when part of the active route; do not repurpose the base selector.
 
 > Note: `.leaflet-marker-icon` is external (do not rename/style)
 

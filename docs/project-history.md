@@ -21,6 +21,11 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-10-31] DOC-S4-Fixes-1 — Sprint 4 docs tightened
+In order to bake in review feedback, I updated selectors, Protocol, and the Sprint 04 plan with dev-loop gating, new hooks, and routeSegment edge cases.
+Considerations: No code changes yet; selectors now predeclare active marker + route message hooks.
+Evidence: #tests=0, green=NA; files: docs/selectors.md, docs/Protocol.md, docs/Sprint-04-Plan.md.
+
 ### [2025-10-31] ROUTE-INPUTS-b — Route controls appear
 In order to unblock future routing UX, I added placeholder From/To inputs and a Find button on the home page.
 Considerations: UI-only slice; Program.cs change under 60 LOC; routing logic remains TODO.

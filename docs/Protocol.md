@@ -8,6 +8,9 @@
 3) **LOG** — append one line to `/docs/code-review.md`.  
 4) **PAUSE** — stop until user cue.
 
+### Sprint Gate — Dev Loop First
+> **NOTE:** Do **not** begin ROUTE-FIND-1a until TOOL-DEV-LOOP-1 (dev server watch loop) is GREEN **and** verified manually (hot reload feels solid, stop/start clean). Routing work pauses if the loop regresses.
+
 ## When ≤60 LOC isn’t enough
 - **BLOCK** with an Ambiguity Card that proposes:
   - **SPLIT**: break into two smaller slices (e.g., `MAP-2a`, `MAP-2b`), *or*
@@ -20,6 +23,10 @@
 - Use built-in waiting (`expect(locator).toBeVisible()`) rather than sleeps.
 - **Artifacts**: optional visual smoke — store **one** PNG per UI story at `docs/artifacts/<STORY-ID>/P<NN>-map.png`, ≤500KB.
 
+### Playwright Usage
+- Primary loop: `npm run e2e:auto` (headless).
+- UI loop (Sprint 04+): run `playwright test --ui --project=chromium` (exposed via `npm run e2e:ui` once TOOL-DEV-LOOP-1b lands). Keep the dev server running via `npm run dev:server`; `reuseExistingServer: true` prevents duplicate launches.
+
 ## Server Lifecycle (Sprint‑02 target)
 - Configure Playwright `webServer` to auto‑start/stop the ASP.NET app on port **5000**; block until ready. (Add as a Sprint‑02 story.)
 
@@ -29,6 +36,7 @@
 
 ## Selectors Contract
 - Canonical selectors live in `/docs/selectors.md`. Do not invent new ones without a story.
+- Sprint 04 predeclared hooks: `[data-testid="poi-marker-active"]`, `data-step-index`, `[data-testid="route-msg"]`, plus `aria-current="step"` on active markers. Treat them as frozen for the sprint.
 
 ## Leaflet Map Interaction (Canonical Pattern)
 - Place an overlay container above `#map` and position button elements per POI using `map.latLngToContainerPoint`.

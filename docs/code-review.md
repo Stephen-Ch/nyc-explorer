@@ -89,6 +89,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-10-31 22:54] nyc-explorer/main REFAC-JS-SPLIT-1a — extract home script to wwwroot (#tests=1, green=true)
 [2025-10-31 22:56] nyc-explorer/main DOC-TEST-TIMEOUTS-1a — document Playwright timeout guidance (#tests=0, green=NA)
 [2025-10-31 22:58] nyc-explorer/main ROUTE-INPUTS-b — add From/To controls on home; route-inputs GREEN (#tests=22, green=true)
+[2025-10-31 23:16] nyc-explorer/main DOC-S4-Fixes-1 — fold Sprint 4 review clarifications into docs (#tests=0, green=NA)
 
 
 **Parked Items**
