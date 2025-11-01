@@ -111,6 +111,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 07:10] nyc-explorer/main ROUTE-ANNOUNCE-1a — add aria-live route-msg contract, RED as expected (#tests=1, green=false)
 [2025-11-01 07:45] nyc-explorer/main ROUTE-ANNOUNCE-1b — add aria-live route messaging; #tests=35, green=true
 [2025-11-01 08:10] nyc-explorer/main ROUTE-FIND-3a — add URL history contract (pushState + back/forward), red as expected (#tests=1, green=false)
+[2025-11-01 08:45] nyc-explorer/main ROUTE-FIND-3b — wire pushState+popstate; history/back-forward synced (#tests=36, green=true)
 
 
 **Parked Items**

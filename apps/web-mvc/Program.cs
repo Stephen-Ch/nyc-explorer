@@ -43,7 +43,7 @@ app.MapGet("/", () => Results.Content(
             overlayContainer = document.getElementById('poi-overlay');
           if (!fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
 
-          let currentList = [], deepLinkPending = true, lastSegment = [], mapEventsBound = false;
+          let currentList = [], deepLinkPending = true, lastSegment = [], mapEventsBound = false, isPopState = false;
 
           const normalize = (value) => (typeof value === 'string' ? value.trim().toLowerCase() : ''),
             hasRouteId = (poi) => {
@@ -130,9 +130,11 @@ app.MapGet("/", () => Results.Content(
                 const fromParam = params.get('from');
                 const toParam = params.get('to');
                 if (!fromParam || !toParam) return;
+                isPopState = true;
                 fromInput.value = fromParam;
                 toInput.value = toParam;
                 findButton.dispatchEvent(new Event('click', { bubbles: true }));
+                isPopState = false;
               };
               if (typeof queueMicrotask === 'function') queueMicrotask(run);
               else if (typeof Promise !== 'undefined') Promise.resolve().then(run);
@@ -178,6 +180,12 @@ app.MapGet("/", () => Results.Content(
               applyActiveMarkers(seg);
               drawRouteGraphics(seg);
               setRouteMessage(`Route: ${seg.length} steps from ${fromName} to ${toName}.`);
+              if (!isPopState && typeof history !== 'undefined' && typeof URLSearchParams !== 'undefined') {
+                const fromId = typeof fromPoi.id === 'string' && fromPoi.id.length ? fromPoi.id : fromValue;
+                const toId = typeof toPoi.id === 'string' && toPoi.id.length ? toPoi.id : toValue;
+                const params = new URLSearchParams({ from: fromId, to: toId }).toString();
+                history.pushState({ from: fromId, to: toId }, '', `?${params}`);
+              }
             };
 
           setRouteMessage('');
@@ -195,6 +203,21 @@ app.MapGet("/", () => Results.Content(
           findButton.addEventListener('click', (event) => {
             event.preventDefault();
             applySegment();
+          });
+
+          window.addEventListener('popstate', () => {
+            const params = new URLSearchParams(window.location.search);
+            const fromParam = params.get('from') ?? '';
+            const toParam = params.get('to') ?? '';
+            fromInput.value = fromParam;
+            toInput.value = toParam;
+            if (fromParam && toParam) {
+              isPopState = true;
+              findButton.dispatchEvent(new Event('click', { bubbles: true }));
+              isPopState = false;
+            } else {
+              clearRouteUI('Select both From and To to see steps.');
+            }
           });
         })();
       </script>

@@ -21,6 +21,11 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] ROUTE-FIND-3b — URL history wired
+In order to sync the UI with the address bar, I pushState on Find and reuse popstate to restore/reset steps, highlights, and the live message.
+Considerations: Single-file change under 60 LOC; reuse existing helpers; suppress pushState while handling popstate/deep links to dodge loops.
+Evidence: #tests=36, green=true; typecheck=green; files: apps/web-mvc/Program.cs.
+
 ### [2025-11-01] ROUTE-FIND-3a — URL history contract
 In order to support sharable state and proper nav, I added an e2e spec asserting pushState on Find plus Back/Forward UI sync.
 Considerations: Deterministic copy and existing selectors keep the checks stable; implementation deferred to next slice.
