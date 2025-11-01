@@ -1,4 +1,6 @@
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllersWithViews();
+
 var app = builder.Build();
 
 app.MapGet("/", () => Results.Content(
@@ -142,79 +144,6 @@ app.MapGet("/content/poi.v1.json", async () =>
     return Results.Text(json, "application/json");
 });
 
-app.MapGet("/poi/{id}", async (string id) =>
-{
-    var contentRoot = app.Environment.ContentRootPath;
-    var filePath = Path.Combine(contentRoot, "..", "..", "content", "poi.v1.json");
-
-    if (!File.Exists(filePath))
-    {
-        return Results.NotFound();
-    }
-
-    var json = await File.ReadAllTextAsync(filePath);
-    using var doc = System.Text.Json.JsonDocument.Parse(json);
-    
-    foreach (var element in doc.RootElement.EnumerateArray())
-    {
-        if (element.TryGetProperty("id", out var poiId) && poiId.GetString() == id)
-        {
-    var name = element.GetProperty("name").GetString();
-    var summary = element.GetProperty("summary").GetString();
-            
-            var sourcesHtml = "";
-            if (element.TryGetProperty("sources", out var sources))
-            {
-                foreach (var source in sources.EnumerateArray())
-                {
-                    var title = source.GetProperty("title").GetString();
-                    var url = source.GetProperty("url").GetString();
-                    var publisher = source.GetProperty("publisher").GetString();
-                    sourcesHtml += $"""<li data-testid="poi-source"><a href="{url}">{title}</a> — {publisher}</li>""";
-                }
-            }
-
-            var imagesHtml = "";
-            if (element.TryGetProperty("images", out var images))
-            {
-                foreach (var image in images.EnumerateArray())
-                {
-                    if (!image.TryGetProperty("src", out var srcProp))
-                    {
-                        continue;
-                    }
-
-                    var src = srcProp.GetString();
-                    if (string.IsNullOrWhiteSpace(src))
-                    {
-                        continue;
-                    }
-
-                    var credit = image.TryGetProperty("credit", out var creditProp) ? creditProp.GetString() : null;
-                    var captionHtml = string.IsNullOrEmpty(credit) ? "" : $"""<figcaption data-testid="img-credit">{credit}</figcaption>""";
-                    imagesHtml += $"""<figure><img data-testid="poi-image" src="{src}" alt="{name ?? "POI image"}"/>{captionHtml}</figure>""";
-                }
-            }
-
-            var imagesSection = string.IsNullOrEmpty(imagesHtml) ? string.Empty : $"""<div id="poi-images">{imagesHtml}</div>""";
-            
-            var html = $$"""
-                <html>
-                <head><title>{{name}} - NYC Explorer</title></head>
-                <body>
-                  <a data-testid="back-to-map" href="/">← Back to Map</a>
-                  <h1 id="poi-title">{{name}}</h1>
-                  <p id="poi-summary">{{summary}}</p>
-                  {{imagesSection}}
-                  <ul id="poi-sources">{{sourcesHtml}}</ul>
-                </body>
-                </html>
-                """;
-            return Results.Content(html, "text/html");
-        }
-    }
-    
-    return Results.NotFound();
-});
+app.MapControllers();
 
 app.Run("http://localhost:5000");

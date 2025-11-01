@@ -1,0 +1,30 @@
+@model NYCExplorer.Controllers.PoiController.PoiDetailViewModel
+<html>
+<head><title>@Model.Name - NYC Explorer</title></head>
+<body>
+  <a data-testid="back-to-map" href="/">← Back to Map</a>
+  <h1 id="poi-title">@Model.Name</h1>
+  <p id="poi-summary">@Model.Summary</p>
+  @if (Model.Images.Count > 0)
+  {
+    <div id="poi-images">
+      @foreach (var image in Model.Images)
+      {
+        <figure>
+          <img data-testid="poi-image" src="@image.Src" alt="@Model.Name" />
+          @if (!string.IsNullOrWhiteSpace(image.Credit))
+          {
+            <figcaption data-testid="img-credit">@image.Credit</figcaption>
+          }
+        </figure>
+      }
+    </div>
+  }
+  <ul id="poi-sources">
+    @foreach (var source in Model.Sources)
+    {
+      <li data-testid="poi-source"><a href="@source.Url">@source.Title</a> — @source.Publisher</li>
+    }
+  </ul>
+</body>
+</html>

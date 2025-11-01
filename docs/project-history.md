@@ -25,6 +25,11 @@ Next: <next step>
 
 ### Sprint 03
 
+### [2025-10-31] REFAC-HTML-1a — Razor detail shell
+In order to make /poi/{id} maintainable, I swapped the inline HTML for an MVC controller + Razor view while preserving all selectors.
+Considerations: JSON parsing now feeds a view model; controllers registered via AddControllersWithViews; future slices can extract shared helpers.
+Evidence: #tests=21, green=true; typecheck=green; files: Program.cs, Controllers/PoiController.cs, Views/Poi/Detail.cshtml.
+
 ### [2025-10-31] DOC-MVP — README run/test checklist
 In order to keep MVP validation obvious, I added a Run & Test section listing local commands and GREEN criteria.
 Considerations: Commands limited to three lines; criteria call out ≥10 POIs, navigation, and image-credit visibility.
