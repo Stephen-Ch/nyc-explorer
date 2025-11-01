@@ -21,6 +21,11 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] ROUTE-FIND-3a — URL history contract
+In order to support sharable state and proper nav, I added an e2e spec asserting pushState on Find plus Back/Forward UI sync.
+Considerations: Deterministic copy and existing selectors keep the checks stable; implementation deferred to next slice.
+Evidence: #tests=1, green=false; typecheck=not-run; files: tests/e2e/route-history.spec.ts.
+
 ### [2025-11-01] ROUTE-ANNOUNCE-1b — Live route messaging
 In order to improve a11y, I wired the route live region to announce success, reset, and mismatch states.
 Considerations: Deterministic copy runs through shared Find/deep-link paths so every trigger updates consistently.
