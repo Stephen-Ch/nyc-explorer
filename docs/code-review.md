@@ -84,6 +84,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-10-31 22:39] nyc-explorer/main ROUTE-INPUTS-a — add route controls contract test, red as expected (#tests=1, green=false)
 [2025-10-31 22:44] nyc-explorer/main DOC-PROT-Leaflet-Pattern — add canonical overlay marker pattern (docs-only) (#tests=0, green=NA)
 [2025-10-31 22:50] nyc-explorer/main CI-SMOKE-1a — add GitHub Actions CI workflow (#tests=0, green=NA)
+[2025-10-31 22:51] nyc-explorer/main DOC-ARTIFACTS-1a — document visual artifact rules (#tests=0, green=NA)
 
 
 **Parked Items**

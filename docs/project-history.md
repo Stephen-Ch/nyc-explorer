@@ -35,6 +35,11 @@ In order to catch regressions on push/PR, I added a workflow running npm ci, typ
 Considerations: Uses Node 18 + .NET 8; relies on existing Playwright webServer config; artifact retention defaults in Actions.
 Evidence: #tests=0, green=NA; files: .github/workflows/ci.yml.
 
+### [2025-10-31] DOC-ARTIFACTS-1a — Visual artifact rules
+In order to standardize screenshots, I created Artifacts.md covering naming, storage, size limits, refresh cadence, and PR linking.
+Considerations: Focused on PNG ≤500KB in `docs/artifacts/<STORY-ID>/`; encourages reuse when UI unchanged.
+Evidence: #tests=0, green=NA; files: docs/Artifacts.md.
+
 ### [2025-10-31] REFAC-HTML-1a — Razor detail shell
 In order to make /poi/{id} maintainable, I swapped the inline HTML for an MVC controller + Razor view while preserving all selectors.
 Considerations: JSON parsing now feeds a view model; controllers registered via AddControllersWithViews; future slices can extract shared helpers.
