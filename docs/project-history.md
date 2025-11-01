@@ -21,6 +21,11 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] SPRINT-04-CLOSEOUT — Release candidate published
+In order to freeze Sprint 4, I captured the changelog and release notes, re-ran full suites, and tagged v0.4.0-rc.
+Considerations: Docs-only slice; runtime code untouched.
+Evidence: e2e=38/38; typecheck=green.
+
 ### [2025-11-01] FORM-A11Y-1b — Labeled route inputs
 In order to keep the form accessible, I added visible labels wired to Search/From/To and sanitized marker aria-labels so tests stay unique.
 Considerations: Inline label/script tweaks only; routing, filtering, and overlays behave the same.

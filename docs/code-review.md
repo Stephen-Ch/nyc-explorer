@@ -119,6 +119,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 16:19] nyc-explorer/main ENC-PLACEHOLDER-1b — add UTF-8 meta+header; placeholders render correctly (#tests=37, green=true)
 [2025-11-01 16:34] nyc-explorer/main FORM-A11Y-1a — add a11y label contract for Search/From/To, RED as expected (#tests=1, green=false)
 [2025-11-01 18:37] nyc-explorer/main FORM-A11Y-1b — add bound labels for Search/From/To; e2e+typecheck green (#tests=38, green=true)
+[2025-11-01 18:44] nyc-explorer/main SPRINT-04-CLOSEOUT — changelog+release notes; tag v0.4.0-rc (#tests=38, green=true)
 
 
 **Parked Items**
