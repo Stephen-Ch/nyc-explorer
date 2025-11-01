@@ -21,6 +21,11 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-10-31] ROUTE-INPUTS-b — Route controls appear
+In order to unblock future routing UX, I added placeholder From/To inputs and a Find button on the home page.
+Considerations: UI-only slice; Program.cs change under 60 LOC; routing logic remains TODO.
+Evidence: #tests=22, green=true; typecheck=green; files: apps/web-mvc/Program.cs.
+
 ### [2025-10-31] REFAC-JS-SPLIT-1a — Extract home script
 In order to improve maintainability, I moved the home-page logic into `wwwroot/js/home.js` and enabled static file serving while preserving selectors/behavior.
 Considerations: Route-inputs spec remains RED by design; other Playwright specs unaffected.

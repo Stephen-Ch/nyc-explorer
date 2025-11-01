@@ -22,6 +22,11 @@ app.MapGet("/", () => Results.Content(
     </head>
     <body>
       <h1>NYC Explorer</h1>
+      <div id="route-inputs" style="margin-bottom:1rem; display:flex; gap:0.5rem;">
+        <input id="route-from" data-testid="route-from" placeholder="From…" />
+        <input id="route-to" data-testid="route-to" placeholder="To…" />
+        <button data-testid="route-find">Find Route</button>
+      </div>
       <div id="map-wrap" style="position:relative;"><div id="map" style="height:300px;"></div><div id="poi-overlay" style="position:absolute; inset:0; z-index:650; pointer-events:none;"></div></div>
       <input id="search-input" data-testid="search-input" placeholder="Search POIs…" />
       <ul id="poi-list"></ul>
