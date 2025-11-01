@@ -108,6 +108,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 05:05] nyc-explorer/main ROUTE-FIND-RESET-a — add reset contract test, red as expected (#tests=1, green=false)
 [2025-11-01 06:20] nyc-explorer/main ROUTE-PATH-1a — add route path visual contract, RED (#tests=1, green=false)
 [2025-11-01 06:55] nyc-explorer/main ROUTE-PATH-1b — render route polyline+nodes; tests green (#tests=34, green=true)
+[2025-11-01 07:10] nyc-explorer/main ROUTE-ANNOUNCE-1a — add aria-live route-msg contract, RED as expected (#tests=1, green=false)
 
 
 **Parked Items**
