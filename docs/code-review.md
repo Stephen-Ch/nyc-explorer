@@ -87,6 +87,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-10-31 22:51] nyc-explorer/main DOC-ARTIFACTS-1a — document visual artifact rules (#tests=0, green=NA)
 [2025-10-31 22:52] nyc-explorer/main DOC-HISTORY-TEMPLATE-1a — add micro-entry snippet (#tests=0, green=NA)
 [2025-10-31 22:54] nyc-explorer/main REFAC-JS-SPLIT-1a — extract home script to wwwroot (#tests=1, green=true)
+[2025-10-31 22:56] nyc-explorer/main DOC-TEST-TIMEOUTS-1a — document Playwright timeout guidance (#tests=0, green=NA)
 
 
 **Parked Items**

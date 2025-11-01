@@ -50,4 +50,11 @@ RED → GREEN → VERIFY (full suite + typecheck) → COMMIT (one story = one co
 - If estimate >50 LOC → split before starting.
 - If during work you exceed 60 LOC or 2 files → REVISE or SPLIT and stop.
 
+## Appendix — Test Timeouts & Retries
+- Default Playwright timeout: expectations wait up to 5s; `page.goto` honors Playwright config (currently 30s).
+- No global retries enabled; if a slice is flaky, investigate before opting into `test.retry` locally.
+- Increase timeouts only when a story introduces deliberate latency (e.g., lazy loading) and document the rationale.
+- Prefer targeting specific `expect` calls with `.setTimeout()` rather than raising the global limit.
+- For long-running setup (e.g., map tiles), avoid exceeding 10s without product sign-off; consider adding loading indicators instead.
+
 **End.**

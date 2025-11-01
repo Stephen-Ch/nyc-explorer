@@ -26,6 +26,11 @@ In order to improve maintainability, I moved the home-page logic into `wwwroot/j
 Considerations: Route-inputs spec remains RED by design; other Playwright specs unaffected.
 Evidence: #tests=1, green=true; typecheck=green; files: apps/web-mvc/Program.cs, apps/web-mvc/wwwroot/js/home.js.
 
+### [2025-10-31] DOC-TEST-TIMEOUTS-1a — Playwright timeout guidance
+In order to keep e2e slices consistent, I added a Protocol appendix covering default Playwright timeouts, retries, and when to adjust them per story.
+Considerations: Emphasizes targeted `expect.setTimeout()` over global increases; discourages exceeding 10s without UX buy-in.
+Evidence: #tests=0, green=NA; files: docs/Protocol.md (Test Timeouts & Retries appendix).
+
 ### [2025-10-31] DOC-PROT-Leaflet-Pattern — Codify overlay approach
 In order to reduce debugging loops, I documented the canonical Leaflet overlay button pattern and testing heuristics in Protocol.md.
 Considerations: Reinforces focus styling, selector usage, and Razor-first guidance for growing views.
