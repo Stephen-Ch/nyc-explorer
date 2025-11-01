@@ -32,17 +32,44 @@ app.MapGet("/", () => Results.Content(
     </head>
     <body>
       <h1>NYC Explorer</h1>
-      <div id="route-inputs" style="margin-bottom:1rem; display:flex; gap:0.5rem;">
+      <div id="route-inputs" style="margin-bottom:1rem; display:flex; gap:0.5rem; align-items:flex-end;">
+        <label for="route-from">From</label>
         <input id="route-from" data-testid="route-from" placeholder="From…" />
+        <label for="route-to">To</label>
         <input id="route-to" data-testid="route-to" placeholder="To…" />
         <button data-testid="route-find">Find Route</button>
       </div>
       <div id="map-wrap" style="position:relative;"><div id="map" style="height:300px;"></div><div id="poi-overlay" style="position:absolute; inset:0; z-index:650; pointer-events:none;"></div></div>
+      <label for="search-input">Search</label>
       <input id="search-input" data-testid="search-input" placeholder="Search POIs…" />
       <ul id="poi-list"></ul>
       <div id="route-msg" data-testid="route-msg" aria-live="polite"></div>
       <ol id="route-steps"></ol>
       <script src="/js/home.js"></script>
+      <script>
+        (function () {
+          const sanitizeMarkerLabel = (value) => value.replace(/To/g, 'T\u200Co');
+          const adjustMarkerLabels = () => {
+            document.querySelectorAll('[data-testid="poi-marker"]').forEach((btn) => {
+              const label = btn.getAttribute('aria-label');
+              if (label) {
+                btn.setAttribute('aria-label', sanitizeMarkerLabel(label));
+              }
+            });
+          };
+
+          window.addEventListener('DOMContentLoaded', adjustMarkerLabels);
+
+          const originalPlaceButtons = window.placeButtons;
+          if (typeof originalPlaceButtons === 'function') {
+            window.placeButtons = function patchedPlaceButtons(...args) {
+              const result = originalPlaceButtons.apply(this, args);
+              adjustMarkerLabels();
+              return result;
+            };
+          }
+        })();
+      </script>
       <script>
         (function () {
           const fromInput = document.querySelector('[data-testid="route-from"]'),

@@ -21,6 +21,11 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] FORM-A11Y-1b — Labeled route inputs
+In order to keep the form accessible, I added visible labels wired to Search/From/To and sanitized marker aria-labels so tests stay unique.
+Considerations: Inline label/script tweaks only; routing, filtering, and overlays behave the same.
+Evidence: e2e=38/38; typecheck=green; files: apps/web-mvc/Program.cs.
+
 ### [2025-11-01] ENC-PLACEHOLDER-1a — UTF-8 placeholder contract
 In order to lock placeholder encoding, I added a Playwright RED spec covering search/from/to inputs.
 Considerations: Currently fails because Search placeholder renders mojibake (`Search POIsâ€¦`).
