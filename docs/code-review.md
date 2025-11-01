@@ -112,6 +112,8 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 07:45] nyc-explorer/main ROUTE-ANNOUNCE-1b — add aria-live route messaging; #tests=35, green=true
 [2025-11-01 08:10] nyc-explorer/main ROUTE-FIND-3a — add URL history contract (pushState + back/forward), red as expected (#tests=1, green=false)
 [2025-11-01 08:45] nyc-explorer/main ROUTE-FIND-3b — wire pushState+popstate; history/back-forward synced (#tests=36, green=true)
+[2025-11-01 13:29] nyc-explorer/main TOOL-DEV-LOOP-2b — dev:probe triggers & detects hot reload; green (#tests=full, green=true)
+[2025-11-01 15:21] nyc-explorer/main TOOL-DEV-LOOP-2c — restore Razor baseline; dev:probe/typecheck/e2e green (#tests=full, green=true)
 
 
 **Parked Items**

@@ -21,6 +21,11 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] TOOL-DEV-LOOP-2c — Restore Razor baseline
+In order to keep the hot-reload probe reliable, I restored Detail.cshtml to HEAD and reran the full verification loop.
+Considerations: Avoid manual tweaks to Razor views while probes execute to prevent false failures.
+Evidence: dev:probe=0; typecheck=0; e2e=36/36 green.
+
 ### [2025-11-01] ROUTE-FIND-3b — URL history wired
 In order to sync the UI with the address bar, I pushState on Find and reuse popstate to restore/reset steps, highlights, and the live message.
 Considerations: Single-file change under 60 LOC; reuse existing helpers; suppress pushState while handling popstate/deep links to dodge loops.
