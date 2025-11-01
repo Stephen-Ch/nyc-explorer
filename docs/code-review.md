@@ -81,6 +81,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-10-31 22:06] nyc-explorer/main DETAIL-IMG-b — render poi images+credits on detail page (#tests=21, green=true)
 [2025-10-31 22:11] nyc-explorer/main DOC-MVP — add MVP run/test checklist to README (#tests=0, green=NA)
 [2025-10-31 22:32] nyc-explorer/main REFAC-HTML-1a — move poi detail to Razor view (#tests=21, green=true)
+[2025-10-31 22:39] nyc-explorer/main ROUTE-INPUTS-a — add route controls contract test, red as expected (#tests=1, green=false)
 
 
 **Parked Items**

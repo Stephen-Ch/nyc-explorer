@@ -33,6 +33,11 @@
 - Ordered list: `#route-steps`
 - Step item: `[data-testid="route-step"]`
 
+## Route Inputs
+- From input: `[data-testid="route-from"]`
+- To input: `[data-testid="route-to"]`
+- Find button: `[data-testid="route-find"]`
+
 ## Stability Rules
 - Do not rename selectors mid-sprint.
 - Add new selectors via story + same-PR doc update.
