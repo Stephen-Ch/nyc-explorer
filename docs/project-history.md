@@ -21,6 +21,10 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] DOC-SEL-S4 — Active route selectors captured
+Documented the Sprint 04 selectors (`poi-marker-active`, `route-msg`, `data-step-index`, `aria-current="step"`) under a dedicated Active Routes section.
+Evidence: #tests=0, green=NA; files: docs/selectors.md.
+
 ### [2025-11-01] DOC-READ-ORDER — Copilot read order synced
 Inserted the canonical “Read Order (always)” list so prompts reference the same sequence as Protocol.
 Evidence: #tests=0, green=NA; files: docs/Copilot-Instructions.md.

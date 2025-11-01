@@ -39,11 +39,11 @@
 - To input: `[data-testid="route-to"]`
 - Find button: `[data-testid="route-find"]`
 
-## Route Highlights (Sprint 04)
+## Active Routes
 - Active marker: `[data-testid="poi-marker-active"]`
-- Active marker order: `data-step-index` (mirrors route step index)
+- Active marker order attribute: `data-step-index` (mirrors route step index)
 - Route status message: `[data-testid="route-msg"]`
-- A11Y: Active markers also set `aria-current="step"` and remain keyboard focusable.
+- Accessibility: Active markers set `aria-current="step"` and remain keyboard focusable.
 
 ## Stability Rules
 - Do not rename selectors mid-sprint.
