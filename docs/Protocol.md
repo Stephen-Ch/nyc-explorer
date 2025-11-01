@@ -1,3 +1,6 @@
+# Canonical Notice
+> **Authoritative Source:** Follow `/docs/Protocol_10-24-25.md` for canonical rules. Update that document first; treat this page as a quick reference only.
+
 # Protocol — UPDATED for Sprint 02 (v2)
 
 **Keep:** prompt-only, tiny steps, TDD; ≤2 files / ≤60 LOC; Decisions log; Ambiguity Cards; Pause rule.

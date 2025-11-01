@@ -21,6 +21,8 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] DOC-PROT-Canon — Added canonical notice linking to Protocol_10-24-25.md.
+
 ### [2025-11-01] TOOL-DEV-LOOP-1c — Hot reload verified
 In order to confirm dotnet watch reloads cleanly, I toggled whitespace in Detail.cshtml and saw the watcher report "File updated" followed by "Hot reload succeeded".
 Evidence: #tests=0, green=NA; typecheck=NA; files: docs/code-review.md, docs/project-history.md.
