@@ -127,6 +127,8 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 20:40] nyc-explorer/main GEO-UI-1a — typeahead dropdown contract RED (#tests=1, green=false)
 [2025-11-01 21:05] nyc-explorer/main GEO-UI-1b — From typeahead dropdown (mouse select); geo-typeahead-basic GREEN (#tests=39, green=true)
 [2025-11-01 21:20] nyc-explorer/main GEO-UI-1c-a — add From typeahead keyboard/a11y contract, RED as expected (#tests=1, green=false)
+[2025-11-02 00:10] nyc-explorer/main FORM-A11Y-1b — bind labels; targeted+full e2e + typecheck (#tests=40, green=false; GEO-UI-1c-a RED expected)
+[2025-11-02 00:35] nyc-explorer/main FORM-A11Y-1b — docs verification (no code changes) (#tests=39/40, green=false)
 
 
 **Parked Items**

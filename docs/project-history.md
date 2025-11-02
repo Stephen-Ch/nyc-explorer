@@ -21,6 +21,18 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-02] FORM-A11Y-1b — Docs verification
+In order to confirm bound labels on Search/From/To, I reran the full suite with doc-only edits.
+Considerations: Accessibility parity maintained; no UI behavior changes.
+Evidence: e2e=39/40 (GEO-UI-1c-a RED expected); typecheck=green.
+Files: docs/code-review.md, docs/project-history.md.
+
+### [2025-11-02] FORM-A11Y-1b — Bound visible labels
+In order to finish the form accessibility slice, I added block-level labels wired to Search/From/To without altering layout.
+Considerations: Raw string indentation is brittle; full suite still includes expected GEO-UI-1c-a RED.
+Evidence: #tests=40, green=false (typecheck=green).
+Files: apps/web-mvc/Program.cs (net +0 LOC).
+
 ### [2025-11-01] GEO-UI-1b — From typeahead dropdown
 In order to satisfy the new typeahead contract, I rendered the geo-from input, mock-aware dropdown, and click-to-select handler.
 Considerations: Mouse-only slice; keyboard/a11y polish deferred to GEO-UI-1c.
