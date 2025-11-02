@@ -141,7 +141,13 @@ app.MapGet("/", () => Results.Content(
             setToExpanded = (state) => {
               geoToInput.setAttribute('aria-expanded', state ? 'true' : 'false');
               if (!state) geoToInput.removeAttribute('aria-activedescendant');
-            };
+            },
+            hasGeoSelection = (input) => Boolean(input?.dataset?.geoLat && input?.dataset?.geoLng),
+            toGeoPoint = (input) => ({
+              lat: +(input?.dataset?.geoLat ?? NaN),
+              lng: +(input?.dataset?.geoLng ?? NaN),
+              label: input?.dataset?.geoLabel ?? input?.value ?? '',
+            });
 
           let geoQueryId = 0, currentOptions = [], activeIndex = -1;
           const hideGeoList = (clearStatus = false) => {
@@ -519,11 +525,34 @@ app.MapGet("/", () => Results.Content(
               }
               return localSegment(list, fromValue, toValue);
             },
+            tryAdapterPath = async () => {
+              if (!hasGeoSelection(geoFromInput) || !hasGeoSelection(geoToInput)) return false;
+              const pathFn = window.App?.adapters?.route?.path;
+              if (typeof pathFn !== 'function') return false;
+              try {
+                const fromGeo = toGeoPoint(geoFromInput);
+                const toGeo = toGeoPoint(geoToInput);
+                const raw = await pathFn(fromGeo, toGeo);
+                const mapped = Array.isArray(raw)
+                  ? raw.filter((node) => node && typeof node.lat === 'number' && typeof node.lng === 'number')
+                      .map((node) => ({ coords: { lat: node.lat, lng: node.lng } }))
+                  : [];
+                if (mapped.length < 2) { clearRouteGraphics(); return false; }
+                clearActiveMarkers();
+                clearSteps();
+                drawRouteGraphics(mapped);
+                setRouteMessage(`Route path from ${fromGeo.label || 'Start'} to ${toGeo.label || 'End'}.`);
+                return true;
+              } catch (error) {
+                clearRouteGraphics();
+                return false;
+              }
+            },
             applySegment = async () => {
               const fromValue = (fromInput.value ?? '').trim();
               const toValue = (toInput.value ?? '').trim();
-              const fromHasCoords = Boolean(geoFromInput.dataset.geoLat && geoFromInput.dataset.geoLng);
-              const toHasCoords = Boolean(geoToInput.dataset.geoLat && geoToInput.dataset.geoLng);
+              const fromHasCoords = hasGeoSelection(geoFromInput);
+              const toHasCoords = hasGeoSelection(geoToInput);
               if (!fromValue || !toValue) {
                 clearRouteUI('Select both From and To to see steps.');
                 return;
@@ -537,6 +566,7 @@ app.MapGet("/", () => Results.Content(
               }
               const seg = await getSegment(base, fromValue, toValue);
               if (!Array.isArray(seg) || !seg.length) {
+                if (await tryAdapterPath()) return;
                 clearRouteUI('No matching route segment.');
                 return;
               }

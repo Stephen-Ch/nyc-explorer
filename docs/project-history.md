@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-02] ROUTE-ADAPTER-PATH-1b — adapter path overlay
+In order to surface geocoder-only routes, I call RouteAdapter.path when POI segments fail and reuse the SVG overlay for the polyline and nodes.
+Considerations: Clears markers/overlay on mismatches and leaves pushState scoped to POI routes.
+Evidence: #tests=47, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~28 LOC).
+
 ### [2025-11-02] GEO-UI-4b — GeoAdapter-powered To typeahead
 In order to keep both comboboxes consistent, I route To searches through App.adapters.geo.search with live Searching/No results/Error status and persist selected lat/lng/label.
 Considerations: Mirrors From wiring without touching RouteAdapter flows; clears status when selection completes.
