@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-02] GEO-UI-4b — GeoAdapter-powered To typeahead
+In order to keep both comboboxes consistent, I route To searches through App.adapters.geo.search with live Searching/No results/Error status and persist selected lat/lng/label.
+Considerations: Mirrors From wiring without touching RouteAdapter flows; clears status when selection completes.
+Evidence: #tests=46, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~28 LOC).
+
 ### [2025-11-02] GEO-UI-3c — GeoAdapter-powered From typeahead
 In order to surface live geocoder suggestions, I call App.adapters.geo.search, announce Searching/No matches status, and persist lat/lng/label on From selections.
 Considerations: Gracefully fall back to suggest stubs when search is absent and hide the list on adapter errors.

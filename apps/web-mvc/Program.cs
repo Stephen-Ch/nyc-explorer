@@ -302,55 +302,66 @@ app.MapGet("/", () => Results.Content(
               delete geoToInput.dataset.geoLat;
               delete geoToInput.dataset.geoLng;
             }
+            if (node.dataset.geoLabel) geoToInput.dataset.geoLabel = node.dataset.geoLabel;
+            else delete geoToInput.dataset.geoLabel;
             toInput.value = geoToInput.value;
-            setStatus(`Selected: ${geoToInput.value}`);
-            hideGeoToList();
+            hideGeoToList(true);
           };
 
           geoToInput.addEventListener('input', async (event) => {
             delete geoToInput.dataset.geoLat;
             delete geoToInput.dataset.geoLng;
+            delete geoToInput.dataset.geoLabel;
             const value = (event.target?.value ?? '').trim();
-            if (value.length < 3) {
+            if (value.length < 2) {
               hideGeoToList(true);
               return;
             }
             const requestId = ++geoToQueryId;
-            const results = await fetchGeoResults(value);
-            if (requestId !== geoToQueryId) return;
-            geoFromList.removeAttribute('data-testid');
-            geoToList.innerHTML = '';
-            geoToOptions = []; geoToActiveIndex = -1;
-            geoToInput.removeAttribute('aria-activedescendant');
-            if (!Array.isArray(results) || !results.length) {
-              hideGeoToList();
-              setStatus('No results');
-              return;
-            }
-            geoToList.setAttribute('data-testid', 'ta-list');
-            results.forEach((item, index) => {
-              const option = document.createElement('div');
-              option.id = `geo-to-option-${geoToQueryId}-${index}`;
-              option.setAttribute('data-testid', 'ta-option');
-              option.setAttribute('role', 'option');
-              option.setAttribute('aria-selected', 'false');
-              option.textContent = item && typeof item.label === 'string' ? item.label : '';
-              option.dataset.id = item && typeof item.id === 'string' ? item.id : '';
-              if (item && typeof item.lat === 'number') option.dataset.geoLat = String(item.lat);
-              else delete option.dataset.geoLat;
-              if (item && typeof item.lng === 'number') option.dataset.geoLng = String(item.lng);
-              else delete option.dataset.geoLng;
-              Object.assign(option.style, { padding: '4px 8px', cursor: 'pointer' });
-              option.addEventListener('mousedown', (evt) => {
-                evt.preventDefault();
-                selectToOption(option);
+            setStatus('Searching…');
+            try {
+              const results = await fetchGeoResults(value);
+              if (requestId !== geoToQueryId) return;
+              geoFromList.removeAttribute('data-testid');
+              geoToList.innerHTML = '';
+              geoToOptions = []; geoToActiveIndex = -1;
+              geoToInput.removeAttribute('aria-activedescendant');
+              if (!Array.isArray(results) || !results.length) {
+                hideGeoToList();
+                setStatus('No results');
+                return;
+              }
+              geoToList.setAttribute('data-testid', 'ta-list');
+              results.forEach((item, index) => {
+                const option = document.createElement('div');
+                option.id = `geo-to-option-${geoToQueryId}-${index}`;
+                option.setAttribute('data-testid', 'ta-option');
+                option.setAttribute('role', 'option');
+                option.setAttribute('aria-selected', 'false');
+                option.textContent = item && typeof item.label === 'string' ? item.label : '';
+                option.dataset.id = item && typeof item.id === 'string' ? item.id : '';
+                if (item && typeof item.lat === 'number') option.dataset.geoLat = String(item.lat);
+                else delete option.dataset.geoLat;
+                if (item && typeof item.lng === 'number') option.dataset.geoLng = String(item.lng);
+                else delete option.dataset.geoLng;
+                if (item && typeof item.label === 'string') option.dataset.geoLabel = item.label;
+                else delete option.dataset.geoLabel;
+                Object.assign(option.style, { padding: '4px 8px', cursor: 'pointer' });
+                option.addEventListener('mousedown', (evt) => {
+                  evt.preventDefault();
+                  selectToOption(option);
+                });
+                geoToOptions.push(option);
+                geoToList.appendChild(option);
               });
-              geoToOptions.push(option);
-              geoToList.appendChild(option);
-            });
-            geoToList.style.display = 'block';
-            setToExpanded(true);
-            setStatus(`${geoToOptions.length} results`);
+              geoToList.style.display = 'block';
+              setToExpanded(true);
+              setStatus(`${geoToOptions.length} results`);
+            } catch (error) {
+              if (requestId !== geoToQueryId) return;
+              hideGeoToList();
+              setStatus('Error contacting geocoder');
+            }
           });
 
           geoToInput.addEventListener('keydown', (event) => {
