@@ -2,6 +2,13 @@
 
 **Keep:** prompt-only, tiny steps, TDD; ≤2 files / ≤60 LOC; Decisions log; Ambiguity Cards; Pause rule.
 
+## Read Order (load in sequence)
+1) docs/Protocol.md
+2) docs/selectors.md
+3) docs/Copilot-Instructions.md
+4) docs/Project.md
+> Sprint 05+: insert `docs/Adapters.md` immediately after selectors to honor DI contracts.
+
 ## Process Flow (each slice)
 1) **RED** — write failing spec with clear messages (edge + error).  
 2) **GREEN** — minimal change to pass.  
@@ -10,6 +17,8 @@
 
 ### Sprint Gate — Dev Loop First
 > **NOTE:** Do **not** begin ROUTE-FIND-1a until TOOL-DEV-LOOP-1 (dev server watch loop) is GREEN **and** verified manually (hot reload feels solid, stop/start clean). Routing work pauses if the loop regresses.
+> **GATE:** Do not start GEO-UI or ROUTE-FIND slices until DOC-SEL-GEO is merged; tests must target the selectors above.
+> **GATE:** DI adapters must match `docs/Adapters.md`; update that doc before swapping providers.
 
 ## When ≤60 LOC isn’t enough
 - **BLOCK** with an Ambiguity Card that proposes:

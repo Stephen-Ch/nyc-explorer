@@ -95,3 +95,7 @@ Outcome: **BLOCK** (awaiting answers)
 - **SCHEMA-TYPES**: Generate or define TS types that mirror the Zod schema (prevents `coords`/`coordinates` mismatches).
 
 **End.**
+
+## Adapter Guidance (Sprint 05)
+- Read `docs/Adapters.md` right after `docs/selectors.md` before drafting any prompt touching geocoding or routing.
+- All slices must use `window.App.adapters.geo` / `.route`; swapping implementations requires updating docs/Adapters.md alongside selectors.

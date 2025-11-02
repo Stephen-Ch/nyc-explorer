@@ -120,6 +120,10 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 16:34] nyc-explorer/main FORM-A11Y-1a — add a11y label contract for Search/From/To, RED as expected (#tests=1, green=false)
 [2025-11-01 18:37] nyc-explorer/main FORM-A11Y-1b — add bound labels for Search/From/To; e2e+typecheck green (#tests=38, green=true)
 [2025-11-01 18:44] nyc-explorer/main SPRINT-04-CLOSEOUT — changelog+release notes; tag v0.4.0-rc (#tests=38, green=true)
+[2025-11-01 19:10] nyc-explorer/main DOC-SEL-GEO — predeclare typeahead/current-location selectors (#tests=0, green=NA)
+[2025-11-01 19:35] nyc-explorer/main DOC-SEL-GEO — add geocoder selectors + read order (#tests=0, green=NA)
+[2025-11-01 19:55] nyc-explorer/main DOC-S5-PLAN — publish Sprint 5 plan (docs-only) (#tests=0, green=NA)
+[2025-11-01 20:20] nyc-explorer/main GEO-ADAPTER-0 — document adapters + DI scaffold (#tests=0, green=NA)
 
 
 **Parked Items**

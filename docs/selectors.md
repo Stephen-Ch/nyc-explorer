@@ -1,4 +1,4 @@
-# Selectors — Canonical (v0.3)
+# Selectors — Canonical (v0.4)
 
 **Purpose:** Lock stable selectors so tests and UI don’t drift mid‑sprint.
 
@@ -31,21 +31,35 @@
 
 ## Route Steps
 - Ordered list: `#route-steps`
-- Step item: `[data-testid="route-step"]`
-- Step order badge: `data-step-index` (0-based; prefer assertions on this attribute)
+- Step item: `[data-testid="route-step"]` includes `data-step-index` (0-based); active step sets `aria-current="step"`
 
 ## Route Inputs
 - From input: `[data-testid="route-from"]`
 - To input: `[data-testid="route-to"]`
 - Find button: `[data-testid="route-find"]`
 
+## Geocoder & Typeahead (Sprint 05 prep)
+- Container (wrappers): `[data-testid="ta-from"]`, `[data-testid="ta-to"]` (wrap the route inputs)
+- Inputs: `[data-testid="geo-from"]`, `[data-testid="geo-to"]` (labels bind via `for="geo-from|geo-to"`, maintain `aria-expanded` + `aria-controls`)
+- Listbox: `[data-testid="ta-list"]` (`role="listbox"`, only renders when open)
+- Option item: `[data-testid="geo-option"]` (`role="option"`, carries `data-value`, `aria-selected="true|false"`)
+- Active option hook: `[data-testid="ta-option-active"]` (input sets `aria-activedescendant` to this option id)
+- Live status: `[data-testid="geo-status"]` (`aria-live="polite"`, announces results/errors)
+- Keyboard contract: Up/Down moves selection, Enter commits, Esc closes (doc only)
+
+## Current Location Control
+- Button: `[data-testid="route-current"]` (`data-target="from|to"`, `aria-label="Use current location for From|To"`); mirror inside UI with `[data-testid="geo-current"]`
+- CI note: mocked behavior — set fixture lat/lng; no Permissions API access.
+
 ## Active Routes
-- Active marker: `[data-testid="poi-marker-active"]`
-- Active marker order attribute: `data-step-index` (mirrors route step index)
+- Active marker: `[data-testid="poi-marker-active"]` includes `data-step-index` (mirrors route step index)
 - Route status message: `[data-testid="route-msg"]` (must include `aria-live="polite"`)
 - Route path overlay: `[data-testid="route-path"]`
 - Route path node (optional): `[data-testid="route-node"]`
 - Accessibility: Active markers set `aria-current="step"` and remain keyboard focusable.
+
+## Routing Adapters (Docs Only)
+- Fixtures: `MockGeocoder`, `MockRouteEngine`; Interfaces: `GeoAdapter`, `RouteAdapter`
 
 ## Stability Rules
 - Do not rename selectors mid-sprint.

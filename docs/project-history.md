@@ -21,6 +21,26 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] GEO-ADAPTER-0 — Adapters documented
+In order to keep Sprint 5 slices provider-agnostic, I defined Geo/Route adapters, mock fixtures, and the DI handoff.
+Considerations: Docs-only guidance including .env toggles; production keys deferred.
+Evidence: #tests=0, green=NA; files: docs/Adapters.md, docs/Protocol.md, docs/Copilot-Instructions.md, .env.example.
+
+### [2025-11-01] DOC-S5-PLAN — Sprint 5 plan published
+In order to align Sprint 5 before coding, I captured goals, split backlog slices, and reinforced selector/a11y contracts.
+Considerations: Docs-only slice keeping ≤60 LOC/file guidance explicit.
+Evidence: #tests=0, green=NA; files: docs/Sprint-05-Plan.md, docs/code-review.md.
+
+### [2025-11-01] DOC-SEL-GEO — Geocoder selectors documented
+In order to unblock GEO-UI slices, I defined geocoder/typeahead selectors and refreshed the required read order.
+Considerations: Docs-only contract for accessibility attributes and adapter names.
+Evidence: #tests=0, green=NA; files: docs/selectors.md, docs/Protocol.md.
+
+### [2025-11-01] DOC-SEL-GEO — Sprint 5 selector hooks
+In order to unblock GEO-UI and ROUTE-FIND slices, I documented typeahead, current location, and focus selectors in v0.4.
+Considerations: Docs-only contract; enforces data-testid + aria attributes before code lands.
+Evidence: #tests=0, green=NA; files: docs/selectors.md, docs/Protocol.md.
+
 ### [2025-11-01] SPRINT-04-CLOSEOUT — Release candidate published
 In order to freeze Sprint 4, I captured the changelog and release notes, re-ran full suites, and tagged v0.4.0-rc.
 Considerations: Docs-only slice; runtime code untouched.
