@@ -145,6 +145,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-02 08:20] nyc-explorer/main GEO-UI-4b — To typeahead via GeoAdapter; status+dataset wired (#tests=46, green=true; typecheck=green)
 [2025-11-02 08:28] nyc-explorer/main ROUTE-ADAPTER-PATH-1a — add adapter path e2e, RED as expected (#tests=1, green=false)
 [schur] ROUTE-ADAPTER-PATH-1b — wire adapter path render; tests green (#tests=47, green=true; typecheck=green)
+[schur] GEO-UI-5a — add current-location e2e contract, RED as expected (#tests=1, green=false)
 
 
 **Parked Items**
