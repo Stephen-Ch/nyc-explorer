@@ -135,6 +135,8 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-02 02:18] nyc-explorer/main GEO-UI-2c — To typeahead keyboard+a11y; suites+typecheck green (#tests=41, green=true; typecheck=green)
 [2025-11-02 02:35] nyc-explorer/main ROUTE-ADAPTER-1a — add RouteAdapter contract test, RED as expected (#tests=1, green=false)
 [2025-11-02 04:45] nyc-explorer/main DOC-QGATE-Thresholds — tighten clarifying-question gate (docs-only, green=NA)
+[2025-11-02 05:10] nyc-explorer/main ROUTE-ADAPTER-1c-a — e2e expects RouteAdapter segment, RED (#tests=1, green=false)
+[2025-11-02 05:40] nyc-explorer/main ROUTE-ADAPTER-1c-b — prefer RouteAdapter in Find flow (#tests=43, green=true)
 
 
 **Parked Items**

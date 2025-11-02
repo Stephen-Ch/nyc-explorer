@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-02] ROUTE-ADAPTER-1c-b — RouteAdapter preferred
+In order to consume adapter segments, I routed Find through window.App.adapters.route.segment with a fallback to the local segmenter.
+Considerations: Skip marker/polyline overlays when adapter steps lack coords while keeping history/live copy intact.
+Evidence: #tests=43, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~40 LOC).
+
 ### [2025-11-02] DOC-QGATE-Thresholds — Clarify-then-execute gate
 In order to reduce clarifying-question churn, I codified 10%/5%/15% lift thresholds and ≤2min/≤3 question caps.
 Considerations: Docs-only update across Protocol and Copilot instructions to keep guidance concise.

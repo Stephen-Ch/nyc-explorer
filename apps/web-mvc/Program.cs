@@ -59,6 +59,31 @@ app.MapGet("/", () => Results.Content(
       <script src="/js/home.js"></script>
       <script>
         (function () {
+          const w = window; w.App = w.App || {}; w.App.adapters = w.App.adapters || {};
+          const existingRoute = w.App.adapters.route || {}; if (typeof existingRoute.walk !== 'function') {
+            const computeLength = (from, to) => {
+              const rad = (deg) => deg * Math.PI / 180, R = 6371000;
+              const fromLat = rad(from?.lat ?? 0);
+              const toLat = rad(to?.lat ?? 0);
+              const dLat = rad((to?.lat ?? 0) - (from?.lat ?? 0));
+              const dLng = rad((to?.lng ?? 0) - (from?.lng ?? 0));
+              const a = Math.sin(dLat / 2) ** 2 + Math.cos(fromLat) * Math.cos(toLat) * Math.sin(dLng / 2) ** 2;
+              const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+              const length = R * c;
+              return Number.isFinite(length) && length > 0 ? length : 1;
+            };
+            w.App.adapters.route = {
+              ...existingRoute,
+              walk: async (from, to) => ({
+                nodes: [from, to],
+                length_m: computeLength(from, to),
+              }),
+            };
+          }
+        })();
+      </script>
+      <script>
+        (function () {
           const sanitizeMarkerLabel = (value) => value.replace(/To/g, 'T\u200Co');
           const adjustMarkerLabels = () => {
             document.querySelectorAll('[data-testid="poi-marker"]').forEach((btn) => {
@@ -367,7 +392,7 @@ app.MapGet("/", () => Results.Content(
             },
             setAttrs = (el, attrs) => Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, String(value))),
             createSvgEl = (name, attrs) => { const el = document.createElementNS('http://www.w3.org/2000/svg', name); setAttrs(el, attrs); return el; },
-            clearRouteGraphics = () => overlayContainer?.querySelectorAll('[data-testid="route-path"], [data-testid="route-node"]').forEach((node) => node.remove()),
+            clearRouteGraphics = () => { overlayContainer?.querySelectorAll('[data-testid="route-path"], [data-testid="route-node"]').forEach((node) => node.remove()); lastSegment = []; },
             drawRouteGraphics = (list) => {
               clearRouteGraphics();
               const mapInstance = typeof map !== 'undefined' ? map : null, filtered = overlayContainer && Array.isArray(list) ? list.filter(hasCoords) : [];
@@ -380,7 +405,7 @@ app.MapGet("/", () => Results.Content(
               points.forEach((pt, index) => svg.appendChild(createSvgEl('circle', { 'data-testid': 'route-node', 'data-step-index': index, 'aria-hidden': 'true', cx: pt.x, cy: pt.y, r: 4, fill: '#ffffff', stroke: '#1a73e8', 'stroke-width': '2', 'pointer-events': 'none' })));
               overlayContainer.appendChild(svg);
             },
-            clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); lastSegment = []; setRouteMessage(message); },
+            clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); setRouteMessage(message); },
             scheduleDeepLink = () => {
               if (!deepLinkPending) return;
               deepLinkPending = false;
@@ -399,7 +424,7 @@ app.MapGet("/", () => Results.Content(
               else if (typeof Promise !== 'undefined') Promise.resolve().then(run);
               else setTimeout(run, 0);
             },
-            segment = (list, fromValue, toValue) => {
+            localSegment = (list, fromValue, toValue) => {
               const fromPoi = list.find((poi) => matchesValue(poi, fromValue));
               const toPoi = list.find((poi) => matchesValue(poi, toValue));
               const fromRouteId = fromPoi ? hasRouteId(fromPoi) : null;
@@ -414,7 +439,18 @@ app.MapGet("/", () => Results.Content(
               const slice = group.slice(lo, hi + 1);
               return start <= end ? slice : slice.reverse();
             },
-            applySegment = () => {
+            getSegment = async (list, fromValue, toValue) => {
+              const routeAdapter = window.App?.adapters?.route;
+              const segmentFn = typeof routeAdapter?.segment === 'function' ? routeAdapter.segment : null;
+              if (segmentFn) {
+                try {
+                  const result = await segmentFn({ from: fromValue, to: toValue, pois: list });
+                  if (Array.isArray(result)) return result;
+                } catch (error) {}
+              }
+              return localSegment(list, fromValue, toValue);
+            },
+            applySegment = async () => {
               const fromValue = (fromInput.value ?? '').trim();
               const toValue = (toInput.value ?? '').trim();
               if (!fromValue || !toValue) {
@@ -428,16 +464,20 @@ app.MapGet("/", () => Results.Content(
                 clearRouteUI('Select both From and To to see steps.');
                 return;
               }
-              const seg = segment(base, fromValue, toValue);
-              if (!seg.length) {
+              const seg = await getSegment(base, fromValue, toValue);
+              if (!Array.isArray(seg) || !seg.length) {
                 clearRouteUI('No matching route segment.');
                 return;
               }
               const fromName = seg[0]?.name ?? seg[0]?.id ?? fromValue;
               const toName = seg[seg.length - 1]?.name ?? seg[seg.length - 1]?.id ?? toValue;
               showSteps(seg);
-              applyActiveMarkers(seg);
-              drawRouteGraphics(seg);
+              if (seg.every((step) => step && step.coords && typeof step.coords.lat === 'number' && typeof step.coords.lng === 'number')) {
+                applyActiveMarkers(seg);
+                drawRouteGraphics(seg);
+              } else {
+                clearActiveMarkers(); clearRouteGraphics();
+              }
               setRouteMessage(`Route: ${seg.length} steps from ${fromName} to ${toName}.`);
               if (!isPopState && typeof history !== 'undefined' && typeof URLSearchParams !== 'undefined') {
                 const fromId = typeof fromPoi.id === 'string' && fromPoi.id.length ? fromPoi.id : fromValue;
@@ -459,9 +499,9 @@ app.MapGet("/", () => Results.Content(
           }
           if (typeof pois !== 'undefined' && Array.isArray(pois)) currentList = pois;
 
-          findButton.addEventListener('click', (event) => {
+          findButton.addEventListener('click', async (event) => {
             event.preventDefault();
-            applySegment();
+            await applySegment();
           });
 
           window.addEventListener('popstate', () => {
