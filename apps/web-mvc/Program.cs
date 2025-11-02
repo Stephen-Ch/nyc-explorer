@@ -169,6 +169,14 @@ app.MapGet("/", () => Results.Content(
           const selectOption = (node) => {
             if (!node) return;
             geoFromInput.value = node.textContent ?? '';
+            if (node.dataset.geoLat && node.dataset.geoLng) {
+              geoFromInput.dataset.geoLat = node.dataset.geoLat;
+              geoFromInput.dataset.geoLng = node.dataset.geoLng;
+            } else {
+              delete geoFromInput.dataset.geoLat;
+              delete geoFromInput.dataset.geoLng;
+            }
+            fromInput.value = geoFromInput.value;
             setStatus(`Selected: ${geoFromInput.value}`);
             hideGeoList();
           };
@@ -192,6 +200,10 @@ app.MapGet("/", () => Results.Content(
               option.setAttribute('aria-selected', 'false');
               option.textContent = item && typeof item.label === 'string' ? item.label : '';
               option.dataset.id = item && typeof item.id === 'string' ? item.id : '';
+              if (item && typeof item.lat === 'number') option.dataset.geoLat = String(item.lat);
+              else delete option.dataset.geoLat;
+              if (item && typeof item.lng === 'number') option.dataset.geoLng = String(item.lng);
+              else delete option.dataset.geoLng;
               Object.assign(option.style, { padding: '4px 8px', cursor: 'pointer' });
               option.addEventListener('mousedown', (event) => {
                 event.preventDefault();
@@ -205,6 +217,8 @@ app.MapGet("/", () => Results.Content(
           };
 
           geoFromInput.addEventListener('input', async (event) => {
+            delete geoFromInput.dataset.geoLat;
+            delete geoFromInput.dataset.geoLng;
             const value = (event.target?.value ?? '').trim();
             if (value.length < 3) {
               hideGeoList(true);
@@ -264,11 +278,21 @@ app.MapGet("/", () => Results.Content(
           const selectToOption = (node) => {
             if (!node) return;
             geoToInput.value = node.textContent ?? '';
+            if (node.dataset.geoLat && node.dataset.geoLng) {
+              geoToInput.dataset.geoLat = node.dataset.geoLat;
+              geoToInput.dataset.geoLng = node.dataset.geoLng;
+            } else {
+              delete geoToInput.dataset.geoLat;
+              delete geoToInput.dataset.geoLng;
+            }
+            toInput.value = geoToInput.value;
             setStatus(`Selected: ${geoToInput.value}`);
             hideGeoToList();
           };
 
           geoToInput.addEventListener('input', async (event) => {
+            delete geoToInput.dataset.geoLat;
+            delete geoToInput.dataset.geoLng;
             const value = (event.target?.value ?? '').trim();
             if (value.length < 3) {
               hideGeoToList(true);
@@ -295,6 +319,10 @@ app.MapGet("/", () => Results.Content(
               option.setAttribute('aria-selected', 'false');
               option.textContent = item && typeof item.label === 'string' ? item.label : '';
               option.dataset.id = item && typeof item.id === 'string' ? item.id : '';
+              if (item && typeof item.lat === 'number') option.dataset.geoLat = String(item.lat);
+              else delete option.dataset.geoLat;
+              if (item && typeof item.lng === 'number') option.dataset.geoLng = String(item.lng);
+              else delete option.dataset.geoLng;
               Object.assign(option.style, { padding: '4px 8px', cursor: 'pointer' });
               option.addEventListener('mousedown', (evt) => {
                 evt.preventDefault();
@@ -440,11 +468,24 @@ app.MapGet("/", () => Results.Content(
               return start <= end ? slice : slice.reverse();
             },
             getSegment = async (list, fromValue, toValue) => {
+              const coordsFrom = geoFromInput?.dataset?.geoLat && geoFromInput?.dataset?.geoLng
+                ? { lat: +geoFromInput.dataset.geoLat, lng: +geoFromInput.dataset.geoLng, label: geoFromInput.value ?? '' }
+                : undefined;
+              const coordsTo = geoToInput?.dataset?.geoLat && geoToInput?.dataset?.geoLng
+                ? { lat: +geoToInput.dataset.geoLat, lng: +geoToInput.dataset.geoLng, label: geoToInput.value ?? '' }
+                : undefined;
               const routeAdapter = window.App?.adapters?.route;
               const segmentFn = typeof routeAdapter?.segment === 'function' ? routeAdapter.segment : null;
               if (segmentFn) {
                 try {
-                  const result = await segmentFn({ from: fromValue, to: toValue, pois: list });
+                  const args = {
+                    from: coordsFrom ?? fromValue,
+                    to: coordsTo ?? toValue,
+                    fromValue,
+                    toValue,
+                    pois: list,
+                  };
+                  const result = await segmentFn(args);
                   if (Array.isArray(result)) return result;
                 } catch (error) {}
               }
@@ -453,6 +494,8 @@ app.MapGet("/", () => Results.Content(
             applySegment = async () => {
               const fromValue = (fromInput.value ?? '').trim();
               const toValue = (toInput.value ?? '').trim();
+              const fromHasCoords = Boolean(geoFromInput.dataset.geoLat && geoFromInput.dataset.geoLng);
+              const toHasCoords = Boolean(geoToInput.dataset.geoLat && geoToInput.dataset.geoLng);
               if (!fromValue || !toValue) {
                 clearRouteUI('Select both From and To to see steps.');
                 return;
@@ -460,7 +503,7 @@ app.MapGet("/", () => Results.Content(
               const base = currentList.length ? currentList : (typeof pois !== 'undefined' && Array.isArray(pois) ? pois : []);
               const fromPoi = base.find((poi) => matchesValue(poi, fromValue));
               const toPoi = base.find((poi) => matchesValue(poi, toValue));
-              if (!fromPoi || !toPoi) {
+              if ((!fromPoi || !toPoi) && !(fromHasCoords && toHasCoords)) {
                 clearRouteUI('Select both From and To to see steps.');
                 return;
               }
@@ -479,7 +522,7 @@ app.MapGet("/", () => Results.Content(
                 clearActiveMarkers(); clearRouteGraphics();
               }
               setRouteMessage(`Route: ${seg.length} steps from ${fromName} to ${toName}.`);
-              if (!isPopState && typeof history !== 'undefined' && typeof URLSearchParams !== 'undefined') {
+              if (!isPopState && typeof history !== 'undefined' && typeof URLSearchParams !== 'undefined' && fromPoi && toPoi) {
                 const fromId = typeof fromPoi.id === 'string' && fromPoi.id.length ? fromPoi.id : fromValue;
                 const toId = typeof toPoi.id === 'string' && toPoi.id.length ? toPoi.id : toValue;
                 const params = new URLSearchParams({ from: fromId, to: toId }).toString();
