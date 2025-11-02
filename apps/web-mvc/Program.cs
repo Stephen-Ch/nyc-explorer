@@ -47,8 +47,8 @@ app.MapGet("/", () => Results.Content(
       </div>
       <div id="geo-to-typeahead" style="margin-bottom:1rem; max-width:320px;">
         <label for="geo-to">Destination (typeahead)</label>
-        <input id="geo-to" data-testid="geo-to" autocomplete="off" placeholder="Search for a destination…" />
-        <div id="geo-to-list" style="display:none; border:1px solid #ccc; background:#fff; margin-top:4px; box-shadow:0 2px 6px rgba(0,0,0,0.1);"></div>
+        <input id="geo-to" data-testid="geo-to" autocomplete="off" placeholder="Search for a destination…" role="combobox" aria-expanded="false" aria-controls="geo-to-list" aria-autocomplete="list" />
+        <div id="geo-to-list" role="listbox" style="display:none; border:1px solid #ccc; background:#fff; margin-top:4px; box-shadow:0 2px 6px rgba(0,0,0,0.1);"></div>
       </div>
       <div id="map-wrap" style="position:relative;"><div id="map" style="height:300px;"></div><div id="poi-overlay" style="position:absolute; inset:0; z-index:650; pointer-events:none;"></div></div>
       <label for="search-input" style="display:block; font-weight:600;">Search</label>
@@ -112,6 +112,10 @@ app.MapGet("/", () => Results.Content(
             setExpanded = (state) => {
               geoFromInput.setAttribute('aria-expanded', state ? 'true' : 'false');
               if (!state) geoFromInput.removeAttribute('aria-activedescendant');
+            },
+            setToExpanded = (state) => {
+              geoToInput.setAttribute('aria-expanded', state ? 'true' : 'false');
+              if (!state) geoToInput.removeAttribute('aria-activedescendant');
             };
 
           let geoQueryId = 0, currentOptions = [], activeIndex = -1;
@@ -205,43 +209,97 @@ app.MapGet("/", () => Results.Content(
             }
           });
 
-          let geoToQueryId = 0;
-          const hideGeoToList = () => {
+          let geoToQueryId = 0, geoToOptions = [], geoToActiveIndex = -1;
+          const hideGeoToList = (clearStatus = false) => {
             geoToList.innerHTML = '';
             geoToList.style.display = 'none';
+            geoToList.removeAttribute('data-testid');
+            geoToOptions = []; geoToActiveIndex = -1;
+            setToExpanded(false);
+            if (clearStatus) setStatus('');
           };
           hideGeoToList();
+
+          const setActiveToOption = (index) => {
+            if (!geoToOptions.length) return;
+            const total = geoToOptions.length;
+            const nextIndex = index < 0 ? 0 : index >= total ? total - 1 : index;
+            geoToActiveIndex = nextIndex;
+            geoToOptions.forEach((node, idx) => {
+              const isActive = idx === geoToActiveIndex;
+              node.setAttribute('data-testid', isActive ? 'ta-option-active' : 'ta-option');
+              node.setAttribute('aria-selected', isActive ? 'true' : 'false');
+              if (isActive) {
+                geoToInput.setAttribute('aria-activedescendant', node.id);
+                setStatus(`Option ${idx + 1} of ${total}`);
+              }
+            });
+          };
+
+          const selectToOption = (node) => {
+            if (!node) return;
+            geoToInput.value = node.textContent ?? '';
+            setStatus(`Selected: ${geoToInput.value}`);
+            hideGeoToList();
+          };
 
           geoToInput.addEventListener('input', async (event) => {
             const value = (event.target?.value ?? '').trim();
             if (value.length < 3) {
-              hideGeoToList();
+              hideGeoToList(true);
               return;
             }
             const requestId = ++geoToQueryId;
             const results = await fetchGeoResults(value);
             if (requestId !== geoToQueryId) return;
             geoFromList.removeAttribute('data-testid');
-            geoToList.setAttribute('data-testid', 'ta-list');
             geoToList.innerHTML = '';
+            geoToOptions = []; geoToActiveIndex = -1;
+            geoToInput.removeAttribute('aria-activedescendant');
             if (!Array.isArray(results) || !results.length) {
               hideGeoToList();
+              setStatus('No results');
               return;
             }
-            results.forEach((item) => {
+            geoToList.setAttribute('data-testid', 'ta-list');
+            results.forEach((item, index) => {
               const option = document.createElement('div');
+              option.id = `geo-to-option-${geoToQueryId}-${index}`;
               option.setAttribute('data-testid', 'ta-option');
+              option.setAttribute('role', 'option');
+              option.setAttribute('aria-selected', 'false');
               option.textContent = item && typeof item.label === 'string' ? item.label : '';
               option.dataset.id = item && typeof item.id === 'string' ? item.id : '';
               Object.assign(option.style, { padding: '4px 8px', cursor: 'pointer' });
               option.addEventListener('mousedown', (evt) => {
                 evt.preventDefault();
-                geoToInput.value = option.textContent ?? '';
-                hideGeoToList();
+                selectToOption(option);
               });
+              geoToOptions.push(option);
               geoToList.appendChild(option);
             });
             geoToList.style.display = 'block';
+            setToExpanded(true);
+            setStatus(`${geoToOptions.length} results`);
+          });
+
+          geoToInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+              hideGeoToList(true);
+              return;
+            }
+            if (!geoToOptions.length) return;
+            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+              event.preventDefault();
+              const isDown = event.key === 'ArrowDown';
+              const next = geoToActiveIndex === -1 ? (isDown ? 0 : geoToOptions.length - 1) : geoToActiveIndex + (isDown ? 1 : -1);
+              setActiveToOption(next);
+              return;
+            }
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              if (geoToOptions[geoToActiveIndex]) selectToOption(geoToOptions[geoToActiveIndex]);
+            }
           });
 
           let currentList = [], deepLinkPending = true, lastSegment = [], mapEventsBound = false, isPopState = false;

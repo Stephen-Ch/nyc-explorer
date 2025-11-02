@@ -21,6 +21,12 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-02] GEO-UI-2c — To typeahead keyboard/a11y
+In order to match the From combobox, I layered To with combobox roles, aria-activedescendant updates, and arrow/Esc/Enter handling plus live status copy.
+Considerations: Shared status messaging now reports Option N of total; From/To lists keep exclusive ta-list ownership.
+Evidence: #tests=41, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~58 LOC).
+
 ### [2025-11-02] GEO-UI-2b — To typeahead mouse selection
 In order to mirror the From combobox for destinations, I wired a To input that fetches suggestions and applies click-to-select results.
 Considerations: Shared suggest/search helper keeps From behavior intact; keyboard + live region remain deferred.
