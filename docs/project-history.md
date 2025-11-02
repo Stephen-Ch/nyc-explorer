@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-02] DOC-QGATE-Thresholds — Clarify-then-execute gate
+In order to reduce clarifying-question churn, I codified 10%/5%/15% lift thresholds and ≤2min/≤3 question caps.
+Considerations: Docs-only update across Protocol and Copilot instructions to keep guidance concise.
+Evidence: #tests=0, green=NA (typecheck=NA).
+
 ### Sprint 03
 
 ### [2025-11-02] GEO-UI-2c — To typeahead keyboard/a11y

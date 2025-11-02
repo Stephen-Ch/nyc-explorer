@@ -16,6 +16,11 @@ Project.md → Sprint-03-Plan.md → Protocol.md → Copilot-Instructions.md →
 7) docs/Project.md
 8) docs/Working-With-Stephen.md (skim headings + Do/Don’t)
 
+**Q-GATE TL;DR**
+- Ask only if lift ≥10% (default), ≥5% (high-risk: DevOps, adapters/deps, schema/data, a11y), ≥15% (trivial UI/docs).
+- ≤2 minutes, ≤3 questions, one message, once.
+- Use the `Q-GATE:` header; otherwise proceed silently.
+
 ## Response Schema (every reply)
 - Assumptions: <none|list>
 - Allowed-Edits Fence: planned=<files/LOC>, actual=<files/LOC>

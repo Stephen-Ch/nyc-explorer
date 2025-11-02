@@ -15,6 +15,28 @@
 3) **LOG** — append one line to `/docs/code-review.md`.  
 4) **PAUSE** — stop until user cue.
 
+## Q-GATE — Ask Clarifying Questions (single pre-execution message)
+
+Purpose: Only ask clarifying questions when doing so meaningfully increases the chance of success.
+
+Thresholds
+- Default: Ask if expected success lift ≥ **10%**.
+- High-risk slices: Ask if expected lift ≥ **5%**.
+  High-risk = DevOps/watchers/probes; new adapters/dependencies/DI; schema/data contracts; accessibility semantics/copy.
+- Trivial slices (single-file UI or docs-only, ≤30 LOC): Ask only if expected lift ≥ **15%**; otherwise proceed.
+
+Time/Volume Caps
+- Spend ≤ **2 minutes** and ≤ **3 questions total**.
+- Combine into **one** message. Ask **once** unless a new blocker appears.
+
+Format
+- Start with `Q-GATE:` then bullets.
+- End with `If you confirm, I’ll proceed.` or `Proceeding without questions (below threshold).`
+
+Examples
+- High-risk (adapters): `Q-GATE: Swapping to GeoAdapter—do we prefer mock-only this sprint? ETA to real provider?`
+- Trivial UI: `Q-GATE: Proceeding without questions (below threshold).`
+
 ### Sprint Gate — Dev Loop First
 > **NOTE:** Do **not** begin ROUTE-FIND-1a until TOOL-DEV-LOOP-1 (dev server watch loop) is GREEN **and** verified manually (hot reload feels solid, stop/start clean). Routing work pauses if the loop regresses.
 > **GATE:** Do not start GEO-UI or ROUTE-FIND slices until DOC-SEL-GEO is merged; tests must target the selectors above.
