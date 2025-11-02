@@ -139,6 +139,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-02 05:40] nyc-explorer/main ROUTE-ADAPTER-1c-b — prefer RouteAdapter in Find flow (#tests=43, green=true)
 [2025-11-02 06:20] nyc-explorer/main GEO-UI-3a — persist+pass geocode coords (RED contract) (#tests=1, green=false)
 [2025-11-02 07:30] nyc-explorer/main GEO-UI-3b — persist geocode coords & route args (#tests=44, green=true; typecheck=green)
+[2025-11-02 07:45] nyc-explorer/main GEO-ADAPTER-1a — add adapter-fed typeahead contract (RED) (#tests=1, green=false)
 
 
 **Parked Items**
