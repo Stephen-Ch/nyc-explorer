@@ -176,7 +176,7 @@ app.MapGet("/", () => Results.Content(
               label: input?.dataset?.geoLabel ?? input?.value ?? '',
             });
 
-          let geoQueryId = 0, currentOptions = [], activeIndex = -1;
+          let geoQueryId = 0, currentOptions = [], activeIndex = -1, geoSearchTimer = 0;
           const hideGeoList = (clearStatus = false) => {
             geoFromList.innerHTML = '';
             geoFromList.style.display = 'none';
@@ -247,7 +247,7 @@ app.MapGet("/", () => Results.Content(
             geoFromList.innerHTML = '';
             if (!Array.isArray(items) || !items.length) {
               hideGeoList();
-              setStatus('No matches');
+              setStatus('No results');
               return;
             }
             currentOptions = []; activeIndex = -1;
@@ -278,23 +278,13 @@ app.MapGet("/", () => Results.Content(
             setStatus(`${currentOptions.length} results`);
           };
 
-          geoFromInput.addEventListener('input', async (event) => {
-            delete geoFromInput.dataset.geoLat;
-            delete geoFromInput.dataset.geoLng;
-            delete geoFromInput.dataset.geoLabel;
-            const value = (event.target?.value ?? '').trim();
-            if (value.length < 2) {
-              hideGeoList(true);
-              return;
-            }
-            const requestId = ++geoQueryId;
-            setStatus('Searching…');
+          const runGeoSearch = async (value, requestId) => {
             try {
               const results = await fetchGeoResults(value);
               if (requestId !== geoQueryId) return;
               if (!Array.isArray(results) || !results.length) {
                 hideGeoList();
-                setStatus('No matches');
+                setStatus('No results');
                 return;
               }
               renderGeoOptions(results);
@@ -303,6 +293,26 @@ app.MapGet("/", () => Results.Content(
               hideGeoList();
               setStatus('Error contacting geocoder');
             }
+          };
+
+          geoFromInput.addEventListener('input', (event) => {
+            delete geoFromInput.dataset.geoLat;
+            delete geoFromInput.dataset.geoLng;
+            delete geoFromInput.dataset.geoLabel;
+            const value = (event.target?.value ?? '').trim();
+            if (geoSearchTimer) { clearTimeout(geoSearchTimer); geoSearchTimer = 0; }
+            if (value.length < 2) {
+              geoQueryId++;
+              hideGeoList(true);
+              return;
+            }
+            hideGeoList();
+            setStatus('Searching…');
+            geoSearchTimer = window.setTimeout(() => {
+              geoSearchTimer = 0;
+              const requestId = ++geoQueryId;
+              void runGeoSearch(value, requestId);
+            }, 250);
           });
 
           geoFromInput.addEventListener('keydown', (event) => {

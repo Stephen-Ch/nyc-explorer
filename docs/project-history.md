@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-02] GEO-UI-Perf-1b — From typeahead debounce
+In order to keep geo-from suggestions fresh, I debounced queries, ignored stale responses, and surfaced Searching/“N results” status per the contract.
+Considerations: Scope stayed on geo-from so To combobox wiring and route flows remain untouched while default adapters now report “No results.”
+Evidence: #tests=targeted+full, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~40 LOC), tests/e2e/geo-typeahead-debounce.spec.ts, tests/e2e/geo-typeahead-adapter.spec.ts.
+
 ### [2025-11-02] GEO-ADAPTER-1b-fix — adapter arities aligned
 In order to lock our DI contract to the docs, I added default geo/route adapter stubs with explicit parameters and wrappers so length checks stay ≥1 without altering behavior.
 Considerations: Geo current stubs are flagged as defaults so the UI still short-circuits unavailable providers; segment/path fall back to local logic when adapters decline.

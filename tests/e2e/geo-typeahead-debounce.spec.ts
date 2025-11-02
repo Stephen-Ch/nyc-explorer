@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('GEO-UI-Perf-1a — From typeahead debounce ignores stale results', async ({ page }) => {
+test('GEO-UI-Perf-1b — From typeahead debounce ignores stale results', async ({ page }) => {
   await page.addInitScript(() => {
     const w = window as any;
     w.App = w.App || {};
@@ -33,13 +33,12 @@ test('GEO-UI-Perf-1a — From typeahead debounce ignores stale results', async (
   await input.type('nion', { delay: 10 });
 
   await expect(status).toHaveText('Searching…');
-  await expect(status).toHaveText('', { timeout: 5000 });
+  await expect(status).toHaveText('2 results', { timeout: 5000 });
   const options = page.locator('[data-testid="ta-option"]');
   await expect(options).toHaveCount(2);
   await expect(options.first()).toHaveText('Union Square Park');
   await expect(options.nth(1)).toHaveText('Union Square East');
 
   const calls = await page.evaluate(() => (window as any).__calls);
-  expect(calls.length).toBeGreaterThanOrEqual(4);
-  expect(calls.at(-1)).toBe('union');
+  expect(calls).toEqual(['union']);
 });

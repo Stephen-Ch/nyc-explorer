@@ -40,6 +40,6 @@ test('GEO-ADAPTER-1a — From typeahead pulls data from GeoAdapter', async ({ pa
 
   await fromInput.fill('');
   await fromInput.fill('zzzzzz');
-  await expect(status).toContainText('No matches');
+  await expect(status).toContainText('No results');
   await expect(list).toBeHidden();
 });
