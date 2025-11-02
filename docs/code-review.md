@@ -125,6 +125,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-01 19:55] nyc-explorer/main DOC-S5-PLAN — publish Sprint 5 plan (docs-only) (#tests=0, green=NA)
 [2025-11-01 20:20] nyc-explorer/main GEO-ADAPTER-0 — document adapters + DI scaffold (#tests=0, green=NA)
 [2025-11-01 20:40] nyc-explorer/main GEO-UI-1a — typeahead dropdown contract RED (#tests=1, green=false)
+[2025-11-01 21:05] nyc-explorer/main GEO-UI-1b — From typeahead dropdown (mouse select); geo-typeahead-basic GREEN (#tests=39, green=true)
 
 
 **Parked Items**

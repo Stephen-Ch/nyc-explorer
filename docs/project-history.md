@@ -21,6 +21,11 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-01] GEO-UI-1b — From typeahead dropdown
+In order to satisfy the new typeahead contract, I rendered the geo-from input, mock-aware dropdown, and click-to-select handler.
+Considerations: Mouse-only slice; keyboard/a11y polish deferred to GEO-UI-1c.
+Evidence: geo-typeahead-basic=green; e2e=39/39; typecheck=green; files: apps/web-mvc/Program.cs.
+
 ### [2025-11-01] GEO-ADAPTER-0 — Adapters documented
 In order to keep Sprint 5 slices provider-agnostic, I defined Geo/Route adapters, mock fixtures, and the DI handoff.
 Considerations: Docs-only guidance including .env toggles; production keys deferred.

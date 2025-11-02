@@ -39,6 +39,11 @@ app.MapGet("/", () => Results.Content(
         <input id="route-to" data-testid="route-to" placeholder="To…" />
         <button data-testid="route-find">Find Route</button>
       </div>
+      <div id="geo-typeahead" style="margin-bottom:1rem; max-width:320px;">
+        <label for="geo-from">Starting point (typeahead)</label>
+        <input id="geo-from" data-testid="geo-from" autocomplete="off" placeholder="Search for a starting point…" />
+        <div data-testid="ta-list" style="display:none; border:1px solid #ccc; background:#fff; margin-top:4px; box-shadow:0 2px 6px rgba(0,0,0,0.1);"></div>
+      </div>
       <div id="map-wrap" style="position:relative;"><div id="map" style="height:300px;"></div><div id="poi-overlay" style="position:absolute; inset:0; z-index:650; pointer-events:none;"></div></div>
       <label for="search-input">Search</label>
       <input id="search-input" data-testid="search-input" placeholder="Search POIs…" />
@@ -72,13 +77,59 @@ app.MapGet("/", () => Results.Content(
       </script>
       <script>
         (function () {
-          const fromInput = document.querySelector('[data-testid="route-from"]'),
+          const geoFromInput = document.querySelector('[data-testid="geo-from"]'),
+            geoList = document.querySelector('[data-testid="ta-list"]'),
+            fromInput = document.querySelector('[data-testid="route-from"]'),
             toInput = document.querySelector('[data-testid="route-to"]'),
             findButton = document.querySelector('[data-testid="route-find"]'),
             routeMsg = document.querySelector('[data-testid="route-msg"]'),
             routeSteps = document.getElementById('route-steps'),
             overlayContainer = document.getElementById('poi-overlay');
-          if (!fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
+          if (!geoFromInput || !geoList || !fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
+
+          const app = window.App = window.App || {}; app.adapters = app.adapters || {}; app.adapters.geo = app.adapters.geo || { search: async () => [], reverse: async () => null };
+
+          const hideGeoList = () => {
+            geoList.innerHTML = '';
+            geoList.style.display = 'none';
+          };
+          hideGeoList();
+
+          let geoQueryId = 0;
+          const renderGeoOptions = (items) => {
+            geoList.innerHTML = '';
+            if (!Array.isArray(items) || !items.length) {
+              hideGeoList();
+              return;
+            }
+            items.forEach((item) => {
+              const option = document.createElement('div');
+              option.setAttribute('data-testid', 'ta-option');
+              option.textContent = item && typeof item.label === 'string' ? item.label : '';
+              option.dataset.id = item && typeof item.id === 'string' ? item.id : '';
+              Object.assign(option.style, { padding: '4px 8px', cursor: 'pointer' });
+              option.addEventListener('mousedown', (event) => {
+                event.preventDefault();
+                geoFromInput.value = option.textContent ?? '';
+                hideGeoList();
+              });
+              geoList.appendChild(option);
+            });
+            geoList.style.display = 'block';
+          };
+
+          geoFromInput.addEventListener('input', async (event) => {
+            const value = (event.target?.value ?? '').trim();
+            if (value.length < 3) {
+              hideGeoList();
+              return;
+            }
+            const requestId = ++geoQueryId;
+            const adapter = app.adapters.geo;
+            const results = adapter && typeof adapter.search === 'function' ? await adapter.search(value) : [];
+            if (requestId !== geoQueryId) return;
+            renderGeoOptions(results);
+          });
 
           let currentList = [], deepLinkPending = true, lastSegment = [], mapEventsBound = false, isPopState = false;
 
