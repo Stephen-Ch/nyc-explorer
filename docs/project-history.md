@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-02] GEO-UI-3b — Persist geocode coords
+In order to pass adapter coords from typeaheads, I store lat/lng on selections, sync route inputs, and forward typed coords within RouteAdapter calls.
+Considerations: Route fallback now tolerates non-POI geocodes while preserving pushState for POI-backed routes only.
+Evidence: #tests=44, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~55 LOC).
+
 ### [2025-11-02] ROUTE-ADAPTER-1c-b — RouteAdapter preferred
 In order to consume adapter segments, I routed Find through window.App.adapters.route.segment with a fallback to the local segmenter.
 Considerations: Skip marker/polyline overlays when adapter steps lack coords while keeping history/live copy intact.
