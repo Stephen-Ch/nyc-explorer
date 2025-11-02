@@ -45,8 +45,13 @@ app.MapGet("/", () => Results.Content(
         <div id="geo-from-list" data-testid="ta-list" role="listbox" style="display:none; border:1px solid #ccc; background:#fff; margin-top:4px; box-shadow:0 2px 6px rgba(0,0,0,0.1);"></div>
         <div data-testid="geo-status" aria-live="polite" style="margin-top:4px; min-height:1em;"></div>
       </div>
+      <div id="geo-to-typeahead" style="margin-bottom:1rem; max-width:320px;">
+        <label for="geo-to">Destination (typeahead)</label>
+        <input id="geo-to" data-testid="geo-to" autocomplete="off" placeholder="Search for a destination…" />
+        <div id="geo-to-list" style="display:none; border:1px solid #ccc; background:#fff; margin-top:4px; box-shadow:0 2px 6px rgba(0,0,0,0.1);"></div>
+      </div>
       <div id="map-wrap" style="position:relative;"><div id="map" style="height:300px;"></div><div id="poi-overlay" style="position:absolute; inset:0; z-index:650; pointer-events:none;"></div></div>
-    <label for="search-input" style="display:block; font-weight:600;">Search</label>
+      <label for="search-input" style="display:block; font-weight:600;">Search</label>
       <input id="search-input" data-testid="search-input" placeholder="Search POIs…" />
       <ul id="poi-list"></ul>
       <div id="route-msg" data-testid="route-msg" aria-live="polite"></div>
@@ -79,7 +84,7 @@ app.MapGet("/", () => Results.Content(
       <script>
         (function () {
           const geoFromInput = document.querySelector('[data-testid="geo-from"]'),
-            geoList = document.querySelector('[data-testid="ta-list"]'),
+            geoFromList = document.getElementById('geo-from-list'),
             geoStatus = document.querySelector('[data-testid="geo-status"]'),
             fromInput = document.querySelector('[data-testid="route-from"]'),
             toInput = document.querySelector('[data-testid="route-to"]'),
@@ -87,9 +92,18 @@ app.MapGet("/", () => Results.Content(
             routeMsg = document.querySelector('[data-testid="route-msg"]'),
             routeSteps = document.getElementById('route-steps'),
             overlayContainer = document.getElementById('poi-overlay');
-          if (!geoFromInput || !geoList || !geoStatus || !fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
+            const geoToInput = document.querySelector('[data-testid="geo-to"]'),
+              geoToList = document.getElementById('geo-to-list');
+            if (!geoFromInput || !geoFromList || !geoStatus || !geoToInput || !geoToList || !fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
 
           const app = window.App = window.App || {}; app.adapters = app.adapters || {}; app.adapters.geo = app.adapters.geo || { search: async () => [], reverse: async () => null };
+          const fetchGeoResults = async (query) => {
+            const adapter = app.adapters.geo;
+            if (!adapter) return [];
+            if (typeof adapter.suggest === 'function') return adapter.suggest(query);
+            if (typeof adapter.search === 'function') return adapter.search(query);
+            return [];
+          };
 
           const setStatus = (text) => {
               const next = text ?? '';
@@ -102,8 +116,8 @@ app.MapGet("/", () => Results.Content(
 
           let geoQueryId = 0, currentOptions = [], activeIndex = -1;
           const hideGeoList = (clearStatus = false) => {
-            geoList.innerHTML = '';
-            geoList.style.display = 'none';
+            geoFromList.innerHTML = '';
+            geoFromList.style.display = 'none';
             currentOptions = []; activeIndex = -1;
             setExpanded(false);
             if (clearStatus) setStatus('');
@@ -131,7 +145,9 @@ app.MapGet("/", () => Results.Content(
           };
 
           const renderGeoOptions = (items) => {
-            geoList.innerHTML = '';
+            geoToList.removeAttribute('data-testid');
+            geoFromList.setAttribute('data-testid', 'ta-list');
+            geoFromList.innerHTML = '';
             if (!Array.isArray(items) || !items.length) {
               hideGeoList();
               setStatus('No results');
@@ -153,9 +169,9 @@ app.MapGet("/", () => Results.Content(
                 selectOption(option);
               });
               currentOptions.push(option);
-              geoList.appendChild(option);
+              geoFromList.appendChild(option);
             });
-            geoList.style.display = 'block'; setExpanded(true);
+            geoFromList.style.display = 'block'; setExpanded(true);
             setStatus(`${currentOptions.length} results`);
           };
 
@@ -166,8 +182,7 @@ app.MapGet("/", () => Results.Content(
               return;
             }
             const requestId = ++geoQueryId;
-            const adapter = app.adapters.geo;
-            const results = adapter && typeof adapter.search === 'function' ? await adapter.search(value) : [];
+            const results = await fetchGeoResults(value);
             if (requestId !== geoQueryId) return;
             renderGeoOptions(results);
           });
@@ -188,6 +203,45 @@ app.MapGet("/", () => Results.Content(
               event.preventDefault();
               if (currentOptions[activeIndex]) selectOption(currentOptions[activeIndex]);
             }
+          });
+
+          let geoToQueryId = 0;
+          const hideGeoToList = () => {
+            geoToList.innerHTML = '';
+            geoToList.style.display = 'none';
+          };
+          hideGeoToList();
+
+          geoToInput.addEventListener('input', async (event) => {
+            const value = (event.target?.value ?? '').trim();
+            if (value.length < 3) {
+              hideGeoToList();
+              return;
+            }
+            const requestId = ++geoToQueryId;
+            const results = await fetchGeoResults(value);
+            if (requestId !== geoToQueryId) return;
+            geoFromList.removeAttribute('data-testid');
+            geoToList.setAttribute('data-testid', 'ta-list');
+            geoToList.innerHTML = '';
+            if (!Array.isArray(results) || !results.length) {
+              hideGeoToList();
+              return;
+            }
+            results.forEach((item) => {
+              const option = document.createElement('div');
+              option.setAttribute('data-testid', 'ta-option');
+              option.textContent = item && typeof item.label === 'string' ? item.label : '';
+              option.dataset.id = item && typeof item.id === 'string' ? item.id : '';
+              Object.assign(option.style, { padding: '4px 8px', cursor: 'pointer' });
+              option.addEventListener('mousedown', (evt) => {
+                evt.preventDefault();
+                geoToInput.value = option.textContent ?? '';
+                hideGeoToList();
+              });
+              geoToList.appendChild(option);
+            });
+            geoToList.style.display = 'block';
           });
 
           let currentList = [], deepLinkPending = true, lastSegment = [], mapEventsBound = false, isPopState = false;

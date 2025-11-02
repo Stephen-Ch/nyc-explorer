@@ -21,6 +21,12 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-02] GEO-UI-2b — To typeahead mouse selection
+In order to mirror the From combobox for destinations, I wired a To input that fetches suggestions and applies click-to-select results.
+Considerations: Shared suggest/search helper keeps From behavior intact; keyboard + live region remain deferred.
+Evidence: #tests=41, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~54 LOC).
+
 ### [2025-11-02] GEO-UI-1c-b — Typeahead keyboard polish
 In order to deliver keyboard/a11y parity for the From typeahead, I applied combobox roles, aria-activedescendant wiring, and live status copy.
 Considerations: List clamps at ends, mouse flow untouched, live region clears on ESC.
