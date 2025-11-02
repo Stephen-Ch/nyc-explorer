@@ -140,6 +140,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-02 06:20] nyc-explorer/main GEO-UI-3a — persist+pass geocode coords (RED contract) (#tests=1, green=false)
 [2025-11-02 07:30] nyc-explorer/main GEO-UI-3b — persist geocode coords & route args (#tests=44, green=true; typecheck=green)
 [2025-11-02 07:45] nyc-explorer/main GEO-ADAPTER-1a — add adapter-fed typeahead contract (RED) (#tests=1, green=false)
+[2025-11-02 07:58] nyc-explorer/main GEO-UI-3c — From typeahead via GeoAdapter + live status (#tests=45, green=true; typecheck=green)
 
 
 **Parked Items**

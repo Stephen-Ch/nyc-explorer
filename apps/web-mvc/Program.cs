@@ -125,8 +125,8 @@ app.MapGet("/", () => Results.Content(
           const fetchGeoResults = async (query) => {
             const adapter = app.adapters.geo;
             if (!adapter) return [];
-            if (typeof adapter.suggest === 'function') return adapter.suggest(query);
             if (typeof adapter.search === 'function') return adapter.search(query);
+            if (typeof adapter.suggest === 'function') return adapter.suggest(query);
             return [];
           };
 
@@ -176,6 +176,8 @@ app.MapGet("/", () => Results.Content(
               delete geoFromInput.dataset.geoLat;
               delete geoFromInput.dataset.geoLng;
             }
+            if (node.dataset.geoLabel) geoFromInput.dataset.geoLabel = node.dataset.geoLabel;
+            else delete geoFromInput.dataset.geoLabel;
             fromInput.value = geoFromInput.value;
             setStatus(`Selected: ${geoFromInput.value}`);
             hideGeoList();
@@ -187,7 +189,7 @@ app.MapGet("/", () => Results.Content(
             geoFromList.innerHTML = '';
             if (!Array.isArray(items) || !items.length) {
               hideGeoList();
-              setStatus('No results');
+              setStatus('No matches');
               return;
             }
             currentOptions = []; activeIndex = -1;
@@ -204,6 +206,8 @@ app.MapGet("/", () => Results.Content(
               else delete option.dataset.geoLat;
               if (item && typeof item.lng === 'number') option.dataset.geoLng = String(item.lng);
               else delete option.dataset.geoLng;
+              if (item && typeof item.label === 'string') option.dataset.geoLabel = item.label;
+              else delete option.dataset.geoLabel;
               Object.assign(option.style, { padding: '4px 8px', cursor: 'pointer' });
               option.addEventListener('mousedown', (event) => {
                 event.preventDefault();
@@ -219,15 +223,28 @@ app.MapGet("/", () => Results.Content(
           geoFromInput.addEventListener('input', async (event) => {
             delete geoFromInput.dataset.geoLat;
             delete geoFromInput.dataset.geoLng;
+            delete geoFromInput.dataset.geoLabel;
             const value = (event.target?.value ?? '').trim();
-            if (value.length < 3) {
+            if (value.length < 2) {
               hideGeoList(true);
               return;
             }
             const requestId = ++geoQueryId;
-            const results = await fetchGeoResults(value);
-            if (requestId !== geoQueryId) return;
-            renderGeoOptions(results);
+            setStatus('Searching…');
+            try {
+              const results = await fetchGeoResults(value);
+              if (requestId !== geoQueryId) return;
+              if (!Array.isArray(results) || !results.length) {
+                hideGeoList();
+                setStatus('No matches');
+                return;
+              }
+              renderGeoOptions(results);
+            } catch (error) {
+              if (requestId !== geoQueryId) return;
+              hideGeoList();
+              setStatus('Error contacting geocoder');
+            }
           });
 
           geoFromInput.addEventListener('keydown', (event) => {
