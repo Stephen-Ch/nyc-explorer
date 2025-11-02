@@ -49,6 +49,7 @@ app.MapGet("/", () => Results.Content(
       <div id="geo-to-typeahead" style="margin-bottom:1rem; max-width:320px;">
         <label for="geo-to">Destination (typeahead)</label>
         <input id="geo-to" data-testid="geo-to" autocomplete="off" placeholder="Search for a destination…" role="combobox" aria-expanded="false" aria-controls="geo-to-list" aria-autocomplete="list" />
+        <button type="button" data-testid="geo-current" data-target="to" aria-label="Use current location" style="margin-top:4px;">Current</button>
         <div id="geo-to-list" role="listbox" style="display:none; border:1px solid #ccc; background:#fff; margin-top:4px; box-shadow:0 2px 6px rgba(0,0,0,0.1);"></div>
       </div>
       <div id="map-wrap" style="position:relative;"><div id="map" style="height:300px;"></div><div id="poi-overlay" style="position:absolute; inset:0; z-index:650; pointer-events:none;"></div></div>
@@ -120,8 +121,9 @@ app.MapGet("/", () => Results.Content(
             routeSteps = document.getElementById('route-steps'),
             overlayContainer = document.getElementById('poi-overlay');
             const geoToInput = document.querySelector('[data-testid="geo-to"]'),
-              geoToList = document.getElementById('geo-to-list');
-            if (!geoFromInput || !geoFromList || !geoStatus || !geoCurrentButton || !geoToInput || !geoToList || !fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
+              geoToList = document.getElementById('geo-to-list'),
+              geoCurrentToButton = document.querySelector('[data-testid="geo-current"][data-target="to"]');
+            if (!geoFromInput || !geoFromList || !geoStatus || !geoCurrentButton || !geoToInput || !geoToList || !geoCurrentToButton || !fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
 
           const app = window.App = window.App || {}; app.adapters = app.adapters || {}; app.adapters.geo = app.adapters.geo || { search: async () => [], reverse: async () => null };
           const fetchGeoResults = async (query) => {
@@ -308,6 +310,31 @@ app.MapGet("/", () => Results.Content(
             if (clearStatus) setStatus('');
           };
           hideGeoToList();
+
+          geoCurrentToButton.addEventListener('click', async () => {
+            const adapter = app.adapters?.geo;
+            if (!adapter || typeof adapter.current !== 'function') {
+              setStatus('Location unavailable.');
+              return;
+            }
+            geoCurrentToButton.disabled = true;
+            setStatus('Locating…');
+            try {
+              const result = await adapter.current();
+              if (!result || typeof result.lat !== 'number' || typeof result.lng !== 'number' || typeof result.label !== 'string') throw new Error('Invalid current location result');
+              geoToInput.value = result.label;
+              geoToInput.dataset.geoLat = String(result.lat);
+              geoToInput.dataset.geoLng = String(result.lng);
+              geoToInput.dataset.geoLabel = result.label;
+              toInput.value = result.label;
+              hideGeoToList();
+              setStatus('Using current location.');
+            } catch (error) {
+              setStatus('Location unavailable.');
+            } finally {
+              geoCurrentToButton.disabled = false;
+            }
+          });
 
           const setActiveToOption = (index) => {
             if (!geoToOptions.length) return;

@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-02] GEO-UI-5c-b — To current location control
+In order to mirror the From combobox, I wired geo.current to populate the To input, persist coords, and announce success while closing the dropdown.
+Considerations: Button disables during lookup, reuses live status copy, and leaves existing flows untouched on adapter errors.
+Evidence: #tests=51, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~35 LOC).
+
 ### [2025-11-02] GEO-UI-5b — current location control
 In order to autopopulate From, I wired geo.current to fill the combobox, store coords, and hide suggestions with a success status.
 Considerations: Button disables while pending, keeps combobox aria state, and leaves input untouched on adapter errors.
