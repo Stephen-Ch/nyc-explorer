@@ -153,6 +153,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-02 11:05] nyc-explorer/main ROUTE-SHARE-GEO-1a — add deep-link contract for adapter routes (tests=2, green=false)
 [2025-11-02 14:30] nyc-explorer/main ROUTE-SHARE-POI-verify — POI deep-link unchanged; tests green (#tests=targeted+full, green=true; typecheck=green)
 [2025-11-02 15:10] nyc-explorer/main GEO-ADAPTER-1b-fix — adapter arities aligned with docs; probe+suite green (#tests=targeted+full, green=true; typecheck=green)
+[2025-11-02 15:20] nyc-explorer/main GEO-UI-Perf-1a — add From typeahead debounce/stale-result contract, RED as expected (#tests=1, green=false)
 
 
 **Parked Items**
