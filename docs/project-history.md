@@ -21,6 +21,12 @@ Files: <main files touched>
 
 ### Sprint 03
 
+### [2025-11-02] GEO-UI-1c-b — Typeahead keyboard polish
+In order to deliver keyboard/a11y parity for the From typeahead, I applied combobox roles, aria-activedescendant wiring, and live status copy.
+Considerations: List clamps at ends, mouse flow untouched, live region clears on ESC.
+Evidence: #tests=40, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~55 LOC).
+
 ### [2025-11-02] FORM-A11Y-1b — Docs verification
 In order to confirm bound labels on Search/From/To, I reran the full suite with doc-only edits.
 Considerations: Accessibility parity maintained; no UI behavior changes.

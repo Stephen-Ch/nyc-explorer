@@ -33,19 +33,20 @@ app.MapGet("/", () => Results.Content(
     <body>
       <h1>NYC Explorer</h1>
       <div id="route-inputs" style="margin-bottom:1rem; display:flex; gap:0.5rem; align-items:flex-end;">
-        <label for="route-from">From</label>
+        <label for="route-from" style="display:block; font-weight:600;">From</label>
         <input id="route-from" data-testid="route-from" placeholder="From…" />
-        <label for="route-to">To</label>
+        <label for="route-to" style="display:block; font-weight:600;">To</label>
         <input id="route-to" data-testid="route-to" placeholder="To…" />
         <button data-testid="route-find">Find Route</button>
       </div>
       <div id="geo-typeahead" style="margin-bottom:1rem; max-width:320px;">
         <label for="geo-from">Starting point (typeahead)</label>
-        <input id="geo-from" data-testid="geo-from" autocomplete="off" placeholder="Search for a starting point…" />
-        <div data-testid="ta-list" style="display:none; border:1px solid #ccc; background:#fff; margin-top:4px; box-shadow:0 2px 6px rgba(0,0,0,0.1);"></div>
+        <input id="geo-from" data-testid="geo-from" autocomplete="off" placeholder="Search for a starting point…" role="combobox" aria-expanded="false" aria-controls="geo-from-list" aria-autocomplete="list" />
+        <div id="geo-from-list" data-testid="ta-list" role="listbox" style="display:none; border:1px solid #ccc; background:#fff; margin-top:4px; box-shadow:0 2px 6px rgba(0,0,0,0.1);"></div>
+        <div data-testid="geo-status" aria-live="polite" style="margin-top:4px; min-height:1em;"></div>
       </div>
       <div id="map-wrap" style="position:relative;"><div id="map" style="height:300px;"></div><div id="poi-overlay" style="position:absolute; inset:0; z-index:650; pointer-events:none;"></div></div>
-      <label for="search-input">Search</label>
+    <label for="search-input" style="display:block; font-weight:600;">Search</label>
       <input id="search-input" data-testid="search-input" placeholder="Search POIs…" />
       <ul id="poi-list"></ul>
       <div id="route-msg" data-testid="route-msg" aria-live="polite"></div>
@@ -79,49 +80,89 @@ app.MapGet("/", () => Results.Content(
         (function () {
           const geoFromInput = document.querySelector('[data-testid="geo-from"]'),
             geoList = document.querySelector('[data-testid="ta-list"]'),
+            geoStatus = document.querySelector('[data-testid="geo-status"]'),
             fromInput = document.querySelector('[data-testid="route-from"]'),
             toInput = document.querySelector('[data-testid="route-to"]'),
             findButton = document.querySelector('[data-testid="route-find"]'),
             routeMsg = document.querySelector('[data-testid="route-msg"]'),
             routeSteps = document.getElementById('route-steps'),
             overlayContainer = document.getElementById('poi-overlay');
-          if (!geoFromInput || !geoList || !fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
+          if (!geoFromInput || !geoList || !geoStatus || !fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
 
           const app = window.App = window.App || {}; app.adapters = app.adapters || {}; app.adapters.geo = app.adapters.geo || { search: async () => [], reverse: async () => null };
 
-          const hideGeoList = () => {
+          const setStatus = (text) => {
+              const next = text ?? '';
+              if (geoStatus.textContent !== next) geoStatus.textContent = next;
+            },
+            setExpanded = (state) => {
+              geoFromInput.setAttribute('aria-expanded', state ? 'true' : 'false');
+              if (!state) geoFromInput.removeAttribute('aria-activedescendant');
+            };
+
+          let geoQueryId = 0, currentOptions = [], activeIndex = -1;
+          const hideGeoList = (clearStatus = false) => {
             geoList.innerHTML = '';
             geoList.style.display = 'none';
+            currentOptions = []; activeIndex = -1;
+            setExpanded(false);
+            if (clearStatus) setStatus('');
           };
           hideGeoList();
 
-          let geoQueryId = 0;
+          const setActiveOption = (index) => {
+            if (!currentOptions.length) return;
+            const total = currentOptions.length;
+            const nextIndex = index < 0 ? 0 : index >= total ? total - 1 : index;
+            activeIndex = nextIndex;
+            currentOptions.forEach((node, idx) => {
+              const isActive = idx === activeIndex;
+              node.setAttribute('data-testid', isActive ? 'ta-option-active' : 'ta-option');
+              node.setAttribute('aria-selected', isActive ? 'true' : 'false');
+              if (isActive) geoFromInput.setAttribute('aria-activedescendant', node.id);
+            });
+          };
+
+          const selectOption = (node) => {
+            if (!node) return;
+            geoFromInput.value = node.textContent ?? '';
+            setStatus(`Selected: ${geoFromInput.value}`);
+            hideGeoList();
+          };
+
           const renderGeoOptions = (items) => {
             geoList.innerHTML = '';
             if (!Array.isArray(items) || !items.length) {
               hideGeoList();
+              setStatus('No results');
               return;
             }
-            items.forEach((item) => {
+            currentOptions = []; activeIndex = -1;
+            geoFromInput.removeAttribute('aria-activedescendant');
+            items.forEach((item, index) => {
               const option = document.createElement('div');
+              option.id = `geo-from-option-${geoQueryId}-${index}`;
               option.setAttribute('data-testid', 'ta-option');
+              option.setAttribute('role', 'option');
+              option.setAttribute('aria-selected', 'false');
               option.textContent = item && typeof item.label === 'string' ? item.label : '';
               option.dataset.id = item && typeof item.id === 'string' ? item.id : '';
               Object.assign(option.style, { padding: '4px 8px', cursor: 'pointer' });
               option.addEventListener('mousedown', (event) => {
                 event.preventDefault();
-                geoFromInput.value = option.textContent ?? '';
-                hideGeoList();
+                selectOption(option);
               });
+              currentOptions.push(option);
               geoList.appendChild(option);
             });
-            geoList.style.display = 'block';
+            geoList.style.display = 'block'; setExpanded(true);
+            setStatus(`${currentOptions.length} results`);
           };
 
           geoFromInput.addEventListener('input', async (event) => {
             const value = (event.target?.value ?? '').trim();
             if (value.length < 3) {
-              hideGeoList();
+              hideGeoList(true);
               return;
             }
             const requestId = ++geoQueryId;
@@ -129,6 +170,24 @@ app.MapGet("/", () => Results.Content(
             const results = adapter && typeof adapter.search === 'function' ? await adapter.search(value) : [];
             if (requestId !== geoQueryId) return;
             renderGeoOptions(results);
+          });
+
+          geoFromInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+              hideGeoList(true);
+              return;
+            }
+            if (!currentOptions.length) return;
+            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+              event.preventDefault();
+              const isDown = event.key === 'ArrowDown';
+              setActiveOption(activeIndex === -1 ? (isDown ? 0 : currentOptions.length - 1) : activeIndex + (isDown ? 1 : -1));
+              return;
+            }
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              if (currentOptions[activeIndex]) selectOption(currentOptions[activeIndex]);
+            }
           });
 
           let currentList = [], deepLinkPending = true, lastSegment = [], mapEventsBound = false, isPopState = false;
