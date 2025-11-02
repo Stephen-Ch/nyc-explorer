@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-02] GEO-ADAPTER-1b-fix — adapter arities aligned
+In order to lock our DI contract to the docs, I added default geo/route adapter stubs with explicit parameters and wrappers so length checks stay ≥1 without altering behavior.
+Considerations: Geo current stubs are flagged as defaults so the UI still short-circuits unavailable providers; segment/path fall back to local logic when adapters decline.
+Evidence: #tests=targeted+full, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~18 LOC), tests/unit/adapters-contract.spec.ts (new), docs/code-review.md, docs/project-history.md.
+
 ### [2025-11-02] ROUTE-SHARE-POI-verify — POI deep-link sanity
 In order to confirm adapter changes left legacy routes untouched, I reran the POI deep-link spec plus the full suite and typecheck with no app edits.
 Considerations: Legacy from/to pushState and back/forward behavior remain unchanged, so no code follow-up required.

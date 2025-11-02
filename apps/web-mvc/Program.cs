@@ -62,7 +62,22 @@ app.MapGet("/", () => Results.Content(
       <script>
         (function () {
           const w = window; w.App = w.App || {}; w.App.adapters = w.App.adapters || {};
-          const existingRoute = w.App.adapters.route || {}; if (typeof existingRoute.walk !== 'function') {
+          const routeAdapters = w.App.adapters.route = w.App.adapters.route || {};
+          if (typeof routeAdapters.segment !== 'function') {
+            routeAdapters.segment = async function (payload) { return null; };
+          }
+          if (typeof routeAdapters.path !== 'function') {
+            routeAdapters.path = async function (payload) { return null; };
+          }
+          if (typeof routeAdapters.segment === 'function' && routeAdapters.segment.length < 1) {
+            const segmentImpl = routeAdapters.segment;
+            routeAdapters.segment = function (payload, ...rest) { return segmentImpl.apply(this, [payload, ...rest]); };
+          }
+          if (typeof routeAdapters.path === 'function' && routeAdapters.path.length < 1) {
+            const pathImpl = routeAdapters.path;
+            routeAdapters.path = function (payload, ...rest) { return pathImpl.apply(this, [payload, ...rest]); };
+          }
+          const existingRoute = routeAdapters; if (typeof existingRoute.walk !== 'function') {
             const computeLength = (from, to) => {
               const rad = (deg) => deg * Math.PI / 180, R = 6371000;
               const fromLat = rad(from?.lat ?? 0);
@@ -125,7 +140,15 @@ app.MapGet("/", () => Results.Content(
               geoCurrentToButton = document.querySelector('[data-testid="geo-current"][data-target="to"]');
             if (!geoFromInput || !geoFromList || !geoStatus || !geoCurrentButton || !geoToInput || !geoToList || !geoCurrentToButton || !fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
 
-          const app = window.App = window.App || {}; app.adapters = app.adapters || {}; app.adapters.geo = app.adapters.geo || { search: async () => [], reverse: async () => null };
+          const app = window.App = window.App || {}; app.adapters = app.adapters || {}; app.adapters.geo = app.adapters.geo || { search: async (query, _options) => [], reverse: async (lat, lng) => null };
+          if (typeof app.adapters.geo.search === 'function' && app.adapters.geo.search.length < 1) {
+            const searchImpl = app.adapters.geo.search;
+            app.adapters.geo.search = async function (query, ...rest) { return searchImpl.apply(this, [query, ...rest]); };
+          }
+          if (typeof app.adapters.geo.current !== 'function') {
+            const unavailable = Object.assign(async () => { throw new Error('Geolocation unavailable'); }, { __nycDefault: true });
+            app.adapters.geo.current = unavailable;
+          }
           const fetchGeoResults = async (query) => {
             const adapter = app.adapters.geo;
             if (!adapter) return [];
@@ -165,7 +188,7 @@ app.MapGet("/", () => Results.Content(
 
           geoCurrentButton.addEventListener('click', async () => {
             const adapter = app.adapters?.geo;
-            if (!adapter || typeof adapter.current !== 'function') {
+            if (!adapter || typeof adapter.current !== 'function' || adapter.current.__nycDefault) {
               setStatus('Location unavailable.');
               return;
             }
@@ -313,7 +336,7 @@ app.MapGet("/", () => Results.Content(
 
           geoCurrentToButton.addEventListener('click', async () => {
             const adapter = app.adapters?.geo;
-            if (!adapter || typeof adapter.current !== 'function') {
+            if (!adapter || typeof adapter.current !== 'function' || adapter.current.__nycDefault) {
               setStatus('Location unavailable.');
               return;
             }
@@ -522,19 +545,89 @@ app.MapGet("/", () => Results.Content(
               overlayContainer.appendChild(svg);
             },
             clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); setRouteMessage(message); },
+            parseGeoTuple = (value) => {
+              if (typeof value !== 'string') return null;
+              const trimmed = value.trim();
+              if (!trimmed.length) return null;
+              const parts = trimmed.split(',');
+              if (parts.length !== 2) return null;
+              const lat = Number.parseFloat(parts[0]);
+              const lng = Number.parseFloat(parts[1]);
+              if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+              return { lat, lng };
+            },
+            setGeoSelection = (geoField, plainField, point, label) => {
+              if (!geoField || !point) return;
+              const rawLabel = typeof label === 'string' ? label.trim() : '';
+              const finalLabel = rawLabel.length ? rawLabel : `${point.lat},${point.lng}`;
+              geoField.value = finalLabel;
+              geoField.dataset.geoLat = String(point.lat);
+              geoField.dataset.geoLng = String(point.lng);
+              geoField.dataset.geoLabel = finalLabel;
+              if (plainField) plainField.value = finalLabel;
+            },
+            clearGeoInputValues = (geoField) => {
+              if (!geoField) return;
+              delete geoField.dataset.geoLat;
+              delete geoField.dataset.geoLng;
+              delete geoField.dataset.geoLabel;
+              geoField.value = '';
+            },
+            readDeepLinkParams = () => {
+              if (typeof URLSearchParams === 'undefined') return null;
+              const params = new URLSearchParams(window.location.search);
+              const read = (key) => params.get(key) ?? '';
+              return {
+                from: read('from'),
+                to: read('to'),
+                gfrom: read('gfrom'),
+                gto: read('gto'),
+                gfl: read('gfl'),
+                gtl: read('gtl'),
+              };
+            },
+            applyDeepLinkParams = (params) => {
+              if (!params) return '';
+              const fromPoi = (params.from ?? '').trim();
+              const toPoi = (params.to ?? '').trim();
+              const fromGeo = parseGeoTuple(params.gfrom);
+              const toGeo = parseGeoTuple(params.gto);
+              const fromGeoLabel = (params.gfl ?? '').trim();
+              const toGeoLabel = (params.gtl ?? '').trim();
+              const hasGeoParams = Boolean(fromGeo && toGeo);
+              const hasPoiParams = Boolean(fromPoi && toPoi);
+              const hasAnyGeoParam = Boolean((params.gfrom ?? '').trim().length || (params.gto ?? '').trim().length || (params.gfl ?? '').trim().length || (params.gtl ?? '').trim().length);
+              hideGeoList(true);
+              hideGeoToList(true);
+              if (hasGeoParams) {
+                setGeoSelection(geoFromInput, fromInput, fromGeo, fromGeoLabel);
+                setGeoSelection(geoToInput, toInput, toGeo, toGeoLabel);
+                return 'geo';
+              }
+              clearGeoInputValues(geoFromInput);
+              clearGeoInputValues(geoToInput);
+              if (hasPoiParams) {
+                fromInput.value = fromPoi;
+                toInput.value = toPoi;
+                return 'poi';
+              }
+              fromInput.value = hasAnyGeoParam ? '' : fromPoi;
+              toInput.value = hasAnyGeoParam ? '' : toPoi;
+              return hasAnyGeoParam ? 'geo-invalid' : '';
+            },
             scheduleDeepLink = () => {
               if (!deepLinkPending) return;
               deepLinkPending = false;
               const run = () => {
-                const params = new URLSearchParams(window.location.search);
-                const fromParam = params.get('from');
-                const toParam = params.get('to');
-                if (!fromParam || !toParam) return;
-                isPopState = true;
-                fromInput.value = fromParam;
-                toInput.value = toParam;
-                findButton.dispatchEvent(new Event('click', { bubbles: true }));
-                isPopState = false;
+                const params = readDeepLinkParams();
+                const mode = applyDeepLinkParams(params);
+                if (mode === 'geo' || mode === 'poi') {
+                  isPopState = true;
+                  findButton.dispatchEvent(new Event('click', { bubbles: true }));
+                  isPopState = false;
+                } else if (mode === 'geo-invalid') {
+                  clearRouteUI('Select both From and To to see steps.');
+                }
               };
               if (typeof queueMicrotask === 'function') queueMicrotask(run);
               else if (typeof Promise !== 'undefined') Promise.resolve().then(run);
@@ -580,9 +673,9 @@ app.MapGet("/", () => Results.Content(
               return localSegment(list, fromValue, toValue);
             },
             tryAdapterPath = async () => {
-              if (!hasGeoSelection(geoFromInput) || !hasGeoSelection(geoToInput)) return false;
+              if (!hasGeoSelection(geoFromInput) || !hasGeoSelection(geoToInput)) return null;
               const pathFn = window.App?.adapters?.route?.path;
-              if (typeof pathFn !== 'function') return false;
+              if (typeof pathFn !== 'function') return null;
               try {
                 const fromGeo = toGeoPoint(geoFromInput);
                 const toGeo = toGeoPoint(geoToInput);
@@ -591,15 +684,15 @@ app.MapGet("/", () => Results.Content(
                   ? raw.filter((node) => node && typeof node.lat === 'number' && typeof node.lng === 'number')
                       .map((node) => ({ coords: { lat: node.lat, lng: node.lng } }))
                   : [];
-                if (mapped.length < 2) { clearRouteGraphics(); return false; }
+                if (mapped.length < 2) { clearRouteGraphics(); return null; }
                 clearActiveMarkers();
                 clearSteps();
                 drawRouteGraphics(mapped);
                 setRouteMessage(`Route path from ${fromGeo.label || 'Start'} to ${toGeo.label || 'End'}.`);
-                return true;
+                return { from: fromGeo, to: toGeo };
               } catch (error) {
                 clearRouteGraphics();
-                return false;
+                return null;
               }
             },
             applySegment = async () => {
@@ -620,7 +713,27 @@ app.MapGet("/", () => Results.Content(
               }
               const seg = await getSegment(base, fromValue, toValue);
               if (!Array.isArray(seg) || !seg.length) {
-                if (await tryAdapterPath()) return;
+                const adapterGeo = await tryAdapterPath();
+                if (adapterGeo) {
+                  if (!isPopState && typeof history !== 'undefined') {
+                    const fromLabel = (adapterGeo.from.label ?? '').trim();
+                    const toLabel = (adapterGeo.to.label ?? '').trim();
+                    const geoParams = [
+                      ['gfrom', `${adapterGeo.from.lat},${adapterGeo.from.lng}`],
+                      ['gto', `${adapterGeo.to.lat},${adapterGeo.to.lng}`],
+                    ];
+                    if (fromLabel.length) geoParams.push(['gfl', fromLabel]);
+                    if (toLabel.length) geoParams.push(['gtl', toLabel]);
+                    const search = geoParams.map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+                    history.pushState({
+                      geo: {
+                        from: { lat: adapterGeo.from.lat, lng: adapterGeo.from.lng, label: fromLabel },
+                        to: { lat: adapterGeo.to.lat, lng: adapterGeo.to.lng, label: toLabel },
+                      },
+                    }, '', `?${search}`);
+                  }
+                  return;
+                }
                 clearRouteUI('No matching route segment.');
                 return;
               }
@@ -660,12 +773,9 @@ app.MapGet("/", () => Results.Content(
           });
 
           window.addEventListener('popstate', () => {
-            const params = new URLSearchParams(window.location.search);
-            const fromParam = params.get('from') ?? '';
-            const toParam = params.get('to') ?? '';
-            fromInput.value = fromParam;
-            toInput.value = toParam;
-            if (fromParam && toParam) {
+            const params = readDeepLinkParams();
+            const mode = applyDeepLinkParams(params);
+            if (mode === 'geo' || mode === 'poi') {
               isPopState = true;
               findButton.dispatchEvent(new Event('click', { bubbles: true }));
               isPopState = false;
