@@ -83,4 +83,10 @@
 - New selectors require a story and must be added here in the same PR.  
 - Prefer `data-testid` for list items and controls.
 
+## URL Contracts (geocoder routing)
+- `gfrom=<lat>,<lng>&gfl=<encoded label>`
+- `gto=<lat>,<lng>&gtl=<encoded label>`
+- Labels optional for UX; decimals expected for lat/lng.
+- Presence of `gfrom`/`gto` restores adapter path without activating POI markers.
+
 **End.**
