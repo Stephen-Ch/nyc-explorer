@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-02] GEO-UI-5b — current location control
+In order to autopopulate From, I wired geo.current to fill the combobox, store coords, and hide suggestions with a success status.
+Considerations: Button disables while pending, keeps combobox aria state, and leaves input untouched on adapter errors.
+Evidence: #tests=49, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~45 LOC).
+
 ### [2025-11-02] ROUTE-ADAPTER-PATH-1b — adapter path overlay
 In order to surface geocoder-only routes, I call RouteAdapter.path when POI segments fail and reuse the SVG overlay for the polyline and nodes.
 Considerations: Clears markers/overlay on mismatches and leaves pushState scoped to POI routes.

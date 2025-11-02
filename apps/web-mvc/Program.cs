@@ -42,6 +42,7 @@ app.MapGet("/", () => Results.Content(
       <div id="geo-typeahead" style="margin-bottom:1rem; max-width:320px;">
         <label for="geo-from">Starting point (typeahead)</label>
         <input id="geo-from" data-testid="geo-from" autocomplete="off" placeholder="Search for a starting point…" role="combobox" aria-expanded="false" aria-controls="geo-from-list" aria-autocomplete="list" />
+    <button type="button" data-testid="geo-current" data-target="from" aria-label="Use current location" style="margin-top:4px;">Current</button>
         <div id="geo-from-list" data-testid="ta-list" role="listbox" style="display:none; border:1px solid #ccc; background:#fff; margin-top:4px; box-shadow:0 2px 6px rgba(0,0,0,0.1);"></div>
         <div data-testid="geo-status" aria-live="polite" style="margin-top:4px; min-height:1em;"></div>
       </div>
@@ -111,6 +112,7 @@ app.MapGet("/", () => Results.Content(
           const geoFromInput = document.querySelector('[data-testid="geo-from"]'),
             geoFromList = document.getElementById('geo-from-list'),
             geoStatus = document.querySelector('[data-testid="geo-status"]'),
+            geoCurrentButton = document.querySelector('[data-testid="geo-current"][data-target="from"]'),
             fromInput = document.querySelector('[data-testid="route-from"]'),
             toInput = document.querySelector('[data-testid="route-to"]'),
             findButton = document.querySelector('[data-testid="route-find"]'),
@@ -119,7 +121,7 @@ app.MapGet("/", () => Results.Content(
             overlayContainer = document.getElementById('poi-overlay');
             const geoToInput = document.querySelector('[data-testid="geo-to"]'),
               geoToList = document.getElementById('geo-to-list');
-            if (!geoFromInput || !geoFromList || !geoStatus || !geoToInput || !geoToList || !fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
+            if (!geoFromInput || !geoFromList || !geoStatus || !geoCurrentButton || !geoToInput || !geoToList || !fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
 
           const app = window.App = window.App || {}; app.adapters = app.adapters || {}; app.adapters.geo = app.adapters.geo || { search: async () => [], reverse: async () => null };
           const fetchGeoResults = async (query) => {
@@ -158,6 +160,31 @@ app.MapGet("/", () => Results.Content(
             if (clearStatus) setStatus('');
           };
           hideGeoList();
+
+          geoCurrentButton.addEventListener('click', async () => {
+            const adapter = app.adapters?.geo;
+            if (!adapter || typeof adapter.current !== 'function') {
+              setStatus('Location unavailable.');
+              return;
+            }
+            geoCurrentButton.disabled = true;
+            setStatus('Locating…');
+            try {
+              const result = await adapter.current();
+              if (!result || typeof result.lat !== 'number' || typeof result.lng !== 'number' || typeof result.label !== 'string') throw new Error('Invalid current location result');
+              geoFromInput.value = result.label;
+              geoFromInput.dataset.geoLat = String(result.lat);
+              geoFromInput.dataset.geoLng = String(result.lng);
+              geoFromInput.dataset.geoLabel = result.label;
+              fromInput.value = result.label;
+              hideGeoList();
+              setStatus('Using current location.');
+            } catch (error) {
+              setStatus('Location unavailable.');
+            } finally {
+              geoCurrentButton.disabled = false;
+            }
+          });
 
           const setActiveOption = (index) => {
             if (!currentOptions.length) return;

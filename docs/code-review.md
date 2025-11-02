@@ -146,6 +146,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-02 08:28] nyc-explorer/main ROUTE-ADAPTER-PATH-1a — add adapter path e2e, RED as expected (#tests=1, green=false)
 [schur] ROUTE-ADAPTER-PATH-1b — wire adapter path render; tests green (#tests=47, green=true; typecheck=green)
 [schur] GEO-UI-5a — add current-location e2e contract, RED as expected (#tests=1, green=false)
+[schur] GEO-UI-5b — implement current-location for From; tests green (#tests=targeted+full, green=true; typecheck=green)
 
 
 **Parked Items**
