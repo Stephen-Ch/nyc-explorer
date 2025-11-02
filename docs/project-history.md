@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-02] DEV-ENV-1b — mock env quickstart
+In order to make setup reproducible, I documented APP_PORT/GEO_PROVIDER/ROUTE_PROVIDER in .env.example and added a README mocks quickstart.
+Considerations: Real provider slots stay blank; Adapters.md now maps env flags to window.App.adapters without changing app code.
+Evidence: #tests=0, green=NA (typecheck=NA).
+Files: .env.example (~10 LOC), README.md (~20 LOC), docs/Adapters.md (~10 LOC).
+
 ### [2025-11-02] GEO-UI-5c-b — To current location control
 In order to mirror the From combobox, I wired geo.current to populate the To input, persist coords, and announce success while closing the dropdown.
 Considerations: Button disables during lookup, reuses live status copy, and leaves existing flows untouched on adapter errors.

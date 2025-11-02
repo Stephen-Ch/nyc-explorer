@@ -149,6 +149,7 @@ Track all development decisions in chronological order using the standardized fo
 [schur] GEO-UI-5b — implement current-location for From; tests green (#tests=targeted+full, green=true; typecheck=green)
 [schur] GEO-UI-5c-a — add To current-location e2e contract (RED as expected) (#tests=2, green=false)
 [schur] GEO-UI-5c-b — wire To current-location; tests green (#tests=51, typecheck=green)
+[2025-11-02 10:45] nyc-explorer/main DEV-ENV-1b — finalize .env.example + README Quickstart (docs-only, green)
 
 
 **Parked Items**

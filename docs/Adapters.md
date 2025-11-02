@@ -38,6 +38,11 @@ export interface RouteAdapter {
 - Test harness swaps mocks by assigning to `window.App.adapters` before UI scripts run.
 - Production keys deferred; `.env` flags (Sprint 05) remain `mock` only.
 
+## Environment Flags (Sprint 05)
+- `.env` → `APP_PORT` controls the ASP.NET dev server port (defaults to 5000 when unset).
+- `.env` → `GEO_PROVIDER` and `ROUTE_PROVIDER` toggle which adapters `Program.cs` injects; only `mock` is supported today.
+- Real provider keys (`GEO_API_KEY`, `ROUTE_API_URL`) are placeholders and should remain blank until a future story wires them through.
+
 ```
 UI (geo inputs, buttons)
   │

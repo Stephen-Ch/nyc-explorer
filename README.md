@@ -24,6 +24,20 @@ BASE_URL=http://localhost:5000 npx playwright test --project=chromium
 - Typecheck: `npm run typecheck`
 - Visual artifacts live in `docs/artifacts/` (map/detail smoke)
 
+## Quickstart (Mocks)
+```bash
+cp .env.example .env
+npm ci
+npm run dev:api
+npm run e2e:ui # optional Playwright UI runner
+```
+
+If you see the map and can use the From/To typeahead plus the “Current” buttons, you are ready to work locally.
+
+### Provider switches
+- `.env` flags `GEO_PROVIDER` and `ROUTE_PROVIDER` are documented in `docs/Adapters.md` and default to `mock`.
+- Real providers are not wired yet; leave the mock settings in place for Sprint 05.
+
 ## Scope
 - Manhattan-only (Union Square + Flatiron), desktop MVP.
 
