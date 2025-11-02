@@ -130,6 +130,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-02 00:10] nyc-explorer/main FORM-A11Y-1b — bind labels; targeted+full e2e + typecheck (#tests=40, green=false; GEO-UI-1c-a RED expected)
 [2025-11-02 00:35] nyc-explorer/main FORM-A11Y-1b — docs verification (no code changes) (#tests=39/40, green=false)
 [2025-11-02 01:10] nyc-explorer/main GEO-UI-1c-b — typeahead keyboard+a11y polish; suites+typecheck green (#tests=40, green=true; typecheck=green)
+[2025-11-02 01:27] nyc-explorer/main GEO-UI-2a — add To typeahead mouse-only contract, RED as expected (#tests=1, green=false)
 
 
 **Parked Items**
