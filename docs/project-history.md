@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-02] ROUTE-SHARE-POI-verify — POI deep-link sanity
+In order to confirm adapter changes left legacy routes untouched, I reran the POI deep-link spec plus the full suite and typecheck with no app edits.
+Considerations: Legacy from/to pushState and back/forward behavior remain unchanged, so no code follow-up required.
+Evidence: #tests=targeted+full, green=true (typecheck=green).
+Files: docs/code-review.md, docs/project-history.md.
+
 ### [2025-11-02] DEV-ENV-1b — mock env quickstart
 In order to make setup reproducible, I documented APP_PORT/GEO_PROVIDER/ROUTE_PROVIDER in .env.example and added a README mocks quickstart.
 Considerations: Real provider slots stay blank; Adapters.md now maps env flags to window.App.adapters without changing app code.
