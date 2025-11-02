@@ -147,6 +147,7 @@ Track all development decisions in chronological order using the standardized fo
 [schur] ROUTE-ADAPTER-PATH-1b — wire adapter path render; tests green (#tests=47, green=true; typecheck=green)
 [schur] GEO-UI-5a — add current-location e2e contract, RED as expected (#tests=1, green=false)
 [schur] GEO-UI-5b — implement current-location for From; tests green (#tests=targeted+full, green=true; typecheck=green)
+[schur] GEO-UI-5c-a — add To current-location e2e contract (RED as expected) (#tests=2, green=false)
 
 
 **Parked Items**
