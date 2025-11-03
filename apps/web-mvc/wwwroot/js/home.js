@@ -1,9 +1,9 @@
-const map = L.map('map').setView([40.7359, -73.9911], 15);
+window.map = L.map('map').setView([40.7359, -73.9911], 15);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap contributors'
-}).addTo(map);
+}).addTo(window.map);
 
-let pois = [];
+window.pois = [];
 const overlay = document.getElementById('poi-overlay');
 const routeSteps = document.getElementById('route-steps');
 
@@ -48,8 +48,8 @@ function placeButtons() {
   }
 
   overlay.innerHTML = '';
-  pois.forEach((poi) => {
-    const point = map.latLngToContainerPoint([poi.coords.lat, poi.coords.lng]);
+  window.pois.forEach((poi) => {
+    const point = window.map.latLngToContainerPoint([poi.coords.lat, poi.coords.lng]);
   const btn = document.createElement('button');
     btn.setAttribute('data-testid', 'poi-marker');
   btn.setAttribute('data-poi-id', poi.id);
@@ -79,25 +79,26 @@ function render(listData) {
     list.appendChild(li);
   });
 }
+window.render = render;
 
 fetch('/content/poi.v1.json')
   .then((res) => res.json())
   .then((data) => {
-    pois = data;
-    render(pois);
+    window.pois = data;
+    render(window.pois);
 
-    pois.forEach((poi) => {
+    window.pois.forEach((poi) => {
       const marker = L.marker([poi.coords.lat, poi.coords.lng]);
-      marker.addTo(map).bindPopup(poi.name);
+      marker.addTo(window.map).bindPopup(poi.name);
     });
 
     placeButtons();
-    AppConfig.MAP_REDRAW_EVENTS.forEach((evt) => map.on(evt, placeButtons));
-    renderRoute(buildRoute(pois));
+    AppConfig.MAP_REDRAW_EVENTS.forEach((evt) => window.map.on(evt, placeButtons));
+    renderRoute(buildRoute(window.pois));
 
     document.getElementById('search-input')?.addEventListener('input', (e) => {
       const q = e.target.value.toLowerCase();
-      const filtered = pois.filter((p) => p.name.toLowerCase().includes(q));
+      const filtered = window.pois.filter((p) => p.name.toLowerCase().includes(q));
       render(filtered);
       renderRoute(buildRoute(filtered));
     });
