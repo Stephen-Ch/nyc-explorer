@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] DOC-WORKFLOW-S6 — Sprint 6 workflow tweaks
+Documented Sprint 6 workflow upgrades and linked DoD/stop hooks in Protocol.
+Evidence: #tests=70, green=true; typecheck=green.
+Files: docs/Workflow-Tweaks-S6.md, docs/Protocol.md, docs/code-review.md, docs/project-history.md.
+
 ### [2025-11-04] PATH-HELPER-1 — Centralized POI detail path
 Purpose: single source of truth for POI detail JSON path via ContentPathHelper.
 Evidence: #tests=70, green=true; typecheck=green.

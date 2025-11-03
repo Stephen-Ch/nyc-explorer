@@ -100,4 +100,8 @@ RED → GREEN → VERIFY (full suite + typecheck) → COMMIT (one story = one co
 - Prefer targeting specific `expect` calls with `.setTimeout()` rather than raising the global limit.
 - For long-running setup (e.g., map tiles), avoid exceeding 10s without product sign-off; consider adding loading indicators instead.
 
+## Sprint 6 Workflow Hooks
+- Definition of Done chain: follow `docs/Workflow-Tweaks-S6.md#definition-of-done-chain` on every slice.
+- Stop-the-line triggers: escalate immediately if any `docs/Workflow-Tweaks-S6.md#stop-the-line-triggers` condition fires.
+
 **End.**
