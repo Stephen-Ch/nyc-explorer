@@ -606,7 +606,7 @@ These issues are immediately addressable through systematic refactoring. The sug
 ## SMELL-ERROR-HANDLING — Missing POI load recovery UX
 - [x] FETCH-GUARD-1a — POI load error contract (commit aeeb5b9, 2025-11-03)
 - [x] FETCH-GUARD-1b — POI load error live region + clears (commit 49a7923, 2025-11-03)
-- [x] ERR-LOG-POI-1c — server logging + forced-500 spec (commit 13c0661, 2025-11-03)
+- [x] ERR-LOG-POI-1c — server logging + forced-500 spec (commit ffb0b4d, 2025-11-03)
 - [x] FETCH-GUARD-2b — POI fetch timeout UX (commit 89786e6, 2025-11-03)
 
 ## SMELL-POI-PATH-DRY — Duplicated POI/Adapter path drawing
