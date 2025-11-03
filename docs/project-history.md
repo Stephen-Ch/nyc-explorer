@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] RETRO-05 — Sprint 5 postmortem
+Captured Sprint 05 retro covering geocoder/typeahead wins, share UX, and Sprint 06 risks.
+Considerations: Highlighted Program.cs LOC pressure, Playwright hangs, and prompting guardrails.
+Evidence: #tests=64, green=true (typecheck=green).
+
 ### [2025-11-03] DOC-REL-1 — deep-link/share documentation
 Captured README onboarding for mock providers, env defaults, and clipboard share UX so fresh clones can exercise POI + adapter routes.
 Considerations: Clarified selector contracts (share-link, ta-option) and mapped adapter deep-link params without touching runtime code.
