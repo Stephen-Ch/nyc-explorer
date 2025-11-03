@@ -1,9 +1,9 @@
-window.map = L.map('map').setView([40.7359, -73.9911], 15);
+const map = L.map('map').setView([40.7359, -73.9911], 15);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap contributors'
-}).addTo(window.map);
+}).addTo(map);
 
-window.pois = [];
+let pois = [];
 const overlay = document.getElementById('poi-overlay');
 const routeSteps = document.getElementById('route-steps');
 
@@ -11,18 +11,18 @@ const buildRoute = (list) => {
   const seen = new Map();
   return [...list]
     .sort((a, b) => {
-      const routeA = a.route_id ?? AppConfig.DEFAULT_ROUTE_ID;
-      const routeB = b.route_id ?? AppConfig.DEFAULT_ROUTE_ID;
+      const routeA = a.route_id ?? 'zzz';
+      const routeB = b.route_id ?? 'zzz';
       if (routeA !== routeB) return routeA.localeCompare(routeB);
-      const orderA = typeof a.order === 'number' ? a.order : AppConfig.DEFAULT_ORDER;
-      const orderB = typeof b.order === 'number' ? b.order : AppConfig.DEFAULT_ORDER;
+      const orderA = typeof a.order === 'number' ? a.order : 999999;
+      const orderB = typeof b.order === 'number' ? b.order : 999999;
       if (orderA !== orderB) return orderA - orderB;
       return (a.name ?? '').localeCompare(b.name ?? '');
     })
     .filter((poi) => {
       const block = typeof poi.block === 'string' ? poi.block : '';
       const count = seen.get(block) ?? 0;
-      if (count >= AppConfig.MAX_POIS_PER_BLOCK) return false;
+      if (count >= 3) return false;
       seen.set(block, count + 1);
       return true;
     });
@@ -48,8 +48,8 @@ function placeButtons() {
   }
 
   overlay.innerHTML = '';
-  window.pois.forEach((poi) => {
-    const point = window.map.latLngToContainerPoint([poi.coords.lat, poi.coords.lng]);
+  pois.forEach((poi) => {
+    const point = map.latLngToContainerPoint([poi.coords.lat, poi.coords.lng]);
   const btn = document.createElement('button');
     btn.setAttribute('data-testid', 'poi-marker');
   btn.setAttribute('data-poi-id', poi.id);
@@ -57,9 +57,7 @@ function placeButtons() {
     btn.setAttribute('aria-label', poi.name);
     btn.setAttribute('role', 'button');
     btn.tabIndex = 0;
-    const offset = AppConfig.MARKER_OFFSET;
-    const size = AppConfig.MARKER_SIZE;
-    btn.style.cssText = `position:absolute; left:${point.x - offset}px; top:${point.y - offset}px; width:${size}px; height:${size}px; border:none; border-radius:50%; background:transparent; pointer-events:auto; cursor:pointer; z-index:${AppConfig.MARKER_Z_INDEX};`;
+    btn.style.cssText = `position:absolute; left:${point.x - 14}px; top:${point.y - 14}px; width:28px; height:28px; border:none; border-radius:50%; background:transparent; pointer-events:auto; cursor:pointer; z-index:651;`;
     btn.addEventListener('click', () => window.location.assign(`/poi/${poi.id}`));
     overlay.appendChild(btn);
   });
@@ -79,30 +77,29 @@ function render(listData) {
     list.appendChild(li);
   });
 }
-window.render = render;
 
 fetch('/content/poi.v1.json')
   .then((res) => res.json())
   .then((data) => {
-    window.pois = data;
-    render(window.pois);
+    pois = data;
+    render(pois);
 
-    window.pois.forEach((poi) => {
+    pois.forEach((poi) => {
       const marker = L.marker([poi.coords.lat, poi.coords.lng]);
-      marker.addTo(window.map).bindPopup(poi.name);
+      marker.addTo(map).bindPopup(poi.name);
     });
 
     placeButtons();
-    AppConfig.MAP_REDRAW_EVENTS.forEach((evt) => window.map.on(evt, placeButtons));
-    renderRoute(buildRoute(window.pois));
+    ['move', 'zoom', 'resize'].forEach((evt) => map.on(evt, placeButtons));
+    renderRoute(buildRoute(pois));
 
     document.getElementById('search-input')?.addEventListener('input', (e) => {
       const q = e.target.value.toLowerCase();
-      const filtered = window.pois.filter((p) => p.name.toLowerCase().includes(q));
+      const filtered = pois.filter((p) => p.name.toLowerCase().includes(q));
       render(filtered);
       renderRoute(buildRoute(filtered));
     });
   })
   .catch(() => {
-    document.body.textContent = AppConfig.MESSAGES.FAILED_TO_LOAD;
+    document.body.textContent = 'Failed to load POIs';
   });
