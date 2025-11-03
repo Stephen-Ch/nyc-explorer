@@ -38,6 +38,7 @@ app.MapGet("/", () => Results.Content(
         <label for="route-to" style="display:block; font-weight:600;">To</label>
         <input id="route-to" data-testid="route-to" placeholder="To…" />
         <button data-testid="route-find">Find Route</button>
+        <button type="button" data-testid="share-link" aria-disabled="true" disabled>Copy link</button>
       </div>
       <div id="geo-typeahead" style="margin-bottom:1rem; max-width:320px;">
         <label for="geo-from">Starting point (typeahead)</label>
@@ -67,7 +68,7 @@ app.MapGet("/", () => Results.Content(
           if (!routeAdapters) routeAdapters = {};
           const routeProvider = (w.__ENV__ && w.__ENV__.ROUTE_PROVIDER) || 'mock';
           const providerAllowsMock = routeProvider === 'mock';
-          const wantsMockRoute = Boolean(w.__nycMock && w.__nycMock.route === true);
+          const wantsMockRoute = !w.__nycMock || w.__nycMock.route !== false;
           if (hadExistingRoute && routeAdapters.__nycMock === undefined) routeAdapters.__nycMock = false;
           if (providerAllowsMock && wantsMockRoute && (!hadExistingRoute || routeAdapters.__nycMock !== false)) {
             const isPoint = (point) => point && typeof point.lat === 'number' && typeof point.lng === 'number';
@@ -167,13 +168,14 @@ app.MapGet("/", () => Results.Content(
             fromInput = document.querySelector('[data-testid="route-from"]'),
             toInput = document.querySelector('[data-testid="route-to"]'),
             findButton = document.querySelector('[data-testid="route-find"]'),
+            shareButton = document.querySelector('[data-testid="share-link"]'),
             routeMsg = document.querySelector('[data-testid="route-msg"]'),
             routeSteps = document.getElementById('route-steps'),
             overlayContainer = document.getElementById('poi-overlay');
             const geoToInput = document.querySelector('[data-testid="geo-to"]'),
               geoToList = document.getElementById('geo-to-list'),
               geoCurrentToButton = document.querySelector('[data-testid="geo-current"][data-target="to"]');
-            if (!geoFromInput || !geoFromList || !geoStatus || !geoCurrentButton || !geoToInput || !geoToList || !geoCurrentToButton || !fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
+            if (!geoFromInput || !geoFromList || !geoStatus || !geoCurrentButton || !geoToInput || !geoToList || !geoCurrentToButton || !fromInput || !toInput || !findButton || !shareButton || !routeMsg || !routeSteps) return;
 
           const app = window.App = window.App || {}; app.adapters = app.adapters || {};
           const MockGeocoder = (() => {
@@ -558,7 +560,19 @@ app.MapGet("/", () => Results.Content(
             }
           });
 
-          let currentList = [], deepLinkPending = true, lastSegment = [], mapEventsBound = false, isPopState = false;
+          let currentList = [], deepLinkPending = true, lastSegment = [], mapEventsBound = false, isPopState = false, shareActive = false;
+
+          const syncShareState = () => {
+            if (!shareButton) return;
+            if (shareActive) {
+              shareButton.disabled = false;
+              shareButton.removeAttribute('aria-disabled');
+            } else {
+              shareButton.disabled = true;
+              shareButton.setAttribute('aria-disabled', 'true');
+            }
+          };
+          syncShareState();
 
           const normalize = (value) => (typeof value === 'string' ? value.trim().toLowerCase() : ''),
             hasRouteId = (poi) => {
@@ -621,6 +635,22 @@ app.MapGet("/", () => Results.Content(
               if (next.length) routeMsg.style.removeProperty('display');
               else routeMsg.style.display = 'none';
             },
+            copyShareLink = async () => {
+              if (!shareButton || shareButton.disabled) return;
+              const url = typeof window !== 'undefined' && window.location ? window.location.href : '';
+              const failure = 'Unable to copy link.';
+              const hasClipboard = typeof navigator !== 'undefined' && navigator.clipboard && typeof navigator.clipboard.writeText === 'function';
+              if (!url || !hasClipboard) {
+                setRouteMessage(failure);
+                return;
+              }
+              try {
+                await navigator.clipboard.writeText(url);
+                setRouteMessage('Link copied.');
+              } catch (error) {
+                setRouteMessage(failure);
+              }
+            },
             setAttrs = (el, attrs) => Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, String(value))),
             createSvgEl = (name, attrs) => { const el = document.createElementNS('http://www.w3.org/2000/svg', name); setAttrs(el, attrs); return el; },
             clearRouteGraphics = () => { overlayContainer?.querySelectorAll('[data-testid="route-path"], [data-testid="route-node"]').forEach((node) => node.remove()); lastSegment = []; },
@@ -635,8 +665,10 @@ app.MapGet("/", () => Results.Content(
               svg.appendChild(createSvgEl('polyline', { points: points.map((pt) => `${pt.x},${pt.y}`).join(' '), fill: 'none', stroke: '#1a73e8', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'pointer-events': 'none' }));
               points.forEach((pt, index) => svg.appendChild(createSvgEl('circle', { 'data-testid': 'route-node', 'data-step-index': index, 'aria-hidden': 'true', cx: pt.x, cy: pt.y, r: 4, fill: '#ffffff', stroke: '#1a73e8', 'stroke-width': '2', 'pointer-events': 'none' })));
               overlayContainer.appendChild(svg);
+              shareActive = true;
+              syncShareState();
             },
-            clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); setRouteMessage(message); },
+            clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); setRouteMessage(message); shareActive = false; syncShareState(); },
             handleAdapterFailure = () => clearRouteUI('Unable to build route.'),
             parseGeoTuple = (value) => {
               if (typeof value !== 'string') return null;
@@ -695,6 +727,8 @@ app.MapGet("/", () => Results.Content(
               if (hasGeoParams) {
                 setGeoSelection(geoFromInput, fromInput, fromGeo, fromGeoLabel);
                 setGeoSelection(geoToInput, toInput, toGeo, toGeoLabel);
+                shareActive = true;
+                syncShareState();
                 return 'geo';
               }
               clearGeoInputValues(geoFromInput);
@@ -702,10 +736,14 @@ app.MapGet("/", () => Results.Content(
               if (hasPoiParams) {
                 fromInput.value = fromPoi;
                 toInput.value = toPoi;
+                shareActive = true;
+                syncShareState();
                 return 'poi';
               }
               fromInput.value = hasAnyGeoParam ? '' : fromPoi;
               toInput.value = hasAnyGeoParam ? '' : toPoi;
+              shareActive = false;
+              syncShareState();
               return hasAnyGeoParam ? 'geo-invalid' : '';
             },
             scheduleDeepLink = () => {
@@ -793,6 +831,8 @@ app.MapGet("/", () => Results.Content(
                 } else {
                   drawRouteGraphics(mapped);
                 }
+                shareActive = true;
+                syncShareState();
                 return { status: 'success', from: fromGeo, to: toGeo };
               } catch (error) {
                 clearRouteGraphics();
@@ -877,6 +917,8 @@ app.MapGet("/", () => Results.Content(
                 }
               }
               setRouteMessage(`Route: ${seg.length} steps from ${fromName} to ${toName}.`);
+              shareActive = true;
+              syncShareState();
               if (!isPopState && typeof history !== 'undefined' && typeof URLSearchParams !== 'undefined' && fromPoi && toPoi) {
                 const fromId = typeof fromPoi.id === 'string' && fromPoi.id.length ? fromPoi.id : fromValue;
                 const toId = typeof toPoi.id === 'string' && toPoi.id.length ? toPoi.id : toValue;
@@ -900,6 +942,11 @@ app.MapGet("/", () => Results.Content(
           findButton.addEventListener('click', async (event) => {
             event.preventDefault();
             await applySegment();
+          });
+
+          shareButton.addEventListener('click', async (event) => {
+            event.preventDefault();
+            await copyShareLink();
           });
 
           window.addEventListener('popstate', () => {

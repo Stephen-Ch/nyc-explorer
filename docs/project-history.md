@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] ROUTE-SHARE-UI-1b — share link control
+In order to let researchers share active routes, I added a [data-testid="share-link"] button that copies window.location.href.
+Considerations: Announces "Link copied." or "Unable to copy link.", keeps adapter and POI parity, and defaults disabled until a route exists.
+Evidence: #tests=64, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~55 LOC).
+
 ### [2025-11-03] ROUTE-ADAPTER-ERR-UX-1b — adapter error UX polish
 In order to make adapter failures accessible, I set the live region to "Unable to build route.", cleared overlays on error, and reused the adapter path on recovery.
 Considerations: Keeps POI mismatch copy intact and reuses overlay mode when segment steps lack coords.
