@@ -168,6 +168,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-03 18:20] nyc-explorer/main RETRO-05 — sprint 5 postmortem + prompting template (#tests=64, green=true; typecheck=green)
 [2025-11-03 18:55] nyc-explorer/main DRY-PATH-1 — factor route path helper; tests green (#tests=64, green=true; typecheck=green); touches: SMELL-POI-PATH-DRY
 [2025-11-03 19:10] nyc-explorer/main FETCH-GUARD-1a — add POI load error contract (RED); selectors gated (poi-error, poi-list); touches: SMELL-ERROR-HANDLING (#tests=1, green=false)
+[2025-11-03 21:55] nyc-explorer/main FETCH-GUARD-1b — POI load error handled (aria-live), route cleared; suites green; touches: SMELL-ERROR-HANDLING
 
 
 **Parked Items**

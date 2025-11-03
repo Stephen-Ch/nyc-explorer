@@ -7,7 +7,7 @@ Scope: Analyze codebase for code smells and potential brittleness per docs/Proje
 Smell Roll-up (2025-11-03)
 - Open: 12
 - In progress: 0
-- Done: 1
+- Done: 2
 
 Executive Summary
 The codebase exhibits several critical maintainability issues:
@@ -602,6 +602,10 @@ Extensive duplication (~600 lines) in typeahead logic
 Magic numbers throughout reducing clarity
 Missing error handling making debugging difficult
 These issues are immediately addressable through systematic refactoring. The suggested roadmap provides a clear path to a more maintainable, testable, and professional codebase while preserving all existing functionality.
+
+## SMELL-ERROR-HANDLING — Missing POI load recovery UX
+- [x] FETCH-GUARD-1a — POI load error contract (commit aeeb5b9, 2025-11-03)
+- [x] FETCH-GUARD-1b — POI load error live region + clears (commit 49a7923, 2025-11-03)
 
 ## SMELL-POI-PATH-DRY — Duplicated POI/Adapter path drawing
 - [x] DRY-PATH-1 — factor shared helper (commit 0f2643a, 2025-11-03)

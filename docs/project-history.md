@@ -19,6 +19,10 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] FETCH-GUARD-1b — POI load error UX
+Guarded fetch with live error message and route clear; verified via poi-load-error.spec.
+Evidence: #tests=full, green=true; typecheck=green. Touches: SMELL-ERROR-HANDLING
+
 ### [2025-11-03] DRY-PATH-1 — Route path helper
 In order to remove duplicated SVG path drawing, I factored a `renderRoutePath` helper reused by POI segments and adapter overlays.
 Considerations: Preserved selectors, aria, and map redraw timing; share state + clear routines untouched.
