@@ -619,6 +619,6 @@ These issues are immediately addressable through systematic refactoring. The sug
 - [x] CONST-LOCAL-1d — Hoist path constants + overlay z-index (commit 8ae4c1d, 2025-11-04)
 
 ## SMELL-PATH-HELPER — Repeated POI file path construction
-- [x] PATH-HELPER-1 — ContentPathHelper.GetPoiFilePath(...) (commit pending, 2025-11-04)
+- [x] PATH-HELPER-1 — ContentPathHelper.GetPoiFilePath(...) (commit 9fdb8be, 2025-11-04)
 
 Recommendation: Proceed with Phases 1-2 of the refactoring roadmap as highest priority.
