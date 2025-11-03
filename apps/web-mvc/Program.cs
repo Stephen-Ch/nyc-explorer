@@ -62,7 +62,42 @@ app.MapGet("/", () => Results.Content(
       <script>
         (function () {
           const w = window; w.App = w.App || {}; w.App.adapters = w.App.adapters || {};
-          const routeAdapters = w.App.adapters.route = w.App.adapters.route || {};
+          let routeAdapters = w.App.adapters.route;
+          const hadExistingRoute = Boolean(routeAdapters);
+          if (!routeAdapters) routeAdapters = {};
+          const routeProvider = (w.__ENV__ && w.__ENV__.ROUTE_PROVIDER) || 'mock';
+          const providerAllowsMock = routeProvider === 'mock';
+          const wantsMockRoute = Boolean(w.__nycMock && w.__nycMock.route === true);
+          if (hadExistingRoute && routeAdapters.__nycMock === undefined) routeAdapters.__nycMock = false;
+          if (providerAllowsMock && wantsMockRoute && (!hadExistingRoute || routeAdapters.__nycMock !== false)) {
+            const isPoint = (point) => point && typeof point.lat === 'number' && typeof point.lng === 'number';
+            const clonePoint = (point) => {
+              if (!isPoint(point)) return null;
+              const node = { lat: Number(point.lat), lng: Number(point.lng) };
+              if (typeof point.label === 'string') node.label = point.label;
+              return node;
+            };
+            const MockRouteEngine = {
+              path(payload) {
+                const start = clonePoint(payload?.from);
+                const end = clonePoint(payload?.to);
+                if (!start || !end) return [];
+                const corner = { lat: start.lat, lng: end.lng };
+                return [start, corner, end];
+              },
+              segment(payload) {
+                const from = payload?.from;
+                const to = payload?.to;
+                if (!isPoint(from) || !isPoint(to)) return [];
+                const startLabel = typeof from.label === 'string' && from.label.trim().length ? from.label : 'starting point';
+                const endLabel = typeof to.label === 'string' && to.label.trim().length ? to.label : 'destination';
+                return [`Start at ${startLabel}`, 'Walk across the Manhattan grid', `Arrive at ${endLabel}`];
+              },
+              __nycMock: true,
+            };
+            routeAdapters = { ...routeAdapters, ...MockRouteEngine };
+          }
+          w.App.adapters.route = routeAdapters;
           if (typeof routeAdapters.segment !== 'function') {
             routeAdapters.segment = async function (payload) { return null; };
           }

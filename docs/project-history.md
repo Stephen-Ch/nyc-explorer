@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] ROUTE-ADAPTER-1b — MockRouteEngine gated
+In order to satisfy the L-path contract, I gated a MockRouteEngine behind __nycMock.route so tests get deterministic paths and segments.
+Considerations: Keeps default route adapters for UI flows, builds [from, corner, to] once, and avoids fetch while returning [] on bad payloads.
+Evidence: #tests=58, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~30 LOC), tests/unit/mock-route-engine.spec.ts (~5 LOC).
+
 ### [2025-11-03] GEO-ADAPTER-1b-b — MockGeocoder wired
 In order to satisfy the adapter contract, I injected a normalized in-memory MockGeocoder gated by GEO_PROVIDER while preserving test overrides.
 Considerations: Keeps search arity >=1, blocks fetch usage, and leaves the UI combobox code untouched beyond DI.

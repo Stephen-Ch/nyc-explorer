@@ -1,12 +1,17 @@
 import { test, expect } from '@playwright/test';
 test('ROUTE-ADAPTER-1a — MockRouteEngine contract', async ({ page }) => {
+  await page.addInitScript(() => {
+    const w = window as any;
+    w.__nycMock = { ...(w.__nycMock || {}), route: true };
+  });
   await page.goto('/');
 
   const payloadA = { from: { lat: 40.75057, lng: -73.99352, label: 'Penn Station' }, to: { lat: 40.76162, lng: -73.97539, label: '666 Fifth Avenue' } };
   const payloadB = { from: { ...payloadA.to }, to: { ...payloadA.from } };
 
   const summary = await page.evaluate(() => {
-    const route = (window as any).App?.adapters?.route;
+  const w = window as any;
+  const route = w.App?.adapters?.route;
     if (!route || typeof route.path !== 'function' || typeof route.segment !== 'function') {
       throw new Error('Route adapter missing');
     }
