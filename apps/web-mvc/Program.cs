@@ -637,6 +637,7 @@ app.MapGet("/", () => Results.Content(
               overlayContainer.appendChild(svg);
             },
             clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); setRouteMessage(message); },
+            handleAdapterFailure = () => clearRouteUI('Unable to build route.'),
             parseGeoTuple = (value) => {
               if (typeof value !== 'string') return null;
               const trimmed = value.trim();
@@ -749,7 +750,10 @@ app.MapGet("/", () => Results.Content(
                 : undefined;
               const routeAdapter = window.App?.adapters?.route;
               const segmentFn = typeof routeAdapter?.segment === 'function' ? routeAdapter.segment : null;
+              let adapterUsed = false;
+              let adapterFailed = false;
               if (segmentFn) {
+                adapterUsed = true;
                 try {
                   const args = {
                     from: coordsFrom ?? fromValue,
@@ -759,15 +763,19 @@ app.MapGet("/", () => Results.Content(
                     pois: list,
                   };
                   const result = await segmentFn(args);
-                  if (Array.isArray(result)) return result;
-                } catch (error) {}
+                  if (Array.isArray(result) && result.length) return { steps: result, adapterUsed: true, adapterFailed: false };
+                  adapterFailed = true;
+                } catch (error) {
+                  adapterFailed = true;
+                }
               }
-              return localSegment(list, fromValue, toValue);
+              const fallback = localSegment(list, fromValue, toValue);
+              return { steps: fallback, adapterUsed, adapterFailed };
             },
-            tryAdapterPath = async () => {
-              if (!hasGeoSelection(geoFromInput) || !hasGeoSelection(geoToInput)) return null;
+            tryAdapterPath = async (mode = 'replace') => {
+              if (!hasGeoSelection(geoFromInput) || !hasGeoSelection(geoToInput)) return { status: 'skip' };
               const pathFn = window.App?.adapters?.route?.path;
-              if (typeof pathFn !== 'function') return null;
+              if (typeof pathFn !== 'function') return { status: 'skip' };
               try {
                 const fromGeo = toGeoPoint(geoFromInput);
                 const toGeo = toGeoPoint(geoToInput);
@@ -776,15 +784,19 @@ app.MapGet("/", () => Results.Content(
                   ? raw.filter((node) => node && typeof node.lat === 'number' && typeof node.lng === 'number')
                       .map((node) => ({ coords: { lat: node.lat, lng: node.lng } }))
                   : [];
-                if (mapped.length < 2) { clearRouteGraphics(); return null; }
-                clearActiveMarkers();
-                clearSteps();
-                drawRouteGraphics(mapped);
-                setRouteMessage(`Route path from ${fromGeo.label || 'Start'} to ${toGeo.label || 'End'}.`);
-                return { from: fromGeo, to: toGeo };
+                if (mapped.length < 2) { clearRouteGraphics(); return { status: 'failed' }; }
+                if (mode === 'replace') {
+                  clearActiveMarkers();
+                  clearSteps();
+                  drawRouteGraphics(mapped);
+                  setRouteMessage(`Route path from ${fromGeo.label || 'Start'} to ${toGeo.label || 'End'}.`);
+                } else {
+                  drawRouteGraphics(mapped);
+                }
+                return { status: 'success', from: fromGeo, to: toGeo };
               } catch (error) {
                 clearRouteGraphics();
-                return null;
+                return { status: 'failed' };
               }
             },
             applySegment = async () => {
@@ -803,10 +815,11 @@ app.MapGet("/", () => Results.Content(
                 clearRouteUI('Select both From and To to see steps.');
                 return;
               }
-              const seg = await getSegment(base, fromValue, toValue);
-              if (!Array.isArray(seg) || !seg.length) {
+              const segmentResult = await getSegment(base, fromValue, toValue);
+              const seg = Array.isArray(segmentResult?.steps) ? segmentResult.steps : [];
+              if (!seg.length) {
                 const adapterGeo = await tryAdapterPath();
-                if (adapterGeo) {
+                if (adapterGeo && adapterGeo.status === 'success') {
                   if (!isPopState && typeof history !== 'undefined') {
                     const fromLabel = (adapterGeo.from.label ?? '').trim();
                     const toLabel = (adapterGeo.to.label ?? '').trim();
@@ -826,17 +839,42 @@ app.MapGet("/", () => Results.Content(
                   }
                   return;
                 }
+                if (segmentResult?.adapterFailed || (adapterGeo && adapterGeo.status === 'failed')) {
+                  handleAdapterFailure();
+                  return;
+                }
                 clearRouteUI('No matching route segment.');
                 return;
               }
               const fromName = seg[0]?.name ?? seg[0]?.id ?? fromValue;
               const toName = seg[seg.length - 1]?.name ?? seg[seg.length - 1]?.id ?? toValue;
               showSteps(seg);
-              if (seg.every((step) => step && step.coords && typeof step.coords.lat === 'number' && typeof step.coords.lng === 'number')) {
+              const segHasCoords = seg.every((step) => step && step.coords && typeof step.coords.lat === 'number' && typeof step.coords.lng === 'number');
+              if (segHasCoords) {
                 applyActiveMarkers(seg);
                 drawRouteGraphics(seg);
               } else {
                 clearActiveMarkers(); clearRouteGraphics();
+                if (segmentResult?.adapterUsed) {
+                  const overlay = await tryAdapterPath('overlay');
+                  if (overlay && overlay.status === 'success' && !fromPoi && !toPoi && !isPopState && typeof history !== 'undefined') {
+                    const fromLabel = (overlay.from.label ?? '').trim();
+                    const toLabel = (overlay.to.label ?? '').trim();
+                    const geoParams = [
+                      ['gfrom', `${overlay.from.lat},${overlay.from.lng}`],
+                      ['gto', `${overlay.to.lat},${overlay.to.lng}`],
+                    ];
+                    if (fromLabel.length) geoParams.push(['gfl', fromLabel]);
+                    if (toLabel.length) geoParams.push(['gtl', toLabel]);
+                    const search = geoParams.map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+                    history.pushState({
+                      geo: {
+                        from: { lat: overlay.from.lat, lng: overlay.from.lng, label: fromLabel },
+                        to: { lat: overlay.to.lat, lng: overlay.to.lng, label: toLabel },
+                      },
+                    }, '', `?${search}`);
+                  }
+                }
               }
               setRouteMessage(`Route: ${seg.length} steps from ${fromName} to ${toName}.`);
               if (!isPopState && typeof history !== 'undefined' && typeof URLSearchParams !== 'undefined' && fromPoi && toPoi) {
