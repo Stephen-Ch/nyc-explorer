@@ -160,6 +160,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-03 09:20] nyc-explorer/main GEO-ADAPTER-1b-b — implement MockGeocoder; unit+e2e+typecheck green (#tests=57, green=true)
 [2025-11-03 10:05] nyc-explorer/main ROUTE-ADAPTER-1b — implement MockRouteEngine; unit+e2e+typecheck green (#tests=58, green=true)
 [2025-11-03 09:45] nyc-explorer/main ROUTE-ADAPTER-1a — add MockRouteEngine unit contract, RED as expected (#tests=1, green=false)
+[2025-11-03 08:00] nyc-explorer/main ROUTE-ADAPTER-ERR-UX-1a — add adapter failure UX contract, RED as expected (#tests=3, green=false)
 
 
 **Parked Items**
