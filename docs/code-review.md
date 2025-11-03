@@ -156,6 +156,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-02 15:20] nyc-explorer/main GEO-UI-Perf-1a — add From typeahead debounce/stale-result contract, RED as expected (#tests=1, green=false)
 [2025-11-02 15:55] nyc-explorer/main GEO-UI-Perf-1b — From typeahead debounce+stale-result; tests green (#tests=targeted+full, green=true; typecheck=green)
 [2025-11-02 16:45] nyc-explorer/main GEO-UI-Perf-2b — To typeahead debounce+stale guard; tests green (#tests=56, green=true)
+[2025-11-02 17:10] nyc-explorer/main GEO-ADAPTER-1b-a — add MockGeocoder contract, RED as expected (#tests=1, green=false)
 
 
 **Parked Items**
