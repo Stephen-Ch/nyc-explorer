@@ -179,6 +179,8 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-04 01:45] nyc-explorer/main PATH-HELPER-1 — extract ContentPathHelper.GetPoiFilePath; no behavior change; suites green; touches: SMELL-PATH-HELPER
 [2025-11-03 15:40] nyc-explorer/main DOC-WORKFLOW-S6 — add Workflow-Tweaks-S6 + DoD gates; suites green (#tests=70, green=true; typecheck=green)
 [2025-11-03 16:11] nyc-explorer/main QA-VERIFY-TIMEOUT — full suite re-run after ask-before-act update; suites green (#tests=70, green=true)
+[2025-11-03 16:20] nyc-explorer/main DOC-SEL-SOP — add selector governance + template; docs-only (#tests=0, green=NA)
+[2025-11-03 17:51] nyc-explorer/main DOC-SEL-GOV-1b — finalize selectors governance; suites green (#tests=70, green=true); touches: SOP-docs
 
 
 **Parked Items**

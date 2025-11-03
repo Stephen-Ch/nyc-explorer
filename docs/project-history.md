@@ -19,6 +19,14 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] DOC-SEL-GOV-1b — selectors governance finalized
+Evidence: #tests=70, green=true; typecheck=green.
+Notes: closed open editor/state; safe process cleanup (no pwsh kill).
+
+### [2025-11-03] DOC-SEL-SOP — Selector governance
+Why: Prevent selector drift by requiring predeclare/version/log.
+Evidence: docs-only; selectors.md v0.5; protocol gate added.
+
 ### [2025-11-03] QA-VERIFY-TIMEOUT — Flake check
 Why: Confirmed no recurrence of prior timeout under full suite.
 Evidence: #tests=70, green=true; typecheck=green.

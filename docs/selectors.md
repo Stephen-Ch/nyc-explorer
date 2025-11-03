@@ -1,4 +1,4 @@
-# Selectors — Canonical (v0.4)
+# Selectors — Canonical (v0.5, 2025-11-03)
 
 **Purpose:** Lock stable selectors so tests and UI don’t drift mid‑sprint.
 
@@ -92,5 +92,22 @@
 - `gto=<lat>,<lng>&gtl=<encoded label>`
 - Labels optional for UX; decimals expected for lat/lng.
 - Presence of `gfrom`/`gto` restores adapter path without activating POI markers.
+
+## Governance & Change Control (v0.1 — 2025-11-03)
+- Predeclare before code: every new/changed selector MUST be added here before any implementation.
+- Version bump: update the header version/date when selectors change (e.g., v0.4 → v0.4.1 + date).
+- Required entry fields: test id, role, purpose, a11y notes (incl. aria), stability rules (attrs that must not change), sample queries.
+- Deprecations: mark with `@deprecated`, keep for ≥1 sprint, list replacement.
+- Logging hook: every selector change must add a Decisions line in `code-review.md` and a micro-entry in `project-history.md`.
+
+**Selector Entry Template**
+```text
+### [data-testid="…"]  @ver vX.Y  @status stable|experimental @deprecated(if any)
+Role: …
+Purpose: …
+A11y: …
+Stability rules: …
+Sample query: getByTestId("…") / getByRole("…", { … })
+```
 
 **End.**
