@@ -19,6 +19,10 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] FETCH-GUARD-2b — POI fetch timeout UX
+Handled stalled POI loads with AbortController and live-region copy (“Unable to load POIs (timeout)”).
+Evidence: #tests=full, green=true; typecheck=green. Touches: SMELL-ERROR-HANDLING.
+
 ### [2025-11-03] FETCH-GUARD-1b — POI load error UX
 Guarded fetch with live error message and route clear; verified via poi-load-error.spec.
 Evidence: #tests=full, green=true; typecheck=green. Touches: SMELL-ERROR-HANDLING

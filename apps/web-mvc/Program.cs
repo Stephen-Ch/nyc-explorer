@@ -64,6 +64,19 @@ app.MapGet("/", () => Results.Content(
         (function () {
           const originalFetch = window.fetch;
           const handlers = [];
+          const fetchWithTimeout = async (input, init, ms) => {
+            if (typeof AbortController === 'undefined' || typeof ms !== 'number' || ms <= 0) {
+              return originalFetch.apply(window, [input, init]);
+            }
+            const controller = new AbortController();
+            const timer = window.setTimeout(() => controller.abort(), ms);
+            const nextInit = { ...(init ?? {}), signal: init?.signal ?? controller.signal };
+            try {
+              return await originalFetch.apply(window, [input, nextInit]);
+            } finally {
+              window.clearTimeout(timer);
+            }
+          };
           const isPoiRequest = (input) => {
             if (typeof input === 'string') return input.includes('/content/poi.v1.json');
             return typeof input?.url === 'string' && input.url.includes('/content/poi.v1.json');
@@ -78,7 +91,7 @@ app.MapGet("/", () => Results.Content(
           window.fetch = async function (input, init) {
             if (!isPoiRequest(input)) return originalFetch.apply(this, arguments);
             try {
-              const response = await originalFetch.apply(this, arguments);
+              const response = await fetchWithTimeout(input, init, 3200);
               if (!response || !response.ok) {
                 notify({ status: response?.status ?? 0, kind: 'http' });
                 return new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } });
@@ -86,7 +99,11 @@ app.MapGet("/", () => Results.Content(
               notify(null);
               return response;
             } catch (error) {
-              notify({ status: 0, kind: 'network', error });
+              if (error && error.name === 'AbortError') {
+                notify({ status: 0, kind: 'timeout' });
+              } else {
+                notify({ status: 0, kind: 'network', error });
+              }
               return new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } });
             }
           };
@@ -287,9 +304,10 @@ app.MapGet("/", () => Results.Content(
               poiError.textContent = '';
               poiError.style.display = 'none';
             },
-            showPoiError = () => {
+            showPoiError = (message) => {
               if (!poiError) return;
-              poiError.textContent = 'Unable to load POIs.';
+              const next = typeof message === 'string' && message.length ? message : 'Unable to load POIs.';
+              if (poiError.textContent !== next) poiError.textContent = next;
               poiError.style.removeProperty('display');
             };
 
@@ -758,10 +776,12 @@ app.MapGet("/", () => Results.Content(
             },
             clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); setRouteMessage(message); shareActive = false; syncShareState(); },
             updatePoiErrorState = (detail) => {
-              poiErrorState = detail && typeof detail === 'object' ? detail : null;
+              const nextState = detail && typeof detail === 'object' ? detail : null;
+              poiErrorState = nextState;
               if (poiErrorState) {
-                showPoiError();
-                clearRouteUI('Unable to load POIs.');
+                const message = poiErrorState.kind === 'timeout' ? 'Unable to load POIs (timeout)' : 'Unable to load POIs.';
+                showPoiError(message);
+                clearRouteUI(message);
                 currentList = [];
                 if (poiListContainer) poiListContainer.innerHTML = '';
               } else {
