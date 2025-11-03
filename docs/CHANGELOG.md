@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.5.0-rc — 2025-11-03
+- Expanded routing coverage to include adapter-driven paths, clipboard sharing, and deep-link recovery across browser history.
+- Hardened geocoder and route adapters with deterministic mocks, debounce guards, and current-location affordances wired through selectors.
+- Polished accessibility with aria-live announcements for copy/share feedback and consistent selector bindings for typeahead status messaging.
+- Updated documentation, env templates, and onboarding to reflect mock-first setup, share control behavior, and selector contracts.
+
 ## v0.4.0-rc — 2025-11-01
 - Locked a repeatable dev loop: hot-reload probe, Razor baseline restore, artifact ignores, and UTF-8 placeholder guard rails keep watch mode green.
 - Shipped routing UX upgrades: route segment helper, deep link hydration, reset handling, history push/pop sync, and SVG path overlay tied to active markers.

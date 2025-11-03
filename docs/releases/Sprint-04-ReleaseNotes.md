@@ -10,6 +10,11 @@
 2. `npm run dev:probe` to verify dotnet hot reload end-to-end.
 3. `npm run e2e:auto` for the full Playwright suite; `npm run typecheck` to keep TS lint-free.
 
+## Known & Verified
+- Deep-link hydration for POI segments — `tests/e2e/route-share.spec.ts`
+- Adapter deep-link restoration — `tests/e2e/route-share-geo.spec.ts`
+- Share control clipboard UX — `tests/e2e/route-share-ui.spec.ts`
+
 ## Known gaps
 - Map imagery/licensing pipeline still pending; placeholder assets remain.
 - Street-level routing and turn-by-turn guidance deferred to post-MVP planning.

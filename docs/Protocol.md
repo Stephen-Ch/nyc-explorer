@@ -8,6 +8,7 @@
 3) docs/Copilot-Instructions.md
 4) docs/Project.md
 > Sprint 05+: insert `docs/Adapters.md` immediately after selectors to honor DI contracts.
+> Deep-link + share slices rely on the selector contracts in `docs/selectors.md` (`share-link`, `route-msg`, geo typeahead hooks).
 
 ## Process Flow (each slice)
 1) **RED** — write failing spec with clear messages (edge + error).  

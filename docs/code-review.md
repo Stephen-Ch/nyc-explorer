@@ -164,6 +164,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-03 11:45] nyc-explorer/main ROUTE-ADAPTER-ERR-UX-1b — adapter error copy+recovery green (#tests=61, green=true; typecheck=green)
 [2025-11-03 12:15] nyc-explorer/main ROUTE-SHARE-UI-1a — copy-link e2e contract RED (#tests=3, green=false)
 [2025-11-03 13:30] nyc-explorer/main ROUTE-SHARE-UI-1b — copy-link control wired; suites green (#tests=64, green=true; typecheck=green)
+[2025-11-03 14:45] nyc-explorer/main DOC-REL-1 — deep-links+share docs; suites n/a (#tests=0, green=NA)
 
 
 **Parked Items**

@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] DOC-REL-1 — deep-link/share documentation
+Captured README onboarding for mock providers, env defaults, and clipboard share UX so fresh clones can exercise POI + adapter routes.
+Considerations: Clarified selector contracts (share-link, ta-option) and mapped adapter deep-link params without touching runtime code.
+Evidence: docs-only; e2e:auto + typecheck rerun for traceability.
+
 ### [2025-11-03] ROUTE-SHARE-UI-1b — share link control
 In order to let researchers share active routes, I added a [data-testid="share-link"] button that copies window.location.href.
 Considerations: Announces "Link copied." or "Unable to copy link.", keeps adapter and POI parity, and defaults disabled until a route exists.

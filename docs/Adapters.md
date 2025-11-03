@@ -43,6 +43,15 @@ export interface RouteAdapter {
 - `.env` → `GEO_PROVIDER` and `ROUTE_PROVIDER` toggle which adapters `Program.cs` injects; only `mock` is supported today.
 - Real provider keys (`GEO_API_KEY`, `ROUTE_API_URL`) are placeholders and should remain blank until a future story wires them through.
 
+### Deep-link params (adapter routes)
+| Param | Description |
+| --- | --- |
+| `gfrom` | `lat,lng` for the adapter route origin |
+| `gto` | `lat,lng` for the adapter route destination |
+| `gfl` | URL-encoded label for the origin (announced in the UI) |
+| `gtl` | URL-encoded label for the destination |
+| (derived) | When both pairs are present, the UI restores the adapter path overlay without POI markers |
+
 ```
 UI (geo inputs, buttons)
   │

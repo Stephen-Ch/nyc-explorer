@@ -39,10 +39,9 @@
 - Find button: `[data-testid="route-find"]`
 
 ## Geocoder & Typeahead (Sprint 05 prep)
-- Container (wrappers): `[data-testid="ta-from"]`, `[data-testid="ta-to"]` (wrap the route inputs)
 - Inputs: `[data-testid="geo-from"]`, `[data-testid="geo-to"]` (labels bind via `for="geo-from|geo-to"`, maintain `aria-expanded` + `aria-controls`)
 - Listbox: `[data-testid="ta-list"]` (`role="listbox"`, only renders when open)
-- Option item: `[data-testid="geo-option"]` (`role="option"`, carries `data-value`, `aria-selected="true|false"`)
+- Option item: `[data-testid="ta-option"]` (`role="option"`, carries lat/lng + label in data attributes)
 - Active option hook: `[data-testid="ta-option-active"]` (input sets `aria-activedescendant` to this option id)
 - Live status: `[data-testid="geo-status"]` (`aria-live="polite"`, announces results/errors)
 - Keyboard contract: Up/Down moves selection, Enter commits, Esc closes (doc only)
@@ -57,6 +56,7 @@
 - Route path overlay: `[data-testid="route-path"]`
 - Route path node (optional): `[data-testid="route-node"]`
 - Accessibility: Active markers set `aria-current="step"` and remain keyboard focusable.
+- Share control: `[data-testid="share-link"]` (native button; copies `window.location.href`, announces “Link copied.” / “Unable to copy link.” via `route-msg`)
 
 ## Routing Adapters (Docs Only)
 - Fixtures: `MockGeocoder`, `MockRouteEngine`; Interfaces: `GeoAdapter`, `RouteAdapter`

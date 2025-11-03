@@ -32,11 +32,21 @@ npm run dev:api
 npm run e2e:ui # optional Playwright UI runner
 ```
 
-If you see the map and can use the From/To typeahead plus the “Current” buttons, you are ready to work locally.
+Verify the mock experience end-to-end:
+- Use the From/To typeahead (mock responses) and the “Current” buttons to populate coordinates.
+- Click **Find Route** to render steps, active markers, and the adapter path overlay.
+- Activate **Copy link** (`[data-testid="share-link"]`) and confirm the live region announces “Link copied.”
+- Paste the copied URL in a new tab; POI deep-links (`?from=&to=`) and adapter deep-links (`?gfrom=&gto=&gfl=&gtl=`) should restore the route state.
 
 ### Provider switches
 - `.env` flags `GEO_PROVIDER` and `ROUTE_PROVIDER` are documented in `docs/Adapters.md` and default to `mock`.
 - Real providers are not wired yet; leave the mock settings in place for Sprint 05.
+
+## Deep-Links & Share
+- **POI routes:** `/?from=<poiId>&to=<poiId>` rehydrates list-based routes, including steps and active markers.
+- **Adapter routes:** `/?gfrom=<lat>,<lng>&gto=<lat>,<lng>&gfl=<label>&gtl=<label>` (labels URL-encoded) redraw the adapter path without POI markers.
+- Invalid or incomplete params clear the route UI and surface “Select both From and To to see steps.” in `[data-testid="route-msg"]`.
+- The **Copy link** control copies `window.location.href` to the clipboard and announces success (“Link copied.”) or failure (“Unable to copy link.”) via the same live region.
 
 ## Scope
 - Manhattan-only (Union Square + Flatiron), desktop MVP.
