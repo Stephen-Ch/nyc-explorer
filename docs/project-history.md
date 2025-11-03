@@ -19,6 +19,10 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] ERR-LOG-POI-1c — PoiController logging + 500 UX
+Added structured logging around POI JSON loading and captured forced-500 UX via Playwright.
+Evidence: #tests=full, green=true; typecheck=green. Touches: SMELL-ERROR-HANDLING.
+
 ### [2025-11-03] FETCH-GUARD-2b — POI fetch timeout UX
 Handled stalled POI loads with AbortController and live-region copy (“Unable to load POIs (timeout)”).
 Evidence: #tests=full, green=true; typecheck=green. Touches: SMELL-ERROR-HANDLING.

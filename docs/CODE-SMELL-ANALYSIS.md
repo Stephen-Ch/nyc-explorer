@@ -7,7 +7,7 @@ Scope: Analyze codebase for code smells and potential brittleness per docs/Proje
 Smell Roll-up (2025-11-03)
 - Open: 12
 - In progress: 0
-- Done: 3
+- Done: 4
 
 Executive Summary
 The codebase exhibits several critical maintainability issues:
@@ -606,7 +606,8 @@ These issues are immediately addressable through systematic refactoring. The sug
 ## SMELL-ERROR-HANDLING — Missing POI load recovery UX
 - [x] FETCH-GUARD-1a — POI load error contract (commit aeeb5b9, 2025-11-03)
 - [x] FETCH-GUARD-1b — POI load error live region + clears (commit 49a7923, 2025-11-03)
-- [x] FETCH-GUARD-2b — POI fetch timeout UX (commit pending)
+- [x] ERR-LOG-POI-1c — server logging + forced-500 spec (commit 13c0661, 2025-11-03)
+- [x] FETCH-GUARD-2b — POI fetch timeout UX (commit 89786e6, 2025-11-03)
 
 ## SMELL-POI-PATH-DRY — Duplicated POI/Adapter path drawing
 - [x] DRY-PATH-1 — factor shared helper (commit 0f2643a, 2025-11-03)

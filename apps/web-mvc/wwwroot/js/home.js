@@ -100,6 +100,7 @@ fetch('/content/poi.v1.json')
       renderRoute(buildRoute(filtered));
     });
   })
-  .catch(() => {
+  .catch((error) => {
+    console.error('[poi-fetch]', error);
     document.body.textContent = 'Failed to load POIs';
   });
