@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] GEO-ADAPTER-1b-b — MockGeocoder wired
+In order to satisfy the adapter contract, I injected a normalized in-memory MockGeocoder gated by GEO_PROVIDER while preserving test overrides.
+Considerations: Keeps search arity >=1, blocks fetch usage, and leaves the UI combobox code untouched beyond DI.
+Evidence: #tests=57, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~45 LOC).
+
 ### [2025-11-02] GEO-UI-Perf-2b — To typeahead debounce
 In order to mirror the From combobox, I added a 250ms debounce with request versioning so stale geo-to responses drop while status copy stays shared.
 Considerations: Leaves geo-from code untouched and keeps ta-list ownership swapping clean between inputs.

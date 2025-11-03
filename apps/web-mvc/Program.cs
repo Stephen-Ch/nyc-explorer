@@ -140,7 +140,40 @@ app.MapGet("/", () => Results.Content(
               geoCurrentToButton = document.querySelector('[data-testid="geo-current"][data-target="to"]');
             if (!geoFromInput || !geoFromList || !geoStatus || !geoCurrentButton || !geoToInput || !geoToList || !geoCurrentToButton || !fromInput || !toInput || !findButton || !routeMsg || !routeSteps) return;
 
-          const app = window.App = window.App || {}; app.adapters = app.adapters || {}; app.adapters.geo = app.adapters.geo || { search: async (query, _options) => [], reverse: async (lat, lng) => null };
+          const app = window.App = window.App || {}; app.adapters = app.adapters || {};
+          const MockGeocoder = (() => {
+            const canonical = {
+              address: { label: '666 Fifth Avenue', lat: 40.7616, lng: -73.9747 },
+              place: { label: 'Penn Station', lat: 40.7506, lng: -73.9935 },
+              intersection: { label: '45th St & 2nd Ave', lat: 40.7526, lng: -73.9718 },
+            };
+            const normalize = (value) => String(value ?? '')
+              .toLowerCase()
+              .replace(/[.]/g, ' ')
+              .replace(/&/g, ' and ')
+              .replace(/\bave?\b/g, 'avenue')
+              .replace(/\bav\b/g, 'avenue')
+              .replace(/\bst\b/g, 'street')
+              .replace(/\bblvd\b/g, 'boulevard')
+              .replace(/\s+/g, ' ')
+              .trim();
+            const search = async function (query) {
+              const norm = normalize(query);
+              if (!norm.length) return [];
+              if (norm.includes(' and ') || /\d+\s*&\s*\d+/.test(String(query ?? ''))) return [canonical.intersection];
+              if (/\d/.test(norm) && (norm.includes(' street') || norm.endsWith(' street') || norm.includes(' avenue'))) return [canonical.address];
+              if (norm.includes('penn') && norm.includes('station')) return [canonical.place];
+              return [];
+            };
+            const current = async () => ({ label: 'Current location', lat: 40.758, lng: -73.9855 });
+            const reverse = async () => null;
+            return { search, current, reverse };
+          })();
+          MockGeocoder.__nycMock = true;
+          const existingGeo = app.adapters.geo;
+          if (existingGeo && existingGeo.__nycMock === undefined) existingGeo.__nycMock = false;
+          const geoProvider = (window.__ENV__ && window.__ENV__.GEO_PROVIDER) || 'mock';
+          if (!existingGeo || (geoProvider === 'mock' && existingGeo.__nycMock !== false)) app.adapters.geo = MockGeocoder;
           if (typeof app.adapters.geo.search === 'function' && app.adapters.geo.search.length < 1) {
             const searchImpl = app.adapters.geo.search;
             app.adapters.geo.search = async function (query, ...rest) { return searchImpl.apply(this, [query, ...rest]); };
