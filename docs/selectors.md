@@ -9,6 +9,7 @@
 ## Lists
 - POI list item: `[data-testid="poi-item"]`
 - List link: `[data-testid="poi-link"]`
+- POI list wrapper: `[data-testid="poi-list"]` (encapsulates the rendered POI list for empty/error states)
 
 ## Leaflet
 - Marker: `.leaflet-marker-icon`
@@ -32,6 +33,9 @@
 ## Route Steps
 - Ordered list: `#route-steps`
 - Step item: `[data-testid="route-step"]` includes `data-step-index` (0-based); active step sets `aria-current="step"`
+
+## Errors & Status (Sprint 05+)
+- POI load error region: `[data-testid="poi-error"]` (`aria-live="polite"`, surfaces concise copy like “Unable to load POIs.”)
 
 ## Route Inputs
 - From input: `[data-testid="route-from"]`
