@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using NYCExplorer.Helpers;
 
 namespace NYCExplorer.Controllers;
 
@@ -8,33 +9,47 @@ namespace NYCExplorer.Controllers;
 public class PoiController : Controller
 {
     private readonly IWebHostEnvironment _environment;
+    private readonly ILogger<PoiController> _logger;
 
-    public PoiController(IWebHostEnvironment environment)
+    public PoiController(IWebHostEnvironment environment, ILogger<PoiController> logger)
     {
         _environment = environment;
+        _logger = logger;
     }
 
     [HttpGet]
     public async Task<IActionResult> Detail(string id)
     {
-        var filePath = Path.Combine(_environment.ContentRootPath, "..", "..", "content", "poi.v1.json");
-        if (!System.IO.File.Exists(filePath))
+        try
         {
+            var filePath = ContentPathHelper.GetPoiFilePath(_environment.ContentRootPath);
+            
+            if (!System.IO.File.Exists(filePath))
+            {
+                _logger.LogWarning("POI data file not found at {FilePath}", filePath);
+                return NotFound();
+            }
+
+            await using var stream = System.IO.File.OpenRead(filePath);
+            using var doc = await JsonDocument.ParseAsync(stream);
+
+            foreach (var element in doc.RootElement.EnumerateArray())
+            {
+                if (element.TryGetProperty("id", out var poiId) && 
+                    string.Equals(poiId.GetString(), id, StringComparison.OrdinalIgnoreCase))
+                {
+                    return View("Detail", BuildModel(element));
+                }
+            }
+
+            _logger.LogInformation("POI with id {PoiId} not found", id);
             return NotFound();
         }
-
-        await using var stream = System.IO.File.OpenRead(filePath);
-        using var doc = await JsonDocument.ParseAsync(stream);
-
-        foreach (var element in doc.RootElement.EnumerateArray())
+        catch (Exception ex)
         {
-            if (element.TryGetProperty("id", out var poiId) && string.Equals(poiId.GetString(), id, StringComparison.OrdinalIgnoreCase))
-            {
-                return View("Detail", BuildModel(element));
-            }
+            _logger.LogError(ex, "Error loading POI detail for id {PoiId}", id);
+            return StatusCode(500);
         }
-
-        return NotFound();
     }
 
     private static PoiDetailViewModel BuildModel(JsonElement element)

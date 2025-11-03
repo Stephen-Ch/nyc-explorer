@@ -11,18 +11,18 @@ const buildRoute = (list) => {
   const seen = new Map();
   return [...list]
     .sort((a, b) => {
-      const routeA = a.route_id ?? 'zzz';
-      const routeB = b.route_id ?? 'zzz';
+      const routeA = a.route_id ?? AppConfig.DEFAULT_ROUTE_ID;
+      const routeB = b.route_id ?? AppConfig.DEFAULT_ROUTE_ID;
       if (routeA !== routeB) return routeA.localeCompare(routeB);
-      const orderA = typeof a.order === 'number' ? a.order : 999999;
-      const orderB = typeof b.order === 'number' ? b.order : 999999;
+      const orderA = typeof a.order === 'number' ? a.order : AppConfig.DEFAULT_ORDER;
+      const orderB = typeof b.order === 'number' ? b.order : AppConfig.DEFAULT_ORDER;
       if (orderA !== orderB) return orderA - orderB;
       return (a.name ?? '').localeCompare(b.name ?? '');
     })
     .filter((poi) => {
       const block = typeof poi.block === 'string' ? poi.block : '';
       const count = seen.get(block) ?? 0;
-      if (count >= 3) return false;
+      if (count >= AppConfig.MAX_POIS_PER_BLOCK) return false;
       seen.set(block, count + 1);
       return true;
     });
@@ -57,7 +57,9 @@ function placeButtons() {
     btn.setAttribute('aria-label', poi.name);
     btn.setAttribute('role', 'button');
     btn.tabIndex = 0;
-    btn.style.cssText = `position:absolute; left:${point.x - 14}px; top:${point.y - 14}px; width:28px; height:28px; border:none; border-radius:50%; background:transparent; pointer-events:auto; cursor:pointer; z-index:651;`;
+    const offset = AppConfig.MARKER_OFFSET;
+    const size = AppConfig.MARKER_SIZE;
+    btn.style.cssText = `position:absolute; left:${point.x - offset}px; top:${point.y - offset}px; width:${size}px; height:${size}px; border:none; border-radius:50%; background:transparent; pointer-events:auto; cursor:pointer; z-index:${AppConfig.MARKER_Z_INDEX};`;
     btn.addEventListener('click', () => window.location.assign(`/poi/${poi.id}`));
     overlay.appendChild(btn);
   });
@@ -90,7 +92,7 @@ fetch('/content/poi.v1.json')
     });
 
     placeButtons();
-    ['move', 'zoom', 'resize'].forEach((evt) => map.on(evt, placeButtons));
+    AppConfig.MAP_REDRAW_EVENTS.forEach((evt) => map.on(evt, placeButtons));
     renderRoute(buildRoute(pois));
 
     document.getElementById('search-input')?.addEventListener('input', (e) => {
@@ -101,5 +103,5 @@ fetch('/content/poi.v1.json')
     });
   })
   .catch(() => {
-    document.body.textContent = 'Failed to load POIs';
+    document.body.textContent = AppConfig.MESSAGES.FAILED_TO_LOAD;
   });
