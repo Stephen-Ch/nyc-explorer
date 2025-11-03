@@ -24,6 +24,11 @@ Codified the ≤3-per-block guard in buildRoute via CFG_ROUTE.BLOCK_CAP without 
 Evidence: #tests=68, green=true; typecheck=green.
 Files: apps/web-mvc/wwwroot/js/home.js, docs/code-review.md, docs/CODE-SMELL-ANALYSIS.md.
 
+### [2025-11-04] CONST-LOCAL-1c — Typeahead debounce constant
+Centralized the 250ms geo typeahead debounce into CFG_UI.DEBOUNCE_MS with zero behavioral drift.
+Evidence: #tests=68, green=true; typecheck=green.
+Files: apps/web-mvc/Program.cs, docs/code-review.md, docs/CODE-SMELL-ANALYSIS.md.
+
 ### [2025-11-03] REL-PUSH-1a — Release push logging + contracts
 Re-pushed logging + failure guards to main and re-verified full suite.
 Evidence: #tests=68, green=true; typecheck=green.

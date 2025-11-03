@@ -211,6 +211,7 @@ app.MapGet("/", () => Results.Content(
       </script>
       <script>
         (function () {
+          const CFG_UI = { DEBOUNCE_MS: 250 };
           const geoFromInput = document.querySelector('[data-testid="geo-from"]'),
             geoFromList = document.getElementById('geo-from-list'),
             geoStatus = document.querySelector('[data-testid="geo-status"]'),
@@ -447,7 +448,7 @@ app.MapGet("/", () => Results.Content(
               geoSearchTimer = 0;
               const requestId = ++geoQueryId;
               void runGeoSearch(value, requestId);
-            }, 250);
+            }, CFG_UI.DEBOUNCE_MS);
           });
 
           geoFromInput.addEventListener('keydown', (event) => {
@@ -603,7 +604,7 @@ app.MapGet("/", () => Results.Content(
               geoToSearchTimer = 0;
               const requestId = ++geoToQueryId;
               void runGeoToSearch(value, requestId);
-            }, 250);
+            }, CFG_UI.DEBOUNCE_MS);
           });
 
           geoToInput.addEventListener('keydown', (event) => {
