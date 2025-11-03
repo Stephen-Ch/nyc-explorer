@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] DRY-PATH-1 — Route path helper
+In order to remove duplicated SVG path drawing, I factored a `renderRoutePath` helper reused by POI segments and adapter overlays.
+Considerations: Preserved selectors, aria, and map redraw timing; share state + clear routines untouched.
+Evidence: #tests=64, green=true (typecheck=green); dotnet build apps/web-mvc.
+Files: apps/web-mvc/Program.cs.
+
 ### [2025-11-03] RETRO-05 — Sprint 5 postmortem
 Captured Sprint 05 retro covering geocoder/typeahead wins, share UX, and Sprint 06 risks.
 Considerations: Highlighted Program.cs LOC pressure, Playwright hangs, and prompting guardrails.

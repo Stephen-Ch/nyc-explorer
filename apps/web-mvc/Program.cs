@@ -654,17 +654,58 @@ app.MapGet("/", () => Results.Content(
             setAttrs = (el, attrs) => Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, String(value))),
             createSvgEl = (name, attrs) => { const el = document.createElementNS('http://www.w3.org/2000/svg', name); setAttrs(el, attrs); return el; },
             clearRouteGraphics = () => { overlayContainer?.querySelectorAll('[data-testid="route-path"], [data-testid="route-node"]').forEach((node) => node.remove()); lastSegment = []; },
+            renderRoutePath = (overlay, containerPoints, viewport) => {
+              if (!overlay || !Array.isArray(containerPoints) || containerPoints.length < 2) return null;
+              const rawWidth = Number(viewport?.width ?? 0);
+              const rawHeight = Number(viewport?.height ?? 0);
+              const width = rawWidth > 0 ? rawWidth : 1;
+              const height = rawHeight > 0 ? rawHeight : 1;
+              const svg = createSvgEl('svg', {
+                'data-testid': 'route-path',
+                'aria-hidden': 'true',
+                style: 'position:absolute; inset:0; width:100%; height:100%; pointer-events:none;',
+                viewBox: `0 0 ${width} ${height}`,
+                preserveAspectRatio: 'none',
+              });
+              svg.appendChild(createSvgEl('polyline', {
+                points: containerPoints.map((pt) => `${pt.x},${pt.y}`).join(' '),
+                fill: 'none',
+                stroke: '#1a73e8',
+                'stroke-width': '2',
+                'stroke-linecap': 'round',
+                'stroke-linejoin': 'round',
+                'pointer-events': 'none',
+              }));
+              containerPoints.forEach((pt, index) => {
+                svg.appendChild(createSvgEl('circle', {
+                  'data-testid': 'route-node',
+                  'data-step-index': index,
+                  'aria-hidden': 'true',
+                  cx: pt.x,
+                  cy: pt.y,
+                  r: 4,
+                  fill: '#ffffff',
+                  stroke: '#1a73e8',
+                  'stroke-width': '2',
+                  'pointer-events': 'none',
+                }));
+              });
+              overlay.appendChild(svg);
+              return svg;
+            },
             drawRouteGraphics = (list) => {
               clearRouteGraphics();
               const mapInstance = typeof map !== 'undefined' ? map : null, filtered = overlayContainer && Array.isArray(list) ? list.filter(hasCoords) : [];
               if (!overlayContainer || filtered.length < 2 || !mapInstance || typeof mapInstance.latLngToContainerPoint !== 'function') { lastSegment = []; return; }
               if (!mapEventsBound && typeof mapInstance.on === 'function') { ['move', 'zoom', 'resize'].forEach((evt) => mapInstance.on(evt, () => lastSegment.length >= 2 && drawRouteGraphics(lastSegment))); mapEventsBound = true; }
               lastSegment = filtered.map((poi) => poi);
-              const bounds = overlayContainer.getBoundingClientRect(), w = bounds.width || overlayContainer.clientWidth || 1, h = bounds.height || overlayContainer.clientHeight || 1, points = filtered.map((poi) => mapInstance.latLngToContainerPoint([poi.coords.lat, poi.coords.lng]));
-              const svg = createSvgEl('svg', { 'data-testid': 'route-path', 'aria-hidden': 'true', style: 'position:absolute; inset:0; width:100%; height:100%; pointer-events:none;', viewBox: `0 0 ${w} ${h}`, preserveAspectRatio: 'none' });
-              svg.appendChild(createSvgEl('polyline', { points: points.map((pt) => `${pt.x},${pt.y}`).join(' '), fill: 'none', stroke: '#1a73e8', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'pointer-events': 'none' }));
-              points.forEach((pt, index) => svg.appendChild(createSvgEl('circle', { 'data-testid': 'route-node', 'data-step-index': index, 'aria-hidden': 'true', cx: pt.x, cy: pt.y, r: 4, fill: '#ffffff', stroke: '#1a73e8', 'stroke-width': '2', 'pointer-events': 'none' })));
-              overlayContainer.appendChild(svg);
+              const bounds = overlayContainer.getBoundingClientRect();
+              const viewport = {
+                width: bounds.width || overlayContainer.clientWidth || 1,
+                height: bounds.height || overlayContainer.clientHeight || 1,
+              };
+              const points = filtered.map((poi) => mapInstance.latLngToContainerPoint([poi.coords.lat, poi.coords.lng]));
+              renderRoutePath(overlayContainer, points, viewport);
               shareActive = true;
               syncShareState();
             },
