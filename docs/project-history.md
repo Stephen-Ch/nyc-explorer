@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] ROUTE-ADAPTER-ERR-UX-1b — adapter error UX polish
+In order to make adapter failures accessible, I set the live region to "Unable to build route.", cleared overlays on error, and reused the adapter path on recovery.
+Considerations: Keeps POI mismatch copy intact and reuses overlay mode when segment steps lack coords.
+Evidence: #tests=61, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs.
+
 ### [2025-11-03] ROUTE-ADAPTER-1b — MockRouteEngine gated
 In order to satisfy the L-path contract, I gated a MockRouteEngine behind __nycMock.route so tests get deterministic paths and segments.
 Considerations: Keeps default route adapters for UI flows, builds [from, corner, to] once, and avoids fetch while returning [] on bad payloads.
