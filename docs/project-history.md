@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-04] CONST-LOCAL-1d — Path constants + overlay z-index
+Hoisted route overlay stroke width, node radius, and z-index into CFG_PATH with no visual changes.
+Evidence: #tests=68, green=true; typecheck=green.
+Files: apps/web-mvc/Program.cs, docs/code-review.md, docs/CODE-SMELL-ANALYSIS.md.
+
 ### [2025-11-03] CONST-LOCAL-1b — Route block cap constant
 Codified the ≤3-per-block guard in buildRoute via CFG_ROUTE.BLOCK_CAP without changing behavior.
 Evidence: #tests=68, green=true; typecheck=green.

@@ -212,6 +212,7 @@ app.MapGet("/", () => Results.Content(
       <script>
         (function () {
           const CFG_UI = { DEBOUNCE_MS: 250 };
+          const CFG_PATH = { STROKE_W: 2, NODE_R: 4, Z: 650 };
           const geoFromInput = document.querySelector('[data-testid="geo-from"]'),
             geoFromList = document.getElementById('geo-from-list'),
             geoStatus = document.querySelector('[data-testid="geo-status"]'),
@@ -231,6 +232,7 @@ app.MapGet("/", () => Results.Content(
             if (!geoFromInput || !geoFromList || !geoStatus || !geoCurrentButton || !geoToInput || !geoToList || !geoCurrentToButton || !fromInput || !toInput || !findButton || !shareButton || !routeMsg || !routeSteps) return;
 
           if (poiError) poiError.style.display = 'none';
+          if (overlayContainer) overlayContainer.style.zIndex = String(CFG_PATH.Z);
 
           const app = window.App = window.App || {}; app.adapters = app.adapters || {};
           const MockGeocoder = (() => {
@@ -737,7 +739,7 @@ app.MapGet("/", () => Results.Content(
                 points: containerPoints.map((pt) => `${pt.x},${pt.y}`).join(' '),
                 fill: 'none',
                 stroke: '#1a73e8',
-                'stroke-width': '2',
+                'stroke-width': CFG_PATH.STROKE_W,
                 'stroke-linecap': 'round',
                 'stroke-linejoin': 'round',
                 'pointer-events': 'none',
@@ -749,10 +751,10 @@ app.MapGet("/", () => Results.Content(
                   'aria-hidden': 'true',
                   cx: pt.x,
                   cy: pt.y,
-                  r: 4,
+                  r: CFG_PATH.NODE_R,
                   fill: '#ffffff',
                   stroke: '#1a73e8',
-                  'stroke-width': '2',
+                  'stroke-width': CFG_PATH.STROKE_W,
                   'pointer-events': 'none',
                 }));
               });
