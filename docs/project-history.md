@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] CONST-LOCAL-1b — Route block cap constant
+Codified the ≤3-per-block guard in buildRoute via CFG_ROUTE.BLOCK_CAP without changing behavior.
+Evidence: #tests=68, green=true; typecheck=green.
+Files: apps/web-mvc/wwwroot/js/home.js, docs/code-review.md, docs/CODE-SMELL-ANALYSIS.md.
+
 ### [2025-11-03] REL-PUSH-1a — Release push logging + contracts
 Re-pushed logging + failure guards to main and re-verified full suite.
 Evidence: #tests=68, green=true; typecheck=green.

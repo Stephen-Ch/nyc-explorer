@@ -5,9 +5,9 @@ Reviewer: GitHub Copilot
 Scope: Analyze codebase for code smells and potential brittleness per docs/Project.md and docs/code-review.md
 
 Smell Roll-up (2025-11-03)
-- Open: 12
+- Open: 13
 - In progress: 0
-- Done: 4
+- Done: 5
 
 Executive Summary
 The codebase exhibits several critical maintainability issues:
@@ -611,5 +611,9 @@ These issues are immediately addressable through systematic refactoring. The sug
 
 ## SMELL-POI-PATH-DRY — Duplicated POI/Adapter path drawing
 - [x] DRY-PATH-1 — factor shared helper (commit 0f2643a, 2025-11-03)
+
+## SMELL-MAGIC-NUMS — Magic numbers in client workflow
+- [ ] CONST-LOCAL-1a — Hoist CFG.DEBOUNCE_MS & CFG.ROUTE_BLOCK_CAP (commit pending)
+- [x] CONST-LOCAL-1b — Hoist per-block cap in home.js (commit dfec4b3, 2025-11-03)
 
 Recommendation: Proceed with Phases 1-2 of the refactoring roadmap as highest priority.

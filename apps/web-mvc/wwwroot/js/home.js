@@ -3,6 +3,8 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
+const CFG_ROUTE = { BLOCK_CAP: 3 };
+
 let pois = [];
 const overlay = document.getElementById('poi-overlay');
 const routeSteps = document.getElementById('route-steps');
@@ -22,7 +24,7 @@ const buildRoute = (list) => {
     .filter((poi) => {
       const block = typeof poi.block === 'string' ? poi.block : '';
       const count = seen.get(block) ?? 0;
-      if (count >= 3) return false;
+      if (count >= CFG_ROUTE.BLOCK_CAP) return false;
       seen.set(block, count + 1);
       return true;
     });

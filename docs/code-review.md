@@ -173,6 +173,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-03 22:45] nyc-explorer/main FETCH-GUARD-2b — POI fetch timeout handled; suites green (#tests=67, green=true); touches: SMELL-ERROR-HANDLING
 [2025-11-03 23:10] nyc-explorer/main ERR-LOG-POI-1c — PoiController logging + forced-500 UX; suites green (#tests=68, green=true); touches: SMELL-ERROR-HANDLING
 [2025-11-03 23:55] nyc-explorer/main REL-PUSH-1a — push logging + failure contracts; suites green (#tests=68, green=true; typecheck=green); touches: SMELL-ERROR-HANDLING
+[2025-11-03 23:59] nyc-explorer/main CONST-LOCAL-1b — hoist CFG_ROUTE.BLOCK_CAP; suites green (#tests=68, green=true; typecheck=green); touches: SMELL-MAGIC-NUMS
 
 
 **Parked Items**
