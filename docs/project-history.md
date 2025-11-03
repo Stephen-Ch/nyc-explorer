@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-04] PATH-HELPER-1 — Centralized POI detail path
+Purpose: single source of truth for POI detail JSON path via ContentPathHelper.
+Evidence: #tests=70, green=true; typecheck=green.
+Touches: SMELL-PATH-HELPER.
+
 ### [2025-11-04] CONST-LOCAL-1d — Path constants + overlay z-index
 Hoisted route overlay stroke width, node radius, and z-index into CFG_PATH with no visual changes.
 Evidence: #tests=68, green=true; typecheck=green.

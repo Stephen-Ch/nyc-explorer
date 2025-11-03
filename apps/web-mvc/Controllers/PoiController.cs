@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NYCExplorer;
 
 namespace NYCExplorer.Controllers;
 
@@ -22,7 +23,7 @@ public class PoiController : Controller
     public async Task<IActionResult> Detail(string id)
     {
         const string action = "poi.detail";
-        var filePath = Path.Combine(_environment.ContentRootPath, "..", "..", "content", "poi.v1.json");
+        var filePath = ContentPathHelper.GetPoiFilePath(_environment, id);
         if (!System.IO.File.Exists(filePath))
         {
             _logger.LogError("POI data file missing {Action} {Path} {PoiId}", action, filePath, id);

@@ -5,9 +5,9 @@ Reviewer: GitHub Copilot
 Scope: Analyze codebase for code smells and potential brittleness per docs/Project.md and docs/code-review.md
 
 Smell Roll-up (2025-11-03)
-- Open: 12
+- Open: 11
 - In progress: 0
-- Done: 7
+- Done: 8
 
 Executive Summary
 The codebase exhibits several critical maintainability issues:
@@ -617,5 +617,8 @@ These issues are immediately addressable through systematic refactoring. The sug
 - [x] CONST-LOCAL-1b — Hoist per-block cap in home.js (commit 0ba9fd2, 2025-11-03)
 - [x] CONST-LOCAL-1c — Hoist DEBOUNCE_MS in Program.cs (commit 9b5d599, 2025-11-04)
 - [x] CONST-LOCAL-1d — Hoist path constants + overlay z-index (commit 8ae4c1d, 2025-11-04)
+
+## SMELL-PATH-HELPER — Repeated POI file path construction
+- [x] PATH-HELPER-1 — ContentPathHelper.GetPoiFilePath(...) (commit pending, 2025-11-04)
 
 Recommendation: Proceed with Phases 1-2 of the refactoring roadmap as highest priority.

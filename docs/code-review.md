@@ -176,6 +176,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-03 23:59] nyc-explorer/main CONST-LOCAL-1b — hoist CFG_ROUTE.BLOCK_CAP; suites green (#tests=68, green=true; typecheck=green); touches: SMELL-MAGIC-NUMS
 [2025-11-04 00:35] nyc-explorer/main CONST-LOCAL-1c — hoist CFG_UI.DEBOUNCE_MS; suites green (#tests=68, green=true; typecheck=green); touches: SMELL-MAGIC-NUMS
 [2025-11-04 01:10] nyc-explorer/main CONST-LOCAL-1d — hoist path constants + overlay z-index; suites green (#tests=68, green=true; typecheck=green); touches: SMELL-MAGIC-NUMS
+[2025-11-04 01:45] nyc-explorer/main PATH-HELPER-1 — extract ContentPathHelper.GetPoiFilePath; no behavior change; suites green; touches: SMELL-PATH-HELPER
 
 
 **Parked Items**

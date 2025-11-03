@@ -1,3 +1,5 @@
+using NYCExplorer;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
@@ -1099,8 +1101,7 @@ app.MapGet("/", () => Results.Content(
 
 app.MapGet("/content/poi.v1.json", async () =>
 {
-    var contentRoot = app.Environment.ContentRootPath;
-    var filePath = Path.Combine(contentRoot, "..", "..", "content", "poi.v1.json");
+    var filePath = ContentPathHelper.GetPoiFilePath(app.Environment, string.Empty);
 
     if (!File.Exists(filePath))
     {
