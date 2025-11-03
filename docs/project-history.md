@@ -19,6 +19,10 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] QA-VERIFY-TIMEOUT — Flake check
+Why: Confirmed no recurrence of prior timeout under full suite.
+Evidence: #tests=70, green=true; typecheck=green.
+
 ### [2025-11-03] DOC-WORKFLOW-S6 — Sprint 6 workflow tweaks
 Documented Sprint 6 workflow upgrades and linked DoD/stop hooks in Protocol.
 Evidence: #tests=70, green=true; typecheck=green.
