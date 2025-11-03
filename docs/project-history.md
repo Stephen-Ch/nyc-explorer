@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-02] GEO-UI-Perf-2b — To typeahead debounce
+In order to mirror the From combobox, I added a 250ms debounce with request versioning so stale geo-to responses drop while status copy stays shared.
+Considerations: Leaves geo-from code untouched and keeps ta-list ownership swapping clean between inputs.
+Evidence: #tests=targeted+full, green=true (typecheck=green).
+Files: apps/web-mvc/Program.cs (~50 LOC).
+
 ### [2025-11-02] GEO-UI-Perf-1b — From typeahead debounce
 In order to keep geo-from suggestions fresh, I debounced queries, ignored stale responses, and surfaced Searching/“N results” status per the contract.
 Considerations: Scope stayed on geo-from so To combobox wiring and route flows remain untouched while default adapters now report “No results.”
