@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] REL-PUSH-1a — Release push logging + contracts
+Re-pushed logging + failure guards to main and re-verified full suite.
+Evidence: #tests=68, green=true; typecheck=green.
+Files: docs/code-review.md, docs/project-history.md.
+
 ### [2025-11-03] ERR-LOG-POI-1c — PoiController logging + 500 UX
 Added structured logging around POI JSON loading and captured forced-500 UX via Playwright.
 Evidence: #tests=full, green=true; typecheck=green. Touches: SMELL-ERROR-HANDLING.
