@@ -56,9 +56,42 @@ app.MapGet("/", () => Results.Content(
       <div id="map-wrap" style="position:relative;"><div id="map" style="height:300px;"></div><div id="poi-overlay" style="position:absolute; inset:0; z-index:650; pointer-events:none;"></div></div>
       <label for="search-input" style="display:block; font-weight:600;">Search</label>
       <input id="search-input" data-testid="search-input" placeholder="Search POIs…" />
-      <ul id="poi-list"></ul>
+      <div data-testid="poi-error" aria-live="polite"></div>
+      <ul id="poi-list" data-testid="poi-list"></ul>
       <div id="route-msg" data-testid="route-msg" aria-live="polite"></div>
       <ol id="route-steps"></ol>
+      <script>
+        (function () {
+          const originalFetch = window.fetch;
+          const handlers = [];
+          const isPoiRequest = (input) => {
+            if (typeof input === 'string') return input.includes('/content/poi.v1.json');
+            return typeof input?.url === 'string' && input.url.includes('/content/poi.v1.json');
+          };
+          const notify = (detail) => {
+            window.__nycPoiErrorState = detail;
+            handlers.forEach((fn) => {
+              try { fn(detail); } catch (error) { /* no-op */ }
+            });
+          };
+          window.__nycOnPoiError = (handler) => { if (typeof handler === 'function') handlers.push(handler); };
+          window.fetch = async function (input, init) {
+            if (!isPoiRequest(input)) return originalFetch.apply(this, arguments);
+            try {
+              const response = await originalFetch.apply(this, arguments);
+              if (!response || !response.ok) {
+                notify({ status: response?.status ?? 0, kind: 'http' });
+                return new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } });
+              }
+              notify(null);
+              return response;
+            } catch (error) {
+              notify({ status: 0, kind: 'network', error });
+              return new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } });
+            }
+          };
+        })();
+      </script>
       <script src="/js/home.js"></script>
       <script>
         (function () {
@@ -171,11 +204,15 @@ app.MapGet("/", () => Results.Content(
             shareButton = document.querySelector('[data-testid="share-link"]'),
             routeMsg = document.querySelector('[data-testid="route-msg"]'),
             routeSteps = document.getElementById('route-steps'),
-            overlayContainer = document.getElementById('poi-overlay');
+            overlayContainer = document.getElementById('poi-overlay'),
+            poiError = document.querySelector('[data-testid="poi-error"]'),
+            poiListContainer = document.querySelector('[data-testid="poi-list"]');
             const geoToInput = document.querySelector('[data-testid="geo-to"]'),
               geoToList = document.getElementById('geo-to-list'),
               geoCurrentToButton = document.querySelector('[data-testid="geo-current"][data-target="to"]');
             if (!geoFromInput || !geoFromList || !geoStatus || !geoCurrentButton || !geoToInput || !geoToList || !geoCurrentToButton || !fromInput || !toInput || !findButton || !shareButton || !routeMsg || !routeSteps) return;
+
+          if (poiError) poiError.style.display = 'none';
 
           const app = window.App = window.App || {}; app.adapters = app.adapters || {};
           const MockGeocoder = (() => {
@@ -244,7 +281,17 @@ app.MapGet("/", () => Results.Content(
               lat: +(input?.dataset?.geoLat ?? NaN),
               lng: +(input?.dataset?.geoLng ?? NaN),
               label: input?.dataset?.geoLabel ?? input?.value ?? '',
-            });
+            }),
+            hidePoiError = () => {
+              if (!poiError) return;
+              poiError.textContent = '';
+              poiError.style.display = 'none';
+            },
+            showPoiError = () => {
+              if (!poiError) return;
+              poiError.textContent = 'Unable to load POIs.';
+              poiError.style.removeProperty('display');
+            };
 
           let geoQueryId = 0, currentOptions = [], activeIndex = -1, geoSearchTimer = 0;
           const hideGeoList = (clearStatus = false) => {
@@ -560,7 +607,7 @@ app.MapGet("/", () => Results.Content(
             }
           });
 
-          let currentList = [], deepLinkPending = true, lastSegment = [], mapEventsBound = false, isPopState = false, shareActive = false;
+          let currentList = [], deepLinkPending = true, lastSegment = [], mapEventsBound = false, isPopState = false, shareActive = false, poiErrorState = window.__nycPoiErrorState ?? null;
 
           const syncShareState = () => {
             if (!shareButton) return;
@@ -710,6 +757,17 @@ app.MapGet("/", () => Results.Content(
               syncShareState();
             },
             clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); setRouteMessage(message); shareActive = false; syncShareState(); },
+            updatePoiErrorState = (detail) => {
+              poiErrorState = detail && typeof detail === 'object' ? detail : null;
+              if (poiErrorState) {
+                showPoiError();
+                clearRouteUI('Unable to load POIs.');
+                currentList = [];
+                if (poiListContainer) poiListContainer.innerHTML = '';
+              } else {
+                hidePoiError();
+              }
+            },
             handleAdapterFailure = () => clearRouteUI('Unable to build route.'),
             parseGeoTuple = (value) => {
               if (typeof value !== 'string') return null;
@@ -972,12 +1030,20 @@ app.MapGet("/", () => Results.Content(
           const originalRender = typeof render === 'function' ? render : null;
           if (originalRender) {
             window.render = function wrappedRender(list) {
-              currentList = Array.isArray(list) ? list : [];
-              setRouteMessage('');
+              const nextList = Array.isArray(list) ? list : [];
+              currentList = nextList;
               scheduleDeepLink();
-              return originalRender(list);
+              if (!poiErrorState) {
+                hidePoiError();
+                setRouteMessage('');
+              }
+              return originalRender(nextList);
             };
           }
+          if (typeof window.__nycOnPoiError === 'function') {
+            window.__nycOnPoiError(updatePoiErrorState);
+          }
+          updatePoiErrorState(poiErrorState);
           if (typeof pois !== 'undefined' && Array.isArray(pois)) currentList = pois;
 
           findButton.addEventListener('click', async (event) => {
