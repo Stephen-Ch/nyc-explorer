@@ -183,6 +183,8 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-03 19:56] nyc-explorer/main DOC-GATE-S6-REV — Sprint 06 docs/fixtures/governance verified; #tests=70, green=true; typecheck=green
 [2025-11-03 20:05] nyc-explorer/main DOC-COPILOT-SUMMARY-1 — require completed prompt title in summaries (#tests=0, green=NA)
 [2025-11-03 17:51] nyc-explorer/main DOC-SEL-GOV-1b — finalize selectors governance; suites green (#tests=70, green=true); touches: SOP-docs
+[2025-11-04 09:15] nyc-explorer/main EXTRACT-ADAPTERS-1 — move adapters + provider config (no behavior change) (#tests=70, green=true; typecheck=green; touches: SMELL-HTML-EXTRACT)
+[2025-11-04 11:45] nyc-explorer/main ENV-RECOVER-DTB-1 — dev:probe OK; e2e/typecheck green (#tests=70, green=true)
 
 
 **Parked Items**
