@@ -19,6 +19,10 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] DOC-COPILOT-SUMMARY-1 — Standardized summaries
+Evidence: #tests=70, green=true; typecheck=green.
+Notes: Responses now start with “Completed Prompt: <TITLE>” and commits prefix `[user] <TITLE>`.
+
 ### [2025-11-03] DOC-GATE-S6-REV — Sprint 06 readiness gate
 Evidence: #tests=70, green=true; typecheck=green.
 Notes: codified ask≥3% rule, provider fallback docs, fixture helper slated for PROV-FIXTURES-1a.

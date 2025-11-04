@@ -39,6 +39,11 @@ Report in this order:
 
 Also include, immediately after Outcome, the existing house keeps: selectors touched, schema keys status, and log updates for `code-review.md` / `project-history.md`.
 
+### Status Summary Format
+- First line: `Completed Prompt: <TITLE> — <GREEN|RED|REVISE|PAUSE>`.
+- Outcome line: append `Completed: <TITLE>` to the reason (all statuses).
+- Commit messages must start with `[<user>] <TITLE> — …` (e.g., `[schur] ROUTE-SHARE-UI-1b — …`).
+
 **Logging Policy:** Project-History.md is updated **after GREEN** only; RED steps are logged in code-review.md.
 
 ## Prompt Skeleton (strict)
