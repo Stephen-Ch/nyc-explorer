@@ -17,19 +17,27 @@ Project.md → Sprint-03-Plan.md → Protocol.md → Copilot-Instructions.md →
 8) docs/Working-With-Stephen.md (skim headings + Do/Don’t)
 
 **Q-GATE TL;DR**
-- Ask only if lift ≥10% (default), ≥5% (high-risk: DevOps, adapters/deps, schema/data, a11y), ≥15% (trivial UI/docs).
+- Ask only if lift ≥3% (default), ≥5% (trivial UI/docs), ≥2% (high-risk: DevOps, adapters/deps, schema/data, a11y).
 - ≤2 minutes, ≤3 questions, one message, once.
 - Use the `Q-GATE:` header; otherwise proceed silently.
 
+### Ask-Before-Act Rule
+- Estimate the success delta first; only ask if the likelihood of succeeding improves by ≥3%.
+- Question template:
+  1. **Assumption at risk** — name the specific contract or file you suspect is wrong.
+  2. **Proposed alternative(s)** — list the options you’d take if the assumption fails.
+  3. **Expected gain %** — quantify the improvement (≥10%) unlocked by getting the answer.
+
 ## Response Schema (every reply)
-- Assumptions: <none|list>
-- Allowed-Edits Fence: planned=<files/LOC>, actual=<files/LOC>
-- Commands run: <ordered list>
-- Tests: passed=<n>/<N>; suite=<N>; typecheck=<green|errors>; artifacts=<paths+sizes|none>
-- Selectors touched: <list|none>; Schema keys: <OK|mismatch>
-- Outcome: <RED|GREEN + one-liner why>
-- Logs: code-review.md <appended|skipped>; project-history.md <appended|n/a>
-- Next step: <one tiny step> or Ambiguity Card
+Report in this order:
+1. **Assumptions** — `none` or enumerate the risks.
+2. **Allowed-Edits Fence** — `planned=<files/LOC>, actual=<files/LOC>`.
+3. **Commands run** — ordered list.
+4. **Tests** — `passed=<n>/<N>; suite=<N>; typecheck=<status>; artifacts=<paths|none>`.
+5. **Outcome** — `RED|GREEN` with a one-line reason.
+6. **Next step** — either a tiny follow-up or “Pause”.
+
+Also include, immediately after Outcome, the existing house keeps: selectors touched, schema keys status, and log updates for `code-review.md` / `project-history.md`.
 
 **Logging Policy:** Project-History.md is updated **after GREEN** only; RED steps are logged in code-review.md.
 
@@ -54,6 +62,12 @@ Project.md → Sprint-03-Plan.md → Protocol.md → Copilot-Instructions.md →
 - **Diff Preview Before Commit** → show **unified diff** (inline `git diff` style, not side‑by‑side) and include per‑file LOC delta; await "APPLY."
 - **Decisions Log Binding** → after GREEN, append one line to `/docs/code-review.md`.
 - **Project History Binding** → after GREEN, append one ≤5-line micro-entry to `/docs/project-history.md` (newest on top, follow template).
+
+### Hang Protocol
+If Playwright Inspector launches but the browser stays blank for >2 minutes with no new logs:
+1. Stop immediately (no retries yet).
+2. Capture the last 10 shell commands plus their exits in the notes.
+3. Re-run the minimal targeted spec with `PWDEBUG=console` to surface output before attempting the full suite again.
 
 ## Pause Rule
 After a backlog item is GREEN and logged, **STOP**. Await explicit user cue (“NEXT” or “PROCEED — P##”). Do not propose or begin the next prompt.

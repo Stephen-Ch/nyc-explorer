@@ -19,6 +19,10 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-03] DOC-GATE-S6-REV — Sprint 06 readiness gate
+Evidence: #tests=70, green=true; typecheck=green.
+Notes: codified ask≥3% rule, provider fallback docs, fixture helper slated for PROV-FIXTURES-1a.
+
 ### [2025-11-03] DOC-SEL-GOV-1b — selectors governance finalized
 Evidence: #tests=70, green=true; typecheck=green.
 Notes: closed open editor/state; safe process cleanup (no pwsh kill).

@@ -41,6 +41,7 @@ Verify the mock experience end-to-end:
 ### Provider switches
 - `.env` flags `GEO_PROVIDER` and `ROUTE_PROVIDER` are documented in `docs/Adapters.md` and default to `mock`.
 - Real providers are not wired yet; leave the mock settings in place for Sprint 05.
+- Sprint 06 adds a rate-limit policy: if a real provider call times out or returns HTTP 429, flip both flags back to `mock`, log the event, and rerun using fixtures.
 
 ## Deep-Links & Share
 - **POI routes:** `/?from=<poiId>&to=<poiId>` rehydrates list-based routes, including steps and active markers.

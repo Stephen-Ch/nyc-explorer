@@ -7,6 +7,7 @@
 2) docs/selectors.md
 3) docs/Copilot-Instructions.md
 4) docs/Project.md
+> Selector Gate: Before implementing UI, update selectors.md (governance section) and bump version.
 > Sprint 05+: insert `docs/Adapters.md` immediately after selectors to honor DI contracts.
 > Deep-link + share slices rely on the selector contracts in `docs/selectors.md` (`share-link`, `route-msg`, geo typeahead hooks).
 
@@ -42,6 +43,7 @@ Examples
 > **NOTE:** Do **not** begin ROUTE-FIND-1a until TOOL-DEV-LOOP-1 (dev server watch loop) is GREEN **and** verified manually (hot reload feels solid, stop/start clean). Routing work pauses if the loop regresses.
 > **GATE:** Do not start GEO-UI or ROUTE-FIND slices until DOC-SEL-GEO is merged; tests must target the selectors above.
 > **GATE:** DI adapters must match `docs/Adapters.md`; update that doc before swapping providers.
+> **GATE (Sprint 06):** Provider slices stay fixture-backed (no live HTTP in CI); enforce Manhattan clamps + timeout/429 fallback to mock before wiring real adapters.
 
 ## When ≤60 LOC isn’t enough
 - **BLOCK** with an Ambiguity Card that proposes:
