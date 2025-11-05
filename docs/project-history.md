@@ -29,6 +29,10 @@ Defined normalizeRoutePayload contract for real adapters (path + steps with plai
 Evidence: npx playwright test tests/unit/route-adapter-real.spec.ts (RED); npm run e2e:auto (RED); typecheck=green.
 Files: tests/unit/route-adapter-real.spec.ts.
 
+### [2025-11-04] ROUTE-ADAPTER-REAL-1b — Implement normalizeRoutePayload
+Added adapters.js normalizer returning {path,steps} with numeric coords + plain text instructions.
+Evidence: npx playwright test tests/unit/route-adapter-real.spec.ts (1/1 green); npm run e2e:auto (RED via ROUTE-FIND-WIRE-1a); typecheck=green. Touches: apps/web-mvc/wwwroot/js/adapters.js.
+
 ### [2025-11-04] FIXTURE-HELPER-1 — Provider fixtures
 Added geo/route Playwright helper interceptors with once support for deterministic provider tests.
 Evidence: npx playwright test tests/unit/provider-fixtures.spec.ts; npm run e2e:auto; typecheck=green.

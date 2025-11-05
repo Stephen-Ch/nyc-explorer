@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('ROUTE-ADAPTER-REAL-1a — normalize provider payload (RED)', async ({ page }) => {
-  await page.goto('about:blank');
+  await page.goto('/');
   const providerPayload = {
     polyline: [
       { latLng: { latitude: 40.7369, longitude: -73.9903 } },

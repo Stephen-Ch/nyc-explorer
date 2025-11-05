@@ -190,6 +190,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-04 14:45] nyc-explorer/main FIXTURE-HELPER-1 — Playwright provider interception helper (RED→GREEN); suites green (#tests=71, green=true; typecheck=green)
 [2025-11-04 15:05] nyc-explorer/main ROUTE-FIND-WIRE-1a — provider Find contract (fixture-backed, RED); suites red (#tests=72, green=false; typecheck=green)
 [2025-11-04 15:25] nyc-explorer/main ROUTE-ADAPTER-REAL-1a — normalizeRoutePayload contract (RED); suites red (#tests=73, green=false; typecheck=green)
+[2025-11-04 15:45] nyc-explorer/main ROUTE-ADAPTER-REAL-1b — implement normalizeRoutePayload (unit green; suite pending ROUTE-FIND-WIRE-1a); typecheck=green
 
 
 **Parked Items**

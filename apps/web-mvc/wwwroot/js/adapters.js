@@ -28,6 +28,37 @@
     return Number.isFinite(length) && length > 0 ? length : 1;
   };
 
+  const toNumber = (value) => {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : null;
+  };
+  const plainText = (value) => typeof value === 'string' ? value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : '';
+  const normalizeRoutePayload = (payload) => {
+    const rawPath = Array.isArray(payload?.polyline) ? payload.polyline : [];
+    const path = rawPath
+      .map((node) => {
+        const lat = toNumber(node?.latLng?.latitude);
+        const lng = toNumber(node?.latLng?.longitude);
+        return lat === null || lng === null ? null : { lat, lng };
+      })
+      .filter(Boolean);
+    const rawSteps = Array.isArray(payload?.steps) ? payload.steps : [];
+    const steps = rawSteps
+      .map((step) => {
+        const instruction = plainText(step?.navigationInstruction?.instructions);
+        const lat = toNumber(step?.startLocation?.latLng?.latitude);
+        const lng = toNumber(step?.startLocation?.latLng?.longitude);
+        if (!instruction || lat === null || lng === null) return null;
+        return { text: instruction, lat, lng };
+      })
+      .filter(Boolean);
+    return {
+      path: path.length >= 2 ? path : [],
+      steps,
+      // TODO: handle encoded polyline payloads when a real provider requires it.
+    };
+  };
+
   const ensureRoute = () => {
     let route = app.adapters.route;
     const had = Boolean(route);
@@ -93,4 +124,5 @@
 
   ensureRoute();
   ensureGeo();
+  app.adapters.normalizeRoutePayload = normalizeRoutePayload;
 })();
