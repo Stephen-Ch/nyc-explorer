@@ -24,6 +24,11 @@ Goal: captured fixture-backed Find flow expectations ahead of real provider wiri
 Evidence: npx playwright test tests/e2e/route-find-provider.spec.ts (RED); npm run e2e:auto (RED); typecheck=green.
 Files: tests/e2e/route-find-provider.spec.ts.
 
+### [2025-11-04] ROUTE-ADAPTER-REAL-1a — Normalize provider payload (RED)
+Defined normalizeRoutePayload contract for real adapters (path + steps with plain text).
+Evidence: npx playwright test tests/unit/route-adapter-real.spec.ts (RED); npm run e2e:auto (RED); typecheck=green.
+Files: tests/unit/route-adapter-real.spec.ts.
+
 ### [2025-11-04] FIXTURE-HELPER-1 — Provider fixtures
 Added geo/route Playwright helper interceptors with once support for deterministic provider tests.
 Evidence: npx playwright test tests/unit/provider-fixtures.spec.ts; npm run e2e:auto; typecheck=green.

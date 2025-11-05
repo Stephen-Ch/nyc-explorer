@@ -189,6 +189,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-04 14:10] nyc-explorer/main EXTRACT-ADAPTERS-1 — finalize ProviderConfig→__APP_CONFIG__ + adapters.js DI; Program.cs delta ≤60; suites green (#tests=70, green=true; typecheck=green; touches: SMELL-HTML-EXTRACT)
 [2025-11-04 14:45] nyc-explorer/main FIXTURE-HELPER-1 — Playwright provider interception helper (RED→GREEN); suites green (#tests=71, green=true; typecheck=green)
 [2025-11-04 15:05] nyc-explorer/main ROUTE-FIND-WIRE-1a — provider Find contract (fixture-backed, RED); suites red (#tests=72, green=false; typecheck=green)
+[2025-11-04 15:25] nyc-explorer/main ROUTE-ADAPTER-REAL-1a — normalizeRoutePayload contract (RED); suites red (#tests=73, green=false; typecheck=green)
 
 
 **Parked Items**
