@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-04] FIXTURE-HELPER-1 — Provider fixtures
+Added geo/route Playwright helper interceptors with once support for deterministic provider tests.
+Evidence: npx playwright test tests/unit/provider-fixtures.spec.ts; npm run e2e:auto; typecheck=green.
+Files: tests/helpers/provider-fixtures.ts; tests/unit/provider-fixtures.spec.ts.
+
 ### [2025-11-04] EXTRACT-ADAPTERS-1 — Provider config serialized
 Moved ProviderConfig JSON emission into Program.cs and adapters.js to own modules while keeping Program.cs lean.
 Evidence: dotnet build apps/web-mvc; #tests=70, green=true; typecheck=green.

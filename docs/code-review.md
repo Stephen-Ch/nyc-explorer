@@ -187,6 +187,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-04 11:45] nyc-explorer/main ENV-RECOVER-DTB-1 — dev:probe OK; e2e/typecheck green (#tests=70, green=true)
 [2025-11-04 13:20] nyc-explorer/main EXTRACT-ADAPTERS-1 — finalize extraction; Program.cs delta ≤60 (#tests=70, green=true; typecheck=green; touches: SMELL-HTML-EXTRACT)
 [2025-11-04 14:10] nyc-explorer/main EXTRACT-ADAPTERS-1 — finalize ProviderConfig→__APP_CONFIG__ + adapters.js DI; Program.cs delta ≤60; suites green (#tests=70, green=true; typecheck=green; touches: SMELL-HTML-EXTRACT)
+[2025-11-04 14:45] nyc-explorer/main FIXTURE-HELPER-1 — Playwright provider interception helper (RED→GREEN); suites green (#tests=71, green=true; typecheck=green)
 
 
 **Parked Items**
