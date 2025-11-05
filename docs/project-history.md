@@ -19,13 +19,18 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-04] EXTRACT-ADAPTERS-1 — Provider config serialized
+Moved ProviderConfig JSON emission into Program.cs and adapters.js to own modules while keeping Program.cs lean.
+Evidence: dotnet build apps/web-mvc; #tests=70, green=true; typecheck=green.
+Files: apps/web-mvc/Program.cs; apps/web-mvc/Adapters/ProviderConfig.cs; apps/web-mvc/wwwroot/js/adapters.js.
+
 ### [2025-11-04] ENV-RECOVER-DTB-1 — Environment recovered
 Restored TypeScript tooling, reran dev:probe hot reload, and reverified smoke suite.
 Evidence: dev:probe=hot reload succeeded; #tests=70, green=true; typecheck=green.
 
 ### [2025-11-04] EXTRACT-ADAPTERS-1 — Adapters extracted
-No behavior change: moved default adapters + provider config out of Program.cs.
-Evidence: #tests=70, green=true; typecheck=green. Touches: SMELL-HTML-EXTRACT.
+Centralized provider config + default adapters into dedicated files; Program.cs now only boots config and scripts.
+Evidence: dotnet build apps/web-mvc; #tests=70, green=true; typecheck=green. Touches: SMELL-HTML-EXTRACT.
 Files: apps/web-mvc/Program.cs; apps/web-mvc/Adapters/ProviderConfig.cs; apps/web-mvc/wwwroot/js/adapters.js.
 
 ### [2025-11-03] DOC-COPILOT-SUMMARY-1 — Standardized summaries

@@ -1,7 +1,21 @@
+using System.Text.Json;
 using NYCExplorer;
+using NYCExplorer.Adapters;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
+
+var providerConfig = ProviderConfig.FromConfiguration(builder.Configuration);
+var providerConfigJson = JsonSerializer.Serialize(new
+{
+  geoProvider = providerConfig.GeoProvider,
+  routeProvider = providerConfig.RouteProvider,
+  geoMock = providerConfig.GeoMockEnabled,
+  routeMock = providerConfig.RouteMockEnabled,
+  geoTimeoutMs = providerConfig.GeoTimeoutMs,
+  routeTimeoutMs = providerConfig.RouteTimeoutMs,
+  appPort = providerConfig.AppPort,
+});
 
 var app = builder.Build();
 
@@ -16,8 +30,9 @@ app.Use(async (context, next) =>
   }
 });
 
-app.MapGet("/", () => Results.Content(
-    """
+app.MapGet("/", () =>
+{
+  var html = """
     <html>
     <head>
       <meta charset="utf-8">
@@ -114,79 +129,11 @@ app.MapGet("/", () => Results.Content(
       <script src="/js/home.js"></script>
       <script>
         (function () {
-          const w = window; w.App = w.App || {}; w.App.adapters = w.App.adapters || {};
-          let routeAdapters = w.App.adapters.route;
-          const hadExistingRoute = Boolean(routeAdapters);
-          if (!routeAdapters) routeAdapters = {};
-          const routeProvider = (w.__ENV__ && w.__ENV__.ROUTE_PROVIDER) || 'mock';
-          const providerAllowsMock = routeProvider === 'mock';
-          const wantsMockRoute = !w.__nycMock || w.__nycMock.route !== false;
-          if (hadExistingRoute && routeAdapters.__nycMock === undefined) routeAdapters.__nycMock = false;
-          if (providerAllowsMock && wantsMockRoute && (!hadExistingRoute || routeAdapters.__nycMock !== false)) {
-            const isPoint = (point) => point && typeof point.lat === 'number' && typeof point.lng === 'number';
-            const clonePoint = (point) => {
-              if (!isPoint(point)) return null;
-              const node = { lat: Number(point.lat), lng: Number(point.lng) };
-              if (typeof point.label === 'string') node.label = point.label;
-              return node;
-            };
-            const MockRouteEngine = {
-              path(payload) {
-                const start = clonePoint(payload?.from);
-                const end = clonePoint(payload?.to);
-                if (!start || !end) return [];
-                const corner = { lat: start.lat, lng: end.lng };
-                return [start, corner, end];
-              },
-              segment(payload) {
-                const from = payload?.from;
-                const to = payload?.to;
-                if (!isPoint(from) || !isPoint(to)) return [];
-                const startLabel = typeof from.label === 'string' && from.label.trim().length ? from.label : 'starting point';
-                const endLabel = typeof to.label === 'string' && to.label.trim().length ? to.label : 'destination';
-                return [`Start at ${startLabel}`, 'Walk across the Manhattan grid', `Arrive at ${endLabel}`];
-              },
-              __nycMock: true,
-            };
-            routeAdapters = { ...routeAdapters, ...MockRouteEngine };
-          }
-          w.App.adapters.route = routeAdapters;
-          if (typeof routeAdapters.segment !== 'function') {
-            routeAdapters.segment = async function (payload) { return null; };
-          }
-          if (typeof routeAdapters.path !== 'function') {
-            routeAdapters.path = async function (payload) { return null; };
-          }
-          if (typeof routeAdapters.segment === 'function' && routeAdapters.segment.length < 1) {
-            const segmentImpl = routeAdapters.segment;
-            routeAdapters.segment = function (payload, ...rest) { return segmentImpl.apply(this, [payload, ...rest]); };
-          }
-          if (typeof routeAdapters.path === 'function' && routeAdapters.path.length < 1) {
-            const pathImpl = routeAdapters.path;
-            routeAdapters.path = function (payload, ...rest) { return pathImpl.apply(this, [payload, ...rest]); };
-          }
-          const existingRoute = routeAdapters; if (typeof existingRoute.walk !== 'function') {
-            const computeLength = (from, to) => {
-              const rad = (deg) => deg * Math.PI / 180, R = 6371000;
-              const fromLat = rad(from?.lat ?? 0);
-              const toLat = rad(to?.lat ?? 0);
-              const dLat = rad((to?.lat ?? 0) - (from?.lat ?? 0));
-              const dLng = rad((to?.lng ?? 0) - (from?.lng ?? 0));
-              const a = Math.sin(dLat / 2) ** 2 + Math.cos(fromLat) * Math.cos(toLat) * Math.sin(dLng / 2) ** 2;
-              const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-              const length = R * c;
-              return Number.isFinite(length) && length > 0 ? length : 1;
-            };
-            w.App.adapters.route = {
-              ...existingRoute,
-              walk: async (from, to) => ({
-                nodes: [from, to],
-                length_m: computeLength(from, to),
-              }),
-            };
-          }
+          window.App = window.App || {};
+          window.App.config = __APP_CONFIG__;
         })();
       </script>
+      <script src="/js/adapters.js"></script>
       <script>
         (function () {
           const sanitizeMarkerLabel = (value) => value.replace(/To/g, 'T\u200Co');
@@ -237,47 +184,6 @@ app.MapGet("/", () => Results.Content(
           if (overlayContainer) overlayContainer.style.zIndex = String(CFG_PATH.Z);
 
           const app = window.App = window.App || {}; app.adapters = app.adapters || {};
-          const MockGeocoder = (() => {
-            const canonical = {
-              address: { label: '666 Fifth Avenue', lat: 40.7616, lng: -73.9747 },
-              place: { label: 'Penn Station', lat: 40.7506, lng: -73.9935 },
-              intersection: { label: '45th St & 2nd Ave', lat: 40.7526, lng: -73.9718 },
-            };
-            const normalize = (value) => String(value ?? '')
-              .toLowerCase()
-              .replace(/[.]/g, ' ')
-              .replace(/&/g, ' and ')
-              .replace(/\bave?\b/g, 'avenue')
-              .replace(/\bav\b/g, 'avenue')
-              .replace(/\bst\b/g, 'street')
-              .replace(/\bblvd\b/g, 'boulevard')
-              .replace(/\s+/g, ' ')
-              .trim();
-            const search = async function (query) {
-              const norm = normalize(query);
-              if (!norm.length) return [];
-              if (norm.includes(' and ') || /\d+\s*&\s*\d+/.test(String(query ?? ''))) return [canonical.intersection];
-              if (/\d/.test(norm) && (norm.includes(' street') || norm.endsWith(' street') || norm.includes(' avenue'))) return [canonical.address];
-              if (norm.includes('penn') && norm.includes('station')) return [canonical.place];
-              return [];
-            };
-            const current = async () => ({ label: 'Current location', lat: 40.758, lng: -73.9855 });
-            const reverse = async () => null;
-            return { search, current, reverse };
-          })();
-          MockGeocoder.__nycMock = true;
-          const existingGeo = app.adapters.geo;
-          if (existingGeo && existingGeo.__nycMock === undefined) existingGeo.__nycMock = false;
-          const geoProvider = (window.__ENV__ && window.__ENV__.GEO_PROVIDER) || 'mock';
-          if (!existingGeo || (geoProvider === 'mock' && existingGeo.__nycMock !== false)) app.adapters.geo = MockGeocoder;
-          if (typeof app.adapters.geo.search === 'function' && app.adapters.geo.search.length < 1) {
-            const searchImpl = app.adapters.geo.search;
-            app.adapters.geo.search = async function (query, ...rest) { return searchImpl.apply(this, [query, ...rest]); };
-          }
-          if (typeof app.adapters.geo.current !== 'function') {
-            const unavailable = Object.assign(async () => { throw new Error('Geolocation unavailable'); }, { __nycDefault: true });
-            app.adapters.geo.current = unavailable;
-          }
           const fetchGeoResults = async (query) => {
             const adapter = app.adapters.geo;
             if (!adapter) return [];
@@ -1096,8 +1002,9 @@ app.MapGet("/", () => Results.Content(
       </script>
     </body>
     </html>
-    """,
-  "text/html; charset=utf-8"));
+    """;
+  return Results.Content(html.Replace("__APP_CONFIG__", providerConfigJson), "text/html; charset=utf-8");
+});
 
 app.MapGet("/content/poi.v1.json", async () =>
 {

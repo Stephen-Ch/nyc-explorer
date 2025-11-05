@@ -5,9 +5,9 @@ Reviewer: GitHub Copilot
 Scope: Analyze codebase for code smells and potential brittleness per docs/Project.md and docs/code-review.md
 
 Smell Roll-up (2025-11-03)
-- Open: 11
+- Open: 10
 - In progress: 0
-- Done: 8
+- Done: 9
 
 Executive Summary
 The codebase exhibits several critical maintainability issues:
@@ -602,6 +602,9 @@ Extensive duplication (~600 lines) in typeahead logic
 Magic numbers throughout reducing clarity
 Missing error handling making debugging difficult
 These issues are immediately addressable through systematic refactoring. The suggested roadmap provides a clear path to a more maintainable, testable, and professional codebase while preserving all existing functionality.
+
+## SMELL-HTML-EXTRACT — Inline adapters + provider config in Program.cs
+- [x] EXTRACT-ADAPTERS-1 — ProviderConfig→__APP_CONFIG__ + adapters.js DI (commit 18e6329, 2025-11-04)
 
 ## SMELL-ERROR-HANDLING — Missing POI load recovery UX
 - [x] FETCH-GUARD-1a — POI load error contract (commit aeeb5b9, 2025-11-03)
