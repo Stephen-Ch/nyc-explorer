@@ -19,6 +19,33 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-05] GEO-ADAPTER-2a — Geocoder provider From contract (RED)
+Captured fixture-backed provider spec for the From typeahead ahead of adapter wiring.
+Evidence: npx playwright test tests/e2e/geo-provider-from.spec.ts (RED); npm run e2e:auto (RED); typecheck=green.
+Files: tests/e2e/geo-provider-from.spec.ts (test-only).
+
+### [2025-11-05] GEO-ADAPTER-2b — Real geocoder wired to fixtures (GREEN)
+Implemented RealGeocoder.search fetching `/geocode?q=` with normalization + fallback; geocoder provider spec now green via fixtures.
+Evidence: npx playwright test tests/e2e/geo-provider-from.spec.ts; npm run e2e:auto; npm run typecheck.
+Files: apps/web-mvc/wwwroot/js/adapters.js; tests/e2e/geo-provider-from.spec.ts.
+
+### [2025-11-05] GEO-ADAPTER-2c-a — Geocoder timeout contract (RED)
+Defined fixture-backed timeout behavior for geo-from typeahead (“Unable to search locations (timeout)”).
+Evidence: npx playwright test tests/e2e/geo-provider-from-timeout.spec.ts (RED); npm run e2e:auto (RED); typecheck=green.
+Files: tests/e2e/geo-provider-from-timeout.spec.ts.
+
+### [2025-11-05] GEO-ADAPTER-2c-b — Geocoder timeout handling (GREEN)
+Introduced fetchJsonWithTimeout + provider-first wiring; UI announces timeout and hides lists.
+Evidence: npx playwright test tests/e2e/geo-provider-from-timeout.spec.ts; npm run e2e:auto; npm run typecheck.
+Files: apps/web-mvc/wwwroot/js/adapters.js; apps/web-mvc/Program.cs.
+
+### [2025-11-05] ENV-GEO-TIMEOUT-1 — Added GEO_TIMEOUT_MS knob
+Documented geocoder timeout env flag and UX copy; docs-only, suites unchanged.
+
+### [2025-11-05] DOC-SEL-DIR-1a — Predeclared directions selectors (dir-list/dir-step/dir-status) and a11y notes.
+In order to lock upcoming provider turn list UX, I documented the dir selectors and keyboard/live-region rules.
+Evidence: docs-only; suites unchanged.
+
 ### [2025-11-04] ROUTE-FIND-WIRE-1a — Provider Find contract (RED)
 Goal: captured fixture-backed Find flow expectations ahead of real provider wiring.
 Evidence: npx playwright test tests/e2e/route-find-provider.spec.ts (RED); npm run e2e:auto (RED); typecheck=green.

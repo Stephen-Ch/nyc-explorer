@@ -45,6 +45,7 @@ export interface RouteAdapter {
 
 ## Environment Flags (Sprint 06)
 - `.env` → `APP_PORT` controls the ASP.NET dev server port (defaults to 5000 when unset).
+- `.env` → `GEO_TIMEOUT_MS` populates `ProviderConfig.geoTimeoutMs`; `fetchJsonWithTimeout` in the geocoder adapter uses it before falling back to the mock.
 - `.env` → `GEO_PROVIDER` and `ROUTE_PROVIDER` toggle which adapters `Program.cs` injects; default to `mock`. Real provider values must fall back to `mock` (and log) after a timeout or HTTP 429.
 - Real provider keys (`GEO_API_KEY`, `ROUTE_API_URL`) remain optional; leave blank when using mocks or fixtures.
 

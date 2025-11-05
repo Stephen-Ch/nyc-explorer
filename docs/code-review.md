@@ -191,6 +191,12 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-04 15:05] nyc-explorer/main ROUTE-FIND-WIRE-1a — provider Find contract (fixture-backed, RED); suites red (#tests=72, green=false; typecheck=green)
 [2025-11-04 15:25] nyc-explorer/main ROUTE-ADAPTER-REAL-1a — normalizeRoutePayload contract (RED); suites red (#tests=73, green=false; typecheck=green)
 [2025-11-04 15:45] nyc-explorer/main ROUTE-ADAPTER-REAL-1b — implement normalizeRoutePayload (unit green; suite pending ROUTE-FIND-WIRE-1a); typecheck=green
+[2025-11-05 10:15] nyc-explorer/main DOC-SEL-DIR-1a — predeclare directions selectors; docs-only (#tests=0, green=NA)
+[2025-11-05 10:45] nyc-explorer/main GEO-ADAPTER-2a — geocoder fixture + From contract, RED as expected (#tests=1, green=false)
+[2025-11-05 11:35] nyc-explorer/main GEO-ADAPTER-2b — wire RealGeocoder.search to /geocode fixture; geo-from list shows; GREEN (#tests=74, green=true)
+[2025-11-05 11:55] nyc-explorer/main GEO-ADAPTER-2c-a — geocoder timeout contract (From), RED as expected (#tests=1, green=false)
+[2025-11-05 12:45] nyc-explorer/main GEO-ADAPTER-2c-b — geocoder timeout handling; GREEN (#tests=75, green=true; typecheck=green)
+[2025-11-05 13:15] nyc-explorer/main ENV-GEO-TIMEOUT-1 — docs-only knob for GEO_TIMEOUT_MS (#tests=0, green=NA)
 
 
 **Parked Items**
