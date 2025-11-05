@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-04] ROUTE-FIND-WIRE-1a — Provider Find contract (RED)
+Goal: captured fixture-backed Find flow expectations ahead of real provider wiring.
+Evidence: npx playwright test tests/e2e/route-find-provider.spec.ts (RED); npm run e2e:auto (RED); typecheck=green.
+Files: tests/e2e/route-find-provider.spec.ts.
+
 ### [2025-11-04] FIXTURE-HELPER-1 — Provider fixtures
 Added geo/route Playwright helper interceptors with once support for deterministic provider tests.
 Evidence: npx playwright test tests/unit/provider-fixtures.spec.ts; npm run e2e:auto; typecheck=green.
