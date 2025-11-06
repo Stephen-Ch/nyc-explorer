@@ -307,5 +307,13 @@ Snapshot: main@f4bcfde dirty=1 tests=91/1 selectors=v0.7 env=[]
 Outcome: GREEN
 Snapshot: main@31625e2 dirty=6 tests=92/1 selectors=v0.7 env=[]
 
+[2025-11-06 13:56] nyc-explorer/main P68 — shadow home view parity wired (#tests=94, green=true)
+Outcome: GREEN
+Snapshot: main@6beaf00 dirty=5 tests=92/1 selectors=v0.7 env=[]
+
+[2025-11-06 13:08] nyc-explorer/main P67 — home shadow parity contract (RED) (#tests=1, green=false)
+Outcome: RED (home-parity spec records missing ready cue for /__view-home)
+Snapshot: main@6beaf00 dirty=1 tests=0/0 selectors=v0.7 env=[]
+
 **Parked Items**
 - (None currently)

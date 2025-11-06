@@ -17,6 +17,8 @@ var providerConfigJson = JsonSerializer.Serialize(new
   appPort = providerConfig.AppPort,
 });
 
+HomeHtmlProvider.Configure(providerConfigJson);
+
 var app = builder.Build();
 
 app.UseStaticFiles();
@@ -36,9 +38,53 @@ app.Use(async (context, next) =>
   }
 });
 
-app.MapGet("/", () =>
+app.MapGet("/", () => Results.Content(HomeHtmlProvider.Get(), "text/html; charset=utf-8"));
+
+app.MapGet("/content/poi.v1.json", async () =>
 {
-  var html = """
+    var filePath = ContentPathHelper.GetPoiFilePath(app.Environment, string.Empty);
+
+    if (!File.Exists(filePath))
+    {
+        return Results.NotFound(new { error = "content/poi.v1.json not found" });
+    }
+
+    var json = await File.ReadAllTextAsync(filePath);
+    return Results.Text(json, "application/json");
+});
+
+app.MapControllerRoute(
+  name: "view-home",
+  pattern: "__view-home",
+  defaults: new { controller = "Home", action = "HomeShadow" });
+
+app.MapControllerRoute(
+  name: "view-ok",
+  pattern: "__view-ok",
+  defaults: new { controller = "Home", action = "Index" });
+
+app.MapControllers();
+
+app.Run("http://localhost:5000");
+
+internal static class HomeHtmlProvider
+{
+    private static string _html = string.Empty;
+
+    public static void Configure(string appConfigJson)
+    {
+    var configJson = string.IsNullOrEmpty(appConfigJson) ? "{}" : appConfigJson;
+    _html = HtmlTemplate.Replace("__APP_CONFIG__", configJson);
+    }
+
+    public static string Get()
+    {
+    return string.IsNullOrEmpty(_html)
+      ? HtmlTemplate.Replace("__APP_CONFIG__", "{}")
+      : _html;
+    }
+
+    private const string HtmlTemplate = """
     <html>
     <head>
       <meta charset="utf-8">
@@ -1124,27 +1170,5 @@ app.MapGet("/", () =>
     </body>
     </html>
     """;
-  return Results.Content(html.Replace("__APP_CONFIG__", providerConfigJson), "text/html; charset=utf-8");
-});
+}
 
-app.MapGet("/content/poi.v1.json", async () =>
-{
-    var filePath = ContentPathHelper.GetPoiFilePath(app.Environment, string.Empty);
-
-    if (!File.Exists(filePath))
-    {
-        return Results.NotFound(new { error = "content/poi.v1.json not found" });
-    }
-
-    var json = await File.ReadAllTextAsync(filePath);
-    return Results.Text(json, "application/json");
-});
-
-app.MapControllerRoute(
-  name: "view-ok",
-  pattern: "__view-ok",
-  defaults: new { controller = "Home", action = "Index" });
-
-app.MapControllers();
-
-app.Run("http://localhost:5000");

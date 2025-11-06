@@ -9,4 +9,11 @@ public sealed class HomeController : Controller
     {
         return View();
     }
+
+    [HttpGet]
+    public IActionResult HomeShadow()
+    {
+        var html = HomeHtmlProvider.Get();
+        return Content(html, "text/html; charset=utf-8");
+    }
 }

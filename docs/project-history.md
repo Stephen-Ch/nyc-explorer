@@ -19,6 +19,18 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P68 — HOME shadow parity wired
+In order to mirror the home markup for the shadow route, I moved the inline HTML into `HomeHtmlProvider` and served `/__view-home` through the controller so both endpoints return identical content.
+Considerations: Provider caches the HTML once per startup and falls back to the template if configuration is missing; no selectors or copy changed.
+Evidence: dotnet build; npx playwright test tests/e2e/home-parity.spec.ts; npx playwright test; npm run typecheck.
+Files: apps/web-mvc/Program.cs; apps/web-mvc/Controllers/HomeController.cs.
+
+### [2025-11-06] P67 — HOME-PARITY shadow contract (RED)
+In order to lock DOM expectations before wiring the shadow home view, I added a parity spec that compares `/` with `/__view-home` for container presence, live regions, and data-testid counts.
+Considerations: Shadow route lacks the ready cue today, so the spec documents the missing parity ahead of the GREEN slice.
+Evidence: npx playwright test tests/e2e/home-parity.spec.ts (RED).
+Files: tests/e2e/home-parity.spec.ts.
+
 ### [2025-11-07] P66 — MVC shadow view plumbing
 In order to prove the Razor pipeline is wired, I added a HomeController/Index view pair and mapped a `/__view-ok` shadow route without touching the existing UX.
 Considerations: Shadow route bypasses shared layout and keeps content minimal so it can be removed once real MVC work lands.
