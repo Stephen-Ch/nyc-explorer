@@ -213,6 +213,7 @@ SPRINT-06 — CLOSEOUT: suite green; tagged sprint-06-closeout-20251106.
 [2025-11-06 18:30] nyc-explorer/main P46 — protocol hardening (prompt schema v2 + loop rules) (#tests=0, green=NA)
 [2025-11-06 19:05] nyc-explorer/main P41 — Copilot instructions repo snapshot macro (#tests=0, green=NA)
 [2025-11-06 19:25] nyc-explorer/main P47 — snapshot wiring (session ritual + decisions template) (#tests=0, green=NA)
+[2025-11-06 19:50] nyc-explorer/main P48 — quarantine meta-check enforces skip cap + label (#tests=87, green=true)
 
 **Parked Items**
 - (None currently)

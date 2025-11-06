@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P48 — Quarantine meta-check
+In order to enforce the 48h TTL policy, I added a Playwright meta spec that fails when `test.skip` usage exceeds the cap or lacks the RED label, keeping the current single skip in compliance.
+Considerations: Tests-only addition under 60 LOC; leans on existing selector contracts but does not touch runtime code.
+Evidence: npx playwright test tests/meta/quarantine-check.spec.ts; npx playwright test; npm run typecheck (all green).
+Files: tests/meta/quarantine-check.spec.ts.
+
 ### [2025-11-06] P47 — Snapshot wiring
 In order to enforce repo snapshots, I tied the SNAPSHOT macro into the session ritual and decisions template so responses and logs capture branch, SHA, tests, selectors, and env data consistently.
 Considerations: Docs-only change scoped with anchors; no runtime impact.
