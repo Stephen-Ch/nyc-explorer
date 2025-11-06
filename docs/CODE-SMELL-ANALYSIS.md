@@ -20,6 +20,14 @@ Missing error handling and logging in several critical paths
 Code duplication in file path construction
 Risk Level: HIGH - The current structure significantly impedes maintainability, testability, and future enhancements.
 
+## Progress since 2025-11-03
+- MVC shadow route now fronts `HomeHtmlProvider`, ensuring graceful fallback to the static template while Program.cs stays slim.
+- Shadow-view parity validated: `/` responses match the legacy inline output for parity checks.
+- Root route `/` now served by the provider pipeline rather than embedding the HTML directly in Program.cs.
+- `home.inline.html` lives in `wwwroot/static` with the geolocation status helper extracted for reuse.
+- `window.ENV` injection hardened by the Program.cs split; values hydrate via structured object guards.
+- Typeahead flows restored with shared current-button handlers; the remaining module extraction stays on deck.
+
 Critical Code Smells
 1. CRITICAL: Massive Inline HTML String Literal (Long Method)
 Location: apps/web-mvc/Program.cs lines 17-881
@@ -53,7 +61,7 @@ Inline script #2 (lines 137-159): Marker label sanitization (~23 lines)
 Inline script #3 (lines 161-810): Geocoding & route UI logic (~650 lines)
 Refactoring Suggestions:
 
-Extract to Razor View: Move HTML to Views/Home/Index.cshtml
+Current state: externalized static template via HomeHtmlProvider + MVC backstop; next: JS module extraction (adapters already split).
 Extract JavaScript Modules: Split inline scripts into separate .js files in wwwroot/js/:
 adapters.js - Adapter initialization logic
 marker-sanitizer.js - Marker label processing
@@ -88,6 +96,8 @@ runGeoSearch / runGeoToSearch: Same logic, different variables
 Event handlers: Nearly identical keyboard/input handling
 Total Duplicated Lines: ~600+
 
+Status: Partially mitigated — shared handlers now cover both "Current" button flows while duplication persists in the typeahead core.
+
 Refactoring Suggestions:
 
 Create Reusable Typeahead Component:
@@ -112,6 +122,7 @@ const toTypeahead = createTypeahead({
 });
 Extract to Class/Module: Create a Typeahead class or module pattern
 Expected Reduction: ~600 lines → ~200 lines (70% reduction)
+Next: Extract shared typeahead logic into `wwwroot/js/typeahead.js` and have Program.cs import it for both inputs.
 3. Magic Numbers Throughout Codebase
 Location: Multiple files
 
@@ -557,13 +568,14 @@ Migrate to TypeScript (as already started with route.ts)
 OR add comprehensive JSDoc type annotations
 Prioritized Refactoring Roadmap
 Phase 1: Critical (Do First)
-✅ Extract Program.cs HTML to Razor views - Reduces 901 → ~100 lines
-✅ Extract inline scripts to separate .js files - Improves maintainability
-✅ Create reusable typeahead component - Eliminates ~600 lines duplication
+- [ ] Extract Program.cs HTML to Razor views — planned; current coverage relies on HomeHtmlProvider + MVC backstop.
+- [x] Extract adapters.js from Program.cs — completed (commit b60093b, 2025-11-04).
+- [ ] Modularize remaining inline scripts — planned follow-up for typeahead and route UI blocks.
+- [ ] Create reusable typeahead component — partially mitigated (shared handlers); full module lives pending in `wwwroot/js/typeahead.js`.
 Phase 2: High Priority
-✅ Add constants/config file - Replaces all magic numbers
-✅ Add error handling and logging - Improves debugging and monitoring
-✅ Create ContentPathHelper - Centralizes file path logic
+- [ ] Add consolidated constants/config file — partial progress (debounce + overlay constants hoisted); shared config module outstanding.
+- [x] Add error handling and logging — completed for POI load flows.
+- [x] Create ContentPathHelper — centralizes POI path construction (commit 9fdb8be, 2025-11-04).
 Phase 3: Medium Priority
 ⚠️ Break down long functions - Improves readability
 ⚠️ Add comprehensive documentation - JSDoc and XML comments

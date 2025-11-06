@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P75 — CODE-SMELL ANALYSIS refresh
+In order to keep the smell log aligned with the Program.cs split and typeahead work, I refreshed CODE-SMELL-ANALYSIS with a progress section and updated statuses.
+Considerations: Document now reflects HomeHtmlProvider backstop, ENV hydration, and partial typeahead dedupe while calling out pending module extraction; no runtime changes shipped.
+Evidence: docs-only; npx playwright test (RED baseline from existing contracts); npm run typecheck (green).
+Files: docs/CODE-SMELL-ANALYSIS.md; docs/code-review.md; docs/project-history.md.
+
 ### [2025-11-06] P72 — Suite baseline snapshot
 In order to capture the current failure profile before further fixes, I reran the full suite with the list reporter and noted the runtime versions.
 Considerations: Snapshot taken against the existing dirty working tree from P69/P71; no files were modified.

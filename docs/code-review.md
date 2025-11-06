@@ -329,3 +329,6 @@ Snapshot: main@8a66ea1; pass=54 fail=40 skip=1
 [2025-11-06 21:55] nyc-explorer/main P72 — Suite baseline snapshot (no edits) (#tests=95, green=false)
 Outcome: RED
 Snapshot: main@8a66ea1 dirty=3 tests=45/1 selectors=v0.7 env=[]
+[2025-11-06 23:59] nyc-explorer/main P75 — Code-smell doc refreshed (Program.cs externalized; ENV hydrated; typeahead partial dedupe) (#tests=0, green=NA)
+Outcome: GREEN
+Snapshot: main@8ac8f49 dirty=1 tests=0/0 selectors=v0.7 env=[]
