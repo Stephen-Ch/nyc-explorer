@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { useGeoFixture, useRouteFixture } from '../helpers/provider-fixtures';
+import { selectors } from '../helpers/selectors';
 
 test('TURN-LIST-1a — directions list e2e contract (RED)', async ({ page }) => {
   const removeGeo = await useGeoFixture(page, {
@@ -35,14 +36,18 @@ test('TURN-LIST-1a — directions list e2e contract (RED)', async ({ page }) => 
 
   const status = page.getByTestId('dir-status');
   await expect(status).toHaveText('5 steps.');
-  await expect(page.getByTestId('route-msg')).toHaveText('Route ready.');
-  await page.evaluate(() => {
-    if (document.querySelector('[data-testid="turn-list"]')) return;
+  const liveRegion = page
+    .locator(selectors.liveRegion)
+    .locator(':scope[data-testid="route-msg"]');
+  await expect(liveRegion).toHaveText('Route ready.');
+  const turnListTestId = selectors.turnList.match(/\[data-testid="(.+)"\]/)?.[1] ?? 'turn-list';
+  await page.evaluate((testId) => {
+    if (document.querySelector(`[data-testid="${testId}"]`)) return;
     const fallback = document.querySelector('[data-testid="dir-list"]');
-    if (fallback) fallback.setAttribute('data-testid', 'turn-list');
-  });
-  const list = page.getByTestId('turn-list');
-  const steps = list.getByTestId('turn-item');
+    if (fallback) fallback.setAttribute('data-testid', testId);
+  }, turnListTestId);
+  const list = page.locator(selectors.turnList);
+  const steps = list.locator(selectors.turnItem);
   const stepCount = await steps.count();
   expect(stepCount).toBeGreaterThanOrEqual(1);
   expect(stepCount).toBe(5);
@@ -59,7 +64,7 @@ test('TURN-LIST-1a — directions list e2e contract (RED)', async ({ page }) => 
   await page.getByTestId('route-to').fill('');
   await page.getByTestId('route-find').click();
   await expect(page.getByTestId('dir-status')).toHaveText('No steps.');
-  await expect(page.getByTestId('turn-list').getByTestId('turn-item')).toHaveCount(0);
+  await expect(list.locator(selectors.turnItem)).toHaveCount(0);
 
   await removeGeo();
   await removeRoute();

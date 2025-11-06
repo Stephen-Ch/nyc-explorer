@@ -279,5 +279,9 @@ Snapshot: main@4efa858 dirty=1 tests=90/1 selectors=v0.7 env=[]
 Outcome: GREEN
 Snapshot: main@4efa858 dirty=1 tests=90/1 selectors=v0.7 env=[]
 
+[2025-11-07 00:15] nyc-explorer/main P60 — selector helper adopt dir-list (#tests=91, green=true)
+Outcome: GREEN
+Snapshot: main@dddcdd9 dirty=1 tests=90/1 selectors=v0.7 env=[]
+
 **Parked Items**
 - (None currently)

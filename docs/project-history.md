@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-07] P60 — Selector helper adopt dir-list
+In order to finish migrating the turn list specs, I swapped dir-list.spec.ts to use the shared selectors helper for the turn list, turn items, and live region expectations.
+Considerations: Preserved the fallback rename for legacy data-testid, deriving the new id from the helper to avoid duplication while keeping the DOM check intact.
+Evidence: npx playwright test tests/e2e/dir-list.spec.ts; npx playwright test; npm run typecheck.
+Files: tests/e2e/dir-list.spec.ts; docs/code-review.md; docs/project-history.md.
+
 ### [2025-11-06] P59 — Selector helper adopt 2
 In order to drive the selector helper toward strict enforcement, I replaced the hard-coded turn list selectors in the keyboard and parity specs with the shared helper values.
 Considerations: Limited scope to two specs as instructed; reused existing locators so assertions stay identical while keeping helper focus calls readable.
