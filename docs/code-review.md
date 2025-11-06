@@ -207,19 +207,57 @@ Blocker: <link or inline card>
 [2025-11-05 16:30] nyc-explorer/main TURN-LIST-1d — map parity contract (RED) (#tests=1, green=false)
 [2025-11-05 17:10] nyc-explorer/main TURN-LIST-1d-b — map/list active-step parity; suites green (#tests=78, green=true; typecheck=green)
 [2025-11-06 11:20] nyc-explorer/main P41 — align rate-limit probe with turn selectors (#tests=1, green=true)
+Outcome: GREEN
+Snapshot: main@8b3b0c5 dirty=0 tests=1/0 selectors=v0.7 env=[]
+
 [2025-11-06 14:55] nyc-explorer/main P37 — RATE-LIMIT-OPS-1c — 429 retry→mock + cooldown; ENV knob exposed; probe green (#tests=1, green=true)
+Outcome: GREEN
+Snapshot: main@8b3b0c5 dirty=0 tests=1/0 selectors=v0.7 env=[]
+
 [2025-11-06 15:40] nyc-explorer/main P42 — promote canonical turn-list selectors + full suite (#tests=86, green=true)
+Outcome: GREEN
+Snapshot: main@8b3b0c5 dirty=0 tests=86/0 selectors=v0.7 env=[]
 
 SPRINT-06 — CLOSEOUT: suite green; tagged sprint-06-closeout-20251106.
 [2025-11-06 18:30] nyc-explorer/main P46 — protocol hardening (prompt schema v2 + loop rules) (#tests=0, green=NA)
+Outcome: DOCS
+Snapshot: main@8b3b0c5 dirty=0 tests=0/0 selectors=v0.7 env=[]
+
 [2025-11-06 19:05] nyc-explorer/main P41 — Copilot instructions repo snapshot macro (#tests=0, green=NA)
+Outcome: DOCS
+Snapshot: main@8b3b0c5 dirty=0 tests=0/0 selectors=v0.7 env=[]
+
 [2025-11-06 19:25] nyc-explorer/main P47 — snapshot wiring (session ritual + decisions template) (#tests=0, green=NA)
+Outcome: DOCS
+Snapshot: main@8b3b0c5 dirty=0 tests=0/0 selectors=v0.7 env=[]
+
 [2025-11-06 19:50] nyc-explorer/main P48 — quarantine meta-check enforces skip cap + label (#tests=87, green=true)
+Outcome: GREEN
+Snapshot: main@8b3b0c5 dirty=0 tests=87/1 selectors=v0.7 env=[]
+
 [2025-11-06 20:05] nyc-explorer/main P49A — CI workflow enforces Playwright + typecheck gates (#tests=0, green=NA)
+Outcome: DOCS
+Snapshot: main@8b3b0c5 dirty=0 tests=0/0 selectors=v0.7 env=[]
+
 [2025-11-06 20:20] nyc-explorer/main P50 — blocker card macro + decisions hook (#tests=0, green=NA)
+Outcome: DOCS
+Snapshot: main@8b3b0c5 dirty=0 tests=0/0 selectors=v0.7 env=[]
+
 [2025-11-06 20:40] nyc-explorer/main P51 — log integrity meta-check (#tests=88, green=true)
+Outcome: GREEN
+Snapshot: main@8b3b0c5 dirty=0 tests=88/1 selectors=v0.7 env=[]
+
 [2025-11-06 21:05] nyc-explorer/main P52 — CI-META-FASTFAIL adds meta gate before suite (#tests=2, green=true)
+Outcome: GREEN
+Snapshot: main@8b3b0c5 dirty=0 tests=2/0 selectors=v0.7 env=[]
+
 [2025-11-06 21:30] nyc-explorer/main P53 — CI meta summary + artifact upload (#tests=2, green=true)
+Outcome: GREEN
+Snapshot: main@8b3b0c5 dirty=0 tests=2/0 selectors=v0.7 env=[]
+
+[2025-11-06 22:00] nyc-explorer/main P54 — decisions template meta-check (#tests=89, green=true)
+Outcome: GREEN
+Snapshot: main@8b3b0c5 dirty=0 tests=89/1 selectors=v0.7 env=[]
 
 **Parked Items**
 - (None currently)

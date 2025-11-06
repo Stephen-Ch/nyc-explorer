@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P54 — Decisions template meta-check
+In order to keep the decisions log compliant, I added a Playwright meta spec that enforces Outcome/Snapshot lines for each P-entry and backfilled the recent entries accordingly.
+Considerations: Restricted changes to tests + docs; spec runs softly per entry to pinpoint missing fields.
+Evidence: npx playwright test tests/meta/decisions-template.spec.ts; npx playwright test; npm run typecheck (all green).
+Files: tests/meta/decisions-template.spec.ts; docs/code-review.md.
+
 ### [2025-11-06] P53 — CI meta summary + artifact
 In order to surface meta gate outcomes, I captured the Playwright meta report to meta-gate.txt, appended it to the job summary, and uploaded it as a CI artifact.
 Considerations: Left the fast-fail behavior intact; summary/log steps run regardless of pass/fail to aid debugging.
