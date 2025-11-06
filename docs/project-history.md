@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-07] P65 — Commit scope meta guard
+In order to keep runtime changes tied to logged prompts, I added a meta spec that checks the latest commit: if runtime files changed, the message must include a P-ID plus Outcome and Snapshot fields.
+Considerations: Relies on git log parsing and soft-fails for docs-only commits; no runtime code touched.
+Evidence: npx playwright test tests/meta/commit-scope.spec.ts; npx playwright test; npm run typecheck.
+Files: tests/meta/commit-scope.spec.ts; docs/code-review.md; docs/project-history.md.
+
 ### [2025-11-07] P64 — PR template prompt schema
 In order to align reviews with Prompt Schema v2, I added a pull request template capturing Snapshot, prompt metadata, fences, test outcomes, and release checks for Commit-on-Green and Quarantine TTL.
 Considerations: Template lives under `.github/` with anchors for idempotent updates; no runtime code touched.

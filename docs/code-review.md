@@ -288,7 +288,7 @@ Outcome: GREEN
 Snapshot: main@0c5be70 dirty=1 tests=90/1 selectors=v0.7 env=[]
 
 [2025-11-07 00:55] nyc-explorer/main P62 — CI selector helper strict gate (#tests=0, green=NA)
-Outcome: CI
+Outcome: DOCS
 Snapshot: main@c782e8e dirty=1 tests=0/0 selectors=v0.7 env=[]
 
 [2025-11-07 01:10] nyc-explorer/main P63 — CI badge + gates summary (#tests=0, green=NA)
@@ -298,6 +298,10 @@ Snapshot: main@128b689 dirty=1 tests=0/0 selectors=v0.7 env=[]
 [2025-11-07 01:25] nyc-explorer/main P64 — PR template prompt schema (#tests=0, green=NA)
 Outcome: DOCS
 Snapshot: main@ccea89a dirty=1 tests=0/0 selectors=v0.7 env=[]
+
+[2025-11-07 01:45] nyc-explorer/main P65 — commit scope meta guard (#tests=92, green=true)
+Outcome: GREEN
+Snapshot: main@f4bcfde dirty=1 tests=91/1 selectors=v0.7 env=[]
 
 **Parked Items**
 - (None currently)
