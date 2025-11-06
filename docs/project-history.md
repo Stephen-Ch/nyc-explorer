@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P56 — Selectors helper adoption for rate-limit probe
+In order to reduce selector drift in the probe, I swapped its hard-coded list/live-region selectors to reuse the shared helper introduced in P55.
+Considerations: Scoped change to the spec only; passed helper selector into page.evaluate to keep cross-context usage safe.
+Evidence: npx playwright test tests/e2e/rate-limit-probe.spec.ts; npx playwright test; npm run typecheck.
+Files: tests/e2e/rate-limit-probe.spec.ts; docs/code-review.md.
+
 ### [2025-11-06] P55 — Selectors helper for route find
 In order to keep high-signal specs aligned with selectors.md, I introduced a shared selectors helper and migrated the real route-find contract to use it.
 Considerations: Limited scope to tests/helpers + one spec; tightened live region lookup with :scope filter to avoid strict locator collisions.

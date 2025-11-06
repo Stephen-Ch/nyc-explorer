@@ -263,5 +263,9 @@ Snapshot: main@8b3b0c5 dirty=0 tests=89/1 selectors=v0.7 env=[]
 Outcome: GREEN
 Snapshot: main@33e3855 dirty=0 tests=89/1 selectors=v0.7 env=[]
 
+[2025-11-06 22:45] nyc-explorer/main P56 — adopt selector helper in rate-limit probe (#tests=89, green=true)
+Outcome: GREEN
+Snapshot: main@6dd156c dirty=0 tests=89/1 selectors=v0.7 env=[]
+
 **Parked Items**
 - (None currently)

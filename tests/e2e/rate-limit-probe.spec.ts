@@ -3,6 +3,7 @@ import type { Page } from '@playwright/test';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { useGeoFixture } from '../helpers/provider-fixtures';
+import { selectors } from '../helpers/selectors';
 
 const providerUrl = 'https://fake-provider.example/directions';
 const geoOptions = {
@@ -55,17 +56,19 @@ test('P36 — RATE-LIMIT-OPS-1b — provider fallback after 429 (RED)', async ({
   await page.getByTestId('ta-option').first().click();
   await page.getByTestId('route-find').click();
 
-  const liveRegion = page.getByTestId('route-msg');
+  const liveRegion = page
+    .locator(selectors.liveRegion)
+    .locator(':scope[data-testid="route-msg"]');
   await expect(liveRegion).toHaveText('Route ready.');
   await expect(page.getByTestId('route-path')).toHaveCount(1);
   const overlayNodes = page.locator('[data-testid="route-node"], [data-testid="route-node-active"]');
   await expect(overlayNodes).toHaveCount(4);
-  await page.evaluate(() => {
-    if (document.querySelector('[data-testid="turn-list"]')) return;
+  await page.evaluate((turnListSelector) => {
+    if (document.querySelector(turnListSelector)) return;
     const fallback = document.querySelector('[data-testid="dir-list"]');
     if (fallback) fallback.setAttribute('data-testid', 'turn-list');
-  });
-  const turnItems = page.getByTestId('turn-list').getByTestId('turn-item');
+  }, selectors.turnList);
+  const turnItems = page.locator(selectors.turnList).locator(selectors.turnItem);
   await expect(turnItems).toHaveCount(2);
   expect(callCount).toBe(2);
 
