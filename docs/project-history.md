@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P57 — Quarantine TTL meta-guard
+In order to enforce the 48h quarantine window, I added a meta spec that checks RED CONTRACT skips and flags any whose git timestamp exceeds the TTL.
+Considerations: Walks tests directory only; leverages git log for timestamps and ignores files without skips.
+Evidence: npx playwright test tests/meta/quarantine-ttl.spec.ts; npx playwright test; npm run typecheck.
+Files: tests/meta/quarantine-ttl.spec.ts; docs/code-review.md.
+
 ### [2025-11-06] P56 — Selectors helper adoption for rate-limit probe
 In order to reduce selector drift in the probe, I swapped its hard-coded list/live-region selectors to reuse the shared helper introduced in P55.
 Considerations: Scoped change to the spec only; passed helper selector into page.evaluate to keep cross-context usage safe.

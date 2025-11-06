@@ -267,5 +267,9 @@ Snapshot: main@33e3855 dirty=0 tests=89/1 selectors=v0.7 env=[]
 Outcome: GREEN
 Snapshot: main@6dd156c dirty=0 tests=89/1 selectors=v0.7 env=[]
 
+[2025-11-06 23:05] nyc-explorer/main P57 — quarantine TTL meta-guard (48h) (#tests=90, green=true)
+Outcome: GREEN
+Snapshot: main@6a88eba dirty=0 tests=90/1 selectors=v0.7 env=[]
+
 **Parked Items**
 - (None currently)
