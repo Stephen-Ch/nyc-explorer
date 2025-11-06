@@ -4,8 +4,8 @@
   const dir = app.dir = app.dir || {};
 
   const statusNode = document.querySelector('[data-testid="dir-status"]'),
-    listNode = document.querySelector('[data-testid="dir-list"]'),
-    stepSelector = '[data-testid="dir-step"]',
+    listNode = document.querySelector('[data-testid="turn-list"]') || document.querySelector('[data-testid="dir-list"]'),
+    stepSelector = '[data-testid="turn-item"]',
     markerSelector = '[data-testid="poi-marker-active"]',
     nodeSelector = '[data-testid="route-node"]';
   let activeIndex = 0, hasActiveStep = false, listBound = false;
@@ -43,6 +43,7 @@
     document.querySelectorAll('[data-testid="route-node-active"]').forEach((el) => {
       try { if (el && typeof el.setAttribute === 'function') el.setAttribute('data-testid', 'route-node'); } catch (e) { /* ignore */ }
     });
+
   // Update aria-current on poi markers and route nodes
     [markerSelector, nodeSelector].forEach((selector) => {
       document.querySelectorAll(selector).forEach((node) => {
@@ -160,8 +161,8 @@
     clearList();
     const fragment = document.createDocumentFragment();
     steps.forEach((step, index) => {
-      const li = document.createElement('li');
-      li.setAttribute('data-testid', 'dir-step');
+  const li = document.createElement('li');
+  li.setAttribute('data-testid', 'turn-item');
       li.setAttribute('data-dir-index', String(index));
       if (isActiveStep(step)) li.setAttribute('aria-current', 'step');
       const text = typeof step?.text === 'string' ? step.text : '';

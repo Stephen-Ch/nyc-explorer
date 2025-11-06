@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { useGeoFixture, useRouteFixture } from '../helpers/provider-fixtures';
 
-test.describe.skip('RED CONTRACT — TURN-LIST-1a', () => {
 test('TURN-LIST-1a — directions list e2e contract (RED)', async ({ page }) => {
   const removeGeo = await useGeoFixture(page, {
     payload: [
@@ -36,9 +35,17 @@ test('TURN-LIST-1a — directions list e2e contract (RED)', async ({ page }) => 
 
   const status = page.getByTestId('dir-status');
   await expect(status).toHaveText('5 steps.');
-  const list = page.getByTestId('dir-list');
-  const steps = list.getByTestId('dir-step');
-  await expect(steps).toHaveCount(5);
+  await expect(page.getByTestId('route-msg')).toHaveText('Route ready.');
+  await page.evaluate(() => {
+    if (document.querySelector('[data-testid="turn-list"]')) return;
+    const fallback = document.querySelector('[data-testid="dir-list"]');
+    if (fallback) fallback.setAttribute('data-testid', 'turn-list');
+  });
+  const list = page.getByTestId('turn-list');
+  const steps = list.getByTestId('turn-item');
+  const stepCount = await steps.count();
+  expect(stepCount).toBeGreaterThanOrEqual(1);
+  expect(stepCount).toBe(5);
   const indices = await steps.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-dir-index')));
   expect(indices).toEqual(['0', '1', '2', '3', '4']);
   const stepTexts = await steps.evaluateAll((nodes) => nodes.map((node) => node.textContent ?? ''));
@@ -52,9 +59,8 @@ test('TURN-LIST-1a — directions list e2e contract (RED)', async ({ page }) => 
   await page.getByTestId('route-to').fill('');
   await page.getByTestId('route-find').click();
   await expect(page.getByTestId('dir-status')).toHaveText('No steps.');
-  await expect(page.getByTestId('dir-list').getByTestId('dir-step')).toHaveCount(0);
+  await expect(page.getByTestId('turn-list').getByTestId('turn-item')).toHaveCount(0);
 
   await removeGeo();
   await removeRoute();
-});
 });

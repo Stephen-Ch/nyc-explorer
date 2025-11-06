@@ -31,9 +31,9 @@ test('back-to-map link navigates from detail page to home with map and POIs', as
   
   // Verify POI items are rendered
   const poiItems = page.locator('[data-testid="poi-item"]');
-  expect(await poiItems.count()).toBeGreaterThanOrEqual(3);
+  await expect(poiItems.nth(2)).toBeVisible();
   
   // Verify Leaflet markers are rendered
   const markers = page.locator('.leaflet-marker-icon');
-  expect(await markers.count()).toBeGreaterThanOrEqual(3);
+  await expect(markers.nth(2)).toBeVisible();
 });

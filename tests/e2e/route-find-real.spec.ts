@@ -58,7 +58,7 @@ test.describe('ROUTE-FIND-4a — provider wiring contract (RED)', () => {
     expect(await pathNodes.count()).toBeGreaterThanOrEqual(2);
     await expect(turnList).toBeVisible();
     await expect(turnItems).toHaveCount(unionStepCount);
-    await expect(liveRegion).toHaveText(/Route ready/i);
+  await expect(liveRegion).toHaveText('Route ready.');
 
     await removeGeo();
     await removeRoute();
@@ -73,14 +73,16 @@ test.describe('ROUTE-FIND-4a — provider wiring contract (RED)', () => {
     await page.goto('/');
     await enterStops(page);
 
-    const turnItems = page.getByTestId('turn-list').getByTestId('turn-item');
-    const liveRegion = page.getByTestId('route-msg');
+  const turnItems = page.getByTestId('turn-list').getByTestId('turn-item');
+  const liveRegion = page.getByTestId('route-msg');
+  const status = page.getByTestId('dir-status');
 
+  const expectedSteps = Math.max(stepsOnlyCount, 1);
+  const expectedStatus = expectedSteps === 1 ? '1 step.' : `${expectedSteps} steps.`;
   await expect(page.getByTestId('route-path')).toHaveCount(0);
-  const fallback = stepsOnlyCount || 1;
-  const count = await turnItems.count();
-  expect(count).toBeGreaterThanOrEqual(fallback);
-    await expect(liveRegion).toHaveText(/Turn list ready/i);
+  await expect(status).toHaveText(expectedStatus);
+  await expect(turnItems).toHaveCount(expectedSteps);
+  await expect(liveRegion).toHaveText('Route ready (turns only).');
 
     await removeGeo();
     await removeRoute();

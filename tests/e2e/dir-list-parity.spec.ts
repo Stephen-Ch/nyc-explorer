@@ -35,10 +35,10 @@ test('TURN-LIST-1d — map parity contract (RED)', async ({ page }) => {
   await page.getByTestId('route-find').click();
 
   await expect(page.getByTestId('dir-status')).toHaveText('5 steps.');
-  const list = page.getByTestId('dir-list');
-  const steps = list.getByTestId('dir-step');
+  const list = page.getByTestId('turn-list');
+  const steps = list.getByTestId('turn-item');
   await expect(steps).toHaveCount(5);
-  await page.focus('[data-testid="dir-list"]');
+  await page.focus('[data-testid="turn-list"]');
   await expect(list).toBeFocused();
 
   // TODO(TURN-LIST-1d): expect overlay to expose [data-testid="route-node-active"][data-step-index]

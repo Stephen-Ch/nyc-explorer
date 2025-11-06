@@ -16,13 +16,6 @@ var providerConfigJson = JsonSerializer.Serialize(new
   routeTimeoutMs = providerConfig.RouteTimeoutMs,
   appPort = providerConfig.AppPort,
 });
-var routeCooldownMs = int.TryParse(builder.Configuration["ROUTE_RATE_LIMIT_COOLDOWN_MS"], out var parsedCooldown) && parsedCooldown > 0
-  ? parsedCooldown
-  : 300000;
-var envJson = JsonSerializer.Serialize(new
-{
-  ROUTE_RATE_LIMIT_COOLDOWN_MS = routeCooldownMs,
-});
 
 var app = builder.Build();
 
@@ -91,7 +84,6 @@ app.MapGet("/", () =>
     <div id="route-msg" data-testid="route-msg" aria-live="polite"></div>
     <div data-testid="dir-status" aria-live="polite"></div>
     <ol data-testid="turn-list"></ol>
-    <ol data-testid="dir-list"></ol>
     <ol id="route-steps"></ol>
       <script>
         (function () {
@@ -149,11 +141,6 @@ app.MapGet("/", () =>
           window.App.config = __APP_CONFIG__;
         })();
       </script>
-      <script>
-        (function () {
-          window.ENV = Object.assign({}, window.ENV || {}, __APP_ENV__);
-        })();
-      </script>
     <script src="/js/adapters.js"></script>
     <script src="/js/directions.js" type="application/json"></script>
     <script src="/js/dir-ui.js"></script>
@@ -202,8 +189,7 @@ app.MapGet("/", () =>
             shareButton = document.querySelector('[data-testid="share-link"]'),
             routeMsg = document.querySelector('[data-testid="route-msg"]'),
             dirStatus = document.querySelector('[data-testid="dir-status"]'),
-            turnList = document.querySelector('[data-testid="turn-list"]'),
-            dirList = document.querySelector('[data-testid="dir-list"]'),
+            dirList = document.querySelector('[data-testid="turn-list"]') || document.querySelector('[data-testid="dir-list"]'),
             routeSteps = document.getElementById('route-steps'),
             overlayContainer = document.getElementById('poi-overlay'),
             poiError = document.querySelector('[data-testid="poi-error"]'),
@@ -211,8 +197,7 @@ app.MapGet("/", () =>
             const geoToInput = document.querySelector('[data-testid="geo-to"]'),
               geoToList = document.getElementById('geo-to-list'),
               geoCurrentToButton = document.querySelector('[data-testid="geo-current"][data-target="to"]');
-            if (!geoFromInput || !geoFromList || !geoStatus || !geoCurrentButton || !geoToInput || !geoToList || !geoCurrentToButton || !fromInput || !toInput || !findButton || !shareButton || !routeMsg || !dirStatus || !turnList || !dirList || !routeSteps) return;
-            turnList.style.display = 'none';
+            if (!geoFromInput || !geoFromList || !geoStatus || !geoCurrentButton || !geoToInput || !geoToList || !geoCurrentToButton || !fromInput || !toInput || !findButton || !shareButton || !routeMsg || !dirStatus || !dirList || !routeSteps) return;
 
           if (poiError) poiError.style.display = 'none';
           if (overlayContainer) overlayContainer.style.zIndex = String(CFG_PATH.Z);
@@ -650,28 +635,6 @@ app.MapGet("/", () =>
                 routeSteps.appendChild(li);
               });
             },
-            clearTurnList = () => {
-              if (!turnList) return;
-              turnList.innerHTML = '';
-              turnList.style.display = 'none';
-            },
-            renderTurnList = (steps) => {
-              if (!turnList) return;
-              if (!Array.isArray(steps) || !steps.length) {
-                clearTurnList();
-                return;
-              }
-              turnList.innerHTML = '';
-              steps.forEach((step, index) => {
-                const li = document.createElement('li');
-                li.setAttribute('data-testid', 'turn-item');
-                li.setAttribute('data-turn-index', String(index));
-                const text = typeof step?.text === 'string' ? step.text.trim() : '';
-                li.textContent = text.length ? text : `Turn ${index + 1}`;
-                turnList.appendChild(li);
-              });
-              turnList.style.removeProperty('display');
-            },
             setRouteMessage = (text) => {
               const next = text ?? '';
               if (routeMsg.textContent === next) return;
@@ -681,7 +644,10 @@ app.MapGet("/", () =>
             },
             clearDirections = (reason) => {
               const dir = window.App?.dir;
-              if (dir && typeof dir.clear === 'function') dir.clear(reason);
+              if (dir && typeof dir.clear === 'function') {
+                dir.clear(reason);
+                return;
+              }
               if (dirList) dirList.innerHTML = '';
               if (dirStatus) {
                 const text = typeof reason === 'string' && reason.trim().length ? reason.trim() : 'No steps.';
@@ -701,24 +667,23 @@ app.MapGet("/", () =>
             },
             renderDirections = (steps) => {
               const dir = window.App?.dir;
-              if (dir && typeof dir.render === 'function') dir.render(steps);
-              if (!Array.isArray(steps) || !steps.length) {
-                clearTurnList();
+              if (dir && typeof dir.render === 'function') {
+                dir.render(steps);
+                return;
+              }
+              if (!Array.isArray(steps) || !dirList) {
                 clearDirections('No steps.');
                 return;
               }
-              if (dirList) {
-                dirList.innerHTML = '';
-                steps.forEach((step, index) => {
-                  const li = document.createElement('li');
-                  li.setAttribute('data-testid', 'dir-step');
-                  li.setAttribute('data-dir-index', String(index));
-                  const text = typeof step?.text === 'string' ? step.text.trim() : '';
-                  li.textContent = text.length ? text : `Step ${index + 1}`;
-                  dirList.appendChild(li);
-                });
-              }
-              renderTurnList(steps);
+              dirList.innerHTML = '';
+              steps.forEach((step, index) => {
+                const li = document.createElement('li');
+                li.setAttribute('data-testid', 'turn-item');
+                li.setAttribute('data-dir-index', String(index));
+                const text = typeof step?.text === 'string' ? step.text.trim() : '';
+                li.textContent = text.length ? text : `Step ${index + 1}`;
+                dirList.appendChild(li);
+              });
             },
             copyShareLink = async () => {
               if (!shareButton || shareButton.disabled) return;
@@ -738,7 +703,7 @@ app.MapGet("/", () =>
             },
             setAttrs = (el, attrs) => Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, String(value))),
             createSvgEl = (name, attrs) => { const el = document.createElementNS('http://www.w3.org/2000/svg', name); setAttrs(el, attrs); return el; },
-            clearRouteGraphics = () => { overlayContainer?.querySelectorAll('[data-testid="route-path"], [data-testid="route-node"]').forEach((node) => node.remove()); lastSegment = []; },
+            clearRouteGraphics = () => { overlayContainer?.querySelectorAll('[data-testid="route-path"], [data-testid="route-node"], [data-testid="route-node-active"]').forEach((node) => node.remove()); lastSegment = []; },
             renderRoutePath = (overlay, containerPoints, viewport) => {
               if (!overlay || !Array.isArray(containerPoints) || containerPoints.length < 2) return null;
               const rawWidth = Number(viewport?.width ?? 0);
@@ -794,7 +759,7 @@ app.MapGet("/", () =>
               shareActive = true;
               syncShareState();
             },
-            clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); clearTurnList(); clearDirections('No steps.'); setRouteMessage(message); shareActive = false; syncShareState(); },
+            clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); clearDirections('No steps.'); setRouteMessage(message); shareActive = false; syncShareState(); },
             updatePoiErrorState = (detail) => {
               const nextState = detail && typeof detail === 'object' ? detail : null;
               poiErrorState = nextState;
@@ -949,76 +914,117 @@ app.MapGet("/", () =>
               const fallback = localSegment(list, fromValue, toValue);
               return { steps: fallback, adapterUsed, adapterFailed };
             },
-            tryAdapterPath = async (mode = 'replace') => {
-              if (!hasGeoSelection(geoFromInput) || !hasGeoSelection(geoToInput)) return { status: 'skip' };
-              const pathFn = window.App?.adapters?.route?.path;
-              if (typeof pathFn !== 'function') return { status: 'skip' };
+            sanitizeRouteStep = (step) => {
+              if (!step || typeof step !== 'object') return null;
+              const rawText = typeof step.text === 'string' ? step.text : '';
+              const text = rawText.replace(/[<>]/g, '').trim();
+              if (!text.length) return null;
+              const entry = { text };
+              const distance = Number(step.distance);
+              if (Number.isFinite(distance) && distance >= 0) entry.distance = distance;
+              const duration = Number(step.duration);
+              if (Number.isFinite(duration) && duration >= 0) entry.duration = duration;
+              if (typeof step.lat === 'number' && Number.isFinite(step.lat)) entry.lat = step.lat;
+              if (typeof step.lng === 'number' && Number.isFinite(step.lng)) entry.lng = step.lng;
+              if (step.active === true || step.current === true) entry.active = true;
+              return entry;
+            },
+            toRoutePoint = (node) => {
+              if (!node || typeof node !== 'object') return null;
+              const lat = typeof node.lat === 'number' ? node.lat
+                : typeof node.latitude === 'number' ? node.latitude
+                : typeof node?.coords?.lat === 'number' ? node.coords.lat
+                : null;
+              const lng = typeof node.lng === 'number' ? node.lng
+                : typeof node.longitude === 'number' ? node.longitude
+                : typeof node?.coords?.lng === 'number' ? node.coords.lng
+                : null;
+              if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+              return { lat: Number(lat), lng: Number(lng) };
+            },
+            normalizeRouteResult = (raw) => {
+              if (!raw) return null;
+              if (Array.isArray(raw)) {
+                const path = raw.map(toRoutePoint).filter(Boolean);
+                const steps = Array.isArray(raw.__nycSteps) ? raw.__nycSteps.map(sanitizeRouteStep).filter(Boolean) : [];
+                return { path, steps };
+              }
+              if (typeof raw === 'object') {
+                const pathSource = Array.isArray(raw.path) ? raw.path : [];
+                const stepsSource = Array.isArray(raw.steps) ? raw.steps : [];
+                return {
+                  path: pathSource.map(toRoutePoint).filter(Boolean),
+                  steps: stepsSource.map(sanitizeRouteStep).filter(Boolean),
+                };
+              }
+              return null;
+            },
+            pushGeoHistory = (fromGeo, toGeo) => {
+              if (isPopState || typeof history === 'undefined' || typeof URLSearchParams === 'undefined') return;
+              const params = new URLSearchParams();
+              params.set('gfrom', `${fromGeo.lat},${fromGeo.lng}`);
+              params.set('gto', `${toGeo.lat},${toGeo.lng}`);
+              const fromLabel = typeof fromGeo.label === 'string' ? fromGeo.label.trim() : '';
+              const toLabel = typeof toGeo.label === 'string' ? toGeo.label.trim() : '';
+              if (fromLabel.length) params.set('gfl', fromLabel);
+              if (toLabel.length) params.set('gtl', toLabel);
+              history.pushState({
+                geo: {
+                  from: { lat: fromGeo.lat, lng: fromGeo.lng, label: fromLabel },
+                  to: { lat: toGeo.lat, lng: toGeo.lng, label: toLabel },
+                },
+              }, '', `?${params.toString()}`);
+            },
+            renderProviderRoute = (routePayload, fromGeo, toGeo) => {
+              const steps = Array.isArray(routePayload?.steps) ? routePayload.steps : [];
+              if (steps.length) {
+                const message = steps.length === 1 ? '1 step.' : `${steps.length} steps.`;
+                renderDirections(steps);
+                setDirectionsStatus(message);
+              } else {
+                clearDirections('No steps.');
+              }
+              clearSteps();
+              clearActiveMarkers();
+              const pathPoints = Array.isArray(routePayload?.path) ? routePayload.path : [];
+              if (pathPoints.length > 1) {
+                const overlayPoints = pathPoints.map((point, index) => ({
+                  coords: { lat: point.lat, lng: point.lng },
+                  id: `route-provider-${index}`,
+                }));
+                drawRouteGraphics(overlayPoints);
+                setRouteMessage('Route ready.');
+              } else {
+                clearRouteGraphics();
+                setRouteMessage(steps.length ? 'Route ready (turns only).' : 'Route ready.');
+              }
+              shareActive = true;
+              syncShareState();
+              pushGeoHistory(fromGeo, toGeo);
+              return true;
+            },
+            attemptProviderRoute = async () => {
+              if (!hasGeoSelection(geoFromInput) || !hasGeoSelection(geoToInput)) return false;
+              const adapter = window.App?.adapters?.route;
+              const findFn = typeof adapter?.find === 'function' ? adapter.find : null;
+              const pathFn = typeof adapter?.path === 'function' ? adapter.path : null;
+              if (!findFn && !pathFn) return false;
+              const fromGeo = toGeoPoint(geoFromInput);
+              const toGeo = toGeoPoint(geoToInput);
+              if (!fromGeo || !toGeo) return false;
               try {
-                const fromGeo = toGeoPoint(geoFromInput);
-                const toGeo = toGeoPoint(geoToInput);
-                const raw = await pathFn(...(pathFn.length >= 2 ? [fromGeo, toGeo] : [{ from: fromGeo, to: toGeo }]));
-                const providerSteps = Array.isArray(raw && raw.__nycSteps) ? raw.__nycSteps : [];
-                const mapped = Array.isArray(raw)
-                  ? raw.filter((node) => node && typeof node.lat === 'number' && typeof node.lng === 'number')
-                      .map((node) => ({ coords: { lat: node.lat, lng: node.lng } }))
-                  : [];
-                const hasPath = mapped.length >= 2;
-                const hasSteps = Array.isArray(providerSteps) && providerSteps.length > 0;
-                if (!hasPath && !hasSteps) {
-                  if (mode === 'replace') {
-                    clearRouteGraphics();
-                    clearTurnList();
-                    clearDirections('No steps.');
-                  }
-                  return { status: 'failed' };
-                }
-                if (mode === 'replace') {
-                  clearActiveMarkers();
-                  clearSteps();
-                  clearRouteGraphics();
-                  clearTurnList();
-                }
-                if (hasPath) {
-                  drawRouteGraphics(mapped);
-                } else if (mode === 'replace') {
-                  clearRouteGraphics();
-                }
-                if (mode === 'replace') {
-                  if (hasSteps) {
-                    renderDirections(providerSteps);
-                    renderTurnList(providerSteps);
-                    setDirectionsStatus(`${providerSteps.length} steps.`);
-                  } else {
-                    clearDirections('No steps.');
-                  }
-                  if (hasSteps && hasPath) {
-                    setRouteMessage('Route ready.');
-                  } else if (hasSteps) {
-                    setRouteMessage('Turn list ready.');
-                  } else {
-                    setRouteMessage(`Route path from ${fromGeo.label || 'Start'} to ${toGeo.label || 'End'}.`);
-                  }
-                }
-                shareActive = true;
-                syncShareState();
-                return { status: 'success', from: fromGeo, to: toGeo, hasPath };
+                const raw = findFn
+                  ? await (findFn.length >= 1 ? findFn({ from: fromGeo, to: toGeo }) : findFn(fromGeo, toGeo))
+                  : await (pathFn.length >= 2 ? pathFn(fromGeo, toGeo) : pathFn({ from: fromGeo, to: toGeo }));
+                const normalized = normalizeRouteResult(raw);
+                if (!normalized || (!normalized.path.length && !normalized.steps.length)) return false;
+                return renderProviderRoute(normalized, fromGeo, toGeo);
               } catch (error) {
-                if (mode === 'replace') {
-                  clearRouteGraphics();
-                  clearTurnList();
-                  clearDirections('No steps.');
-                  clearSteps();
-                  clearActiveMarkers();
-                  shareActive = false;
-                  syncShareState();
-                } else {
-                  clearRouteGraphics();
+                if (error && (error.name === 'ProviderTimeoutError' || error.code === 'TIMEOUT')) {
+                  handleAdapterFailure();
+                  return true;
                 }
-                if (error && error.name === 'ProviderTimeoutError') {
-                  setRouteMessage('Unable to build route.');
-                  return { status: 'timeout' };
-                }
-                return { status: 'failed' };
+                return false;
               }
             },
             applySegment = async () => {
@@ -1039,29 +1045,10 @@ app.MapGet("/", () =>
               }
               const segmentResult = await getSegment(base, fromValue, toValue);
               const seg = Array.isArray(segmentResult?.steps) ? segmentResult.steps : [];
+              const providerHandled = await attemptProviderRoute();
+              if (providerHandled) return;
               if (!seg.length) {
-                const adapterGeo = await tryAdapterPath();
-                if (adapterGeo && adapterGeo.status === 'success') {
-                  if (adapterGeo.hasPath && !isPopState && typeof history !== 'undefined') {
-                    const fromLabel = (adapterGeo.from.label ?? '').trim();
-                    const toLabel = (adapterGeo.to.label ?? '').trim();
-                    const geoParams = [
-                      ['gfrom', `${adapterGeo.from.lat},${adapterGeo.from.lng}`],
-                      ['gto', `${adapterGeo.to.lat},${adapterGeo.to.lng}`],
-                    ];
-                    if (fromLabel.length) geoParams.push(['gfl', fromLabel]);
-                    if (toLabel.length) geoParams.push(['gtl', toLabel]);
-                    const search = geoParams.map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
-                    history.pushState({
-                      geo: {
-                        from: { lat: adapterGeo.from.lat, lng: adapterGeo.from.lng, label: fromLabel },
-                        to: { lat: adapterGeo.to.lat, lng: adapterGeo.to.lng, label: toLabel },
-                      },
-                    }, '', `?${search}`);
-                  }
-                  return;
-                }
-                if (segmentResult?.adapterFailed || (adapterGeo && (adapterGeo.status === 'failed' || adapterGeo.status === 'timeout'))) {
+                if (segmentResult?.adapterFailed) {
                   handleAdapterFailure();
                   return;
                 }
@@ -1071,7 +1058,6 @@ app.MapGet("/", () =>
               const fromName = seg[0]?.name ?? seg[0]?.id ?? fromValue;
               const toName = seg[seg.length - 1]?.name ?? seg[seg.length - 1]?.id ?? toValue;
               showSteps(seg);
-              clearTurnList();
               clearDirections('No steps.');
               const segHasCoords = seg.every((step) => step && step.coords && typeof step.coords.lat === 'number' && typeof step.coords.lng === 'number');
               if (segHasCoords) {
@@ -1079,26 +1065,6 @@ app.MapGet("/", () =>
                 drawRouteGraphics(seg);
               } else {
                 clearActiveMarkers(); clearRouteGraphics();
-                if (segmentResult?.adapterUsed) {
-                  const overlay = await tryAdapterPath('overlay');
-                  if (overlay && overlay.status === 'success' && overlay.hasPath && !fromPoi && !toPoi && !isPopState && typeof history !== 'undefined') {
-                    const fromLabel = (overlay.from.label ?? '').trim();
-                    const toLabel = (overlay.to.label ?? '').trim();
-                    const geoParams = [
-                      ['gfrom', `${overlay.from.lat},${overlay.from.lng}`],
-                      ['gto', `${overlay.to.lat},${overlay.to.lng}`],
-                    ];
-                    if (fromLabel.length) geoParams.push(['gfl', fromLabel]);
-                    if (toLabel.length) geoParams.push(['gtl', toLabel]);
-                    const search = geoParams.map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
-                    history.pushState({
-                      geo: {
-                        from: { lat: overlay.from.lat, lng: overlay.from.lng, label: fromLabel },
-                        to: { lat: overlay.to.lat, lng: overlay.to.lng, label: toLabel },
-                      },
-                    }, '', `?${search}`);
-                  }
-                }
               }
               setRouteMessage(`Route: ${seg.length} steps from ${fromName} to ${toName}.`);
               shareActive = true;
@@ -1112,7 +1078,6 @@ app.MapGet("/", () =>
             };
 
           setRouteMessage('');
-          clearTurnList();
           clearDirections('No steps.');
           const originalRender = typeof render === 'function' ? render : null;
           if (originalRender) {
@@ -1159,7 +1124,7 @@ app.MapGet("/", () =>
     </body>
     </html>
     """;
-  return Results.Content(html.Replace("__APP_CONFIG__", providerConfigJson).Replace("__APP_ENV__", envJson), "text/html; charset=utf-8");
+  return Results.Content(html.Replace("__APP_CONFIG__", providerConfigJson), "text/html; charset=utf-8");
 });
 
 app.MapGet("/content/poi.v1.json", async () =>

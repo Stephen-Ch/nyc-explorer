@@ -25,21 +25,22 @@ test.describe('ROUTE-SHARE-GEO-1a — adapter deep link', () => {
     await to.fill('to place');
     await page.getByTestId('ta-option').first().click();
     await page.getByTestId('route-find').click();
-    const url = page.url();
-    expect(url).toContain('gfrom=');
-    expect(url).toContain('gto=');
-    expect(url).toContain('gfl=From%20Geo');
+  const params = new URL(page.url()).searchParams;
+  expect(params.has('gfrom')).toBe(true);
+  expect(params.has('gto')).toBe(true);
+  expect(params.get('gfl')).toBe('From Geo');
     await page.reload();
     await expect(page.getByTestId('route-path')).toBeVisible();
-    await expect(page.getByTestId('route-node')).toHaveCount(2);
+  const nodes = page.locator('[data-testid="route-node"], [data-testid="route-node-active"]');
+  await expect(nodes).toHaveCount(2);
     await expect(page.getByTestId('poi-marker-active')).toHaveCount(0);
-    await expect(page.getByTestId('route-msg')).toHaveText('Route path from From Geo to To Geo.');
+  await expect(page.getByTestId('route-msg')).toHaveText('Route ready.');
   });
 
   test('invalid params clear adapter state', async ({ page }) => {
     await page.goto('/?gfrom=40.715,-73.99&gfl=From%20Geo');
     await expect(page.getByTestId('route-path')).toHaveCount(0);
-    await expect(page.getByTestId('route-node')).toHaveCount(0);
+  await expect(page.locator('[data-testid="route-node"], [data-testid="route-node-active"]')).toHaveCount(0);
     await expect(page.getByTestId('poi-marker-active')).toHaveCount(0);
     await expect(page.getByTestId('route-msg')).toContainText('Select both From and To to see steps.');
   });

@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P42 — Turn list canonical selectors
+In order to align provider UI with the new turn-list/turn-item contract, I renamed the Razor markup, tightened adapter mocks, and refreshed specs to assert the updated live-region copy.
+Considerations: Bumped selectors.md to v0.7, normalized provider fixtures to emit sanitized steps, and stabilized back-to-map assertions before the full rerun.
+Evidence: npx playwright test (GREEN); dotnet build apps/web-mvc (GREEN).
+Files: apps/web-mvc/Program.cs; apps/web-mvc/wwwroot/js/directions.js; tests/e2e/route-adapter-error.spec.ts; docs/selectors.md.
+
 ### [2025-11-06] P41 — Rate limit probe selectors
 In order to keep the probe aligned with new turn list testids, I updated the spec to rename fallback selectors and cache the provider fixture between retries.
 Considerations: Adapter stub prevents extra provider calls while preserving live-region copy.

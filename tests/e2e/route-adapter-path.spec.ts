@@ -39,7 +39,8 @@ test('ROUTE-ADAPTER-PATH-1a — renders adapter path overlay', async ({ page }) 
 
   await page.getByTestId('route-find').click();
   await expect(page.locator('[data-testid="route-path"]')).toHaveCount(1);
-  await expect(page.locator('[data-testid="route-node"]')).toHaveCount(3);
+  const overlayNodes = page.locator('[data-testid="route-node"], [data-testid="route-node-active"]');
+  await expect(overlayNodes).toHaveCount(3);
   await expect(page.locator('[data-testid="poi-marker-active"]')).toHaveCount(0);
 
   const pathArgs = await page.evaluate(() => (window as any).__pathArgs);

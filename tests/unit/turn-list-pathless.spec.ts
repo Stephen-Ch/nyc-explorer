@@ -42,7 +42,7 @@ test('P35 — Turn list persists when provider omits path', async ({ page }) => 
   const liveRegion = page.getByTestId('route-msg');
   const turnItems = page.getByTestId('turn-list').getByTestId('turn-item');
   await expect(page.getByTestId('route-path')).toHaveCount(0);
-  await expect(liveRegion).toHaveText('Turn list ready.');
+  await expect(liveRegion).toHaveText('Route ready (turns only).');
   await expect(turnItems).toHaveCount(Math.max(stepsOnlyCount, 1));
   await expect(turnItems).toHaveCount(Math.max(stepsOnlyCount, 1));
 

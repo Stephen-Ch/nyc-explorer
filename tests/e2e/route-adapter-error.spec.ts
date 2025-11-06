@@ -54,12 +54,23 @@ test.describe('ROUTE-ADAPTER-ERR-UX-1a — adapter failure UX', () => {
     await installMock(page, { segment: { mode: 'null' }, path: { mode: 'empty' } });
     await page.click(SELECTOR.find); await assertCleared(page);
 
+    const providerRoute = {
+      path: [
+        { lat: 40.75057, lng: -73.99352 },
+        { lat: 40.75057, lng: -73.97539 },
+        { lat: 40.76162, lng: -73.97539 },
+      ],
+      steps: [
+        { text: 'Adapter Step One' },
+        { text: 'Adapter Step Two' },
+      ],
+    };
     await installMock(page, {
-      segment: { mode: 'data', data: [{ id: 'step-1', name: 'Adapter Step One' }, { id: 'step-2', name: 'Adapter Step Two' }] },
-      path: { mode: 'data', data: [{ lat: 40.75057, lng: -73.99352 }, { lat: 40.75057, lng: -73.97539 }, { lat: 40.76162, lng: -73.97539 }] },
+      segment: { mode: 'data', data: [{ text: 'Adapter Step One' }, { text: 'Adapter Step Two' }] },
+      path: { mode: 'data', data: providerRoute },
     });
     await page.click(SELECTOR.find);
-    await expect(page.locator(SELECTOR.steps)).toHaveCount(2);
+    await expect(page.getByTestId('turn-list').getByTestId('turn-item')).toHaveCount(2);
     await expect(page.locator(SELECTOR.path)).toHaveCount(1);
     await expect(page.locator(SELECTOR.message)).not.toHaveText('Unable to build route.');
   });

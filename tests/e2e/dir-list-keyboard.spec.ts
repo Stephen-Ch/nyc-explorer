@@ -54,13 +54,13 @@ test('TURN-LIST-1c — directions keyboard nav + aria parity', async ({ page }) 
     };
   });
   console.log('dir init state:', dirState);
-  const list = page.getByTestId('dir-list');
-  const steps = list.getByTestId('dir-step');
+  const list = page.getByTestId('turn-list');
+  const steps = list.getByTestId('turn-item');
   await expect(steps).toHaveCount(5);
   console.log('initial aria-current:', await steps.evaluateAll((els) => els.map((el) => el.getAttribute('aria-current'))));
 
   await expect(list).toHaveJSProperty('tabIndex', 0);
-  await page.focus('[data-testid="dir-list"]');
+  await page.focus('[data-testid="turn-list"]');
   await expect(list).toBeFocused();
   const expectActive = async (index: number) => {
     await expect.poll(async () => {
@@ -87,7 +87,7 @@ test('TURN-LIST-1c — directions keyboard nav + aria parity', async ({ page }) 
   await page.getByTestId('route-to').fill('');
   await page.getByTestId('route-find').click();
   await expect(page.getByTestId('dir-status')).toHaveText('No steps.');
-  await expect(page.getByTestId('dir-list').getByTestId('dir-step')).toHaveCount(0);
+  await expect(page.getByTestId('turn-list').getByTestId('turn-item')).toHaveCount(0);
 
   await removeRoute();
   await removeGeo();

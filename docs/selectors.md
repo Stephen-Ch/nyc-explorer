@@ -1,4 +1,4 @@
-# Selectors — Canonical (v0.6, 2025-11-05)
+# Selectors — Canonical (v0.7, 2025-11-06)
 
 **Purpose:** Lock stable selectors so tests and UI don’t drift mid‑sprint.
 
@@ -63,8 +63,8 @@
 - Share control: `[data-testid="share-link"]` (native button; copies `window.location.href`, announces “Link copied.” / “Unable to copy link.” via `route-msg`)
 
 ## Directions (Provider Steps)
-- Step list: `[data-testid="dir-list"]` — keyboard-focusable container for provider step navigation.
-- Step item: `[data-testid="dir-step"]` carries `data-dir-index="0..N"`; active item sets `aria-current="step"` and syncs with the matching marker/path node.
+- Step list: `[data-testid="turn-list"]` — keyboard-focusable container for provider step navigation (fallback legacy id: `dir-list`).
+- Step item: `[data-testid="turn-item"]` carries `data-dir-index="0..N"`; active item sets `aria-current="step"` and syncs with the matching marker/path node.
 - Status live region: `[data-testid="dir-status"]` (`aria-live="polite"`) surfaces copy such as “N steps”, “No steps”, or provider error text.
 - Keyboard: ArrowUp/ArrowDown cycle steps; Enter moves focus to the related marker/path node when present.
 - Copy hygiene: Adapter layer must strip provider HTML/SSML; render plain strings only.
