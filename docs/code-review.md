@@ -287,5 +287,9 @@ Snapshot: main@dddcdd9 dirty=1 tests=90/1 selectors=v0.7 env=[]
 Outcome: GREEN
 Snapshot: main@0c5be70 dirty=1 tests=90/1 selectors=v0.7 env=[]
 
+[2025-11-07 00:55] nyc-explorer/main P62 — CI selector helper strict gate (#tests=0, green=NA)
+Outcome: CI
+Snapshot: main@c782e8e dirty=1 tests=0/0 selectors=v0.7 env=[]
+
 **Parked Items**
 - (None currently)

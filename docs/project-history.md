@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-07] P62 — CI selector helper strict gate
+In order to hard-fail future selector drift, I set `SELECTOR_HELPER_STRICT=1` for the Playwright Meta Gate in CI so the selector helper spec runs in strict mode.
+Considerations: Scoped change to the workflow env block only, keeping the meta summary and artifacts intact; no runtime code touched.
+Evidence: Workflow-only update (no local tests required).
+Files: .github/workflows/ci.yml; docs/code-review.md; docs/project-history.md.
+
 ### [2025-11-07] P61 — Selector helper meta promoted
 In order to enforce strict selector helper usage, I promoted the meta spec into version control and verified it passes with `SELECTOR_HELPER_STRICT=1` before rerunning the full suite and typecheck.
 Considerations: No offenders remain so strict mode passes locally; CI flip will follow separately once this guard is in main.
