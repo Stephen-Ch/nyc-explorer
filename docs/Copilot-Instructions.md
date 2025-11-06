@@ -1,16 +1,16 @@
-# Copilot-Instructions — UPDATED for Sprint 02 (v2)
+# Copilot-Instructions — UPDATED for Sprint 06 (v6)
 
 > **Read this before every prompt.** Enforces prompt‑only, tiny‑step TDD with zero guessing.
 
 ## Read Order (each prompt)
-Project.md → Sprint-03-Plan.md → Protocol.md → Copilot-Instructions.md → selectors.md → code-review.md (last 3)
+Project.md → Sprint-06-Plan.md → Protocol.md → Copilot-Instructions.md → selectors.md → code-review.md (last 3)
 
 ## Read Order (always)
 
 1) docs/Protocol.md
 2) docs/Copilot-Instructions.md (Prompt Skeleton, Hard Guardrails, Allowed-Edits Fence)
 3) docs/selectors.md
-4) docs/Sprint-04-Plan.md (or latest Sprint-XX-Plan.md)
+4) docs/Sprint-06-Plan.md (or latest Sprint-XX-Plan.md)
 5) docs/code-review.md (read last 3 Decisions lines only)
 6) docs/project-history.md (read last 2 micro-entries only)
 7) docs/Project.md
@@ -143,7 +143,7 @@ Snapshot:
 - Outcome line: append `Completed: <TITLE>` to the reason (all statuses).
 - Commit messages must start with `[<user>] <TITLE> — …` (e.g., `[schur] ROUTE-SHARE-UI-1b — …`).
 
-**Logging Policy:** Project-History.md is updated **after GREEN** only; RED steps are logged in code-review.md.
+**Logging Policy:** Project-History.md is updated **after GREEN** only; RED steps are logged in code-review.md. Playwright meta checks (`tests/meta`) now guard quarantine TTL and log parity before the full suite.
 
 ## Prompt Skeleton (strict)
 - **TITLE**: `P<NN> — <STORY-ID + slice>`

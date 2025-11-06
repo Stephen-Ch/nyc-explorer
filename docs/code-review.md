@@ -218,6 +218,7 @@ SPRINT-06 — CLOSEOUT: suite green; tagged sprint-06-closeout-20251106.
 [2025-11-06 20:05] nyc-explorer/main P49A — CI workflow enforces Playwright + typecheck gates (#tests=0, green=NA)
 [2025-11-06 20:20] nyc-explorer/main P50 — blocker card macro + decisions hook (#tests=0, green=NA)
 [2025-11-06 20:40] nyc-explorer/main P51 — log integrity meta-check (#tests=88, green=true)
+[2025-11-06 21:05] nyc-explorer/main P52 — CI-META-FASTFAIL adds meta gate before suite (#tests=2, green=true)
 
 **Parked Items**
 - (None currently)

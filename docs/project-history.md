@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P52 — CI-META-FASTFAIL
+In order to fail fast on governance drift, I added a Playwright Meta Gate before the full suite and refreshed Copilot instructions to point at Sprint-06 and call out the new enforcement.
+Considerations: Preserved the existing install/typecheck/E2E order; meta gate reuses CI env without extra setup.
+Evidence: npx playwright test tests/meta (GREEN).
+Files: .github/workflows/ci.yml; docs/Copilot-Instructions.md.
+
 ### [2025-11-06] P49A — CI gate enforcement
 In order to align commit-on-green with automation, I updated the existing CI workflow so the Playwright E2E Gate runs `npx playwright install --with-deps && npx playwright test` and the Typecheck Gate runs `npm run typecheck` on every push/PR to main.
 Considerations: Preserved Node 18, .NET setup, and trace upload steps while only renaming the gate steps for idempotence.

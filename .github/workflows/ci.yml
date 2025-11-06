@@ -33,6 +33,11 @@ jobs:
       - name: Typecheck Gate
         run: npm run typecheck
 
+      - name: Playwright Meta Gate
+        run: npx playwright test tests/meta
+        env:
+          CI: true
+
       - name: Playwright E2E Gate
         run: npx playwright install --with-deps && npx playwright test
         env:
