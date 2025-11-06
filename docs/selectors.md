@@ -1,4 +1,4 @@
-# Selectors — Canonical (v0.5, 2025-11-03)
+# Selectors — Canonical (v0.6, 2025-11-05)
 
 **Purpose:** Lock stable selectors so tests and UI don’t drift mid‑sprint.
 
@@ -61,6 +61,14 @@
 - Route path node (optional): `[data-testid="route-node"]`
 - Accessibility: Active markers set `aria-current="step"` and remain keyboard focusable.
 - Share control: `[data-testid="share-link"]` (native button; copies `window.location.href`, announces “Link copied.” / “Unable to copy link.” via `route-msg`)
+
+## Directions (Provider Steps)
+- Step list: `[data-testid="dir-list"]` — keyboard-focusable container for provider step navigation.
+- Step item: `[data-testid="dir-step"]` carries `data-dir-index="0..N"`; active item sets `aria-current="step"` and syncs with the matching marker/path node.
+- Status live region: `[data-testid="dir-status"]` (`aria-live="polite"`) surfaces copy such as “N steps”, “No steps”, or provider error text.
+- Keyboard: ArrowUp/ArrowDown cycle steps; Enter moves focus to the related marker/path node when present.
+- Copy hygiene: Adapter layer must strip provider HTML/SSML; render plain strings only.
+- Parity: Maintain index parity across `[data-testid="dir-step"]`, `[data-testid="poi-marker-active"]`, and `[data-testid="route-node"]`.
 
 ## Routing Adapters (Docs Only)
 - Fixtures: `MockGeocoder`, `MockRouteEngine`; Interfaces: `GeoAdapter`, `RouteAdapter`

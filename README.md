@@ -43,7 +43,7 @@ Verify the mock experience end-to-end:
 - `.env` exposes `GEO_TIMEOUT_MS` (milliseconds) to tune geocoder timeout locally; defaults to 3500. When the limit is hit the UI surfaces “Unable to search locations (timeout)” and hides the typeahead list until retries.
 - Real providers are not wired yet; leave the mock settings in place for Sprint 05.
 - Sprint 06 adds a rate-limit policy: if a real provider call times out or returns HTTP 429, flip both flags back to `mock`, log the event, and rerun using fixtures.
-
+- When you hit rate limits: the live region announces "Using cached results due to provider limits.", the server logs `provider-rate-limit`, and you can force mocks locally by keeping `GEO_PROVIDER=mock` and `ROUTE_PROVIDER=mock`.
 ## Deep-Links & Share
 - **POI routes:** `/?from=<poiId>&to=<poiId>` rehydrates list-based routes, including steps and active markers.
 - **Adapter routes:** `/?gfrom=<lat>,<lng>&gto=<lat>,<lng>&gfl=<label>&gtl=<label>` (labels URL-encoded) redraw the adapter path without POI markers.

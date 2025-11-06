@@ -976,6 +976,7 @@ app.MapGet("/", () =>
                   clearActiveMarkers();
                   clearSteps();
                   clearRouteGraphics();
+                  clearTurnList();
                 }
                 if (hasPath) {
                   drawRouteGraphics(mapped);
@@ -985,9 +986,9 @@ app.MapGet("/", () =>
                 if (mode === 'replace') {
                   if (hasSteps) {
                     renderDirections(providerSteps);
+                    renderTurnList(providerSteps);
                     setDirectionsStatus(`${providerSteps.length} steps.`);
                   } else {
-                    clearTurnList();
                     clearDirections('No steps.');
                   }
                   if (hasSteps && hasPath) {

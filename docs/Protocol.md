@@ -10,6 +10,7 @@
 > Selector Gate: Before implementing UI, update selectors.md (governance section) and bump version.
 > Sprint 05+: insert `docs/Adapters.md` immediately after selectors to honor DI contracts.
 > Deep-link + share slices rely on the selector contracts in `docs/selectors.md` (`share-link`, `route-msg`, geo typeahead hooks).
+> Sprint 06 Directions Gate: Directions UI work (DIR-UI-*) must reference selectors.md v0.6+ (dir- selectors) before adding tests or code.
 
 ## Process Flow (each slice)
 1) **RED** — write failing spec with clear messages (edge + error).  
@@ -44,6 +45,7 @@ Examples
 > **GATE:** Do not start GEO-UI or ROUTE-FIND slices until DOC-SEL-GEO is merged; tests must target the selectors above.
 > **GATE:** DI adapters must match `docs/Adapters.md`; update that doc before swapping providers.
 > **GATE (Sprint 06):** Provider slices stay fixture-backed (no live HTTP in CI); enforce Manhattan clamps + timeout/429 fallback to mock before wiring real adapters.
+> **Gate Check (Sprint 06):** Any slice touching real providers must call out the 429 policy in `docs/Adapters.md` and log a decision plus project-history micro-entry.
 
 ## When ≤60 LOC isn’t enough
 - **BLOCK** with an Ambiguity Card that proposes:

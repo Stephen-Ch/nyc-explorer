@@ -1,17 +1,65 @@
-name,address,neighborhood,cd_id,block,lot,bbl10,lat,lng,sources
-Stonewall Inn,51–53 Christopher St,Greenwich Village,MN02,610,1,1006100001,40.73389,-74.00222,LPC Stonewall report; Wikipedia coords
-Federal Hall National Memorial,26 Wall St,Financial District,MN01,43,6,1000430006,40.7074,-74.01027,LPC Federal Hall report
-Trinity Church,75 Broadway,Financial District,MN01,49,1,1000490001,40.7081,-74.012,LPC Trinity Church report
-New York Stock Exchange,11 Wall St,Financial District,MN01,26,14,1000260014,40.70757,-74.01137,LPC NYSE report
-Woolworth Building,233 Broadway,Tribeca/Civic Center,MN01,123,22,1001230022,40.71256,-74.00931,LPC Woolworth report
-St. Paul's Chapel,209 Broadway,Financial District,MN01,87,1,1000870001,40.71135,-74.00903,LPC St. Paul's report
-Fraunces Tavern,54 Pearl St,Financial District,MN01,7,35,1000070035,40.70338,-74.01193,LPC Fraunces Tavern report
-Cooper Union Foundation Building,7 E 7th St / Cooper Sq,East Village,MN03,465,1,1004650001,40.72912,-73.99041,LPC Cooper Union report
-Tenement Museum,97 Orchard St,Lower East Side,MN03,310,2,1003100002,40.71879,-73.99007,Tenement Museum page
-Eldridge Street Synagogue,12 Eldridge St,Lower East Side/Chinatown,MN03,297,10,1002970010,40.71437,-73.99304,Museum at Eldridge Street page
-St. Mark's Church in-the-Bowery,131 E 10th St,East Village,MN03,457,1,1004570001,40.72979,-73.98768,LPC St. Mark's report
-CBGB Building (315 Bowery),315 Bowery,Bowery/East Village,MN03,448,1,1004480001,40.72574,-73.99255,NYC LPC Bowery HD report; Wikipedia
-Fillmore East (former),105 Second Ave,East Village,MN03,450,58,1004500058,40.7276,-73.9886,Wikipedia; historic maps
-McSorley's Old Ale House,15 E 7th St,East Village,MN03,463,5,1004630005,40.72856,-73.98946,NYC PLUTO / references; Wikipedia
-Merchant's House Museum,29 E 4th St,NoHo,MN02,544,71,1005440071,40.72738,-73.99266,LPC Old Merchant's House report
-Puck Building,295 Lafayette St,Nolita/SoHo,MN02,510,45,1005100045,40.72401,-73.99645,LPC Puck Building report
+name,address,cd_id,neighborhood,block,lot,bbl10,lat,lng,status,sources
+Stonewall Inn,51–53 Christopher St,MN02,Greenwich Village,610,1,1006100001,40.73389,-74.00222,verified,"LPC Stonewall; NPS"
+Federal Hall National Memorial,26 Wall St,MN01,Financial District,43,6,1000430006,40.7074,-74.01027,verified,"LPC Federal Hall"
+Trinity Church,75 Broadway,MN01,Financial District,49,1,1000490001,40.7081,-74.012,verified,"LPC Trinity"
+New York Stock Exchange,11 Wall St,MN01,Financial District,26,14,1000260014,40.70757,-74.01137,verified,"LPC NYSE"
+Woolworth Building,233 Broadway,MN01,Civic Center,123,22,1001230022,40.71256,-74.00931,verified,"LPC Woolworth"
+St. Paul's Chapel,209 Broadway,MN01,Financial District,87,1,1000870001,40.71135,-74.00903,verified,"LPC St. Paul's"
+Fraunces Tavern,54 Pearl St,MN01,Financial District,7,35,1000070035,40.70338,-74.01193,verified,"LPC Fraunces"
+Cooper Union Foundation Building,7 E 7th St / Cooper Sq,MN03,East Village,465,1,1004650001,40.72912,-73.99041,verified,"LPC Cooper Union"
+Tenement Museum (97 Orchard),97 Orchard St,MN03,Lower East Side,310,2,1003100002,40.71879,-73.99007,verified,"Tenement Museum; NYC records"
+Eldridge Street Synagogue,12 Eldridge St,MN03,Lower East Side/Chinatown,297,10,1002970010,40.71437,-73.99304,verified,"Museum at Eldridge Street"
+St. Mark's Church in-the-Bowery,131 E 10th St,MN03,East Village,457,1,1004570001,40.72979,-73.98768,verified,"LPC St. Mark's"
+CBGB Building,315 Bowery,MN03,Bowery/East Village,448,1,1004480001,40.72574,-73.99255,verified,"LPC Bowery HD"
+Fillmore East (former),105 Second Ave,MN03,East Village,450,58,1004500058,40.7276,-73.9886,verified,"Venue histories"
+McSorley's Old Ale House,15 E 7th St,MN03,East Village,463,5,1004630005,40.72856,-73.98946,verified,"PLUTO; histories"
+Puck Building,295 Lafayette St,MN02,Nolita/SoHo,510,45,1005100045,40.72401,-73.99645,verified,"LPC Puck"
+Washington Square Arch,Washington Sq N & 5th Ave,MN02,Greenwich Village,,,,40.73136,-73.99702,needs_verification,"LPC Washington Square Park; verify"
+Washington Square Park (interior),Washington Square Park,MN02,Greenwich Village,,,,40.73085,-73.99733,needs_verification,"NYC Parks; verify park BBL"
+St. Patrick's Old Cathedral,263 Mulberry St,MN02,Nolita,,,,40.72384,-73.99506,needs_verification,"LPC St. Patrick's Old Cathedral; verify"
+Bowery Ballroom,6 Delancey St,MN03,Lower East Side,,,,40.72165,-73.99253,needs_verification,"Venue records; verify BBL"
+Katz's Delicatessen,205 E Houston St,MN03,Lower East Side,,,,40.72231,-73.9874,needs_verification,"Business records; verify BBL"
+Angel Orensanz Foundation,172 Norfolk St,MN03,Lower East Side,,,,40.72056,-73.98765,needs_verification,"LPC/venue; verify"
+The Public Theater (Astor Library),425 Lafayette St,MN02,NoHo,,,,40.72955,-73.99151,needs_verification,"LPC Astor Library; verify"
+Merchant's House Museum Neighbors,21-27 E 4th St,MN02,NoHo,,,,40.72762,-73.99296,needs_verification,"LPC NoHo; verify"
+Old St. Patrick's Basilica Cemetery Gate,Mott St & Prince St,MN02,Nolita,,,,40.72366,-73.99592,needs_verification,"LPC; verify"
+Judson Memorial Church,55 Washington Square S,MN02,Greenwich Village,,,,40.73033,-73.99782,needs_verification,"LPC; verify"
+Old Police Headquarters,240 Centre St,MN02,Little Italy/SoHo,,,,40.72027,-73.99846,needs_verification,"LPC Police HQ; verify"
+New Museum (site),235 Bowery,MN02,Bowery,,,,40.72239,-73.99351,needs_verification,"Museum; verify"
+The Bitter End,147 Bleecker St,MN02,Greenwich Village,,,,40.72851,-73.99984,needs_verification,"Venue; verify"
+Blue Note Jazz Club,131 W 3rd St,MN02,Greenwich Village,,,,40.73054,-74.00062,needs_verification,"Venue; verify"
+La MaMa Experimental Theatre Club,66 E 4th St,MN03,East Village/NoHo,,,,40.72689,-73.99028,needs_verification,"Theatre; verify"
+Public Theater - Joe's Pub Entrance,425 Lafayette (Joe's Pub),MN02,NoHo,,,,40.72937,-73.99145,needs_verification,"Venue; verify"
+Merchant's House Museum,29 E 4th St,MN02,NoHo,544,71,1005440071,40.72738,-73.99266,verified,"LPC Old Merchant's House"
+Hotel Chelsea,222 W 23rd St,MN04,Chelsea,,,,,,needs_verification,"LPC PDF"
+The High Line (Park),Gansevoort to W 30 St,MN04,West Chelsea,,,,,,needs_verification,"NYC Parks; multi-lot"
+The Shed,545 W 30th St,MN04,Hudson Yards,,,,,,needs_verification,
+The Vessel (Hudson Yards),20 Hudson Yards,MN04,Hudson Yards,,,,,,needs_verification,
+Empire State Building,20 W 34th St,MN05,Midtown,,,,,,needs_verification,"LPC; DOF"
+New York Public Library (Main),476 5th Ave,MN05,Midtown/Bryant Park,,,,,,needs_verification,"LPC; DOF"
+Grand Central Terminal,89 E 42nd St,MN05,Midtown,,,,,,needs_verification,"LPC; MTA"
+Chrysler Building,405 Lexington Ave,MN05,Midtown,,,,,,needs_verification,"LPC"
+Rockefeller Center (30 Rock),30 Rockefeller Plaza,MN05,Rockefeller Center,,,,,,needs_verification,"LPC"
+United Nations Headquarters,405 E 42nd St,MN06,Turtle Bay,,,,,,needs_verification,"UN; multi-lot"
+Gramercy Park (Private Park),E 20th-21st St,MN06,Gramercy,,,,,,needs_verification,"Park BBL"
+The Morgan Library & Museum,225 Madison Ave,MN06,Murray Hill,,,,,,needs_verification,"LPC"
+Lincoln Center for the Performing Arts,Broadway & W 65th St,MN07,Lincoln Square,,,,,,needs_verification,"Multiple halls, multiple lots"
+American Museum of Natural History,Central Park West at 79th,MN07,Upper West Side,,,,,,needs_verification,"LPC"
+The Dakota,1 W 72nd St,MN07,Upper West Side,,,,,,needs_verification,"LPC"
+The Metropolitan Museum of Art,1000 5th Ave,MN08,Upper East Side,,,,,,needs_verification,"LPC"
+Solomon R. Guggenheim Museum,1071 5th Ave,MN08,Upper East Side,,,,,,needs_verification,"LPC"
+Park Avenue Armory,643 Park Ave,MN08,Upper East Side,,,,,,needs_verification,"LPC"
+Gracie Mansion,East End Ave at 88th St,MN08,Yorkville,,,,,,needs_verification,"NYC Parks"
+Columbia University (Low Library),535 W 116th St,MN09,Morningside Heights,,,,,,needs_verification,"Campus lots"
+Cathedral Church of St. John the Divine,1047 Amsterdam Ave,MN09,Morningside Heights,,,,,,needs_verification,"LPC"
+Riverside Church,490 Riverside Dr,MN09,Morningside Heights,,,,,,needs_verification,"LPC"
+General Grant National Memorial,Riverside Dr & 122nd St,MN09,Morningside Heights,,,,,,needs_verification,"NPS"
+Apollo Theater,253 W 125th St,MN10,Central Harlem,,,,,,needs_verification,"LPC"
+Abyssinian Baptist Church,132 W 138th St,MN10,Central Harlem,,,,,,needs_verification,"LPC"
+Schomburg Center for Research in Black Culture,515 Malcolm X Blvd,MN10,Central Harlem,,,,,,needs_verification,
+El Museo del Barrio,1230 5th Ave,MN11,East Harlem,,,,,,needs_verification,
+Museum of the City of New York,1220 5th Ave,MN11,East Harlem,,,,,,needs_verification,"LPC"
+La Marqueta,Park Ave at 116th St,MN11,East Harlem,,,,,,needs_verification,
+The Cloisters (Met Cloisters),99 Margaret Corbin Dr,MN12,Inwood,,,,,,needs_verification,"NPS/Met"
+United Palace,4140 Broadway,MN12,Washington Heights,,,,,,needs_verification,"LPC"
+Dyckman Farmhouse Museum,4881 Broadway,MN12,Inwood,,,,,,needs_verification,"LPC"

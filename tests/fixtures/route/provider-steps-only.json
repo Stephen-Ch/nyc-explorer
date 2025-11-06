@@ -1,0 +1,24 @@
+{
+  "routes": [
+    {
+      "legs": [
+        {
+          "steps": [
+            {
+              "navigationInstruction": { "instructions": "Continue toward 5th Avenue" },
+              "startLocation": { "latLng": { "latitude": 40.7362, "longitude": -73.9909 } },
+              "distanceMeters": 85,
+              "duration": { "text": "1 min" }
+            },
+            {
+              "navigationInstruction": { "instructions": "Arrive at Bryant Park" },
+              "startLocation": { "latLng": { "latitude": 40.7536, "longitude": -73.9832 } },
+              "distanceMeters": 0,
+              "duration": { "text": "0 min" }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

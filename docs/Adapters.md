@@ -67,3 +67,10 @@ UI (geo inputs, buttons)
 ```
 
 **Note:** Any adapter change requires updating this document plus selectors.md contracts.
+
+### Rate Limit (429) Policy
+- **Scope:** Applies to real Geo and Route adapters in Sprint 06+.
+- **Detection:** Treat HTTP 429 responses and provider-specific "too many requests" bodies as rate limits.
+- **Immediate action:** Swap the affected adapter back to its mock fixtures for the session and emit a single `provider-rate-limit` log event.
+- **Recovery:** Allow retries only after the user triggers a new Find/typing interaction or the cooldown elapses quietly (`GEO_RATE_LIMIT_COOLDOWN_MS=30000`, `ROUTE_RATE_LIMIT_COOLDOWN_MS=60000`).
+- **UX copy:** Live region message remains plain text: `Using cached results due to provider limits.` (no HTML).

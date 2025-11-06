@@ -346,12 +346,8 @@
           throw error;
         }
       };
-      const isRateLimitError = (error) => {
-        if (!error) return false;
-        if (error.status === 429) return true;
-        if (error.name === 'ProviderTimeoutError') return true;
-        return isTimeoutLike(error);
-      };
+      const isProviderTimeoutError = (error) => Boolean(error && error.name === 'ProviderTimeoutError');
+      const isRateLimitError = (error) => Boolean(error && error.status === 429);
       pathImpl = async function providerRoutePath(from, to) {
         const origin = toGeoPayload(from);
         const dest = toGeoPayload(to);
@@ -368,6 +364,13 @@
             }
             return result;
           } catch (error) {
+            if (isProviderTimeoutError(error)) {
+              if (attempt >= 2) {
+                routeCooldownUntil = Date.now() + routeCooldownMs;
+                throw error;
+              }
+              continue;
+            }
             if (isRateLimitError(error)) {
               if (attempt >= 2) {
                 routeCooldownUntil = Date.now() + routeCooldownMs;

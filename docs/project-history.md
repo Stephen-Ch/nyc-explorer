@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-05] P40-FIX — Pathless turn list preserved
+In order to keep provider routes useful when polylines are missing, I updated Program.cs to render the turn list before clearing state and to reuse provider steps during fallback.
+Considerations: Skips overlay/history updates when no path exists while leaving rate-limit cooldown behavior untouched.
+Evidence: npx playwright test tests/e2e/route-find-real.spec.ts; npx playwright test; npm run typecheck (green).
+Files: apps/web-mvc/Program.cs; docs/code-review.md.
+
 ### [2025-11-05] P37 — Provider cooldown fallback
 In order to keep routes available through provider 429s, I added a retry + cooldown that returns mock results while preserving turn-list steps.
 Considerations: Cooldown defaults to 300000ms via window.ENV and only re-enables provider calls after the window expires.

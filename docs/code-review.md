@@ -217,6 +217,8 @@ P34-FIX — ROUTE-FIND steps-only preservation: keep turn list when pathless; mo
 
 [2025-11-05 22:05] nyc-explorer/main P38 — quarantine legacy RED contracts (skipped specs) (#tests=full, green=true; typecheck=green)
 
+[2025-11-05 23:15] nyc-explorer/main P40-FIX — preserve provider turn list on pathless fallback (#tests=full, green=true; typecheck=green)
+
 **Parked Items**
 - (None currently)
 [2025-11-05 20:15] nyc-explorer/main P34-FIX — pathless provider wiring keeps turn list; GREEN (#tests=3, green=true; typecheck=green)

@@ -1,0 +1,32 @@
+{
+  "routes": [
+    {
+      "polyline": {
+        "coordinates": [
+          { "latLng": { "latitude": 40.7359, "longitude": -73.9911 } },
+          { "latLng": { "latitude": 40.742, "longitude": -73.987 } },
+          { "latLng": { "latitude": 40.746, "longitude": -73.985 } },
+          { "latLng": { "latitude": 40.7536, "longitude": -73.9832 } }
+        ]
+      },
+      "legs": [
+        {
+          "steps": [
+            {
+              "navigationInstruction": { "instructions": "Head north on Broadway" },
+              "startLocation": { "latLng": { "latitude": 40.7359, "longitude": -73.9911 } },
+              "distanceMeters": 320,
+              "duration": { "text": "4 min" }
+            },
+            {
+              "navigationInstruction": { "instructions": "Turn right toward Bryant Park" },
+              "startLocation": { "latLng": { "latitude": 40.753, "longitude": -73.984 } },
+              "distanceMeters": 120,
+              "duration": { "text": "2 min" }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

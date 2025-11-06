@@ -64,7 +64,7 @@ test.describe('ROUTE-FIND-4a — provider wiring contract (RED)', () => {
     await removeRoute();
   });
 
-  test.skip('falls back to turn list when provider omits polyline', async ({ page }) => {
+  test('falls back to turn list when provider omits polyline', async ({ page }) => {
     // RED CONTRACT — provider fallback pending
     await forceProviders(page);
     const removeGeo = await configureGeo(page);
@@ -86,7 +86,7 @@ test.describe('ROUTE-FIND-4a — provider wiring contract (RED)', () => {
     await removeRoute();
   });
 
-  test.skip('announces provider timeout without crashing', async ({ page }) => {
+  test('announces provider timeout without crashing', async ({ page }) => {
     // RED CONTRACT — timeout handling pending
     await forceProviders(page);
     const removeGeo = await configureGeo(page);
