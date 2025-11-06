@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-07] P76 — setGeoStatus module split
+In order to centralize geolocation status handling, I moved the shared helper into /js/geo-status.js and registered the live region from home.inline.
+Considerations: No UX or copy drift; module preserves the App.geo.setStatus contract and existing busy-button toggles.
+Evidence: npx playwright test tests/e2e/env-hydration.spec.ts ... geo-typeahead-a11y.spec.ts (GREEN); npx playwright test (RED baseline 58/36/1); npm run typecheck (green).
+Files: apps/web-mvc/wwwroot/js/geo-status.js; apps/web-mvc/wwwroot/static/home.inline.html.
+
 ### [2025-11-06] P75 — CODE-SMELL ANALYSIS refresh
 In order to keep the smell log aligned with the Program.cs split and typeahead work, I refreshed CODE-SMELL-ANALYSIS with a progress section and updated statuses.
 Considerations: Document now reflects HomeHtmlProvider backstop, ENV hydration, and partial typeahead dedupe while calling out pending module extraction; no runtime changes shipped.

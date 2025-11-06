@@ -325,6 +325,9 @@ Snapshot: main@8a66ea1; pass=54 fail=40 skip=1
 [2025-11-06 23:45] nyc-explorer/main P74 — GEO-STATUS/DISABLE — unified status + disable; timeout copy (#tests=6, green=true)
 Outcome: GREEN (geo-current*.spec.ts / geo-provider-from*.spec.ts targeted; no new regressions)
 Snapshot: main@fa484d3 dirty=1 tests=6/0 selectors=v0.7 env=[]
+[2025-11-07 00:45] nyc-explorer/main P76 — EXTRACT-JS-1a — setGeoStatus extracted to /js/geo-status.js (#tests=95, green=false)
+Outcome: GREEN (env-hydration + geo current/provider/typeahead targeted; baseline unchanged at 58 pass / 36 fail / 1 skip)
+Snapshot: main@2daf58d dirty=1 tests=58/36 selectors=v0.7 env=[] skip=1
 
 **Parked Items**
 - (None currently)
