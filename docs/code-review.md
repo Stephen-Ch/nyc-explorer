@@ -8,6 +8,7 @@ Track all development decisions in chronological order using the standardized fo
 [YYYY-MM-DD HH:MM] <REPO>/<BRANCH> <STORY-ID> — <~12 words on what changed> (#tests=<N>, green=<true|false>)
 <!-- DECISIONS_TEMPLATE_SNAPSHOT -->
 Snapshot: <branch>@<sha> dirty=<n> tests=<pass>/<skip> selectors=vX.Y env=[...]
+Blocker: <link or inline card>
 ```
 
 **Guidelines**
@@ -215,6 +216,7 @@ SPRINT-06 — CLOSEOUT: suite green; tagged sprint-06-closeout-20251106.
 [2025-11-06 19:25] nyc-explorer/main P47 — snapshot wiring (session ritual + decisions template) (#tests=0, green=NA)
 [2025-11-06 19:50] nyc-explorer/main P48 — quarantine meta-check enforces skip cap + label (#tests=87, green=true)
 [2025-11-06 20:05] nyc-explorer/main P49A — CI workflow enforces Playwright + typecheck gates (#tests=0, green=NA)
+[2025-11-06 20:20] nyc-explorer/main P50 — blocker card macro + decisions hook (#tests=0, green=NA)
 
 **Parked Items**
 - (None currently)

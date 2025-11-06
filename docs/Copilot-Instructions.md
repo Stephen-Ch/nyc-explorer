@@ -79,6 +79,28 @@ SNAPSHOT:
 ```
 <!-- /REPO_SNAPSHOT_MACRO_BLOCK -->
 
+<!-- BLOCKER_CARD -->
+## Blocker Card Macro
+- Trigger this after Loop Stop Rules fire (two failed attempts or repeated failure).
+- Populate every field before pausing for user input.
+
+```
+BLOCKER CARD — <STORY-ID>
+Context:
+- <summary of work attempted>
+Failing specs:
+- <spec + failure detail>
+Last diffs (paths only):
+- <relative/path>
+Top hypothesis:
+- <root-cause guess>
+Next experiments:
+1. <minimal follow-up>
+2. <secondary option>
+Snapshot:
+- branch: <name>@<sha>
+```
+
 <!-- PROMPT_SCHEMA_V2 -->
 ## Prompt Schema v2 (reply preamble)
 - Surface all required headers before acting: READ, GOAL, ACCEPTANCE, CONSTRAINTS, FILES, COMMANDS, LOGGING, COMMIT-ON-GREEN, WHY-NOW, DRIFT-RADAR.

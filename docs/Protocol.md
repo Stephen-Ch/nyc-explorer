@@ -59,6 +59,28 @@ If any header lacks data, pause and request clarification before editing.
 - When starting complex slices, capture current `git status -sb` and head commit hash.
 - Store snapshot details in the response for traceability; skip if unchanged from prior prompt.
 
+<!-- BLOCKER_CARD -->
+## Blocker Card Template
+- Invoke after Loop Stop Rules fire (two failed attempts or repeated failures).
+- Fill every field before pausing for user direction.
+
+```
+BLOCKER CARD — <STORY-ID>
+Context:
+- <summary of the attempted work>
+Failing specs:
+- <spec name — failure detail>
+Last diffs (paths only):
+- <relative/path>
+Top hypothesis:
+- <suspected root cause>
+Next experiments:
+1. <minimal follow-up>
+2. <backup experiment>
+Snapshot:
+- branch: <name>@<sha>
+```
+
 <!-- SELECTOR_CANON -->
 ## Selector Canon Freeze
 - Treat `docs/selectors.md` as immutable during a prompt unless the user issues a dedicated selector-change request.

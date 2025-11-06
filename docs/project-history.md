@@ -25,6 +25,12 @@ Considerations: Preserved Node 18, .NET setup, and trace upload steps while only
 Evidence: docs-only workflow edit (no local tests required).
 Files: .github/workflows/ci.yml.
 
+### [2025-11-06] P50 — Blocker card macro
+In order to standardize loop stoppage, I added a Blocker Card macro with context, failing specs, diffs, hypothesis, experiments, and snapshot fields, plus an optional log line so incidents are traceable.
+Considerations: Anchored sections in Protocol and Copilot instructions ensure idempotency; no runtime code touched.
+Evidence: docs-only update (no tests required).
+Files: docs/Protocol.md; docs/Copilot-Instructions.md; docs/code-review.md.
+
 ### [2025-11-06] P48 — Quarantine meta-check
 In order to enforce the 48h TTL policy, I added a Playwright meta spec that fails when `test.skip` usage exceeds the cap or lacks the RED label, keeping the current single skip in compliance.
 Considerations: Tests-only addition under 60 LOC; leans on existing selector contracts but does not touch runtime code.
