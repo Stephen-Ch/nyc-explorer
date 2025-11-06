@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P49A — CI gate enforcement
+In order to align commit-on-green with automation, I updated the existing CI workflow so the Playwright E2E Gate runs `npx playwright install --with-deps && npx playwright test` and the Typecheck Gate runs `npm run typecheck` on every push/PR to main.
+Considerations: Preserved Node 18, .NET setup, and trace upload steps while only renaming the gate steps for idempotence.
+Evidence: docs-only workflow edit (no local tests required).
+Files: .github/workflows/ci.yml.
+
 ### [2025-11-06] P48 — Quarantine meta-check
 In order to enforce the 48h TTL policy, I added a Playwright meta spec that fails when `test.skip` usage exceeds the cap or lacks the RED label, keeping the current single skip in compliance.
 Considerations: Tests-only addition under 60 LOC; leans on existing selector contracts but does not touch runtime code.
