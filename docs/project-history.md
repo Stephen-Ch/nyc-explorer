@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-07] P64 — PR template prompt schema
+In order to align reviews with Prompt Schema v2, I added a pull request template capturing Snapshot, prompt metadata, fences, test outcomes, and release checks for Commit-on-Green and Quarantine TTL.
+Considerations: Template lives under `.github/` with anchors for idempotent updates; no runtime code touched.
+Evidence: docs-only addition (no tests required).
+Files: .github/pull_request_template.md; docs/code-review.md; docs/project-history.md.
+
 ### [2025-11-07] P63 — CI badge + gates summary
 In order to surface our enforcement pipeline, I added a README badge for the CI workflow and documented the Meta, E2E, and Typecheck gates under a dedicated anchors section.
 Considerations: Docs-only change that preserves existing anchors and keeps the workflow name untouched so the badge stays stable.

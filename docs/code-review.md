@@ -295,5 +295,9 @@ Snapshot: main@c782e8e dirty=1 tests=0/0 selectors=v0.7 env=[]
 Outcome: DOCS
 Snapshot: main@128b689 dirty=1 tests=0/0 selectors=v0.7 env=[]
 
+[2025-11-07 01:25] nyc-explorer/main P64 — PR template prompt schema (#tests=0, green=NA)
+Outcome: DOCS
+Snapshot: main@ccea89a dirty=1 tests=0/0 selectors=v0.7 env=[]
+
 **Parked Items**
 - (None currently)
