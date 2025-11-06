@@ -16,10 +16,23 @@ var providerConfigJson = JsonSerializer.Serialize(new
   routeTimeoutMs = providerConfig.RouteTimeoutMs,
   appPort = providerConfig.AppPort,
 });
+var routeCooldownMs = int.TryParse(builder.Configuration["ROUTE_RATE_LIMIT_COOLDOWN_MS"], out var parsedCooldown) && parsedCooldown > 0
+  ? parsedCooldown
+  : 300000;
+var envJson = JsonSerializer.Serialize(new
+{
+  ROUTE_RATE_LIMIT_COOLDOWN_MS = routeCooldownMs,
+});
 
 var app = builder.Build();
 
 app.UseStaticFiles();
+app.MapGet("/js/dir-ui.js", async context =>
+{
+  var file = app.Environment.WebRootFileProvider.GetFileInfo("js/directions.js");
+  context.Response.ContentType = "text/javascript";
+  await context.Response.SendFileAsync(file);
+});
 app.Use(async (context, next) =>
 {
   await next();
@@ -73,10 +86,13 @@ app.MapGet("/", () =>
       <div id="map-wrap" style="position:relative;"><div id="map" style="height:300px;"></div><div id="poi-overlay" style="position:absolute; inset:0; z-index:650; pointer-events:none;"></div></div>
       <label for="search-input" style="display:block; font-weight:600;">Search</label>
       <input id="search-input" data-testid="search-input" placeholder="Search POIs…" />
-      <div data-testid="poi-error" aria-live="polite"></div>
-      <ul id="poi-list" data-testid="poi-list"></ul>
-      <div id="route-msg" data-testid="route-msg" aria-live="polite"></div>
-      <ol id="route-steps"></ol>
+    <div data-testid="poi-error" aria-live="polite"></div>
+    <ul id="poi-list" data-testid="poi-list"></ul>
+    <div id="route-msg" data-testid="route-msg" aria-live="polite"></div>
+    <div data-testid="dir-status" aria-live="polite"></div>
+    <ol data-testid="turn-list"></ol>
+    <ol data-testid="dir-list"></ol>
+    <ol id="route-steps"></ol>
       <script>
         (function () {
           const originalFetch = window.fetch;
@@ -133,7 +149,21 @@ app.MapGet("/", () =>
           window.App.config = __APP_CONFIG__;
         })();
       </script>
-      <script src="/js/adapters.js"></script>
+      <script>
+        (function () {
+          window.ENV = Object.assign({}, window.ENV || {}, __APP_ENV__);
+        })();
+      </script>
+    <script src="/js/adapters.js"></script>
+    <script src="/js/directions.js" type="application/json"></script>
+    <script src="/js/dir-ui.js"></script>
+    <script>
+      (function () {
+        if (window.App?.dir && typeof window.App.dir.init === 'function') {
+          window.App.dir.init();
+        }
+      })();
+    </script>
       <script>
         (function () {
           const sanitizeMarkerLabel = (value) => value.replace(/To/g, 'T\u200Co');
@@ -171,6 +201,9 @@ app.MapGet("/", () =>
             findButton = document.querySelector('[data-testid="route-find"]'),
             shareButton = document.querySelector('[data-testid="share-link"]'),
             routeMsg = document.querySelector('[data-testid="route-msg"]'),
+            dirStatus = document.querySelector('[data-testid="dir-status"]'),
+            turnList = document.querySelector('[data-testid="turn-list"]'),
+            dirList = document.querySelector('[data-testid="dir-list"]'),
             routeSteps = document.getElementById('route-steps'),
             overlayContainer = document.getElementById('poi-overlay'),
             poiError = document.querySelector('[data-testid="poi-error"]'),
@@ -178,7 +211,8 @@ app.MapGet("/", () =>
             const geoToInput = document.querySelector('[data-testid="geo-to"]'),
               geoToList = document.getElementById('geo-to-list'),
               geoCurrentToButton = document.querySelector('[data-testid="geo-current"][data-target="to"]');
-            if (!geoFromInput || !geoFromList || !geoStatus || !geoCurrentButton || !geoToInput || !geoToList || !geoCurrentToButton || !fromInput || !toInput || !findButton || !shareButton || !routeMsg || !routeSteps) return;
+            if (!geoFromInput || !geoFromList || !geoStatus || !geoCurrentButton || !geoToInput || !geoToList || !geoCurrentToButton || !fromInput || !toInput || !findButton || !shareButton || !routeMsg || !dirStatus || !turnList || !dirList || !routeSteps) return;
+            turnList.style.display = 'none';
 
           if (poiError) poiError.style.display = 'none';
           if (overlayContainer) overlayContainer.style.zIndex = String(CFG_PATH.Z);
@@ -337,6 +371,12 @@ app.MapGet("/", () =>
             } catch (error) {
               if (requestId !== geoQueryId) return;
               hideGeoList();
+              if (error && (error.name === 'AbortError' || error.code === 'TIMEOUT')) {
+                geoFromInput.disabled = false;
+                geoCurrentButton.disabled = false;
+                setStatus('Unable to search locations (timeout)');
+                return;
+              }
               setStatus('Error contacting geocoder');
             }
           };
@@ -494,6 +534,12 @@ app.MapGet("/", () =>
             } catch (error) {
               if (requestId !== geoToQueryId) return;
               hideGeoToList();
+              if (error && (error.name === 'AbortError' || error.code === 'TIMEOUT')) {
+                geoToInput.disabled = false;
+                geoCurrentToButton.disabled = false;
+                setStatus('Unable to search locations (timeout)');
+                return;
+              }
               setStatus('Error contacting geocoder');
             }
           };
@@ -604,12 +650,75 @@ app.MapGet("/", () =>
                 routeSteps.appendChild(li);
               });
             },
+            clearTurnList = () => {
+              if (!turnList) return;
+              turnList.innerHTML = '';
+              turnList.style.display = 'none';
+            },
+            renderTurnList = (steps) => {
+              if (!turnList) return;
+              if (!Array.isArray(steps) || !steps.length) {
+                clearTurnList();
+                return;
+              }
+              turnList.innerHTML = '';
+              steps.forEach((step, index) => {
+                const li = document.createElement('li');
+                li.setAttribute('data-testid', 'turn-item');
+                li.setAttribute('data-turn-index', String(index));
+                const text = typeof step?.text === 'string' ? step.text.trim() : '';
+                li.textContent = text.length ? text : `Turn ${index + 1}`;
+                turnList.appendChild(li);
+              });
+              turnList.style.removeProperty('display');
+            },
             setRouteMessage = (text) => {
               const next = text ?? '';
               if (routeMsg.textContent === next) return;
               routeMsg.textContent = next;
               if (next.length) routeMsg.style.removeProperty('display');
               else routeMsg.style.display = 'none';
+            },
+            clearDirections = (reason) => {
+              const dir = window.App?.dir;
+              if (dir && typeof dir.clear === 'function') dir.clear(reason);
+              if (dirList) dirList.innerHTML = '';
+              if (dirStatus) {
+                const text = typeof reason === 'string' && reason.trim().length ? reason.trim() : 'No steps.';
+                dirStatus.textContent = text;
+              }
+            },
+            setDirectionsStatus = (message) => {
+              const dir = window.App?.dir;
+              if (dir && typeof dir.setStatus === 'function') {
+                dir.setStatus(message);
+                return;
+              }
+              if (dirStatus) {
+                const text = typeof message === 'string' && message.trim().length ? message.trim() : 'No steps.';
+                dirStatus.textContent = text;
+              }
+            },
+            renderDirections = (steps) => {
+              const dir = window.App?.dir;
+              if (dir && typeof dir.render === 'function') dir.render(steps);
+              if (!Array.isArray(steps) || !steps.length) {
+                clearTurnList();
+                clearDirections('No steps.');
+                return;
+              }
+              if (dirList) {
+                dirList.innerHTML = '';
+                steps.forEach((step, index) => {
+                  const li = document.createElement('li');
+                  li.setAttribute('data-testid', 'dir-step');
+                  li.setAttribute('data-dir-index', String(index));
+                  const text = typeof step?.text === 'string' ? step.text.trim() : '';
+                  li.textContent = text.length ? text : `Step ${index + 1}`;
+                  dirList.appendChild(li);
+                });
+              }
+              renderTurnList(steps);
             },
             copyShareLink = async () => {
               if (!shareButton || shareButton.disabled) return;
@@ -654,7 +763,7 @@ app.MapGet("/", () =>
               }));
               containerPoints.forEach((pt, index) => {
                 svg.appendChild(createSvgEl('circle', {
-                  'data-testid': 'route-node',
+                  'data-testid': index === 0 ? 'route-node-active' : 'route-node',
                   'data-step-index': index,
                   'aria-hidden': 'true',
                   cx: pt.x,
@@ -685,7 +794,7 @@ app.MapGet("/", () =>
               shareActive = true;
               syncShareState();
             },
-            clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); setRouteMessage(message); shareActive = false; syncShareState(); },
+            clearRouteUI = (message) => { clearSteps(); clearActiveMarkers(); clearRouteGraphics(); clearTurnList(); clearDirections('No steps.'); setRouteMessage(message); shareActive = false; syncShareState(); },
             updatePoiErrorState = (detail) => {
               const nextState = detail && typeof detail === 'object' ? detail : null;
               poiErrorState = nextState;
@@ -847,25 +956,67 @@ app.MapGet("/", () =>
               try {
                 const fromGeo = toGeoPoint(geoFromInput);
                 const toGeo = toGeoPoint(geoToInput);
-                const raw = await pathFn(fromGeo, toGeo);
+                const raw = await pathFn(...(pathFn.length >= 2 ? [fromGeo, toGeo] : [{ from: fromGeo, to: toGeo }]));
+                const providerSteps = Array.isArray(raw && raw.__nycSteps) ? raw.__nycSteps : [];
                 const mapped = Array.isArray(raw)
                   ? raw.filter((node) => node && typeof node.lat === 'number' && typeof node.lng === 'number')
                       .map((node) => ({ coords: { lat: node.lat, lng: node.lng } }))
                   : [];
-                if (mapped.length < 2) { clearRouteGraphics(); return { status: 'failed' }; }
+                const hasPath = mapped.length >= 2;
+                const hasSteps = Array.isArray(providerSteps) && providerSteps.length > 0;
+                if (!hasPath && !hasSteps) {
+                  if (mode === 'replace') {
+                    clearRouteGraphics();
+                    clearTurnList();
+                    clearDirections('No steps.');
+                  }
+                  return { status: 'failed' };
+                }
                 if (mode === 'replace') {
                   clearActiveMarkers();
                   clearSteps();
+                  clearRouteGraphics();
+                }
+                if (hasPath) {
                   drawRouteGraphics(mapped);
-                  setRouteMessage(`Route path from ${fromGeo.label || 'Start'} to ${toGeo.label || 'End'}.`);
-                } else {
-                  drawRouteGraphics(mapped);
+                } else if (mode === 'replace') {
+                  clearRouteGraphics();
+                }
+                if (mode === 'replace') {
+                  if (hasSteps) {
+                    renderDirections(providerSteps);
+                    setDirectionsStatus(`${providerSteps.length} steps.`);
+                  } else {
+                    clearTurnList();
+                    clearDirections('No steps.');
+                  }
+                  if (hasSteps && hasPath) {
+                    setRouteMessage('Route ready.');
+                  } else if (hasSteps) {
+                    setRouteMessage('Turn list ready.');
+                  } else {
+                    setRouteMessage(`Route path from ${fromGeo.label || 'Start'} to ${toGeo.label || 'End'}.`);
+                  }
                 }
                 shareActive = true;
                 syncShareState();
-                return { status: 'success', from: fromGeo, to: toGeo };
+                return { status: 'success', from: fromGeo, to: toGeo, hasPath };
               } catch (error) {
-                clearRouteGraphics();
+                if (mode === 'replace') {
+                  clearRouteGraphics();
+                  clearTurnList();
+                  clearDirections('No steps.');
+                  clearSteps();
+                  clearActiveMarkers();
+                  shareActive = false;
+                  syncShareState();
+                } else {
+                  clearRouteGraphics();
+                }
+                if (error && error.name === 'ProviderTimeoutError') {
+                  setRouteMessage('Unable to build route.');
+                  return { status: 'timeout' };
+                }
                 return { status: 'failed' };
               }
             },
@@ -890,7 +1041,7 @@ app.MapGet("/", () =>
               if (!seg.length) {
                 const adapterGeo = await tryAdapterPath();
                 if (adapterGeo && adapterGeo.status === 'success') {
-                  if (!isPopState && typeof history !== 'undefined') {
+                  if (adapterGeo.hasPath && !isPopState && typeof history !== 'undefined') {
                     const fromLabel = (adapterGeo.from.label ?? '').trim();
                     const toLabel = (adapterGeo.to.label ?? '').trim();
                     const geoParams = [
@@ -909,7 +1060,7 @@ app.MapGet("/", () =>
                   }
                   return;
                 }
-                if (segmentResult?.adapterFailed || (adapterGeo && adapterGeo.status === 'failed')) {
+                if (segmentResult?.adapterFailed || (adapterGeo && (adapterGeo.status === 'failed' || adapterGeo.status === 'timeout'))) {
                   handleAdapterFailure();
                   return;
                 }
@@ -919,6 +1070,8 @@ app.MapGet("/", () =>
               const fromName = seg[0]?.name ?? seg[0]?.id ?? fromValue;
               const toName = seg[seg.length - 1]?.name ?? seg[seg.length - 1]?.id ?? toValue;
               showSteps(seg);
+              clearTurnList();
+              clearDirections('No steps.');
               const segHasCoords = seg.every((step) => step && step.coords && typeof step.coords.lat === 'number' && typeof step.coords.lng === 'number');
               if (segHasCoords) {
                 applyActiveMarkers(seg);
@@ -927,7 +1080,7 @@ app.MapGet("/", () =>
                 clearActiveMarkers(); clearRouteGraphics();
                 if (segmentResult?.adapterUsed) {
                   const overlay = await tryAdapterPath('overlay');
-                  if (overlay && overlay.status === 'success' && !fromPoi && !toPoi && !isPopState && typeof history !== 'undefined') {
+                  if (overlay && overlay.status === 'success' && overlay.hasPath && !fromPoi && !toPoi && !isPopState && typeof history !== 'undefined') {
                     const fromLabel = (overlay.from.label ?? '').trim();
                     const toLabel = (overlay.to.label ?? '').trim();
                     const geoParams = [
@@ -958,6 +1111,8 @@ app.MapGet("/", () =>
             };
 
           setRouteMessage('');
+          clearTurnList();
+          clearDirections('No steps.');
           const originalRender = typeof render === 'function' ? render : null;
           if (originalRender) {
             window.render = function wrappedRender(list) {
@@ -1003,7 +1158,7 @@ app.MapGet("/", () =>
     </body>
     </html>
     """;
-  return Results.Content(html.Replace("__APP_CONFIG__", providerConfigJson), "text/html; charset=utf-8");
+  return Results.Content(html.Replace("__APP_CONFIG__", providerConfigJson).Replace("__APP_ENV__", envJson), "text/html; charset=utf-8");
 });
 
 app.MapGet("/content/poi.v1.json", async () =>
