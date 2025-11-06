@@ -303,5 +303,9 @@ Snapshot: main@ccea89a dirty=1 tests=0/0 selectors=v0.7 env=[]
 Outcome: GREEN
 Snapshot: main@f4bcfde dirty=1 tests=91/1 selectors=v0.7 env=[]
 
+[2025-11-07 02:10] nyc-explorer/main P66 — MVC shadow route validates Razor pipeline (#tests=93, green=true)
+Outcome: GREEN
+Snapshot: main@31625e2 dirty=6 tests=92/1 selectors=v0.7 env=[]
+
 **Parked Items**
 - (None currently)

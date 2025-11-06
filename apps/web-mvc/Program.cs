@@ -1140,6 +1140,11 @@ app.MapGet("/content/poi.v1.json", async () =>
     return Results.Text(json, "application/json");
 });
 
+app.MapControllerRoute(
+  name: "view-ok",
+  pattern: "__view-ok",
+  defaults: new { controller = "Home", action = "Index" });
+
 app.MapControllers();
 
 app.Run("http://localhost:5000");

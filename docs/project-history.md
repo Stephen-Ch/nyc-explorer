@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-07] P66 — MVC shadow view plumbing
+In order to prove the Razor pipeline is wired, I added a HomeController/Index view pair and mapped a `/__view-ok` shadow route without touching the existing UX.
+Considerations: Shadow route bypasses shared layout and keeps content minimal so it can be removed once real MVC work lands.
+Evidence: dotnet build apps/web-mvc; npx playwright test; npm run typecheck.
+Files: apps/web-mvc/Program.cs; apps/web-mvc/Controllers/HomeController.cs; apps/web-mvc/Views/Home/Index.cshtml; tests/e2e/view-plumbing.spec.ts.
+
 ### [2025-11-07] P65 — Commit scope meta guard
 In order to keep runtime changes tied to logged prompts, I added a meta spec that checks the latest commit: if runtime files changed, the message must include a P-ID plus Outcome and Snapshot fields.
 Considerations: Relies on git log parsing and soft-fails for docs-only commits; no runtime code touched.
