@@ -319,5 +319,13 @@ Snapshot: main@6beaf00 dirty=5 tests=92/1 selectors=v0.7 env=[]
 Outcome: RED (home-parity spec records missing ready cue for /__view-home)
 Snapshot: main@6beaf00 dirty=1 tests=0/0 selectors=v0.7 env=[]
 
+[2025-11-06 23:20] nyc-explorer/main P73 — TYPEAHEAD-FIX — geo adapter debounced; renders <li data-testid="ta-option">; From/To combobox wired (#tests=95, green=false)
+Outcome: GREEN (geo-typeahead-a11y.spec.ts)
+Snapshot: main@8a66ea1; pass=54 fail=40 skip=1
+
 **Parked Items**
 - (None currently)
+
+[2025-11-06 21:55] nyc-explorer/main P72 — Suite baseline snapshot (no edits) (#tests=95, green=false)
+Outcome: RED
+Snapshot: main@8a66ea1 dirty=3 tests=45/1 selectors=v0.7 env=[]

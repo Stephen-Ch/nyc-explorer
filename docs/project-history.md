@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P72 — Suite baseline snapshot
+In order to capture the current failure profile before further fixes, I reran the full suite with the list reporter and noted the runtime versions.
+Considerations: Snapshot taken against the existing dirty working tree from P69/P71; no files were modified.
+Evidence: npx playwright test --reporter=list (RED, pass=45 fail=49 skip=1).
+Files: none (baseline-only).
+
 ### [2025-11-06] P69 — HOME default serves provider HTML
 In order to make the default route reuse the provider-backed markup, I updated the `/` MapGet to write `HomeHtmlProvider.Get()` directly with the existing UTF-8 content type.
 Considerations: `/__view-home` stays on the MVC action as a backstop and no selectors or copy changed.
@@ -183,6 +189,7 @@ Files: tests/e2e/rate-limit-probe.spec.ts.
 
 - 2025-11-06 • P37 — 429 retry→mock + cooldown; ENV exposed; probe green.
 - 2025-11-06 • Sprint-06 CLOSEOUT — Shipped provider routing + 429 cooldown; tag: sprint-06-closeout-20251106.
+- 2025-11-06 • P73 — Typeahead restored (From/To via geo); a11y spec green; suite baseline unchanged.
 
 ### [2025-11-05] TURN-LIST-1c-c — Keyboard a11y spec split
 Fixtures: useGeoFixture/useRouteFixture (Union → Bryant).
