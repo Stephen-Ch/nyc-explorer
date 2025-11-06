@@ -39,6 +39,39 @@ Report in this order:
 
 Also include, immediately after Outcome, the existing house keeps: selectors touched, schema keys status, and log updates for `code-review.md` / `project-history.md`.
 
+<!-- REPO_SNAPSHOT_MACRO -->
+## REPO SNAPSHOT (optional pre-flight)
+Default run cadence:
+- At first prompt of the day.
+- Before complex/branchwide edits.
+- When prompted with “snapshot stale; run pre-flight.”
+
+Triggers that require a fresh snapshot:
+- Working tree not clean.
+- Branch diverges from tracking or rebases are pending.
+- Selector or schema version bumps coming.
+- After any failed full-suite run.
+
+Output contract (include in response):
+1. `tree` summary (top-level dirs/files touched).
+2. `branch` + short SHA + dirty flag.
+3. Test status since last snapshot (pass/skip list).
+4. Recent command runtimes (estimate in seconds).
+5. Active selector map version (`docs/selectors.md` header).
+6. `window.App.env` / relevant env toggles if known.
+
+<!-- REPO_SNAPSHOT_MACRO_BLOCK -->
+```
+SNAPSHOT:
+- tree: <dirs/files>
+- branch: <name> @ <sha> (<clean|dirty>)
+- tests: passed=<n>; skipped=<ids>
+- runtimes: <command>=<seconds>, ...
+- selectors: v<major.minor> (last bump=<date>)
+- env: <key>=<value>, ...
+```
+<!-- /REPO_SNAPSHOT_MACRO_BLOCK -->
+
 <!-- PROMPT_SCHEMA_V2 -->
 ## Prompt Schema v2 (reply preamble)
 - Surface all required headers before acting: READ, GOAL, ACCEPTANCE, CONSTRAINTS, FILES, COMMANDS, LOGGING, COMMIT-ON-GREEN, WHY-NOW, DRIFT-RADAR.

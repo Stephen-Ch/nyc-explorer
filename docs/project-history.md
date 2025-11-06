@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P41 — Repo snapshot macro
+In order to surface a standard pre-flight snapshot, I added a Copilot instructions section detailing default triggers, output contract, and a reusable macro block.
+Considerations: Scoped to docs-only and anchored for idempotent reuse without touching runtime code.
+Evidence: docs-only slice (no tests required).
+Files: docs/Copilot-Instructions.md.
+
 ### [2025-11-06] P46 — Protocol hardening
 In order to lock prompt structure and loop safeguards, I updated Protocol.md and Copilot-Instructions.md with schema v2 headers, quarantine TTL, loop stop rules, commit-on-green matrix, repo snapshot guidance, and selector freeze language.
 Considerations: Added HTML anchors for idempotent reapplication and kept scope strictly docs-only.
