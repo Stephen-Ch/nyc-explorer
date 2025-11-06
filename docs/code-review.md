@@ -207,6 +207,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-06 14:55] nyc-explorer/main P37 — RATE-LIMIT-OPS-1c — 429 retry→mock + cooldown; ENV knob exposed; probe green (#tests=1, green=true)
 [2025-11-06 15:40] nyc-explorer/main P42 — promote canonical turn-list selectors + full suite (#tests=86, green=true)
 
+SPRINT-06 — CLOSEOUT: suite green; tagged sprint-06-closeout-20251106.
 
 **Parked Items**
 - (None currently)
