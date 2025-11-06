@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P69 — HOME default serves provider HTML
+In order to make the default route reuse the provider-backed markup, I updated the `/` MapGet to write `HomeHtmlProvider.Get()` directly with the existing UTF-8 content type.
+Considerations: `/__view-home` stays on the MVC action as a backstop and no selectors or copy changed.
+Evidence: dotnet build; npx playwright test tests/e2e/home-parity.spec.ts; npx playwright test; npm run typecheck.
+Files: apps/web-mvc/Program.cs.
+
 ### [2025-11-06] P68 — HOME shadow parity wired
 In order to mirror the home markup for the shadow route, I moved the inline HTML into `HomeHtmlProvider` and served `/__view-home` through the controller so both endpoints return identical content.
 Considerations: Provider caches the HTML once per startup and falls back to the template if configuration is missing; no selectors or copy changed.

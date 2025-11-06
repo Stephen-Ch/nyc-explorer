@@ -38,7 +38,11 @@ app.Use(async (context, next) =>
   }
 });
 
-app.MapGet("/", () => Results.Content(HomeHtmlProvider.Get(), "text/html; charset=utf-8"));
+app.MapGet("/", static async context =>
+{
+  context.Response.ContentType = "text/html; charset=utf-8";
+  await context.Response.WriteAsync(HomeHtmlProvider.Get());
+});
 
 app.MapGet("/content/poi.v1.json", async () =>
 {
