@@ -31,6 +31,8 @@ Considerations: Adapter stub prevents extra provider calls while preserving live
 Evidence: npx playwright test tests/e2e/rate-limit-probe.spec.ts (GREEN).
 Files: tests/e2e/rate-limit-probe.spec.ts.
 
+- 2025-11-06 • P37 — 429 retry→mock + cooldown; ENV exposed; probe green.
+
 ### [2025-11-05] TURN-LIST-1c-c — Keyboard a11y spec split
 Fixtures: useGeoFixture/useRouteFixture (Union → Bryant).
 Evidence: npx playwright test tests/e2e/dir-list-keyboard.spec.ts (GREEN); npm run e2e:auto (RED via TURN-LIST-1d); npm run typecheck (green).

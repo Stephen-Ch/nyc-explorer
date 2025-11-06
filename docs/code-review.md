@@ -204,6 +204,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-05 16:30] nyc-explorer/main TURN-LIST-1d — map parity contract (RED) (#tests=1, green=false)
 [2025-11-05 17:10] nyc-explorer/main TURN-LIST-1d-b — map/list active-step parity; suites green (#tests=78, green=true; typecheck=green)
 [2025-11-06 11:20] nyc-explorer/main P41 — align rate-limit probe with turn selectors (#tests=1, green=true)
+[2025-11-06 14:55] nyc-explorer/main P37 — RATE-LIMIT-OPS-1c — 429 retry→mock + cooldown; ENV knob exposed; probe green (#tests=1, green=true)
 [2025-11-06 15:40] nyc-explorer/main P42 — promote canonical turn-list selectors + full suite (#tests=86, green=true)
 
 
