@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P53 — CI meta summary + artifact
+In order to surface meta gate outcomes, I captured the Playwright meta report to meta-gate.txt, appended it to the job summary, and uploaded it as a CI artifact.
+Considerations: Left the fast-fail behavior intact; summary/log steps run regardless of pass/fail to aid debugging.
+Evidence: npx playwright test tests/meta (GREEN).
+Files: .github/workflows/ci.yml.
+
 ### [2025-11-06] P52 — CI-META-FASTFAIL
 In order to fail fast on governance drift, I added a Playwright Meta Gate before the full suite and refreshed Copilot instructions to point at Sprint-06 and call out the new enforcement.
 Considerations: Preserved the existing install/typecheck/E2E order; meta gate reuses CI env without extra setup.

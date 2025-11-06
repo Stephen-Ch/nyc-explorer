@@ -34,9 +34,29 @@ jobs:
         run: npm run typecheck
 
       - name: Playwright Meta Gate
-        run: npx playwright test tests/meta
+        run: |
+          set -euo pipefail
+          : > meta-gate.txt
+          npx playwright test tests/meta --reporter=list | tee meta-gate.txt
         env:
           CI: true
+
+      - name: Playwright Meta Summary
+        if: always()
+        run: |
+          {
+            echo '### Playwright Meta Gate'
+            echo '```'
+            cat meta-gate.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Meta Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: meta-gate
+          path: meta-gate.txt
 
       - name: Playwright E2E Gate
         run: npx playwright install --with-deps && npx playwright test
