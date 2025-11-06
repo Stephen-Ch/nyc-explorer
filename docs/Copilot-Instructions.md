@@ -16,6 +16,13 @@ Project.md → Sprint-03-Plan.md → Protocol.md → Copilot-Instructions.md →
 7) docs/Project.md
 8) docs/Working-With-Stephen.md (skim headings + Do/Don’t)
 
+<!-- SESSION_SNAPSHOT_RULE -->
+## Start-of-Session Ritual — Snapshot hook
+- Before the first reply of a session, confirm the latest `SNAPSHOT:` block is present and <12h old.
+- If absent or stale, run the repo snapshot pre-flight (per macro) and paste the block at the top of the reply before other content.
+- Announce `SNAPSHOT UPDATED` when adding a fresh block; otherwise note `SNAPSHOT current`.
+- Skip only if the user explicitly says the snapshot is current.
+
 **Q-GATE TL;DR**
 - Ask only if lift ≥3% (default), ≥5% (trivial UI/docs), ≥2% (high-risk: DevOps, adapters/deps, schema/data, a11y).
 - ≤2 minutes, ≤3 questions, one message, once.

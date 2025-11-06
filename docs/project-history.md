@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P47 — Snapshot wiring
+In order to enforce repo snapshots, I tied the SNAPSHOT macro into the session ritual and decisions template so responses and logs capture branch, SHA, tests, selectors, and env data consistently.
+Considerations: Docs-only change scoped with anchors; no runtime impact.
+Evidence: docs-only slice (no tests required).
+Files: docs/Copilot-Instructions.md; docs/code-review.md.
+
 ### [2025-11-06] P41 — Repo snapshot macro
 In order to surface a standard pre-flight snapshot, I added a Copilot instructions section detailing default triggers, output contract, and a reusable macro block.
 Considerations: Scoped to docs-only and anchored for idempotent reuse without touching runtime code.
