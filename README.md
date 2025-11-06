@@ -1,3 +1,6 @@
+<!-- CI_BADGE -->
+[![CI](https://github.com/Stephen-Ch/nyc-explorer/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Stephen-Ch/nyc-explorer/actions/workflows/ci.yml)
+
 # NYC Explorer (Manhattan) — v0.1
 
 **One‑liner:** A Manhattan‑only, map‑based walking guide launching around **Union Square + Flatiron**, with curated walking routes capped at **≤ 3 POIs per block frontage**.
@@ -64,6 +67,12 @@ Verify the mock experience end-to-end:
 - **Tests‑first:** Spec goes red before implementation.
 - **Schema/Selector freeze** unless a dedicated story authorizes changes.
 - **Diff preview** required before commit; **Decisions log** appended after GREEN.
+
+<!-- CI_GATES -->
+## CI Gates
+- **Meta Gate:** STRICT selector/helper, quarantine TTL, log integrity.
+- **E2E Gate:** Full Playwright suite (chromium) with trace upload on failure.
+- **Typecheck:** `npm run typecheck` on every push and PR.
 
 ## Story seeds
 - **MAP-1:** Map + list from `content/poi.v1.json` (Manhattan scope).

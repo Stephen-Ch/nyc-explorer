@@ -291,5 +291,9 @@ Snapshot: main@0c5be70 dirty=1 tests=90/1 selectors=v0.7 env=[]
 Outcome: CI
 Snapshot: main@c782e8e dirty=1 tests=0/0 selectors=v0.7 env=[]
 
+[2025-11-07 01:10] nyc-explorer/main P63 — CI badge + gates summary (#tests=0, green=NA)
+Outcome: DOCS
+Snapshot: main@128b689 dirty=1 tests=0/0 selectors=v0.7 env=[]
+
 **Parked Items**
 - (None currently)

@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-07] P63 — CI badge + gates summary
+In order to surface our enforcement pipeline, I added a README badge for the CI workflow and documented the Meta, E2E, and Typecheck gates under a dedicated anchors section.
+Considerations: Docs-only change that preserves existing anchors and keeps the workflow name untouched so the badge stays stable.
+Evidence: docs-only commit (no tests required).
+Files: README.md; docs/code-review.md; docs/project-history.md.
+
 ### [2025-11-07] P62 — CI selector helper strict gate
 In order to hard-fail future selector drift, I set `SELECTOR_HELPER_STRICT=1` for the Playwright Meta Gate in CI so the selector helper spec runs in strict mode.
 Considerations: Scoped change to the workflow env block only, keeping the meta summary and artifacts intact; no runtime code touched.
