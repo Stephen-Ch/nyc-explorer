@@ -196,6 +196,7 @@ Files: tests/e2e/rate-limit-probe.spec.ts.
 - 2025-11-06 • P37 — 429 retry→mock + cooldown; ENV exposed; probe green.
 - 2025-11-06 • Sprint-06 CLOSEOUT — Shipped provider routing + 429 cooldown; tag: sprint-06-closeout-20251106.
 - 2025-11-06 • P73 — Typeahead restored (From/To via geo); a11y spec green; suite baseline unchanged.
+- 2025-11-06 • P74 — Geolocation UX unified (status/disable/timeout); suite unchanged outside historic reds.
 
 ### [2025-11-05] TURN-LIST-1c-c — Keyboard a11y spec split
 Fixtures: useGeoFixture/useRouteFixture (Union → Bryant).

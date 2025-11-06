@@ -322,6 +322,9 @@ Snapshot: main@6beaf00 dirty=1 tests=0/0 selectors=v0.7 env=[]
 [2025-11-06 23:20] nyc-explorer/main P73 — TYPEAHEAD-FIX — geo adapter debounced; renders <li data-testid="ta-option">; From/To combobox wired (#tests=95, green=false)
 Outcome: GREEN (geo-typeahead-a11y.spec.ts)
 Snapshot: main@8a66ea1; pass=54 fail=40 skip=1
+[2025-11-06 23:45] nyc-explorer/main P74 — GEO-STATUS/DISABLE — unified status + disable; timeout copy (#tests=6, green=true)
+Outcome: GREEN (geo-current*.spec.ts / geo-provider-from*.spec.ts targeted; no new regressions)
+Snapshot: main@fa484d3 dirty=1 tests=6/0 selectors=v0.7 env=[]
 
 **Parked Items**
 - (None currently)
