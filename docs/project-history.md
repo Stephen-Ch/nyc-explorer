@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P46 — Protocol hardening
+In order to lock prompt structure and loop safeguards, I updated Protocol.md and Copilot-Instructions.md with schema v2 headers, quarantine TTL, loop stop rules, commit-on-green matrix, repo snapshot guidance, and selector freeze language.
+Considerations: Added HTML anchors for idempotent reapplication and kept scope strictly docs-only.
+Evidence: docs-only slice (no tests required).
+Files: docs/Protocol.md; docs/Copilot-Instructions.md.
+
 ### [2025-11-06] P42 — Turn list canonical selectors
 In order to align provider UI with the new turn-list/turn-item contract, I renamed the Razor markup, tightened adapter mocks, and refreshed specs to assert the updated live-region copy.
 Considerations: Bumped selectors.md to v0.7, normalized provider fixtures to emit sanitized steps, and stabilized back-to-map assertions before the full rerun.

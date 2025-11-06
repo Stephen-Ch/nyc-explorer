@@ -18,6 +18,53 @@
 3) **LOG** — append one line to `/docs/code-review.md`.  
 4) **PAUSE** — stop until user cue.
 
+<!-- PROMPT_SCHEMA_V2 -->
+## Prompt Schema v2
+Every prompt must surface these header fields before work begins:
+- **READ** — explicit doc list already reviewed for this prompt.
+- **GOAL** — single-sentence objective in the user’s words.
+- **ACCEPTANCE** — measurable exit criteria (tests, docs, approvals).
+- **CONSTRAINTS** — file/LOC limits, tooling expectations, and forbidden actions.
+- **FILES** — canonical paths allowed this slice (even if unchanged).
+- **COMMANDS** — planned shell/script invocations; note which are optional.
+- **LOGGING** — required code-review/project-history updates.
+- **COMMIT-ON-GREEN** — recap test matrix required before committing.
+- **WHY-NOW** — why the slice exists (link to sprint plan/backlog entry).
+- **DRIFT-RADAR** — risk indicators to watch (selectors, schema, env toggles).
+If any header lacks data, pause and request clarification before editing.
+
+<!-- QUARANTINE_POLICY -->
+## Quarantine Policy (TTL 48h)
+- Tag flakey specs/skipped tests with a quarantine note and start a 48-hour TTL clock.
+- Cap quarantined items at ≤5; if adding a sixth, unblock at least one first.
+- Auto-remind the user at 24h and 48h marks with current status + unblock plan.
+- After TTL expires, escalate via Ambiguity Card unless explicitly re-authorized.
+
+<!-- LOOP_STOP_RULES -->
+## Loop Stop Rules
+- After **2 unsuccessful iterations** (same failure or no progress), stop.
+- If a command repeats an identical failure twice, stop immediately.
+- Emit a **BLOCKER CARD** summarizing attempts, errors, and proposed next moves.
+- Resume only after user guidance; do not silently continue looping.
+
+<!-- COMMIT_ON_GREEN -->
+## Commit-on-Green Matrix
+- **Docs-only changes** → no Playwright run required; note "docs-only" in response.
+- **Runtime/code changes** → run full Playwright suite + `npm run typecheck` before committing.
+- Record results in the response (tests + typecheck status) prior to `git commit`.
+- Never commit partial work; restage after re-running if new edits occur.
+
+<!-- REPO_SNAPSHOT -->
+## Repository Snapshot (optional pre-flight)
+- When starting complex slices, capture current `git status -sb` and head commit hash.
+- Store snapshot details in the response for traceability; skip if unchanged from prior prompt.
+
+<!-- SELECTOR_CANON -->
+## Selector Canon Freeze
+- Treat `docs/selectors.md` as immutable during a prompt unless the user issues a dedicated selector-change request.
+- Any selector update requires bumping the selectors version and logging the reason before touching runtime code.
+- If a prompt risks selector drift, stop and request a dedicated selector story.
+
 ## Q-GATE — Ask Clarifying Questions (single pre-execution message)
 
 Purpose: Only ask clarifying questions when doing so meaningfully increases the chance of success.

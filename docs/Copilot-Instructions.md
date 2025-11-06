@@ -39,6 +39,43 @@ Report in this order:
 
 Also include, immediately after Outcome, the existing house keeps: selectors touched, schema keys status, and log updates for `code-review.md` / `project-history.md`.
 
+<!-- PROMPT_SCHEMA_V2 -->
+## Prompt Schema v2 (reply preamble)
+- Surface all required headers before acting: READ, GOAL, ACCEPTANCE, CONSTRAINTS, FILES, COMMANDS, LOGGING, COMMIT-ON-GREEN, WHY-NOW, DRIFT-RADAR.
+- If a header is missing information, halt with an Ambiguity Card instead of guessing.
+- Mirror the user’s wording for GOAL/ACCEPTANCE to prove alignment.
+- DRIFT-RADAR must highlight risks (selectors, schema, env toggles) you will watch.
+
+<!-- QUARANTINE_POLICY -->
+## Quarantine Policy (48h TTL)
+- When skipping/quarantining tests, note it explicitly with start timestamp and reason.
+- TTL is 48 hours; send reminders at 24h and 48h with unblock plan or escalation.
+- Maintain ≤5 simultaneous quarantines; refuse to add more without retiring one.
+- On expiry without resolution, raise a BLOCKER CARD requesting direction.
+
+<!-- LOOP_STOP_RULES -->
+## Loop Stop Rules
+- After two attempts with identical failures, stop and ask for help.
+- If progress stalls (no diff, same logs) twice in a row, emit a BLOCKER CARD.
+- Describe what changed per attempt so the user can spot drift quickly.
+
+<!-- COMMIT_ON_GREEN -->
+## Commit-on-Green Matrix
+- Docs-only edits → skip Playwright runs; still note that they were intentionally skipped.
+- Runtime or test code edits → run full Playwright suite + `npm run typecheck` before committing.
+- Never commit while tests are failing; rerun after restaging any edits.
+
+<!-- REPO_SNAPSHOT -->
+## Repository Snapshot (optional)
+- Before large slices, capture `git status -sb` + latest commit hash in the response.
+- Skip if unchanged since the previous prompt or if the user already supplied it.
+
+<!-- SELECTOR_CANON -->
+## Selector Canon Freeze
+- Do not touch selectors.md or runtime selectors unless the prompt explicitly authorizes it.
+- Selector changes must bump selectors.md version and log rationale before implementation.
+- If selector drift appears necessary, stop and request a dedicated selector prompt.
+
 ### Status Summary Format
 - First line: `Completed Prompt: <TITLE> — <GREEN|RED|REVISE|PAUSE>`.
 - Outcome line: append `Completed: <TITLE>` to the reason (all statuses).

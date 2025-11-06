@@ -208,6 +208,7 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-06 15:40] nyc-explorer/main P42 — promote canonical turn-list selectors + full suite (#tests=86, green=true)
 
 SPRINT-06 — CLOSEOUT: suite green; tagged sprint-06-closeout-20251106.
+[2025-11-06 18:30] nyc-explorer/main P46 — protocol hardening (prompt schema v2 + loop rules) (#tests=0, green=NA)
 
 **Parked Items**
 - (None currently)
