@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { useGeoFixture, useRouteFixture } from '../helpers/provider-fixtures';
+import { selectors } from '../helpers/selectors';
 
 test('TURN-LIST-1d — map parity contract (RED)', async ({ page }) => {
   page.on('console', (msg) => console.log('BROWSER:', msg.text()));
@@ -35,10 +36,10 @@ test('TURN-LIST-1d — map parity contract (RED)', async ({ page }) => {
   await page.getByTestId('route-find').click();
 
   await expect(page.getByTestId('dir-status')).toHaveText('5 steps.');
-  const list = page.getByTestId('turn-list');
-  const steps = list.getByTestId('turn-item');
+  const list = page.locator(selectors.turnList);
+  const steps = list.locator(selectors.turnItem);
   await expect(steps).toHaveCount(5);
-  await page.focus('[data-testid="turn-list"]');
+  await list.focus();
   await expect(list).toBeFocused();
 
   // TODO(TURN-LIST-1d): expect overlay to expose [data-testid="route-node-active"][data-step-index]

@@ -271,5 +271,13 @@ Snapshot: main@6dd156c dirty=0 tests=89/1 selectors=v0.7 env=[]
 Outcome: GREEN
 Snapshot: main@6a88eba dirty=0 tests=90/1 selectors=v0.7 env=[]
 
+[2025-11-06 23:35] nyc-explorer/main P58 — selector helper meta nudges (#tests=91, green=true)
+Outcome: GREEN
+Snapshot: main@4efa858 dirty=1 tests=90/1 selectors=v0.7 env=[]
+
+[2025-11-06 23:55] nyc-explorer/main P59 — selector helper adopt 2 (#tests=91, green=true)
+Outcome: GREEN
+Snapshot: main@4efa858 dirty=1 tests=90/1 selectors=v0.7 env=[]
+
 **Parked Items**
 - (None currently)

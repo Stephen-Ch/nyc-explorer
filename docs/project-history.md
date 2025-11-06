@@ -19,6 +19,18 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P59 — Selector helper adopt 2
+In order to drive the selector helper toward strict enforcement, I replaced the hard-coded turn list selectors in the keyboard and parity specs with the shared helper values.
+Considerations: Limited scope to two specs as instructed; reused existing locators so assertions stay identical while keeping helper focus calls readable.
+Evidence: npx playwright test tests/e2e/dir-list-keyboard.spec.ts; npx playwright test tests/e2e/dir-list-parity.spec.ts; npx playwright test; npm run typecheck.
+Files: tests/e2e/dir-list-keyboard.spec.ts; tests/e2e/dir-list-parity.spec.ts; docs/code-review.md; docs/project-history.md.
+
+### [2025-11-06] P58 — Selector helper meta nudges
+In order to keep e2e specs aligned with the shared selectors helper, I added a meta spec that scans for hard-coded turn list selectors and nudges offenders toward the import, failing only when `SELECTOR_HELPER_STRICT=1`.
+Considerations: Uses a recursive file walker under tests/e2e and records annotations instead of failing in default mode to surface drift without blocking the suite.
+Evidence: npx playwright test tests/meta/selector-helper.spec.ts; npx playwright test; npm run typecheck.
+Files: tests/meta/selector-helper.spec.ts; docs/code-review.md; docs/project-history.md.
+
 ### [2025-11-06] P57 — Quarantine TTL meta-guard
 In order to enforce the 48h quarantine window, I added a meta spec that checks RED CONTRACT skips and flags any whose git timestamp exceeds the TTL.
 Considerations: Walks tests directory only; leverages git log for timestamps and ignores files without skips.
