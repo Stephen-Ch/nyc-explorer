@@ -3,6 +3,7 @@ import type { Page } from '@playwright/test';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { useGeoFixture, useRouteFixture } from '../helpers/provider-fixtures';
+import { selectors } from '../helpers/selectors';
 
 const loadFixture = (file: string) => {
   const fullPath = join(__dirname, '..', 'fixtures', 'route', file);
@@ -50,15 +51,17 @@ test.describe('ROUTE-FIND-4a — provider wiring contract (RED)', () => {
     await enterStops(page);
 
     const pathNodes = page.getByTestId('route-node');
-    const turnList = page.getByTestId('turn-list');
-    const turnItems = turnList.getByTestId('turn-item');
-    const liveRegion = page.getByTestId('route-msg');
+    const turnList = page.locator(selectors.turnList);
+    const turnItems = turnList.locator(selectors.turnItem);
+    const liveRegion = page
+      .locator(selectors.liveRegion)
+      .locator(':scope[data-testid="route-msg"]');
 
     await expect(page.getByTestId('route-path')).toHaveCount(1);
     expect(await pathNodes.count()).toBeGreaterThanOrEqual(2);
     await expect(turnList).toBeVisible();
     await expect(turnItems).toHaveCount(unionStepCount);
-  await expect(liveRegion).toHaveText('Route ready.');
+    await expect(liveRegion).toHaveText('Route ready.');
 
     await removeGeo();
     await removeRoute();
@@ -73,16 +76,18 @@ test.describe('ROUTE-FIND-4a — provider wiring contract (RED)', () => {
     await page.goto('/');
     await enterStops(page);
 
-  const turnItems = page.getByTestId('turn-list').getByTestId('turn-item');
-  const liveRegion = page.getByTestId('route-msg');
-  const status = page.getByTestId('dir-status');
+    const turnItems = page.locator(selectors.turnList).locator(selectors.turnItem);
+    const liveRegion = page
+      .locator(selectors.liveRegion)
+      .locator(':scope[data-testid="route-msg"]');
+    const status = page.getByTestId('dir-status');
 
-  const expectedSteps = Math.max(stepsOnlyCount, 1);
-  const expectedStatus = expectedSteps === 1 ? '1 step.' : `${expectedSteps} steps.`;
-  await expect(page.getByTestId('route-path')).toHaveCount(0);
-  await expect(status).toHaveText(expectedStatus);
-  await expect(turnItems).toHaveCount(expectedSteps);
-  await expect(liveRegion).toHaveText('Route ready (turns only).');
+    const expectedSteps = Math.max(stepsOnlyCount, 1);
+    const expectedStatus = expectedSteps === 1 ? '1 step.' : `${expectedSteps} steps.`;
+    await expect(page.getByTestId('route-path')).toHaveCount(0);
+    await expect(status).toHaveText(expectedStatus);
+    await expect(turnItems).toHaveCount(expectedSteps);
+    await expect(liveRegion).toHaveText('Route ready (turns only).');
 
     await removeGeo();
     await removeRoute();
@@ -99,7 +104,9 @@ test.describe('ROUTE-FIND-4a — provider wiring contract (RED)', () => {
     await page.goto('/');
     await enterStops(page);
 
-    const liveRegion = page.getByTestId('route-msg');
+    const liveRegion = page
+      .locator(selectors.liveRegion)
+      .locator(':scope[data-testid="route-msg"]');
     await expect(liveRegion).toHaveText(/Unable to build route/i);
     await expect(page.getByTestId('turn-item')).toHaveCount(0);
 

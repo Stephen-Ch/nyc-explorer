@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-06] P55 — Selectors helper for route find
+In order to keep high-signal specs aligned with selectors.md, I introduced a shared selectors helper and migrated the real route-find contract to use it.
+Considerations: Limited scope to tests/helpers + one spec; tightened live region lookup with :scope filter to avoid strict locator collisions.
+Evidence: npx playwright test tests/e2e/route-find-real.spec.ts; npx playwright test; npm run typecheck (all green).
+Files: tests/helpers/selectors.ts; tests/e2e/route-find-real.spec.ts.
+
 ### [2025-11-06] P54 — Decisions template meta-check
 In order to keep the decisions log compliant, I added a Playwright meta spec that enforces Outcome/Snapshot lines for each P-entry and backfilled the recent entries accordingly.
 Considerations: Restricted changes to tests + docs; spec runs softly per entry to pinpoint missing fields.
