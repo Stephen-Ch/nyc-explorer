@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-07] P61 — Selector helper meta promoted
+In order to enforce strict selector helper usage, I promoted the meta spec into version control and verified it passes with `SELECTOR_HELPER_STRICT=1` before rerunning the full suite and typecheck.
+Considerations: No offenders remain so strict mode passes locally; CI flip will follow separately once this guard is in main.
+Evidence: SELECTOR_HELPER_STRICT=1 npx playwright test tests/meta/selector-helper.spec.ts; npx playwright test; npm run typecheck.
+Files: tests/meta/selector-helper.spec.ts; docs/code-review.md; docs/project-history.md.
+
 ### [2025-11-07] P60 — Selector helper adopt dir-list
 In order to finish migrating the turn list specs, I swapped dir-list.spec.ts to use the shared selectors helper for the turn list, turn items, and live region expectations.
 Considerations: Preserved the fallback rename for legacy data-testid, deriving the new id from the helper to avoid duplication while keeping the DOM check intact.
