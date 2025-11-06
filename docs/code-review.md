@@ -203,23 +203,8 @@ Track all development decisions in chronological order using the standardized fo
 [2025-11-05 16:30] nyc-explorer/main TURN-LIST-1c-c — keyboard a11y spec only; GREEN (#tests=1, green=true; typecheck=green)
 [2025-11-05 16:30] nyc-explorer/main TURN-LIST-1d — map parity contract (RED) (#tests=1, green=false)
 [2025-11-05 17:10] nyc-explorer/main TURN-LIST-1d-b — map/list active-step parity; suites green (#tests=78, green=true; typecheck=green)
-[2025-11-05 17:25] nyc-explorer/main TURN-LIST-1e — remove debug log from directions.js; suites green (#tests=78, green=true; typecheck=green)
-[2025-11-05 18:05] nyc-explorer/main RATE-LIMIT-OPS-1a — documented 429 fallback policy + cooldown knobs (#tests=78, green=true; typecheck=green)
-[2025-11-05 18:40] nyc-explorer/main ROUTE-ADAPTER-2a — real route adapter contract (RED) (#tests=2, green=false; typecheck=green)
-[2025-11-05 19:10] nyc-explorer/main ROUTE-ADAPTER-2b — real route adapter via fixtures; suites green (#tests=79, green=true; typecheck=green)
-[2025-11-05 19:25] nyc-explorer/main ROUTE-FIND-4a — provider Find contract (RED); turn list + timeout UX pending (#tests=3, green=false; typecheck=green)
+[2025-11-06 11:20] nyc-explorer/main P41 — align rate-limit probe with turn selectors (#tests=1, green=true)
 
-P34-FIX — ROUTE-FIND steps-only preservation: keep turn list when pathless; moved clears before success; guarded list clears; Outcome: GREEN (route-find-real.spec.ts).
-
-[2025-11-05 20:45] nyc-explorer/main P35 — turn list pathless guard unit spec; GREEN (#tests=1, green=true; typecheck=green)
-
-[2025-11-05 21:40] nyc-explorer/main P37 — provider 429 cooldown fallback keeps route ready (#tests=1, green=true; typecheck=green)
-
-[2025-11-05 22:05] nyc-explorer/main P38 — quarantine legacy RED contracts (skipped specs) (#tests=full, green=true; typecheck=green)
-
-[2025-11-05 23:15] nyc-explorer/main P40-FIX — preserve provider turn list on pathless fallback (#tests=full, green=true; typecheck=green)
 
 **Parked Items**
 - (None currently)
-[2025-11-05 20:15] nyc-explorer/main P34-FIX — pathless provider wiring keeps turn list; GREEN (#tests=3, green=true; typecheck=green)
-
