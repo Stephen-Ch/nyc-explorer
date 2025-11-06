@@ -31,6 +31,12 @@ Considerations: Anchored sections in Protocol and Copilot instructions ensure id
 Evidence: docs-only update (no tests required).
 Files: docs/Protocol.md; docs/Copilot-Instructions.md; docs/code-review.md.
 
+### [2025-11-06] P51 — Log integrity meta-check
+In order to keep decisions and history aligned, I added a meta spec that asserts every P## from the decisions log appears in the Sprint-06 project history block.
+Considerations: Tests-only addition under 60 LOC; reads docs without mutating them.
+Evidence: npx playwright test tests/meta/log-integrity.spec.ts; npx playwright test; npm run typecheck.
+Files: tests/meta/log-integrity.spec.ts.
+
 ### [2025-11-06] P48 — Quarantine meta-check
 In order to enforce the 48h TTL policy, I added a Playwright meta spec that fails when `test.skip` usage exceeds the cap or lacks the RED label, keeping the current single skip in compliance.
 Considerations: Tests-only addition under 60 LOC; leans on existing selector contracts but does not touch runtime code.
