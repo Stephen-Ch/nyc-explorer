@@ -8,7 +8,9 @@ test-results/
 *.user
 *.suo
 
-# local backups from HTML/CS refactors
+# local backups from HTML refactors
+apps/web-mvc/wwwroot/static/restore_home.inline.html
+apps/web-mvc/wwwroot/static/tmp_home_sim.html
 apps/web-mvc/**/old_home.inline.html
 apps/web-mvc/**/prev_*.html
 apps/web-mvc/**/prev_*.cs

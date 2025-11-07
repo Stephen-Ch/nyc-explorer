@@ -331,6 +331,10 @@ Snapshot: main@2daf58d dirty=1 tests=58/36 selectors=v0.7 env=[] skip=1
 
 P79 — ROUTE-FIND-REWIRE — Find→adapter restored; dir-list shows step count; Outcome: GREEN (dir-list, geo-typeahead-a11y). Snapshot: main@beba2a4; pass=63 fail=31 skip=1.
 
+P81 — ENV INJECTION — deterministic app-env script in head; Outcome: GREEN (env-hydration). Snapshot: main@cba8bf5; pass=94 fail=0 skip=1.
+
+P83 — cleanup backups + tighten .gitignore; Outcome: GREEN; Snapshot: main@cba8bf5; #tests=94/0/1; typecheck=green.
+
 **Parked Items**
 - (None currently)
 

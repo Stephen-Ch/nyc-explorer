@@ -19,6 +19,18 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-07] P83 — removed local backup files; added narrow ignores to prevent reappearance.
+In order to keep the repo free of local HTML artifacts, I deleted the stray backup files and added narrow ignore rules so they stay out of version control.
+Considerations: No runtime files changed; ignores target only the known backup filenames.
+Evidence: npx playwright test (94 pass / 0 fail / 1 skip); npm run typecheck (green).
+Files: .gitignore.
+
+### [2025-11-07] P81 — window.ENV injection hardened
+In order to guarantee `window.ENV` is present regardless of template casing, I added a deterministic head injector that caches the script with the serialized config.
+Considerations: Preserves HomeHtmlProvider caching, avoids per-request work, and inserts before `</head>` or prepends when the tag is missing.
+Evidence: npx playwright test tests/e2e/env-hydration.spec.ts (GREEN); npx playwright test (RED, 93 pass / 1 fail / 1 skip — commit-scope meta guard remains outstanding); npm run typecheck (green).
+Files: apps/web-mvc/Program.cs.
+
 ### [2025-11-07] P76 — setGeoStatus module split
 In order to centralize geolocation status handling, I moved the shared helper into /js/geo-status.js and registered the live region from home.inline.
 Considerations: No UX or copy drift; module preserves the App.geo.setStatus contract and existing busy-button toggles.
