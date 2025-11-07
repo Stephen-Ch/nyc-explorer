@@ -78,15 +78,32 @@ internal static class HomeHtmlProvider
     public static void Configure(string appConfigJson)
     {
     var configJson = string.IsNullOrEmpty(appConfigJson) ? "{}" : appConfigJson;
-    _html = HtmlTemplate.Replace("__APP_CONFIG__", configJson);
+    var html = HtmlTemplate.Replace("__APP_CONFIG__", configJson);
+    _html = InjectEnvScript(html, configJson);
     }
 
     public static string Get()
     {
-    return string.IsNullOrEmpty(_html)
-      ? HtmlTemplate.Replace("__APP_CONFIG__", "{}")
-      : _html;
+    if (string.IsNullOrEmpty(_html))
+    {
+      var html = HtmlTemplate.Replace("__APP_CONFIG__", "{}");
+      _html = InjectEnvScript(html, "{}");
     }
+
+    return _html;
+    }
+
+  private static string InjectEnvScript(string html, string appConfigJson)
+  {
+    var script = $"<script id=\"app-env\">window.ENV = {appConfigJson};</script>";
+    var idx = html.IndexOf("</head>", StringComparison.OrdinalIgnoreCase);
+    if (idx >= 0)
+    {
+      return html.Insert(idx, script);
+    }
+
+    return script + html;
+  }
 
     private const string HtmlTemplate = """
     <html>

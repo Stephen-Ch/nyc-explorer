@@ -199,6 +199,7 @@ Considerations: Adapter stub prevents extra provider calls while preserving live
 Evidence: npx playwright test tests/e2e/rate-limit-probe.spec.ts (GREEN).
 Files: tests/e2e/rate-limit-probe.spec.ts.
 
+- 2025-11-06 • P79 — Rewired Find→adapter; dir list reflects steps; suite improved vs. P76 baseline.
 - 2025-11-06 • P37 — 429 retry→mock + cooldown; ENV exposed; probe green.
 - 2025-11-06 • Sprint-06 CLOSEOUT — Shipped provider routing + 429 cooldown; tag: sprint-06-closeout-20251106.
 - 2025-11-06 • P73 — Typeahead restored (From/To via geo); a11y spec green; suite baseline unchanged.

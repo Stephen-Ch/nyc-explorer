@@ -7,3 +7,9 @@ test-results/
 .vs/
 *.user
 *.suo
+
+# local backups from HTML/CS refactors
+apps/web-mvc/**/old_home.inline.html
+apps/web-mvc/**/prev_*.html
+apps/web-mvc/**/prev_*.cs
+wwwroot/js/typeahead.js

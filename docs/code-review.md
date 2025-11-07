@@ -329,6 +329,8 @@ Snapshot: main@fa484d3 dirty=1 tests=6/0 selectors=v0.7 env=[]
 Outcome: GREEN (env-hydration + geo current/provider/typeahead targeted; baseline unchanged at 58 pass / 36 fail / 1 skip)
 Snapshot: main@2daf58d dirty=1 tests=58/36 selectors=v0.7 env=[] skip=1
 
+P79 — ROUTE-FIND-REWIRE — Find→adapter restored; dir-list shows step count; Outcome: GREEN (dir-list, geo-typeahead-a11y). Snapshot: main@beba2a4; pass=63 fail=31 skip=1.
+
 **Parked Items**
 - (None currently)
 

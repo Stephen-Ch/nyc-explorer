@@ -198,7 +198,120 @@
           const next = typeof message === 'string' && message.length ? message : 'Unable to load POIs.';
           if (poiError.textContent !== next) poiError.textContent = next;
           poiError.style.removeProperty('display');
-        };
+        },
+        dirApi = window.App?.dir;
+
+      const setRouteMessage = (text) => {
+        if (!routeMsg) return;
+        if (typeof text === 'string' && text.length) {
+          routeMsg.textContent = text;
+          routeMsg.style.removeProperty('display');
+        } else {
+          routeMsg.textContent = '';
+          routeMsg.style.display = 'none';
+        }
+      };
+
+      const setFindDisabled = (state) => {
+        if (!findButton) return;
+        findButton.disabled = state;
+        if (state) findButton.setAttribute('aria-disabled', 'true');
+        else findButton.removeAttribute('aria-disabled');
+      };
+
+      const clearDirections = (message) => {
+        const reason = typeof message === 'string' && message.length ? message : 'No steps.';
+        if (dirApi && typeof dirApi.clear === 'function') dirApi.clear(reason);
+        else {
+          if (dirList) dirList.innerHTML = '';
+          if (dirStatus) dirStatus.textContent = reason;
+        }
+      };
+
+      const renderDirections = (steps, statusText) => {
+        const message = typeof statusText === 'string' && statusText.length ? statusText : 'No steps.';
+        if (dirApi && typeof dirApi.render === 'function' && typeof dirApi.setStatus === 'function') {
+          dirApi.render(steps);
+          dirApi.setStatus(message);
+        } else {
+          if (dirList) {
+            dirList.innerHTML = '';
+            steps.forEach((step, index) => {
+              const item = document.createElement('li');
+              item.setAttribute('data-testid', 'turn-item');
+              item.setAttribute('data-dir-index', String(index));
+              item.textContent = typeof step?.text === 'string' && step.text.trim().length ? step.text : `Step ${index + 1}`;
+              dirList.appendChild(item);
+            });
+          }
+          if (dirStatus) dirStatus.textContent = message;
+        }
+      };
+
+      const normalizeRoute = (payload) => {
+        if (!payload) return null;
+        const normalizer = typeof app.adapters.normalizeRoutePayload === 'function' ? app.adapters.normalizeRoutePayload : null;
+        if (normalizer) {
+          const normalized = normalizer(payload);
+          if (normalized && (Array.isArray(normalized.path) && normalized.path.length || Array.isArray(normalized.steps) && normalized.steps.length)) return normalized;
+        }
+        if (Array.isArray(payload)) {
+          const steps = Array.isArray(payload.__nycSteps) ? payload.__nycSteps : [];
+          return { path: payload, steps };
+        }
+        if (typeof payload === 'object') {
+          const steps = Array.isArray(payload.steps) ? payload.steps : [];
+          const path = Array.isArray(payload.path) ? payload.path : [];
+          if (steps.length || path.length) return { path, steps };
+        }
+        return null;
+      };
+
+      const findRoute = async () => {
+        const fromValue = (fromInput.value ?? '').trim();
+        const toValue = (toInput.value ?? '').trim();
+        const fromGeo = hasGeoSelection(geoFromInput) ? toGeoPoint(geoFromInput) : null;
+        const toGeo = hasGeoSelection(geoToInput) ? toGeoPoint(geoToInput) : null;
+        if (!fromValue || !toValue || !fromGeo || !toGeo) {
+          clearDirections('No steps.');
+          setRouteMessage('Select both From and To to see steps.');
+          if (shareButton) { shareButton.disabled = true; shareButton.setAttribute('aria-disabled', 'true'); }
+          return;
+        }
+        setFindDisabled(true);
+        setRouteMessage('');
+        if (dirApi && typeof dirApi.setStatus === 'function') dirApi.setStatus('Searching…');
+        else if (dirStatus) dirStatus.textContent = 'Searching…';
+        if (routeSteps) routeSteps.innerHTML = '';
+        try {
+          const adapter = app.adapters?.route;
+          if (!adapter) throw new Error('Route adapter unavailable');
+          const run = () => {
+            if (typeof adapter.find === 'function') return adapter.find.length >= 1 ? adapter.find({ from: fromGeo, to: toGeo }) : adapter.find(fromGeo, toGeo);
+            if (typeof adapter.path === 'function') return adapter.path.length >= 2 ? adapter.path(fromGeo, toGeo) : adapter.path({ from: fromGeo, to: toGeo });
+            return null;
+          };
+          const payload = await run();
+          const normalized = normalizeRoute(payload);
+          const steps = Array.isArray(normalized?.steps) ? normalized.steps.filter(Boolean) : [];
+          if (!steps.length) {
+            clearDirections('No steps.');
+            setRouteMessage('Route ready.');
+            if (shareButton) { shareButton.disabled = true; shareButton.setAttribute('aria-disabled', 'true'); }
+            return;
+          }
+          const statusText = steps.length === 1 ? '1 step.' : `${steps.length} steps.`;
+          renderDirections(steps, statusText);
+          setRouteMessage('Route ready.');
+          if (shareButton) { shareButton.disabled = false; shareButton.removeAttribute('aria-disabled'); }
+        } catch (error) {
+          clearDirections('No steps.');
+          setRouteMessage('Unable to build route.');
+          if (shareButton) { shareButton.disabled = true; shareButton.setAttribute('aria-disabled', 'true'); }
+        } finally {
+          setFindDisabled(false);
+        }
+      };
 
       let geoQueryId = 0, currentOptions = [], activeIndex = -1, geoSearchTimer = 0;
       const hideGeoList = (clearStatus = false) => {
@@ -288,6 +401,10 @@
         geoToList.removeAttribute('data-testid');
         geoFromList.setAttribute('data-testid', 'ta-list');
         geoFromList.innerHTML = '';
+        const list = document.createElement('ol');
+        list.style.margin = '0';
+        list.style.padding = '0';
+        list.style.listStyle = 'none';
         if (!Array.isArray(items) || !items.length) {
           hideGeoList();
           setStatus('No results');
@@ -296,7 +413,7 @@
         currentOptions = []; activeIndex = -1;
         geoFromInput.removeAttribute('aria-activedescendant');
         items.forEach((item, index) => {
-          const option = document.createElement('div');
+          const option = document.createElement('li');
           option.id = `geo-from-option-${geoQueryId}-${index}`;
           option.setAttribute('data-testid', 'ta-option');
           option.setAttribute('role', 'option');
@@ -315,8 +432,9 @@
             selectOption(option);
           });
           currentOptions.push(option);
-          geoFromList.appendChild(option);
+          list.appendChild(option);
         });
+        geoFromList.appendChild(list);
         geoFromList.style.display = 'block'; setExpanded(true);
         setStatus(`${currentOptions.length} results`);
       };
@@ -352,12 +470,16 @@
       const renderGeoToOptions = (items) => {
         geoFromList.removeAttribute('data-testid'); geoToList.setAttribute('data-testid', 'ta-list');
         geoToList.innerHTML = '';
+        const list = document.createElement('ol');
+        list.style.margin = '0';
+        list.style.padding = '0';
+        list.style.listStyle = 'none';
         if (!Array.isArray(items) || !items.length) {
           hideGeoToList(); setStatus('No results'); return;
         }
         toOptions = []; toActiveIndex = -1; geoToInput.removeAttribute('aria-activedescendant');
         items.forEach((item, idx) => {
-          const option = document.createElement('div');
+          const option = document.createElement('li');
           option.id = `geo-to-option-${geoToQueryId}-${idx}`;
           option.setAttribute('data-testid', 'ta-option'); option.setAttribute('role', 'option'); option.setAttribute('aria-selected', 'false');
           option.textContent = item && typeof item.label === 'string' ? item.label : '';
@@ -366,8 +488,9 @@
           if (item && typeof item.label === 'string') option.dataset.geoLabel = item.label;
           Object.assign(option.style, { padding: '4px 8px', cursor: 'pointer' });
           option.addEventListener('mousedown', (event) => { event.preventDefault(); selectToOption(option); });
-          toOptions.push(option); geoToList.appendChild(option);
+          toOptions.push(option); list.appendChild(option);
         });
+        geoToList.appendChild(list);
         geoToList.style.display = 'block'; setToExpanded(true); setStatus(`${toOptions.length} results`);
       };
 
@@ -414,6 +537,11 @@
           if (options.length) { (isTo ? geoToList : geoFromList).style.display = 'block'; (isTo ? setToExpanded : setExpanded)(true); }
         });
         input.addEventListener('blur', () => window.setTimeout(() => (isTo ? hideGeoToList : hideGeoList)(), 150));
+      });
+
+      findButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        findRoute();
       });
     })();
   </script>
