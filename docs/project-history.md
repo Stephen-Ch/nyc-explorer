@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-07] P85 — Rebased main; CI/meta gates unchanged
+In order to keep local main aligned with the remote tip, I rebased onto origin/main and restored the P84 metadata before pushing.
+Considerations: No runtime files changed; force push only updated the commit message so the commit-scope guard stays green.
+Evidence: npx playwright test tests/meta; npx playwright test (94 pass / 0 fail / 1 skip); npm run typecheck (green).
+Files: none (history-only rebase sync).
+
 ### [2025-11-07] P84 — route UI helpers extracted
 In order to keep the announce + turn-list helpers reusable, I moved them into `/js/route-ui.js` and delegated the inline script to call the shared module.
 Considerations: No selector or copy changes; wrappers still respect the existing dir adapter hooks.

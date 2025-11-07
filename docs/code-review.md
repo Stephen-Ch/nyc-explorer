@@ -198,6 +198,7 @@ Blocker: <link or inline card>
 [2025-11-05 10:45] nyc-explorer/main GEO-ADAPTER-2a — geocoder fixture + From contract, RED as expected (#tests=1, green=false)
 [2025-11-05 11:35] nyc-explorer/main GEO-ADAPTER-2b — wire RealGeocoder.search to /geocode fixture; geo-from list shows; GREEN (#tests=74, green=true)
 [2025-11-05 11:55] nyc-explorer/main GEO-ADAPTER-2c-a — geocoder timeout contract (From), RED as expected (#tests=1, green=false)
+P85 — REBASE-SYNC — rebased main onto origin/main; Outcome: GREEN; Snapshot: main@1fd0413; #tests=94/0/1; typecheck=green.
 [2025-11-05 12:45] nyc-explorer/main GEO-ADAPTER-2c-b — geocoder timeout handling; GREEN (#tests=75, green=true; typecheck=green)
 [2025-11-05 13:15] nyc-explorer/main ENV-GEO-TIMEOUT-1 — docs-only knob for GEO_TIMEOUT_MS (#tests=0, green=NA)
 [2025-11-05 13:55] nyc-explorer/main TURN-LIST-1a — directions list e2e contract (RED) (#tests=1, green=false)
