@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-07] P84 — route UI helpers extracted
+In order to keep the announce + turn-list helpers reusable, I moved them into `/js/route-ui.js` and delegated the inline script to call the shared module.
+Considerations: No selector or copy changes; wrappers still respect the existing dir adapter hooks.
+Evidence: npx playwright test tests/e2e/dir-list.spec.ts tests/e2e/route-find-real.spec.ts tests/e2e/rate-limit-probe.spec.ts tests/e2e/geo-typeahead-a11y.spec.ts; npx playwright test (94 pass / 0 fail / 1 skip); npm run typecheck (green).
+Files: apps/web-mvc/wwwroot/js/route-ui.js; apps/web-mvc/wwwroot/static/home.inline.html.
+
 ### [2025-11-07] P83 — removed local backup files; added narrow ignores to prevent reappearance.
 In order to keep the repo free of local HTML artifacts, I deleted the stray backup files and added narrow ignore rules so they stay out of version control.
 Considerations: No runtime files changed; ignores target only the known backup filenames.

@@ -102,6 +102,7 @@
   </script>
 <script src="/js/adapters.js"></script>
 <script src="/js/geo-status.js"></script>
+<script src="/js/route-ui.js"></script>
 <script src="/js/directions.js" type="application/json"></script>
 <script src="/js/dir-ui.js"></script>
 <script>
@@ -163,6 +164,41 @@
       if (overlayContainer) overlayContainer.style.zIndex = String(CFG_PATH.Z);
 
       const app = window.App = window.App || {}; app.adapters = app.adapters || {}; app.geo = app.geo || {};
+      const routeUi = app.routeUi || {};
+      const clearTurnList = typeof routeUi.clearTurnList === 'function'
+        ? routeUi.clearTurnList
+        : (root) => {
+          if (!root) return;
+          root.innerHTML = '';
+        };
+      const renderTurnList = typeof routeUi.renderTurnList === 'function'
+        ? routeUi.renderTurnList
+        : (root, steps) => {
+          if (!root) return;
+          root.innerHTML = '';
+          if (!Array.isArray(steps) || !steps.length) return;
+          const doc = root.ownerDocument || document;
+          steps.forEach((step, index) => {
+            const item = doc.createElement('li');
+            item.setAttribute('data-testid', 'turn-item');
+            item.setAttribute('data-dir-index', String(index));
+            item.textContent = typeof step?.text === 'string' && step.text.trim().length ? step.text : `Step ${index + 1}`;
+            root.appendChild(item);
+          });
+        };
+      const announceReady = typeof routeUi.announceReady === 'function'
+        ? routeUi.announceReady
+        : (liveRegion, detail) => {
+          if (!liveRegion) return;
+          const steps = Array.isArray(detail?.steps) ? detail.steps.filter(Boolean) : [];
+          const path = Array.isArray(detail?.path) ? detail.path.filter(Boolean) : [];
+          const hasPath = path.length > 1;
+          const hasTurns = steps.length > 0;
+          const base = hasTurns && !hasPath ? 'Route ready (turns only).' : 'Route ready.';
+          const suffix = hasTurns ? (steps.length === 1 ? '1 step.' : `${steps.length} steps.`) : '';
+          liveRegion.textContent = suffix ? `${base} ${suffix}` : base;
+          liveRegion.style.removeProperty('display');
+        };
       if (typeof app.geo.registerStatusElement === 'function') app.geo.registerStatusElement(geoStatus);
       const fetchGeoResults = async (query) => {
         const adapter = app.adapters.geo;
@@ -212,6 +248,11 @@
         }
       };
 
+      const announceRouteReady = (detail) => {
+        if (!routeMsg) return;
+        announceReady(routeMsg, detail);
+      };
+
       const setFindDisabled = (state) => {
         if (!findButton) return;
         findButton.disabled = state;
@@ -223,7 +264,7 @@
         const reason = typeof message === 'string' && message.length ? message : 'No steps.';
         if (dirApi && typeof dirApi.clear === 'function') dirApi.clear(reason);
         else {
-          if (dirList) dirList.innerHTML = '';
+          if (dirList) clearTurnList(dirList);
           if (dirStatus) dirStatus.textContent = reason;
         }
       };
@@ -234,16 +275,7 @@
           dirApi.render(steps);
           dirApi.setStatus(message);
         } else {
-          if (dirList) {
-            dirList.innerHTML = '';
-            steps.forEach((step, index) => {
-              const item = document.createElement('li');
-              item.setAttribute('data-testid', 'turn-item');
-              item.setAttribute('data-dir-index', String(index));
-              item.textContent = typeof step?.text === 'string' && step.text.trim().length ? step.text : `Step ${index + 1}`;
-              dirList.appendChild(item);
-            });
-          }
+          if (dirList) renderTurnList(dirList, steps);
           if (dirStatus) dirStatus.textContent = message;
         }
       };
@@ -294,15 +326,16 @@
           const payload = await run();
           const normalized = normalizeRoute(payload);
           const steps = Array.isArray(normalized?.steps) ? normalized.steps.filter(Boolean) : [];
+          const path = Array.isArray(normalized?.path) ? normalized.path.filter(Boolean) : [];
           if (!steps.length) {
             clearDirections('No steps.');
-            setRouteMessage('Route ready.');
+            announceRouteReady({ steps, path });
             if (shareButton) { shareButton.disabled = true; shareButton.setAttribute('aria-disabled', 'true'); }
             return;
           }
           const statusText = steps.length === 1 ? '1 step.' : `${steps.length} steps.`;
           renderDirections(steps, statusText);
-          setRouteMessage('Route ready.');
+          announceRouteReady({ steps, path });
           if (shareButton) { shareButton.disabled = false; shareButton.removeAttribute('aria-disabled'); }
         } catch (error) {
           clearDirections('No steps.');

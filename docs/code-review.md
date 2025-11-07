@@ -335,6 +335,8 @@ P81 — ENV INJECTION — deterministic app-env script in head; Outcome: GREEN (
 
 P83 — cleanup backups + tighten .gitignore; Outcome: GREEN; Snapshot: main@cba8bf5; #tests=94/0/1; typecheck=green.
 
+P84 — EXTRACT-JS-ROUTE-UI-1 — moved announce/turn-list helpers to /js/route-ui.js; Outcome: GREEN; Snapshot: main@13f6766; #tests=94/0/1; typecheck=green.
+
 **Parked Items**
 - (None currently)
 
