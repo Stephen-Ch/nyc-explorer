@@ -338,6 +338,8 @@ P83 — cleanup backups + tighten .gitignore; Outcome: GREEN; Snapshot: main@cba
 
 P84 — EXTRACT-JS-ROUTE-UI-1 — moved announce/turn-list helpers to /js/route-ui.js; Outcome: GREEN; Snapshot: main@13f6766; #tests=94/0/1; typecheck=green.
 
+P86 — EXTRACT-JS-TYPEAHEAD-1 — moved combobox handlers to /js/typeahead.js; Outcome: GREEN (geo-typeahead-a11y, dir-list*); Snapshot: main@776e577; #tests=94/0/1; typecheck=green.
+
 **Parked Items**
 - (None currently)
 
