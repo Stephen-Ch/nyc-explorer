@@ -13,6 +13,7 @@ Reviewer-facing checklist. Keep this lean. All gating and read-order rules live 
 - Confirm **Constraints** were respected (≤2 files / ≤60 LOC unless refactor story).
 - Sanity-check **UX/strings/accessibility** for regressions.
 - Confirm **artifacts** (screenshots, output paths) were attached when requested.
+- Ensure high-risk guardrails are called out (plan link from `docs/plans/`, baseline logs, overlay freeze status, prompt log).
 
 ---
 
@@ -35,6 +36,10 @@ Reviewer-facing checklist. Keep this lean. All gating and read-order rules live 
 - [ ] No unrelated files edited; diff aligned to story
 - [ ] Artifacts included (if requested)
 - [ ] Security / PII / secrets scan ok
+- [ ] Pre-flight plan linked (from `docs/plans/`) for high-risk slices (Program.cs, overlay, adapters)
+- [ ] Baseline verification noted (full suite + typecheck before/after risky slice)
+- [ ] Overlay freeze guard acknowledged (when active)
+- [ ] Prompt log present (`Prompt X/Y — elapsed <m>`) showing cap adherence
 - [ ] Approve or request **REVISE** with concrete items
 
 ---

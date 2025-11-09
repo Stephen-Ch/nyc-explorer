@@ -15,8 +15,9 @@
 ## Process Flow (each slice)
 1) **RED** — write failing spec with clear messages (edge + error).  
 2) **GREEN** — minimal change to pass.  
-3) **LOG** — append one line to `/docs/code-review.md`.  
-4) **PAUSE** — stop until user cue.
+3) **VERIFY** — run required checks (see Baseline & Guardrail section).  
+4) **LOG** — append one line to `/docs/code-review.md`.  
+5) **PAUSE** — stop until user cue.
 
 <!-- PROMPT_SCHEMA_V2 -->
 ## Prompt Schema v2
@@ -115,6 +116,16 @@ Examples
 > **GATE:** DI adapters must match `docs/Adapters.md`; update that doc before swapping providers.
 > **GATE (Sprint 06):** Provider slices stay fixture-backed (no live HTTP in CI); enforce Manhattan clamps + timeout/429 fallback to mock before wiring real adapters.
 > **Gate Check (Sprint 06):** Any slice touching real providers must call out the 429 policy in `docs/Adapters.md` and log a decision plus project-history micro-entry.
+> **Overlay Freeze (Sprint 06 closeout → Sprint 07 RFC):** Do not edit overlay assets served on `/` (`Program.cs`, `wwwroot/js/route-overlay.js`, inline clones) unless a Sprint‑07 RFC is opened and approved.
+
+## Baseline & Guardrail Enforcement (Sprint 06+)
+- **Pre-flight plan:** For any high-risk slice (Program.cs refactor, overlay, provider wiring, adapters), draft a plan using `docs/templates/high-risk-plan.md`, store it under `docs/plans/`, and link it in the first prompt before touching files.
+- **Prompt/time caps:** After **3 prompts** or **60 minutes** without GREEN, halt and declare BREAKDOWN. Resume only after environment reset and updated plan.
+- **Baseline verification:** When a slice touches `Program.cs`, overlay JS, or adapters, run the **full Playwright suite** and `npm run typecheck` **before** starting (confirm clean baseline) and **after** implementation. Record results in `docs/project-history.md` and reference them in the plan document.
+- **Renderer fingerprint guards:** Ensure meta tests verify `renderRoutePath` contains `data-testid="route-node"` and script order is `home.js` → overlay on `/` and `/__view-home` before allowing overlay work to resume.
+- **Overlay freeze check:** CI must fail if overlay files change while freeze flag is active. Document intent in `docs/Workflow-Tweaks-S6.md` before lifting the freeze.
+- **Environment reset cadence:** After any BREAKDOWN or persistent RED, reboot IDE/browsers, clear local caches, and reopen a clean worktree prior to new commands.
+- **Pre-prompt review:** At the start of each session, re-read `docs/Protocol.md`, `docs/Workflow-Tweaks-S6.md`, `docs/postmortems/overlay-2025-11-09.md`, the active recovery plan, and the relevant plan document in `docs/plans/`.
 
 ## When ≤60 LOC isn’t enough
 - **BLOCK** with an Ambiguity Card that proposes:

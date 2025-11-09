@@ -3,18 +3,21 @@
 > **Read this before every prompt.** Enforces prompt‑only, tiny‑step TDD with zero guessing.
 
 ## Read Order (each prompt)
-Project.md → Sprint-06-Plan.md → Protocol.md → Copilot-Instructions.md → selectors.md → code-review.md (last 3)
+Project.md -> Sprint-06-Plan.md -> Protocol.md -> Workflow-Tweaks-S6.md -> Copilot-Instructions.md -> selectors.md -> postmortems/overlay-2025-11-09.md -> recovery/overlay-recovery-plan.md -> code-review.md (last 3)
 
 ## Read Order (always)
 
 1) docs/Protocol.md
-2) docs/Copilot-Instructions.md (Prompt Skeleton, Hard Guardrails, Allowed-Edits Fence)
-3) docs/selectors.md
-4) docs/Sprint-06-Plan.md (or latest Sprint-XX-Plan.md)
-5) docs/code-review.md (read last 3 Decisions lines only)
-6) docs/project-history.md (read last 2 micro-entries only)
-7) docs/Project.md
-8) docs/Working-With-Stephen.md (skim headings + Do/Don’t)
+2) docs/Workflow-Tweaks-S6.md
+3) docs/postmortems/overlay-2025-11-09.md
+4) docs/recovery/overlay-recovery-plan.md (active recovery plan)
+5) docs/Copilot-Instructions.md (Prompt Skeleton, Hard Guardrails, Allowed-Edits Fence)
+6) docs/selectors.md
+7) docs/Sprint-06-Plan.md (or latest Sprint-XX-Plan.md)
+8) docs/code-review.md (read last 3 Decisions lines only)
+9) docs/project-history.md (read last 2 micro-entries only)
+10) docs/Project.md
+11) docs/Working-With-Stephen.md (skim headings + Do/Don't)
 
 <!-- SESSION_SNAPSHOT_RULE -->
 ## Start-of-Session Ritual — Snapshot hook
@@ -32,7 +35,7 @@ Project.md → Sprint-06-Plan.md → Protocol.md → Copilot-Instructions.md →
 - Estimate the success delta first; only ask if the likelihood of succeeding improves by ≥3%.
 - Question template:
   1. **Assumption at risk** — name the specific contract or file you suspect is wrong.
-  2. **Proposed alternative(s)** — list the options you’d take if the assumption fails.
+  2. **Proposed alternative(s)** - list the options you'd take if the assumption fails.
   3. **Expected gain %** — quantify the improvement (≥10%) unlocked by getting the answer.
 
 ## Response Schema (every reply)
@@ -42,7 +45,8 @@ Report in this order:
 3. **Commands run** — ordered list.
 4. **Tests** — `passed=<n>/<N>; suite=<N>; typecheck=<status>; artifacts=<paths|none>`.
 5. **Outcome** — `RED|GREEN` with a one-line reason.
-6. **Next step** — either a tiny follow-up or “Pause”.
+6. **Prompt log** — `Prompt X/Y — elapsed <minutes>` (track cap adherence).
+7. **Next step** - either a tiny follow-up or "Pause".
 
 Also include, immediately after Outcome, the existing house keeps: selectors touched, schema keys status, and log updates for `code-review.md` / `project-history.md`.
 
@@ -157,6 +161,8 @@ Snapshot:
   - Append a micro-entry to `/docs/project-history.md` using the template (≤5 lines)
 - **OUTCOME**: **PROCEED / REVISE / BLOCK**
 - **Assumptions**: *none* (if any → BLOCK with Ambiguity Card)
+- **PROMPT STATUS**: `Prompt X/Y — elapsed <minutes>`
+- **PLAN LINK**: include path under `docs/plans/` when high risk
 
 ## Hard Guardrails (no exceptions)
 - **No‑Guessing Contract** → unclear? return **Ambiguity Card** and **BLOCK** (no code).
@@ -174,7 +180,7 @@ If Playwright Inspector launches but the browser stays blank for >2 minutes with
 3. Re-run the minimal targeted spec with `PWDEBUG=console` to surface output before attempting the full suite again.
 
 ## Pause Rule
-After a backlog item is GREEN and logged, **STOP**. Await explicit user cue (“NEXT” or “PROCEED — P##”). Do not propose or begin the next prompt.
+After a backlog item is GREEN and logged, **STOP**. Await explicit user cue such as NEXT or PROCEED - PNN. Do not propose or begin the next prompt.
 
 ## Definition of Ready (per prompt)
 - Title + READ paths present
@@ -186,23 +192,23 @@ After a backlog item is GREEN and logged, **STOP**. Await explicit user cue (“
 
 ## Deterministic E2E (UI stories)
 - Fix viewport (e.g., `1280×800`) and prefer `await expect(...).toBeVisible()` over manual throws.
-- For async DOM (fetch), rely on Playwright’s built‑in waiting (no sleeps).
+- For async DOM (fetch), rely on Playwright's built-in waiting (no sleeps).
 
 ## Optional Visual Smoke (UI stories)
-- After GREEN, run once in **headed** mode and capture `#map` screenshot to `docs/artifacts/<STORY-ID>/P<NN>-map.png` (no pixel diff). Store in git; keep ≤1 image per story, ≤500KB.
+- After GREEN, run once in **headed** mode and capture a map container screenshot to `docs/artifacts/<STORY-ID>/P<NN>-map.png` (no pixel diff). Store in git; keep ≤1 image per story, ≤500KB.
 
 ## Selectors Guidance (data-testid vs id/class)
 - **Use `data-testid`** for test‑targeted list items/controls (kebab‑case, e.g., `poi-item`, `back-to-map`).
-- **Use `id`** for unique structural containers (e.g., `#map`).
-- **Use `class`** for styling only; don’t test on classes unless from a third‑party lib.
-- **Leaflet classes** (`.leaflet-*`) are external; do **not** customize/rename them. It’s OK to assert their presence (e.g., `.leaflet-marker-icon`).
+- **Use `id`** for unique structural containers (for example `id="map"`).
+- **Use `class`** for styling only; don't test on classes unless from a third-party lib.
+- **Leaflet classes** (`.leaflet-*`) are external; do **not** customize/rename them. It's OK to assert their presence (e.g., `.leaflet-marker-icon`).
 
 ## Ambiguity Card — example
 ```
 Ambiguity Card — P12 ROUTE-1
 Questions:
-- Q1: Route to detail page is server `/poi/{id}` or client `/#/poi/{id}`?
-- Q2: Selector for “Back to Map” link? (proposal: [data-testid="back-to-map"])
+- Q1: Route to detail page is delivered by the server route or by the client hash route?
+- Q2: Selector for "Back to Map" link? (proposal: [data-testid="back-to-map"]) 
 Intended approach if approved:
 - Server route `/poi/{id}` with Razor view that fetches POI by id.
 Files to touch (≤2) + approx LOC (≤60):

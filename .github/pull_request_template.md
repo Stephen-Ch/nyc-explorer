@@ -15,9 +15,27 @@
 - Acceptance: <!-- explicit acceptance criteria -->
 - Allowed Edits: <!-- Fence details: files, LOC limits -->
 
+### Summary
+- [ ] Story / slice ID:
+- [ ] Guardrail plan: link to `docs/plans/...`
+- [ ] Overlay freeze status: ☐ not active ☐ approved exception ☐ n/a
+
+### Baseline Verification
+- [ ] Full Playwright suite (pre-flight) — command + timestamp:
+- [ ] `npm run typecheck` (pre-flight) — command + timestamp:
+- [ ] Full Playwright suite (post-change) — command + timestamp:
+- [ ] `npm run typecheck` (post-change) — command + timestamp:
+
+### Prompt Log
+- [ ] Provide prompt log snippet (`Prompt X/Y — elapsed <m>`) proving cap adherence.
+
 ### Tests
 - Spec(s) run: <!-- list specs or suites executed -->
 - Outcome: <!-- GREEN / RED (expected) / N/A -->
+
+### Additional Checks
+- [ ] CI overlay guard passes
+- [ ] Recovery plan steps still valid (link if updated)
 
 ### Blocker Card (optional)
 - Link: <!-- paste URL or leave N/A -->
@@ -27,3 +45,7 @@
 - [ ] Commit-on-Green observed (tests + typecheck where applicable)
 - [ ] Quarantine TTL respected (no expired skips)
 - [ ] Meta gates documented (if touched)
+
+### Reviewer Notes
+- Testing evidence / traces:
+- Docs touched:

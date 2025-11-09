@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-09] BREAKDOWN — Overlay re-landing
+In order to stop overlay drift after repeated BLOCKERs on `/`, I declared a BREAKDOWN, paused feature work, and activated the recovery plan sequence.
+Considerations: Recovery pending per code-review entry `P-BREAKDOWN — Overlay re-landing`; overlay edits remain frozen until reset completes.
+Evidence: #tests=0, green=NA (baseline snapshot at dfbf54a surfaced ProviderTimeoutError).
+Files: docs/code-review.md; docs/postmortems/overlay-2025-11-09.md; docs/recovery/overlay-recovery-plan.md; docs/nyc-explorer-system-reset-2025-11-09.md; docs/templates/high-risk-plan.md.
+
 ### [2025-11-07] P85 — Rebased main; CI/meta gates unchanged
 In order to keep local main aligned with the remote tip, I rebased onto origin/main and restored the P84 metadata before pushing.
 Considerations: No runtime files changed; force push only updated the commit message so the commit-scope guard stays green.
@@ -66,29 +72,20 @@ In order to make the default route reuse the provider-backed markup, I updated t
 Considerations: `/__view-home` stays on the MVC action as a backstop and no selectors or copy changed.
 Evidence: dotnet build; npx playwright test tests/e2e/home-parity.spec.ts; npx playwright test; npm run typecheck.
 Files: apps/web-mvc/Program.cs.
+Evidence: docs-only; npx playwright test (RED baseline from existing contracts); npm run typecheck (green).
+Files: docs/CODE-SMELL-ANALYSIS.md; docs/code-review.md; docs/project-history.md.
 
-### [2025-11-06] P68 — HOME shadow parity wired
-In order to mirror the home markup for the shadow route, I moved the inline HTML into `HomeHtmlProvider` and served `/__view-home` through the controller so both endpoints return identical content.
-Considerations: Provider caches the HTML once per startup and falls back to the template if configuration is missing; no selectors or copy changed.
+### [2025-11-06] P72 — Suite baseline snapshot
+In order to capture the current failure profile before further fixes, I reran the full suite with the list reporter and noted the runtime versions.
+Considerations: Snapshot taken against the existing dirty working tree from P69/P71; no files were modified.
+Evidence: npx playwright test --reporter=list (RED, pass=45 fail=49 skip=1).
+Files: none (baseline-only).
+
+### [2025-11-06] P69 — HOME default serves provider HTML
+In order to make the default route reuse the provider-backed markup, I updated the `/` MapGet to write `HomeHtmlProvider.Get()` directly with the existing UTF-8 content type.
+Considerations: `/__view-home` stays on the MVC action as a backstop and no selectors or copy changed.
 Evidence: dotnet build; npx playwright test tests/e2e/home-parity.spec.ts; npx playwright test; npm run typecheck.
-Files: apps/web-mvc/Program.cs; apps/web-mvc/Controllers/HomeController.cs.
-
-### [2025-11-06] P67 — HOME-PARITY shadow contract (RED)
-In order to lock DOM expectations before wiring the shadow home view, I added a parity spec that compares `/` with `/__view-home` for container presence, live regions, and data-testid counts.
-Considerations: Shadow route lacks the ready cue today, so the spec documents the missing parity ahead of the GREEN slice.
-Evidence: npx playwright test tests/e2e/home-parity.spec.ts (RED).
-Files: tests/e2e/home-parity.spec.ts.
-
-### [2025-11-07] P66 — MVC shadow view plumbing
-In order to prove the Razor pipeline is wired, I added a HomeController/Index view pair and mapped a `/__view-ok` shadow route without touching the existing UX.
-Considerations: Shadow route bypasses shared layout and keeps content minimal so it can be removed once real MVC work lands.
-Evidence: dotnet build apps/web-mvc; npx playwright test; npm run typecheck.
-Files: apps/web-mvc/Program.cs; apps/web-mvc/Controllers/HomeController.cs; apps/web-mvc/Views/Home/Index.cshtml; tests/e2e/view-plumbing.spec.ts.
-
-### [2025-11-07] P65 — Commit scope meta guard
-In order to keep runtime changes tied to logged prompts, I added a meta spec that checks the latest commit: if runtime files changed, the message must include a P-ID plus Outcome and Snapshot fields.
-Considerations: Relies on git log parsing and soft-fails for docs-only commits; no runtime code touched.
-Evidence: npx playwright test tests/meta/commit-scope.spec.ts; npx playwright test; npm run typecheck.
+Files: apps/web-mvc/Program.cs.
 Files: tests/meta/commit-scope.spec.ts; docs/code-review.md; docs/project-history.md.
 
 ### [2025-11-07] P64 — PR template prompt schema

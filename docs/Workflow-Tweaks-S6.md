@@ -13,6 +13,9 @@
 - Capture risky assumptions inline in prompts so reviewers can veto quickly.
 - Trim redundant selectors/tests the same day they become obsolete.
 - Tighten Playwright log collection by copying stdout/stderr before re-running the suite.
+- Enforce the high-risk plan template (`docs/templates/high-risk-plan.md`) and store each plan under `docs/plans/` before editing `Program.cs`, overlay JS, or provider wiring slices.
+- Log baseline verification (full suite + typecheck) in project-history before and after these slices.
+- Track prompt cadence inside each prompt header using `Prompt X/Y — elapsed <minutes>` to make the cap visible.
 
 ## Stop-the-Line Triggers
 - Playwright run hangs >2 minutes with no new log output.
@@ -27,7 +30,15 @@
 
 ## Definition of Done Chain
 1. Targeted spec(s) GREEN.
-2. Full Playwright suite GREEN.
-3. `npm run typecheck` GREEN.
-4. Append Decisions line + project-history micro-entry.
-5. Update CODE-SMELL checklist item if touched by the slice.
+2. Full Playwright suite GREEN (pre-flight + post-change when `Program.cs`/overlay/adapters touched).
+3. `npm run typecheck` GREEN (pre-flight + post-change when `Program.cs`/overlay/adapters touched).
+4. Append Decisions line + project-history micro-entry with baseline notes.
+5. Confirm guardrails (plan link, overlay freeze status, renderer fingerprint meta) in the prompt summary.
+6. Update CODE-SMELL checklist item if touched by the slice.
+
+## Guardrail Checklist (Sprint 06 Closeout → Sprint 07)
+- Overlay freeze active: no `/` overlay edits until Sprint‑07 RFC approved. Fail fast if diffs appear.
+- Prompt/time caps: stop after 3 prompts or 60 minutes of RED; declare BREAKDOWN and reset.
+- Environment reset: after any BREAKDOWN, reboot tools and reload worktree before resuming.
+- Renderer fingerprint meta and script-order parity tests must remain GREEN.
+- Session cadence: before first prompt each day, skim `docs/Protocol.md`, `docs/Workflow-Tweaks-S6.md`, `docs/postmortems/overlay-2025-11-09.md`, the active recovery plan, and the relevant plan under `docs/plans/`; refresh after every BREAKDOWN or RFC approval.

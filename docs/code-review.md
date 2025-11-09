@@ -349,3 +349,15 @@ Snapshot: main@8a66ea1 dirty=3 tests=45/1 selectors=v0.7 env=[]
 [2025-11-06 23:59] nyc-explorer/main P75 — Code-smell doc refreshed (Program.cs externalized; ENV hydrated; typeahead partial dedupe) (#tests=0, green=NA)
 Outcome: GREEN
 Snapshot: main@8ac8f49 dirty=1 tests=0/0 selectors=v0.7 env=[]
+
+## P-BREAKDOWN — Overlay re-landing
+
+**Context:** Repeated BLOCKERs during overlay re-landing on `/` in isolated worktree.
+**Last Green Tag:** sprint-06-closeout-20251106 (dfbf54a)
+**Failing spec at stop:** tests/unit/route-adapter-real.spec.ts:12 (ProviderTimeoutError); earlier overlay path issues persisted on `/`.
+**Decision:** Declare BREAKDOWN. Stop feature work. Document, reset environment, and pivot per recovery plan.
+**Next Steps:**
+- Write post-mortem (fishbone + 5 whys) scaffold and recovery plan doc.
+- Reboot + fresh IDE/browsers + fresh chats (post-prompt operational step).
+- Re-verify baseline before any new overlay attempt; overlay becomes a Sprint-07 RFC unless product demands immediate Option B.
+Snapshot: baseline/sprint06-verify@dfbf54a; node=v20.19.5 dotnet=10.0.100-rc.2.25502.107 pw=Version 1.56.1
