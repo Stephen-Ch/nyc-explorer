@@ -364,3 +364,4 @@ Snapshot: baseline/sprint06-verify@dfbf54a; node=v20.19.5 dotnet=10.0.100-rc.2.2
 
 ### Sprint-06 story references (backfill)
 - 2025-11-09 20:22:58 UTC — Ensured presence of P65, P66, P67, P68 for log-integrity.
+- 2025-11-09 23:41:14Z — Baseline GREEN: Playwright + typecheck pass; governance satisfied; ready to refactor Program.cs.
