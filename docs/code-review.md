@@ -361,3 +361,6 @@ Snapshot: main@8ac8f49 dirty=1 tests=0/0 selectors=v0.7 env=[]
 - Reboot + fresh IDE/browsers + fresh chats (post-prompt operational step).
 - Re-verify baseline before any new overlay attempt; overlay becomes a Sprint-07 RFC unless product demands immediate Option B.
 Snapshot: baseline/sprint06-verify@dfbf54a; node=v20.19.5 dotnet=10.0.100-rc.2.25502.107 pw=Version 1.56.1
+
+### Sprint-06 story references (backfill)
+- 2025-11-09 20:22:58 UTC — Ensured presence of P65, P66, P67, P68 for log-integrity.

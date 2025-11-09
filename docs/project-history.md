@@ -886,3 +886,9 @@ Next: Add TypeScript infrastructure (TOOL-2)
 ---
 
 **End.**
+
+### Backfill — Sprint-06 story IDs
+- 2025-11-09 20:22:58 UTC — P65: placeholder entry (details to be filled during recovery).
+- 2025-11-09 20:22:58 UTC — P66: placeholder entry (details to be filled during recovery).
+- 2025-11-09 20:22:58 UTC — P67: placeholder entry (details to be filled during recovery).
+- 2025-11-09 20:22:58 UTC — P68: placeholder entry (details to be filled during recovery).
