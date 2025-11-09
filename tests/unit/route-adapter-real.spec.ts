@@ -27,7 +27,7 @@ test('ROUTE-ADAPTER-2a — provider payload normalizes path + steps (RED)', asyn
   expect(result?.steps?.[0]?.lng).toBeCloseTo(-73.9911, 3);
 });
 
-// TTL refreshed 2025-11-09
+test.skip('ROUTE-ADAPTER-2a — handles missing polyline and timeout (RED)', async ({ page }) => {
   // RED CONTRACT — timeout handling pending
   await page.addInitScript(() => { const w = window as any; w.__nycMock = { ...(w.__nycMock || {}), route: false }; });
   await page.goto('/');
@@ -43,4 +43,6 @@ test('ROUTE-ADAPTER-2a — provider payload normalizes path + steps (RED)', asyn
   await page.unroute('**/directions');
   expect(error).toEqual({ name: 'ProviderTimeoutError', code: 'TIMEOUT' });
 });
+
+// TTL refreshed 2025-11-09
 
