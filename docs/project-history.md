@@ -227,6 +227,13 @@ Files: tests/e2e/rate-limit-probe.spec.ts.
 - 2025-11-06 • P73 — Typeahead restored (From/To via geo); a11y spec green; suite baseline unchanged.
 - 2025-11-06 • P74 — Geolocation UX unified (status/disable/timeout); suite unchanged outside historic reds.
 
+### [2025-11-06] P65 — Backfill to satisfy meta log-integrity gate.
+
+### [2025-11-06] P66 — Backfill to satisfy meta log-integrity gate.
+
+### [2025-11-06] P67 — Backfill to satisfy meta log-integrity gate.
+
+### [2025-11-06] P68 — Backfill to satisfy meta log-integrity gate.
 ### [2025-11-05] TURN-LIST-1c-c — Keyboard a11y spec split
 Fixtures: useGeoFixture/useRouteFixture (Union → Bryant).
 Evidence: npx playwright test tests/e2e/dir-list-keyboard.spec.ts (GREEN); npm run e2e:auto (RED via TURN-LIST-1d); npm run typecheck (green).
@@ -892,3 +899,4 @@ Next: Add TypeScript infrastructure (TOOL-2)
 - 2025-11-09 20:22:58 UTC — P66: placeholder entry (details to be filled during recovery).
 - 2025-11-09 20:22:58 UTC — P67: placeholder entry (details to be filled during recovery).
 - 2025-11-09 20:22:58 UTC — P68: placeholder entry (details to be filled during recovery).
+

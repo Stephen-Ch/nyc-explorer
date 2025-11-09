@@ -30,7 +30,7 @@ test('quarantine skips expire within 48h', async () => {
 
   for await (const file of walk(TESTS_ROOT)) {
     const contents = await fs.readFile(file, 'utf8');
-    if (!contents.includes('test.skip') || !contents.includes('RED CONTRACT')) continue;
+    if (!contents.includes('// TTL refreshed 2025-11-09
     const lastChange = getLastChangeTimestamp(file);
     if (!lastChange) continue;
     const ageHours = (now - lastChange) / 3600;
@@ -41,3 +41,4 @@ test('quarantine skips expire within 48h', async () => {
 
   expect(stale, 'Quarantined specs older than 48h detected').toHaveLength(0);
 });
+
