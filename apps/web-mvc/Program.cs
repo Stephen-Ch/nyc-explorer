@@ -508,11 +508,11 @@ internal static class HomeHtmlProvider
           geoCurrentToButton.addEventListener('click', async () => {
             const adapter = app.adapters?.geo;
             if (!adapter || typeof adapter.current !== 'function' || adapter.current.__nycDefault) {
-              setStatus(ErrorMessages.LocationUnavailable);
+              setStatus('{{ErrorMessages.LocationUnavailable}}');
               return;
             }
             geoCurrentToButton.disabled = true;
-            setStatus(ErrorMessages.Locating);
+            setStatus('{{ErrorMessages.Locating}}');
             try {
               const result = await adapter.current();
               if (!result || typeof result.lat !== 'number' || typeof result.lng !== 'number' || typeof result.label !== 'string') throw new Error('Invalid current location result');
@@ -522,9 +522,9 @@ internal static class HomeHtmlProvider
               geoToInput.dataset.geoLabel = result.label;
               toInput.value = result.label;
               hideGeoToList();
-              setStatus(ErrorMessages.UsingCurrentLocation);
+              setStatus('{{ErrorMessages.UsingCurrentLocation}}');
             } catch (error) {
-              setStatus(ErrorMessages.LocationUnavailable);
+              setStatus('{{ErrorMessages.LocationUnavailable}}');
             } finally {
               geoCurrentToButton.disabled = false;
             }
@@ -564,36 +564,21 @@ internal static class HomeHtmlProvider
 
           const renderGeoToOptions = (items) => {
             geoFromList.removeAttribute('data-testid');
-            geoToList.innerHTML = '';
-            geoToOptions = [];
+            if (!Array.isArray(items) || !items.length) {
+              hideGeoToList();
+              setStatus('No results');
+              return;
+            }
+            const decorated = items.map((item, index) => ({ ...(item ?? {}), __domId: `geo-to-option-${geoToQueryId}-${index}` }));
             geoToActiveIndex = -1;
-            geoToInput.removeAttribute('aria-activedescendant');
-            items.forEach((item, index) => {
-              const option = document.createElement('div');
-              option.id = `geo-to-option-${geoToQueryId}-${index}`;
-              option.setAttribute('data-testid', 'ta-option');
-              option.setAttribute('role', 'option');
-              option.setAttribute('aria-selected', 'false');
-              option.textContent = item && typeof item.label === 'string' ? item.label : '';
-              option.dataset.id = item && typeof item.id === 'string' ? item.id : '';
-              if (item && typeof item.lat === 'number') option.dataset.geoLat = String(item.lat);
-              else delete option.dataset.geoLat;
-              if (item && typeof item.lng === 'number') option.dataset.geoLng = String(item.lng);
-              else delete option.dataset.geoLng;
-              if (item && typeof item.label === 'string') option.dataset.geoLabel = item.label;
-              else delete option.dataset.geoLabel;
-              Object.assign(option.style, { padding: '4px 8px', cursor: 'pointer' });
-              option.addEventListener('mousedown', (evt) => {
-                evt.preventDefault();
-                selectToOption(option);
-              });
-              geoToOptions.push(option);
-              geoToList.appendChild(option);
-            });
-            geoToList.setAttribute('data-testid', 'ta-list');
-            geoToList.style.display = 'block';
-            setToExpanded(true);
-            setStatus(`${geoToOptions.length} results`);
+            geoToOptions = renderTypeaheadList(
+              geoToList,
+              setToExpanded,
+              setStatus,
+              decorated,
+              geoToInput,
+              (node) => { selectToOption(node); }
+            );
           };
 
           const runGeoToSearch = async (value, requestId) => {
