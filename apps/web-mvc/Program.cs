@@ -157,12 +157,7 @@ internal static class HomeHtmlProvider
     <script src="/js/geo-typeahead.js"></script>
     <script src="/js/poi-fetch-guard.js"></script>
       <script src="/js/home.js"></script>
-      <script>
-        (function () {
-          window.App = window.App || {};
-          window.App.config = __APP_CONFIG__;
-        })();
-      </script>
+    <script src="/js/app-bootstrap.js"></script>
     <script src="/js/adapters.js"></script>
     <script src="/js/directions.js" type="application/json"></script>
     <script src="/js/dir-ui.js"></script>
