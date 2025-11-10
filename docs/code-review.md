@@ -342,6 +342,8 @@ P86 — EXTRACT-JS-TYPEAHEAD-1 — moved combobox handlers to /js/typeahead.js; 
 
 P87 — NAV-BOOTSTRAP-EXTRACT — routed inline bootstrap into /js/nav-bootstrap.js and hydrated error JSON from Program.cs; Outcome: GREEN (dir-list, route-find-provider, turn-list-pathless, route-find-real, unit route-adapter-real [skip], full e2e 94/0/1); Snapshot: main@0ffef4d dirty=2; #tests=94/0/1; typecheck=not-run.
 
+[2025-11-10 10:55] nyc-explorer/overlay-drift-20251108-155953 S7-01 DOC-INDEX — add INDEX + header (#tests=0, green=true)
+
 **Parked Items**
 - (None currently)
 

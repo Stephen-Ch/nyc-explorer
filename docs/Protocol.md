@@ -1,4 +1,4 @@
-# Protocol — UPDATED for Sprint 02 (v2)
+# Protocol — v2 (Last updated: 2025-11-10 by Copilot)
 
 **Keep:** prompt-only, tiny steps, TDD; ≤2 files / ≤60 LOC; Decisions log; Ambiguity Cards; Pause rule.
 

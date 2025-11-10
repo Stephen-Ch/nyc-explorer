@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] S7-01 — DOC-INDEX — add INDEX + header
+In order to reduce drift, I added INDEX.md and stamped Protocol header.
+Evidence: typecheck pass; Files: docs/INDEX.md, docs/Protocol.md
+Considerations: docs-only; overlay freeze remains ON.
+
 ### [2025-11-10] P87 — nav bootstrap extraction
 In order to keep the home shell modular, I moved the route + geo bootstrap into `/js/nav-bootstrap.js` and hydrated error messages via `Program.cs` JSON.
 Considerations: Geo typeahead regressions cleared by renaming the bundle to avoid fixture capture; no selector drift observed.
