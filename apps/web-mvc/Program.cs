@@ -365,6 +365,23 @@ internal static class HomeHtmlProvider
             return nextIndex;
           };
 
+          const applyGeoSelection = (inputEl, targetInput, node) => {
+            if (!inputEl || !targetInput || !node) return '';
+            const label = node.textContent ?? '';
+            inputEl.value = label;
+            if (node.dataset.geoLat && node.dataset.geoLng) {
+              inputEl.dataset.geoLat = node.dataset.geoLat;
+              inputEl.dataset.geoLng = node.dataset.geoLng;
+            } else {
+              delete inputEl.dataset.geoLat;
+              delete inputEl.dataset.geoLng;
+            }
+            if (node.dataset.geoLabel) inputEl.dataset.geoLabel = node.dataset.geoLabel;
+            else delete inputEl.dataset.geoLabel;
+            targetInput.value = label;
+            return label;
+          };
+
           let geoQueryId = 0, currentOptions = [], activeIndex = -1, geoSearchTimer = 0;
           const hideGeoList = (clearStatus = false) => {
             geoFromList.innerHTML = '';
@@ -407,18 +424,8 @@ internal static class HomeHtmlProvider
 
           const selectOption = (node) => {
             if (!node) return;
-            geoFromInput.value = node.textContent ?? '';
-            if (node.dataset.geoLat && node.dataset.geoLng) {
-              geoFromInput.dataset.geoLat = node.dataset.geoLat;
-              geoFromInput.dataset.geoLng = node.dataset.geoLng;
-            } else {
-              delete geoFromInput.dataset.geoLat;
-              delete geoFromInput.dataset.geoLng;
-            }
-            if (node.dataset.geoLabel) geoFromInput.dataset.geoLabel = node.dataset.geoLabel;
-            else delete geoFromInput.dataset.geoLabel;
-            fromInput.value = geoFromInput.value;
-            setStatus(`Selected: ${geoFromInput.value}`);
+            const label = applyGeoSelection(geoFromInput, fromInput, node);
+            setStatus(`Selected: ${label}`);
             hideGeoList();
           };
 
@@ -550,17 +557,7 @@ internal static class HomeHtmlProvider
 
           const selectToOption = (node) => {
             if (!node) return;
-            geoToInput.value = node.textContent ?? '';
-            if (node.dataset.geoLat && node.dataset.geoLng) {
-              geoToInput.dataset.geoLat = node.dataset.geoLat;
-              geoToInput.dataset.geoLng = node.dataset.geoLng;
-            } else {
-              delete geoToInput.dataset.geoLat;
-              delete geoToInput.dataset.geoLng;
-            }
-            if (node.dataset.geoLabel) geoToInput.dataset.geoLabel = node.dataset.geoLabel;
-            else delete geoToInput.dataset.geoLabel;
-            toInput.value = geoToInput.value;
+            applyGeoSelection(geoToInput, toInput, node);
             hideGeoToList(true);
           };
 
