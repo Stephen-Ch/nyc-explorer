@@ -42,7 +42,7 @@ app.Use(async (context, next) =>
 app.MapGet("/", static async context =>
 {
   context.Response.ContentType = "text/html; charset=utf-8";
-  await context.Response.WriteAsync(HomeHtmlProvider.Get());
+  await context.Response.WriteAsync(HomeHtmlProvider.GetHtml());
 });
 
 app.MapGet("/content/poi.v1.json", async () =>
@@ -100,7 +100,7 @@ internal static class HomeHtmlProvider
     _html = InjectEnvScript(html, configJson);
     }
 
-    public static string Get()
+    public static string GetHtml()
     {
     if (string.IsNullOrEmpty(_html))
     {

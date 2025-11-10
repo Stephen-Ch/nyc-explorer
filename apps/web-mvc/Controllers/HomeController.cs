@@ -13,7 +13,7 @@ public sealed class HomeController : Controller
     [HttpGet]
     public IActionResult HomeShadow()
     {
-        var html = HomeHtmlProvider.Get();
+        var html = HomeHtmlProvider.GetHtml();
         return Content(html, "text/html; charset=utf-8");
     }
 }
