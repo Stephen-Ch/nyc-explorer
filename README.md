@@ -41,12 +41,17 @@ Verify the mock experience end-to-end:
 - Activate **Copy link** (`[data-testid="share-link"]`) and confirm the live region announces “Link copied.”
 - Paste the copied URL in a new tab; POI deep-links (`?from=&to=`) and adapter deep-links (`?gfrom=&gto=&gfl=&gtl=`) should restore the route state.
 
-### Provider switches
+## Provider switches
 - `.env` flags `GEO_PROVIDER` and `ROUTE_PROVIDER` are documented in `docs/Adapters.md` and default to `mock`.
-- `.env` exposes `GEO_TIMEOUT_MS` (milliseconds) to tune geocoder timeout locally; defaults to 3500. When the limit is hit the UI surfaces “Unable to search locations (timeout)” and hides the typeahead list until retries.
+- `.env` exposes `GEO_TIMEOUT_MS` (milliseconds) to tune geocoder timeout locally; defaults to 3500. When the limit is hit the UI surfaces "Unable to search locations (timeout)" and hides the typeahead list until retries.
 - Real providers are not wired yet; leave the mock settings in place for Sprint 05.
 - Sprint 06 adds a rate-limit policy: if a real provider call times out or returns HTTP 429, flip both flags back to `mock`, log the event, and rerun using fixtures.
 - When you hit rate limits: the live region announces "Using cached results due to provider limits.", the server logs `provider-rate-limit`, and you can force mocks locally by keeping `GEO_PROVIDER=mock` and `ROUTE_PROVIDER=mock`.
+
+### Overlay Recovery Flag
+- `OVERLAY_RECOVERY=1` (set before app start) injects `/js/_overlay/overlay-core.js` and `/js/_overlay/overlay-announce.js` at startup.
+- Default is OFF; changing the flag requires an app restart.
+
 ## Deep-Links & Share
 - **POI routes:** `/?from=<poiId>&to=<poiId>` rehydrates list-based routes, including steps and active markers.
 - **Adapter routes:** `/?gfrom=<lat>,<lng>&gto=<lat>,<lng>&gfl=<label>&gtl=<label>` (labels URL-encoded) redraw the adapter path without POI markers.

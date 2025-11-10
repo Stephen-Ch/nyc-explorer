@@ -88,6 +88,18 @@ internal static class HomeHtmlProvider
     var html = HtmlTemplate
       .Replace("__APP_CONFIG__", configJson)
       .Replace("__ERROR_MESSAGES__", messagesJson);
+    
+    var orFlag = Environment.GetEnvironmentVariable("OVERLAY_RECOVERY");
+    if (orFlag == "1")
+    {
+      var overlayScripts = "<script src=\"/js/_overlay/overlay-core.js\"></script><script src=\"/js/_overlay/overlay-announce.js\"></script>";
+      var bodyIdx = html.IndexOf("</body>", StringComparison.OrdinalIgnoreCase);
+      if (bodyIdx >= 0)
+      {
+        html = html.Insert(bodyIdx, overlayScripts);
+      }
+    }
+    
     _html = InjectEnvScript(html, configJson);
     }
 
