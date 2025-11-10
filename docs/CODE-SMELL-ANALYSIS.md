@@ -27,6 +27,7 @@ Risk Level: HIGH - The current structure significantly impedes maintainability, 
 - `home.inline.html` lives in `wwwroot/static` with the geolocation status helper extracted for reuse.
 - `window.ENV` injection hardened by the Program.cs split; values hydrate via structured object guards.
 - Typeahead flows restored with shared current-button handlers; the remaining module extraction stays on deck.
+- 2025-11-09: `ErrorMessages` strings centralized for current-location statuses, the HTML template converted to an interpolated raw string, and a reusable `renderTypeaheadList` helper landed; the geo-from typeahead now uses the helper (green `dotnet build` + `npm run typecheck`).
 
 Critical Code Smells
 1. CRITICAL: Massive Inline HTML String Literal (Long Method)
@@ -96,7 +97,7 @@ runGeoSearch / runGeoToSearch: Same logic, different variables
 Event handlers: Nearly identical keyboard/input handling
 Total Duplicated Lines: ~600+
 
-Status: Partially mitigated — shared handlers now cover both "Current" button flows while duplication persists in the typeahead core.
+Status: In progress — shared handlers cover both "Current" flows and `renderTypeaheadList` now renders the geo-from list; geo-to rendering and the keyboard/selection helpers remain duplicated.
 
 Refactoring Suggestions:
 
@@ -122,7 +123,10 @@ const toTypeahead = createTypeahead({
 });
 Extract to Class/Module: Create a Typeahead class or module pattern
 Expected Reduction: ~600 lines → ~200 lines (70% reduction)
-Next: Extract shared typeahead logic into `wwwroot/js/typeahead.js` and have Program.cs import it for both inputs.
+Near-term next steps:
+- Apply `renderTypeaheadList` to the geo-to flow and collapse the twin keyboard/select helpers behind shared utilities.
+- Swap remaining literal status strings for `ErrorMessages` constants during the helper roll-out.
+- Once both flows share the helper surface, migrate the typeahead logic into `wwwroot/js/typeahead.js` and load it from the template.
 3. Magic Numbers Throughout Codebase
 Location: Multiple files
 
