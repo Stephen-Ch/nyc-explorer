@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] OR-08A — approval checklist added
+In order to capture explicit consent before changing runtime defaults, I added an approval checklist for the freeze-lift proposal.
+Evidence: typecheck pass; Files: docs/approvals/OR-08A-approval.md
+Considerations: docs-only; freeze remains ON until checklist is APPROVED; selectors v0.7; quarantine unchanged
+
 ### [2025-11-10] OR-08A — freeze-lift proposal RFC + CI note
 In order to formalize guarded progress on overlay, I added an RFC proposing a partial freeze-lift and appended a CI policy note.
 Evidence: typecheck pass; Files: docs/rfc/2025-11-10-freeze-lift-proposal.md; docs/CI-Policy.md
