@@ -3,3 +3,4 @@
 - Accessible turn list with turn-list/turn-item selectors
 - 429 retry→mock cooldown fallback (P37/P41)
 - selectors.md promoted to v0.7 canonical contract
+- Inline nav bootstrap extracted to `/js/nav-bootstrap.js` with Program.cs error JSON hydration (P87)

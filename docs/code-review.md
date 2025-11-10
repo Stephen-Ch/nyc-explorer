@@ -340,6 +340,8 @@ P84 — EXTRACT-JS-ROUTE-UI-1 — moved announce/turn-list helpers to /js/route-
 
 P86 — EXTRACT-JS-TYPEAHEAD-1 — moved combobox handlers to /js/typeahead.js; Outcome: GREEN (geo-typeahead-a11y, dir-list*); Snapshot: main@776e577; #tests=94/0/1; typecheck=green.
 
+P87 — NAV-BOOTSTRAP-EXTRACT — routed inline bootstrap into /js/nav-bootstrap.js and hydrated error JSON from Program.cs; Outcome: GREEN (dir-list, route-find-provider, turn-list-pathless, route-find-real, unit route-adapter-real [skip], full e2e 94/0/1); Snapshot: main@0ffef4d dirty=2; #tests=94/0/1; typecheck=not-run.
+
 **Parked Items**
 - (None currently)
 

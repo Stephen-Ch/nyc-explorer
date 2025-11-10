@@ -19,6 +19,12 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] P87 — nav bootstrap extraction
+In order to keep the home shell modular, I moved the route + geo bootstrap into `/js/nav-bootstrap.js` and hydrated error messages via `Program.cs` JSON.
+Considerations: Geo typeahead regressions cleared by renaming the bundle to avoid fixture capture; no selector drift observed.
+Evidence: #tests=95, green=true (Playwright: dir-list, provider, turn-list pathless, route real, adapters, full e2e 94/0/1).
+Files: apps/web-mvc/Program.cs; apps/web-mvc/wwwroot/js/nav-bootstrap.js; CHANGELOG.md.
+
 ### [2025-11-09] BREAKDOWN — Overlay re-landing
 In order to stop overlay drift after repeated BLOCKERs on `/`, I declared a BREAKDOWN, paused feature work, and activated the recovery plan sequence.
 Considerations: Recovery pending per code-review entry `P-BREAKDOWN — Overlay re-landing`; overlay edits remain frozen until reset completes.
