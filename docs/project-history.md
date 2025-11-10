@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] OR-06D — renderSvgPolyline helper added
+In order to enable a real happy-path overlay render under freeze, I added renderSvgPolyline to create an SVG path from points (no wiring).
+Evidence: typecheck pass; Playwright 95/98; Files: apps/web-mvc/wwwroot/js/_overlay/overlay-core.js
+Considerations: helper only; overlay freeze ON; OVERLAY_RECOVERY default OFF; selectors v0.7; quarantine unchanged
+
 ### [2025-11-10] OR-06C — decodePolyline stub + routed toPointsFromPolyline
 In order to enable meaningful happy-path assertions under freeze, I added a minimal decodePolyline stub and routed toPointsFromPolyline through it.
 Evidence: typecheck pass; Playwright 95/98; Files: apps/web-mvc/wwwroot/js/_overlay/overlay-core.js
