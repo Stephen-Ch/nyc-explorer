@@ -321,11 +321,11 @@ internal static class HomeHtmlProvider
           geoCurrentButton.addEventListener('click', async () => {
             const adapter = app.adapters?.geo;
             if (!adapter || typeof adapter.current !== 'function' || adapter.current.__nycDefault) {
-              setStatus('Location unavailable.');
+              setStatus(ErrorMessages.LocationUnavailable);
               return;
             }
             geoCurrentButton.disabled = true;
-            setStatus('Locating…');
+            setStatus(ErrorMessages.Locating);
             try {
               const result = await adapter.current();
               if (!result || typeof result.lat !== 'number' || typeof result.lng !== 'number' || typeof result.label !== 'string') throw new Error('Invalid current location result');
@@ -335,9 +335,9 @@ internal static class HomeHtmlProvider
               geoFromInput.dataset.geoLabel = result.label;
               fromInput.value = result.label;
               hideGeoList();
-              setStatus('Using current location.');
+              setStatus(ErrorMessages.UsingCurrentLocation);
             } catch (error) {
-              setStatus('Location unavailable.');
+              setStatus(ErrorMessages.LocationUnavailable);
             } finally {
               geoCurrentButton.disabled = false;
             }
@@ -485,11 +485,11 @@ internal static class HomeHtmlProvider
           geoCurrentToButton.addEventListener('click', async () => {
             const adapter = app.adapters?.geo;
             if (!adapter || typeof adapter.current !== 'function' || adapter.current.__nycDefault) {
-              setStatus('Location unavailable.');
+              setStatus(ErrorMessages.LocationUnavailable);
               return;
             }
             geoCurrentToButton.disabled = true;
-            setStatus('Locating…');
+            setStatus(ErrorMessages.Locating);
             try {
               const result = await adapter.current();
               if (!result || typeof result.lat !== 'number' || typeof result.lng !== 'number' || typeof result.label !== 'string') throw new Error('Invalid current location result');
@@ -499,9 +499,9 @@ internal static class HomeHtmlProvider
               geoToInput.dataset.geoLabel = result.label;
               toInput.value = result.label;
               hideGeoToList();
-              setStatus('Using current location.');
+              setStatus(ErrorMessages.UsingCurrentLocation);
             } catch (error) {
-              setStatus('Location unavailable.');
+              setStatus(ErrorMessages.LocationUnavailable);
             } finally {
               geoCurrentToButton.disabled = false;
             }
