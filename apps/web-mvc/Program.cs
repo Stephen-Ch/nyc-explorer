@@ -90,14 +90,11 @@ internal static class HomeHtmlProvider
       .Replace("__ERROR_MESSAGES__", messagesJson);
     
     var orFlag = Environment.GetEnvironmentVariable("OVERLAY_RECOVERY");
-    if (orFlag == "1")
+    var overlayOff = orFlag == "0"; // default ON unless explicitly "0"
+    var overlayScripts = "<script src=\"/js/_overlay/overlay-core.js\"></script><script src=\"/js/_overlay/overlay-announce.js\"></script>";
+    if (!overlayOff && html.Contains("</body>"))
     {
-      var overlayScripts = "<script src=\"/js/_overlay/overlay-core.js\"></script><script src=\"/js/_overlay/overlay-announce.js\"></script>";
-      var bodyIdx = html.IndexOf("</body>", StringComparison.OrdinalIgnoreCase);
-      if (bodyIdx >= 0)
-      {
-        html = html.Insert(bodyIdx, overlayScripts);
-      }
+      html = html.Replace("</body>", overlayScripts + "</body>");
     }
     
     _html = InjectEnvScript(html, configJson);

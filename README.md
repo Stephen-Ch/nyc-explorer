@@ -49,8 +49,9 @@ Verify the mock experience end-to-end:
 - When you hit rate limits: the live region announces "Using cached results due to provider limits.", the server logs `provider-rate-limit`, and you can force mocks locally by keeping `GEO_PROVIDER=mock` and `ROUTE_PROVIDER=mock`.
 
 ### Overlay Recovery Flag
-- `OVERLAY_RECOVERY=1` (set before app start) injects `/js/_overlay/overlay-core.js` and `/js/_overlay/overlay-announce.js` at startup.
-- Default is OFF; changing the flag requires an app restart.
+- **Default:** Overlay core scripts (`/js/_overlay/overlay-core.js` and `/js/_overlay/overlay-announce.js`) load at startup (inert; helpers only).
+- Set `OVERLAY_RECOVERY=0` **before app start** to disable injection (troubleshooting).
+- No UI wiring is enabled by this change; scripts provide utility functions only.
 
 ## Deep-Links & Share
 - **POI routes:** `/?from=<poiId>&to=<poiId>` rehydrates list-based routes, including steps and active markers.
