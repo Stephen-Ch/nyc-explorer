@@ -308,6 +308,46 @@ internal static class HomeHtmlProvider
               poiError.style.removeProperty('display');
             };
 
+          const renderTypeaheadList = (listEl, setExpandedFn, statusFn, options, inputEl, onPick) => {
+            const nodes = [];
+            if (!listEl || typeof setExpandedFn !== 'function' || typeof statusFn !== 'function' || !inputEl) return nodes;
+            listEl.setAttribute('data-testid', 'ta-list');
+            listEl.innerHTML = '';
+            if (!Array.isArray(options) || !options.length) {
+              listEl.style.display = 'none';
+              setExpandedFn(false);
+              statusFn('No results');
+              return nodes;
+            }
+            inputEl.removeAttribute('aria-activedescendant');
+            options.forEach((item) => {
+              const option = document.createElement('div');
+              option.id = typeof item?.__domId === 'string' ? item.__domId : '';
+              option.setAttribute('data-testid', 'ta-option');
+              option.setAttribute('role', 'option');
+              option.setAttribute('aria-selected', 'false');
+              option.textContent = item && typeof item.label === 'string' ? item.label : '';
+              option.dataset.id = item && typeof item.id === 'string' ? item.id : '';
+              if (item && typeof item.lat === 'number') option.dataset.geoLat = String(item.lat);
+              else delete option.dataset.geoLat;
+              if (item && typeof item.lng === 'number') option.dataset.geoLng = String(item.lng);
+              else delete option.dataset.geoLng;
+              if (item && typeof item.label === 'string') option.dataset.geoLabel = item.label;
+              else delete option.dataset.geoLabel;
+              Object.assign(option.style, { padding: '4px 8px', cursor: 'pointer' });
+              option.addEventListener('mousedown', (event) => {
+                event.preventDefault();
+                if (typeof onPick === 'function') onPick(option);
+              });
+              nodes.push(option);
+              listEl.appendChild(option);
+            });
+            listEl.style.display = 'block';
+            setExpandedFn(true);
+            statusFn(`${nodes.length} results`);
+            return nodes;
+          };
+
           let geoQueryId = 0, currentOptions = [], activeIndex = -1, geoSearchTimer = 0;
           const hideGeoList = (clearStatus = false) => {
             geoFromList.innerHTML = '';
