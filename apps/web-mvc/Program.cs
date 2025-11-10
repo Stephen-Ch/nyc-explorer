@@ -153,7 +153,8 @@ internal static class HomeHtmlProvider
     <div data-testid="dir-status" aria-live="polite"></div>
     <ol data-testid="turn-list"></ol>
     <ol id="route-steps"></ol>
-      <script src="/js/typeahead-helpers.js"></script>
+    <script src="/js/typeahead-helpers.js"></script>
+    <script src="/js/geo-typeahead.js"></script>
       <script>
         (function () {
           const originalFetch = window.fetch;
@@ -246,7 +247,6 @@ internal static class HomeHtmlProvider
       </script>
       <script>
         (function () {
-          const CFG_UI = { DEBOUNCE_MS: 250 };
           const CFG_PATH = { STROKE_W: 2, NODE_R: 4, Z: 650 };
           const geoFromInput = document.querySelector('[data-testid="geo-from"]'),
             geoFromList = document.getElementById('geo-from-list'),
@@ -272,319 +272,69 @@ internal static class HomeHtmlProvider
           if (overlayContainer) overlayContainer.style.zIndex = String(CFG_PATH.Z);
 
           const app = window.App = window.App || {}; app.adapters = app.adapters || {};
-          const fetchGeoResults = async (query) => {
-            const adapter = app.adapters.geo;
-            if (!adapter) return [];
-            if (typeof adapter.search === 'function') return adapter.search(query);
-            if (typeof adapter.suggest === 'function') return adapter.suggest(query);
-            return [];
-          };
 
-          const setStatus = (text) => {
-              const next = text ?? '';
-              if (geoStatus.textContent !== next) geoStatus.textContent = next;
-            },
-            setExpanded = (state) => {
-              geoFromInput.setAttribute('aria-expanded', state ? 'true' : 'false');
-              if (!state) geoFromInput.removeAttribute('aria-activedescendant');
-            },
-            setToExpanded = (state) => {
-              geoToInput.setAttribute('aria-expanded', state ? 'true' : 'false');
-              if (!state) geoToInput.removeAttribute('aria-activedescendant');
-            },
-            hasGeoSelection = (input) => Boolean(input?.dataset?.geoLat && input?.dataset?.geoLng),
-            toGeoPoint = (input) => ({
-              lat: +(input?.dataset?.geoLat ?? NaN),
-              lng: +(input?.dataset?.geoLng ?? NaN),
-              label: input?.dataset?.geoLabel ?? input?.value ?? '',
-            }),
-            hidePoiError = () => {
-              if (!poiError) return;
-              poiError.textContent = '';
-              poiError.style.display = 'none';
-            },
-            showPoiError = (message) => {
-              if (!poiError) return;
-              const next = typeof message === 'string' && message.length ? message : 'Unable to load POIs.';
-              if (poiError.textContent !== next) poiError.textContent = next;
-              poiError.style.removeProperty('display');
-            };
-
-          const typeaheadHelpers = window.NYCExplorer?.Typeahead ?? {};
-          const fallbackRenderTypeaheadList = () => [];
-          const fallbackUpdateTypeaheadActiveOption = () => -1;
-          const fallbackApplyGeoSelection = () => '';
-          const renderTypeaheadList = typeof typeaheadHelpers.renderTypeaheadList === 'function'
-            ? typeaheadHelpers.renderTypeaheadList
-            : fallbackRenderTypeaheadList;
-          const updateTypeaheadActiveOption = typeof typeaheadHelpers.updateTypeaheadActiveOption === 'function'
-            ? typeaheadHelpers.updateTypeaheadActiveOption
-            : fallbackUpdateTypeaheadActiveOption;
-          const applyGeoSelection = typeof typeaheadHelpers.applyGeoSelection === 'function'
-            ? typeaheadHelpers.applyGeoSelection
-            : fallbackApplyGeoSelection;
-          if (renderTypeaheadList === fallbackRenderTypeaheadList) {
-            console.error('Typeahead helpers missing; geo typeahead functionality is degraded.');
+          const typeaheadNamespace = window.NYCExplorer?.Typeahead ?? {};
+          const initGeoTypeahead = typeof typeaheadNamespace.initGeoTypeahead === 'function'
+            ? typeaheadNamespace.initGeoTypeahead
+            : null;
+          const geoTypeaheadApi = initGeoTypeahead
+            ? initGeoTypeahead({
+                geoFromInput,
+                geoFromList,
+                geoToInput,
+                geoToList,
+                geoStatus,
+                geoCurrentButton,
+                geoCurrentToButton,
+                fromInput,
+                toInput,
+                messages: {
+                  locating: "{{ErrorMessages.Locating}}",
+                  usingCurrentLocation: "{{ErrorMessages.UsingCurrentLocation}}",
+                  locationUnavailable: "{{ErrorMessages.LocationUnavailable}}",
+                },
+              })
+            : null;
+          if (!geoTypeaheadApi) {
+            console.error('Geo typeahead initializer missing; geo typeahead functionality is degraded.');
           }
-
-          let geoQueryId = 0, currentOptions = [], activeIndex = -1, geoSearchTimer = 0;
-          const hideGeoList = (clearStatus = false) => {
+          const setStatus = geoTypeaheadApi?.setStatus ?? ((text) => {
+            if (!geoStatus) return;
+            const next = text ?? '';
+            if (geoStatus.textContent !== next) geoStatus.textContent = next;
+          });
+          const hideGeoList = geoTypeaheadApi?.hideFromList ?? ((clearStatus = false) => {
             geoFromList.innerHTML = '';
             geoFromList.style.display = 'none';
-            currentOptions = []; activeIndex = -1;
-            setExpanded(false);
+            geoFromInput.setAttribute('aria-expanded', 'false');
+            geoFromInput.removeAttribute('aria-activedescendant');
             if (clearStatus) setStatus('');
-          };
-          hideGeoList();
-
-          geoCurrentButton.addEventListener('click', async () => {
-            const adapter = app.adapters?.geo;
-            if (!adapter || typeof adapter.current !== 'function' || adapter.current.__nycDefault) {
-              setStatus('{{ErrorMessages.LocationUnavailable}}');
-              return;
-            }
-            geoCurrentButton.disabled = true;
-            setStatus('{{ErrorMessages.Locating}}');
-            try {
-              const result = await adapter.current();
-              if (!result || typeof result.lat !== 'number' || typeof result.lng !== 'number' || typeof result.label !== 'string') throw new Error('Invalid current location result');
-              geoFromInput.value = result.label;
-              geoFromInput.dataset.geoLat = String(result.lat);
-              geoFromInput.dataset.geoLng = String(result.lng);
-              geoFromInput.dataset.geoLabel = result.label;
-              fromInput.value = result.label;
-              hideGeoList();
-              setStatus('{{ErrorMessages.UsingCurrentLocation}}');
-            } catch (error) {
-              setStatus('{{ErrorMessages.LocationUnavailable}}');
-            } finally {
-              geoCurrentButton.disabled = false;
-            }
           });
-
-          const setActiveOption = (index) => {
-            if (!currentOptions.length) return;
-            activeIndex = updateTypeaheadActiveOption(currentOptions, geoFromInput, index);
-          };
-
-          const selectOption = (node) => {
-            if (!node) return;
-            const label = applyGeoSelection(geoFromInput, fromInput, node);
-            setStatus(`Selected: ${label}`);
-            hideGeoList();
-          };
-
-          const renderGeoOptions = (items) => {
-            geoToList.removeAttribute('data-testid');
-            if (!Array.isArray(items) || !items.length) {
-              hideGeoList();
-              setStatus('No results');
-              return;
-            }
-            const decorated = items.map((item, index) => ({ ...(item ?? {}), __domId: `geo-from-option-${geoQueryId}-${index}` }));
-            activeIndex = -1;
-            currentOptions = renderTypeaheadList(
-              geoFromList,
-              setExpanded,
-              setStatus,
-              decorated,
-              geoFromInput,
-              (node) => { selectOption(node); }
-            );
-          };
-
-          const runGeoSearch = async (value, requestId) => {
-            try {
-              const results = await fetchGeoResults(value);
-              if (requestId !== geoQueryId) return;
-              if (!Array.isArray(results) || !results.length) {
-                hideGeoList();
-                setStatus('No results');
-                return;
-              }
-              renderGeoOptions(results);
-            } catch (error) {
-              if (requestId !== geoQueryId) return;
-              hideGeoList();
-              if (error && (error.name === 'AbortError' || error.code === 'TIMEOUT')) {
-                geoFromInput.disabled = false;
-                geoCurrentButton.disabled = false;
-                setStatus('Unable to search locations (timeout)');
-                return;
-              }
-              setStatus('Error contacting geocoder');
-            }
-          };
-
-          geoFromInput.addEventListener('input', (event) => {
-            delete geoFromInput.dataset.geoLat;
-            delete geoFromInput.dataset.geoLng;
-            delete geoFromInput.dataset.geoLabel;
-            const value = (event.target?.value ?? '').trim();
-            if (geoSearchTimer) { clearTimeout(geoSearchTimer); geoSearchTimer = 0; }
-            if (value.length < 2) {
-              geoQueryId++;
-              hideGeoList(true);
-              return;
-            }
-            hideGeoList();
-            setStatus('Searching…');
-            geoSearchTimer = window.setTimeout(() => {
-              geoSearchTimer = 0;
-              const requestId = ++geoQueryId;
-              void runGeoSearch(value, requestId);
-            }, CFG_UI.DEBOUNCE_MS);
-          });
-
-          geoFromInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-              hideGeoList(true);
-              return;
-            }
-            if (!currentOptions.length) return;
-            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-              event.preventDefault();
-              const isDown = event.key === 'ArrowDown';
-              setActiveOption(activeIndex === -1 ? (isDown ? 0 : currentOptions.length - 1) : activeIndex + (isDown ? 1 : -1));
-              return;
-            }
-            if (event.key === 'Enter') {
-              event.preventDefault();
-              if (currentOptions[activeIndex]) selectOption(currentOptions[activeIndex]);
-            }
-          });
-
-          let geoToQueryId = 0, geoToOptions = [], geoToActiveIndex = -1, geoToSearchTimer = 0;
-          const hideGeoToList = (clearStatus = false) => {
+          const hideGeoToList = geoTypeaheadApi?.hideToList ?? ((clearStatus = false) => {
             geoToList.innerHTML = '';
             geoToList.style.display = 'none';
             geoToList.removeAttribute('data-testid');
-            geoToOptions = []; geoToActiveIndex = -1;
-            setToExpanded(false);
+            geoToInput.setAttribute('aria-expanded', 'false');
+            geoToInput.removeAttribute('aria-activedescendant');
             if (clearStatus) setStatus('');
-          };
-          hideGeoToList();
-
-          geoCurrentToButton.addEventListener('click', async () => {
-            const adapter = app.adapters?.geo;
-            if (!adapter || typeof adapter.current !== 'function' || adapter.current.__nycDefault) {
-              setStatus('{{ErrorMessages.LocationUnavailable}}');
-              return;
-            }
-            geoCurrentToButton.disabled = true;
-            setStatus('{{ErrorMessages.Locating}}');
-            try {
-              const result = await adapter.current();
-              if (!result || typeof result.lat !== 'number' || typeof result.lng !== 'number' || typeof result.label !== 'string') throw new Error('Invalid current location result');
-              geoToInput.value = result.label;
-              geoToInput.dataset.geoLat = String(result.lat);
-              geoToInput.dataset.geoLng = String(result.lng);
-              geoToInput.dataset.geoLabel = result.label;
-              toInput.value = result.label;
-              hideGeoToList();
-              setStatus('{{ErrorMessages.UsingCurrentLocation}}');
-            } catch (error) {
-              setStatus('{{ErrorMessages.LocationUnavailable}}');
-            } finally {
-              geoCurrentToButton.disabled = false;
-            }
           });
-
-          const setActiveToOption = (index) => {
-            if (!geoToOptions.length) return;
-            geoToActiveIndex = updateTypeaheadActiveOption(
-              geoToOptions,
-              geoToInput,
-              index,
-              (idx, total) => { setStatus(`Option ${idx + 1} of ${total}`); }
-            );
-          };
-
-          const selectToOption = (node) => {
-            if (!node) return;
-            applyGeoSelection(geoToInput, toInput, node);
-            hideGeoToList(true);
-          };
-
-          const renderGeoToOptions = (items) => {
-            geoFromList.removeAttribute('data-testid');
-            if (!Array.isArray(items) || !items.length) {
-              hideGeoToList();
-              setStatus('No results');
-              return;
-            }
-            const decorated = items.map((item, index) => ({ ...(item ?? {}), __domId: `geo-to-option-${geoToQueryId}-${index}` }));
-            geoToActiveIndex = -1;
-            geoToOptions = renderTypeaheadList(
-              geoToList,
-              setToExpanded,
-              setStatus,
-              decorated,
-              geoToInput,
-              (node) => { selectToOption(node); }
-            );
-          };
-
-          const runGeoToSearch = async (value, requestId) => {
-            try {
-              const results = await fetchGeoResults(value);
-              if (requestId !== geoToQueryId) return;
-              if (!Array.isArray(results) || !results.length) {
-                hideGeoToList();
-                setStatus('No results');
-                return;
-              }
-              renderGeoToOptions(results);
-            } catch (error) {
-              if (requestId !== geoToQueryId) return;
-              hideGeoToList();
-              if (error && (error.name === 'AbortError' || error.code === 'TIMEOUT')) {
-                geoToInput.disabled = false;
-                geoCurrentToButton.disabled = false;
-                setStatus('Unable to search locations (timeout)');
-                return;
-              }
-              setStatus('Error contacting geocoder');
-            }
-          };
-
-          geoToInput.addEventListener('input', (event) => {
-            delete geoToInput.dataset.geoLat;
-            delete geoToInput.dataset.geoLng;
-            delete geoToInput.dataset.geoLabel;
-            const value = (event.target?.value ?? '').trim();
-            if (value.length < 2) {
-              geoToQueryId++;
-              hideGeoToList(true);
-              return;
-            }
-            hideGeoToList();
-            setStatus('Searching…');
-            geoToSearchTimer = window.setTimeout(() => {
-              geoToSearchTimer = 0;
-              const requestId = ++geoToQueryId;
-              void runGeoToSearch(value, requestId);
-            }, CFG_UI.DEBOUNCE_MS);
+          const hasGeoSelection = (input) => Boolean(input?.dataset?.geoLat && input?.dataset?.geoLng);
+          const toGeoPoint = (input) => ({
+            lat: +(input?.dataset?.geoLat ?? NaN),
+            lng: +(input?.dataset?.geoLng ?? NaN),
+            label: input?.dataset?.geoLabel ?? input?.value ?? '',
           });
-
-          geoToInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-              hideGeoToList(true);
-              return;
-            }
-            if (!geoToOptions.length) return;
-            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-              event.preventDefault();
-              const isDown = event.key === 'ArrowDown';
-              const next = geoToActiveIndex === -1 ? (isDown ? 0 : geoToOptions.length - 1) : geoToActiveIndex + (isDown ? 1 : -1);
-              setActiveToOption(next);
-              return;
-            }
-            if (event.key === 'Enter') {
-              event.preventDefault();
-              if (geoToOptions[geoToActiveIndex]) selectToOption(geoToOptions[geoToActiveIndex]);
-            }
-          });
+          const hidePoiError = () => {
+            if (!poiError) return;
+            poiError.textContent = '';
+            poiError.style.display = 'none';
+          };
+          const showPoiError = (message) => {
+            if (!poiError) return;
+            const next = typeof message === 'string' && message.length ? message : 'Unable to load POIs.';
+            if (poiError.textContent !== next) poiError.textContent = next;
+            poiError.style.removeProperty('display');
+          };
 
           let currentList = [], deepLinkPending = true, lastSegment = [], mapEventsBound = false, isPopState = false, shareActive = false, poiErrorState = window.__nycPoiErrorState ?? null;
 

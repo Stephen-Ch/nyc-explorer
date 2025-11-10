@@ -28,6 +28,7 @@ Risk Level: HIGH - The current structure significantly impedes maintainability, 
 - `window.ENV` injection hardened by the Program.cs split; values hydrate via structured object guards.
 - Typeahead flows restored with shared current-button handlers; the remaining module extraction stays on deck.
 - 2025-11-09: `ErrorMessages` strings centralized for current-location statuses, the HTML template converted to an interpolated raw string, and a reusable `renderTypeaheadList` helper landed; the geo-from typeahead now uses the helper (green `dotnet build` + `npm run typecheck`).
+- 2025-11-10: Collapsed the geo typeahead plumbing behind `initGeoTypeahead` in `wwwroot/js/geo-typeahead.js`, swapped Program.cs to a lean bootstrap that calls the initializer, and confirmed parity with `dotnet build` + `npm run typecheck`.
 
 Critical Code Smells
 1. CRITICAL: Massive Inline HTML String Literal (Long Method)
