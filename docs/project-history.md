@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] OR-06C — decodePolyline stub + routed toPointsFromPolyline
+In order to enable meaningful happy-path assertions under freeze, I added a minimal decodePolyline stub and routed toPointsFromPolyline through it.
+Evidence: typecheck pass; Playwright 95/98; Files: apps/web-mvc/wwwroot/js/_overlay/overlay-core.js
+Considerations: pure helpers; decodePolyline returns fixed path for 'enc:abc123_dummy_polyline'; overlay freeze ON; selectors v0.7; quarantine unchanged
+
 ### [2025-11-10] OR-06B — happy overlay smoke passing
 In order to advance overlay recovery safely, I unskipped the happy overlay smoke and loaded overlay-core in the test to verify availability.
 Evidence: typecheck pass; Playwright 95/98; Files: tests/e2e/overlay.smoke.spec.ts

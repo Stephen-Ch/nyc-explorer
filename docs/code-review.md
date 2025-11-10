@@ -356,6 +356,8 @@ P87 — NAV-BOOTSTRAP-EXTRACT — routed inline bootstrap into /js/nav-bootstrap
 
 [2025-11-10 13:55] nyc-explorer/overlay-drift-20251108-155953 OR-06B — happy overlay smoke passing (#tests=95/98, green=true)
 
+[2025-11-10 14:04] nyc-explorer/overlay-drift-20251108-155953 OR-06C — decodePolyline stub + route to toPointsFromPolyline (#tests=95/98, green=true)
+
 **Parked Items**
 - (None currently)
 
