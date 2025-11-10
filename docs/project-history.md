@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] OR-06E — happy overlay render assertion using fixture
+In order to lock a real happy-path under freeze, I updated the happy smoke to decode the polyline and render an SVG path from the fixture.
+Evidence: typecheck pass; Playwright 95/98; Files: tests/e2e/overlay.smoke.spec.ts
+Considerations: tests-only; overlay freeze ON; selectors v0.7; other overlay tests remain skipped; quarantine unchanged
+
 ### [2025-11-10] OR-06D — renderSvgPolyline helper added
 In order to enable a real happy-path overlay render under freeze, I added renderSvgPolyline to create an SVG path from points (no wiring).
 Evidence: typecheck pass; Playwright 95/98; Files: apps/web-mvc/wwwroot/js/_overlay/overlay-core.js
