@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.6.0-rc — 2025-11-10
+- Completed home shell extraction: inline nav bootstrap moved to `/js/nav-bootstrap.js`, with `Program.cs` hydrating error JSON and `window.ENV` to support modular script loading.
+- Restored geo typeahead stability and provider wiring after extraction, keeping selector contracts intact and clearing targeted Playwright regressions.
+- Expanded governance automation with commit-scope, decisions-template, log-integrity, and quarantine TTL meta guards alongside strict selector enforcement in CI.
+- Updated project history, code review log, and sprint documentation to align with Commit-on-Green ritual and nav bootstrap refactor outcomes.
+
 ## v0.5.0-rc — 2025-11-03
 - Expanded routing coverage to include adapter-driven paths, clipboard sharing, and deep-link recovery across browser history.
 - Hardened geocoder and route adapters with deterministic mocks, debounce guards, and current-location affordances wired through selectors.
