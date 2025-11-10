@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] OR-06A — core helpers in overlay-core.js (toPointsFromPolyline/buildSvgPath)
+In order to prepare overlay render logic under freeze, I added toPointsFromPolyline (placeholder enc: decoder) and buildSvgPath helper to overlay-core.js.
+Evidence: typecheck pass; Playwright 94/98; Files: apps/web-mvc/wwwroot/js/_overlay/overlay-core.js
+Considerations: pure functions; no DOM wiring yet; OVERLAY_RECOVERY flag OFF by default; overlay freeze ON; selectors v0.7; quarantine unchanged
+
 ### [2025-11-10] OR-05 — startup-baked overlay flag include
 In order to prepare overlay work under freeze without runtime refactors, I injected overlay scripts at startup when OVERLAY_RECOVERY==1.
 Evidence: typecheck pass; Playwright 94/98; Files: apps/web-mvc/Program.cs; README.md
