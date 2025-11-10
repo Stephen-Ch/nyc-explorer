@@ -9,6 +9,7 @@ declare global {
       buildSvgPath: (points: Array<[number, number]>) => string;
       toPointsFromPolyline: (poly: string) => Array<[number, number]>;
       renderSvgPolyline: (containerSelector: string | null, points: Array<[number, number]>) => { d: string; count: number };
+      renderPolylineOrError: (containerSelector: string | null, response: any) => { status: 'ok' | 'error'; count?: number; d?: string; reason?: string };
     };
   }
 }
@@ -34,8 +35,16 @@ test.describe('overlay smoke (frozen)', () => {
     expect(res.d.length).toBeGreaterThan(0);
   });
 
-  test.skip('missing polyline fails gracefully (RED)', async ({ page }) => {
-    // Unskip in OR-07 when resilience paths are implemented
+  test('missing polyline fails gracefully', async ({ page }) => {
+    const fp = path.resolve(__dirname, '../fixtures/overlay/route-missing-polyline.json');
+    const data = JSON.parse(fs.readFileSync(fp, 'utf-8'));
+    await page.goto('/');
+    await page.addScriptTag({ url: '/js/_overlay/overlay-core.js' });
+    const res = await page.evaluate((resp) => window.NYCOverlayCore!.renderPolylineOrError(null, resp), data.response);
+    const msg = await page.locator('[data-testid="overlay-error"]').innerText();
+    expect(res.status).toBe('error');
+    expect(res.reason).toBe('missing-polyline');
+    expect(msg).toBe('No polyline');
   });
 
   test.skip('timeout surfaces retry UX (RED)', async ({ page }) => {
