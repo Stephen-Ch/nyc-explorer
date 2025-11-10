@@ -1,6 +1,7 @@
 using System.Text.Json;
 using NYCExplorer;
 using NYCExplorer.Adapters;
+using NYCExplorer.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
@@ -105,7 +106,7 @@ internal static class HomeHtmlProvider
     return script + html;
   }
 
-    private const string HtmlTemplate = """
+  private const string HtmlTemplate = $$"""
     <html>
     <head>
       <meta charset="utf-8">
@@ -361,11 +362,11 @@ internal static class HomeHtmlProvider
           geoCurrentButton.addEventListener('click', async () => {
             const adapter = app.adapters?.geo;
             if (!adapter || typeof adapter.current !== 'function' || adapter.current.__nycDefault) {
-              setStatus(ErrorMessages.LocationUnavailable);
+              setStatus('{{ErrorMessages.LocationUnavailable}}');
               return;
             }
             geoCurrentButton.disabled = true;
-            setStatus(ErrorMessages.Locating);
+            setStatus('{{ErrorMessages.Locating}}');
             try {
               const result = await adapter.current();
               if (!result || typeof result.lat !== 'number' || typeof result.lng !== 'number' || typeof result.label !== 'string') throw new Error('Invalid current location result');
@@ -375,9 +376,9 @@ internal static class HomeHtmlProvider
               geoFromInput.dataset.geoLabel = result.label;
               fromInput.value = result.label;
               hideGeoList();
-              setStatus(ErrorMessages.UsingCurrentLocation);
+              setStatus('{{ErrorMessages.UsingCurrentLocation}}');
             } catch (error) {
-              setStatus(ErrorMessages.LocationUnavailable);
+              setStatus('{{ErrorMessages.LocationUnavailable}}');
             } finally {
               geoCurrentButton.disabled = false;
             }
@@ -415,39 +416,21 @@ internal static class HomeHtmlProvider
 
           const renderGeoOptions = (items) => {
             geoToList.removeAttribute('data-testid');
-            geoFromList.setAttribute('data-testid', 'ta-list');
-            geoFromList.innerHTML = '';
             if (!Array.isArray(items) || !items.length) {
               hideGeoList();
               setStatus('No results');
               return;
             }
-            currentOptions = []; activeIndex = -1;
-            geoFromInput.removeAttribute('aria-activedescendant');
-            items.forEach((item, index) => {
-              const option = document.createElement('div');
-              option.id = `geo-from-option-${geoQueryId}-${index}`;
-              option.setAttribute('data-testid', 'ta-option');
-              option.setAttribute('role', 'option');
-              option.setAttribute('aria-selected', 'false');
-              option.textContent = item && typeof item.label === 'string' ? item.label : '';
-              option.dataset.id = item && typeof item.id === 'string' ? item.id : '';
-              if (item && typeof item.lat === 'number') option.dataset.geoLat = String(item.lat);
-              else delete option.dataset.geoLat;
-              if (item && typeof item.lng === 'number') option.dataset.geoLng = String(item.lng);
-              else delete option.dataset.geoLng;
-              if (item && typeof item.label === 'string') option.dataset.geoLabel = item.label;
-              else delete option.dataset.geoLabel;
-              Object.assign(option.style, { padding: '4px 8px', cursor: 'pointer' });
-              option.addEventListener('mousedown', (event) => {
-                event.preventDefault();
-                selectOption(option);
-              });
-              currentOptions.push(option);
-              geoFromList.appendChild(option);
-            });
-            geoFromList.style.display = 'block'; setExpanded(true);
-            setStatus(`${currentOptions.length} results`);
+            const decorated = items.map((item, index) => ({ ...(item ?? {}), __domId: `geo-from-option-${geoQueryId}-${index}` }));
+            activeIndex = -1;
+            currentOptions = renderTypeaheadList(
+              geoFromList,
+              setExpanded,
+              setStatus,
+              decorated,
+              geoFromInput,
+              (node) => { selectOption(node); }
+            );
           };
 
           const runGeoSearch = async (value, requestId) => {
