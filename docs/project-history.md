@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] OR-07C — renderTimeoutBanner helper
+In order to surface provider timeouts safely under freeze, I added renderTimeoutBanner to append a timeout message banner.
+Evidence: typecheck pass; Playwright 2/3; Files: apps/web-mvc/wwwroot/js/_overlay/overlay-core.js
+Considerations: helper only; overlay freeze ON; selectors v0.7; quarantine unchanged
+
 ### [2025-11-10] OR-07B — missing-polyline overlay smoke passing
 In order to advance resilience safely under freeze, I unskipped the missing-polyline smoke and asserted error status and DOM banner using the fixture.
 Evidence: typecheck pass; Playwright 96/98; Files: tests/e2e/overlay.smoke.spec.ts
