@@ -91,5 +91,21 @@
     target.appendChild(div);
     return { status: 'error', reason: 'missing-polyline' };
   };
+
+  /**
+   * renderTimeoutBanner(containerSelector, error)
+   * If error.kind === 'timeout' → append <div data-testid="overlay-timeout">Route provider timed out</div>.
+   * Returns { status: 'error', reason: 'timeout'|'ignored' }.
+   */
+  NS.renderTimeoutBanner = function(containerSelector, error){
+    var target = document.querySelector(containerSelector) || document.body;
+    if (!error || typeof error !== 'object') return { status: 'error', reason: 'ignored' };
+    if (String(error.kind) !== 'timeout') return { status: 'error', reason: 'ignored' };
+    var div = document.createElement('div');
+    div.setAttribute('data-testid', 'overlay-timeout');
+    div.textContent = 'Route provider timed out';
+    target.appendChild(div);
+    return { status: 'error', reason: 'timeout' };
+  };
 })();
 
