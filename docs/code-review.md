@@ -374,6 +374,8 @@ P87 — NAV-BOOTSTRAP-EXTRACT — routed inline bootstrap into /js/nav-bootstrap
 
 [2025-11-10 16:30] nyc-explorer/overlay-drift-20251108-155953 OR-08A — approval checklist added (#tests=0/0, green=true)
 
+[2025-11-10 17:00] nyc-explorer/overlay-drift-20251108-155953 DOC — CODE-SMELL-ANALYSIS + overlay-recovery updated to reflect completion (#tests=0/0, green=true)
+
 **Parked Items**
 - (None currently)
 

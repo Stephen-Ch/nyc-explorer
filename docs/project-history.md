@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] DOC — CODE-SMELL-ANALYSIS + overlay-recovery updated
+In order to maintain accurate technical documentation, I updated CODE-SMELL-ANALYSIS.md to reflect overlay completion and overlay-recovery.md to mark all slices complete.
+Evidence: typecheck pass; Files: docs/CODE-SMELL-ANALYSIS.md, docs/plans/overlay-recovery.md
+Considerations: docs-only; captures smell roll-up (8 open, 1 in progress, 10 done), overlay recovery status (COMPLETE), and current Program.cs state (196 lines)
+
 ### [2025-11-10] OR-08A — approval checklist added
 In order to capture explicit consent before changing runtime defaults, I added an approval checklist for the freeze-lift proposal.
 Evidence: typecheck pass; Files: docs/approvals/OR-08A-approval.md
