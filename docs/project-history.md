@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] OR-08A — freeze-lift proposal RFC + CI note
+In order to formalize guarded progress on overlay, I added an RFC proposing a partial freeze-lift and appended a CI policy note.
+Evidence: typecheck pass; Files: docs/rfc/2025-11-10-freeze-lift-proposal.md; docs/CI-Policy.md
+Considerations: docs-only; freeze remains ON pending RFC approval; selectors v0.7; quarantine unchanged
+
 ### [2025-11-10] OR-07D — timeout overlay smoke passing
 In order to complete resilience, I unskipped the timeout overlay smoke and asserted the timeout banner using the fixture and helper.
 Evidence: typecheck pass; Playwright 97/98; Files: tests/e2e/overlay.smoke.spec.ts

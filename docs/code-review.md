@@ -370,6 +370,8 @@ P87 — NAV-BOOTSTRAP-EXTRACT — routed inline bootstrap into /js/nav-bootstrap
 
 [2025-11-10 16:05] nyc-explorer/overlay-drift-20251108-155953 OR-07D — timeout overlay smoke passing (#tests=97/98, green=true)
 
+[2025-11-10 16:20] nyc-explorer/overlay-drift-20251108-155953 OR-08A — freeze-lift proposal RFC + CI note (#tests=0/0, green=true)
+
 **Parked Items**
 - (None currently)
 
