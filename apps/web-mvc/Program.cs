@@ -349,6 +349,22 @@ internal static class HomeHtmlProvider
             return nodes;
           };
 
+          const updateTypeaheadActiveOption = (nodes, inputEl, requestedIndex, onActive) => {
+            if (!Array.isArray(nodes) || !nodes.length || !inputEl) return -1;
+            const total = nodes.length;
+            const nextIndex = requestedIndex < 0 ? 0 : requestedIndex >= total ? total - 1 : requestedIndex;
+            nodes.forEach((node, idx) => {
+              const isActive = idx === nextIndex;
+              node.setAttribute('data-testid', isActive ? 'ta-option-active' : 'ta-option');
+              node.setAttribute('aria-selected', isActive ? 'true' : 'false');
+              if (isActive) {
+                inputEl.setAttribute('aria-activedescendant', node.id);
+                if (typeof onActive === 'function') onActive(idx, total);
+              }
+            });
+            return nextIndex;
+          };
+
           let geoQueryId = 0, currentOptions = [], activeIndex = -1, geoSearchTimer = 0;
           const hideGeoList = (clearStatus = false) => {
             geoFromList.innerHTML = '';
@@ -386,15 +402,7 @@ internal static class HomeHtmlProvider
 
           const setActiveOption = (index) => {
             if (!currentOptions.length) return;
-            const total = currentOptions.length;
-            const nextIndex = index < 0 ? 0 : index >= total ? total - 1 : index;
-            activeIndex = nextIndex;
-            currentOptions.forEach((node, idx) => {
-              const isActive = idx === activeIndex;
-              node.setAttribute('data-testid', isActive ? 'ta-option-active' : 'ta-option');
-              node.setAttribute('aria-selected', isActive ? 'true' : 'false');
-              if (isActive) geoFromInput.setAttribute('aria-activedescendant', node.id);
-            });
+            activeIndex = updateTypeaheadActiveOption(currentOptions, geoFromInput, index);
           };
 
           const selectOption = (node) => {
@@ -532,18 +540,12 @@ internal static class HomeHtmlProvider
 
           const setActiveToOption = (index) => {
             if (!geoToOptions.length) return;
-            const total = geoToOptions.length;
-            const nextIndex = index < 0 ? 0 : index >= total ? total - 1 : index;
-            geoToActiveIndex = nextIndex;
-            geoToOptions.forEach((node, idx) => {
-              const isActive = idx === geoToActiveIndex;
-              node.setAttribute('data-testid', isActive ? 'ta-option-active' : 'ta-option');
-              node.setAttribute('aria-selected', isActive ? 'true' : 'false');
-              if (isActive) {
-                geoToInput.setAttribute('aria-activedescendant', node.id);
-                setStatus(`Option ${idx + 1} of ${total}`);
-              }
-            });
+            geoToActiveIndex = updateTypeaheadActiveOption(
+              geoToOptions,
+              geoToInput,
+              index,
+              (idx, total) => { setStatus(`Option ${idx + 1} of ${total}`); }
+            );
           };
 
           const selectToOption = (node) => {
