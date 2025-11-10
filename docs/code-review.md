@@ -364,6 +364,8 @@ P87 — NAV-BOOTSTRAP-EXTRACT — routed inline bootstrap into /js/nav-bootstrap
 
 [2025-11-10 15:09] nyc-explorer/overlay-drift-20251108-155953 OR-07A — renderPolylineOrError for missing polyline (#tests=95/98, green=true)
 
+[2025-11-10 15:28] nyc-explorer/overlay-drift-20251108-155953 OR-07B — missing-polyline overlay smoke passing (#tests=96/98, green=true)
+
 **Parked Items**
 - (None currently)
 
