@@ -362,6 +362,8 @@ P87 — NAV-BOOTSTRAP-EXTRACT — routed inline bootstrap into /js/nav-bootstrap
 
 [2025-11-10 14:32] nyc-explorer/overlay-drift-20251108-155953 OR-06E — happy overlay render assertion using fixture (#tests=95/98, green=true)
 
+[2025-11-10 15:09] nyc-explorer/overlay-drift-20251108-155953 OR-07A — renderPolylineOrError for missing polyline (#tests=95/98, green=true)
+
 **Parked Items**
 - (None currently)
 

@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] OR-07A — renderPolylineOrError for missing polyline
+In order to handle missing polyline safely under freeze, I added renderPolylineOrError to render SVG when present or an error banner when absent.
+Evidence: typecheck pass; Playwright 95/98; Files: apps/web-mvc/wwwroot/js/_overlay/overlay-core.js
+Considerations: helper only; overlay freeze ON; selectors v0.7; quarantine unchanged
+
 ### [2025-11-10] OR-06E — happy overlay render assertion using fixture
 In order to lock a real happy-path under freeze, I updated the happy smoke to decode the polyline and render an SVG path from the fixture.
 Evidence: typecheck pass; Playwright 95/98; Files: tests/e2e/overlay.smoke.spec.ts
