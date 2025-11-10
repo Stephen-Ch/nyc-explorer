@@ -15,11 +15,11 @@
   /**
    * toPointsFromPolyline(poly)
    * Accepts provider polyline (string) and returns Array<[lat,lng]>.
-   * Placeholder: returns [] for non-string or 'enc:'-prefixed dummy data.
+   * Routes through decodePolyline for 'enc:'-prefixed data.
    */
   NS.toPointsFromPolyline = function(poly){
     if (typeof poly !== 'string' || !poly.length) return [];
-    if (poly.startsWith('enc:')) return []; // decoder to be added later
+    if (poly.startsWith('enc:')) return NS.decodePolyline(poly);
     return [];
   };
 
@@ -31,6 +31,24 @@
     const arr = Array.isArray(points) ? points : [];
     if (!arr.length) return '';
     return arr.map((p, i) => (i === 0 ? 'M ' : 'L ') + (p[0]||0) + ' ' + (p[1]||0)).join(' ');
+  };
+
+  /**
+   * decodePolyline(poly)
+   * Minimal stub: returns a fixed path for our known dummy token; else [].
+   * @param {string} poly
+   * @returns {Array<[number,number]>}
+   */
+  NS.decodePolyline = function(poly){
+    if (typeof poly !== 'string') return [];
+    if (poly === 'enc:abc123_dummy_polyline') {
+      return [
+        [40.74105, -73.98970],
+        [40.74840, -73.98570],
+        [40.75800, -73.98550]
+      ];
+    }
+    return [];
   };
 })();
 
