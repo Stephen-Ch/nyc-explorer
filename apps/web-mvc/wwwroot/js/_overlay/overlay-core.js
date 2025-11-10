@@ -50,5 +50,23 @@
     }
     return [];
   };
+
+  /**
+   * renderSvgPolyline(containerSelector, points)
+   * Creates <svg data-testid="overlay-polyline"><path d="..."></path></svg> in container (or body).
+   * Returns { d, count } where d is the built path string.
+   */
+  NS.renderSvgPolyline = function(containerSelector, points){
+    var target = document.querySelector(containerSelector) || document.body;
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('data-testid', 'overlay-polyline');
+    var path = document.createElementNS(svgNS, 'path');
+    var d = NS.buildSvgPath(points || []);
+    path.setAttribute('d', d);
+    svg.appendChild(path);
+    target.appendChild(svg);
+    return { d: d, count: Array.isArray(points) ? points.length : 0 };
+  };
 })();
 
