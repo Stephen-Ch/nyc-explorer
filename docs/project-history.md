@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] OR-07D — timeout overlay smoke passing
+In order to complete resilience, I unskipped the timeout overlay smoke and asserted the timeout banner using the fixture and helper.
+Evidence: typecheck pass; Playwright 97/98; Files: tests/e2e/overlay.smoke.spec.ts
+Considerations: tests-only; overlay freeze ON; selectors v0.7; quarantine unchanged
+
 ### [2025-11-10] OR-07C — renderTimeoutBanner helper
 In order to surface provider timeouts safely under freeze, I added renderTimeoutBanner to append a timeout message banner.
 Evidence: typecheck pass; Playwright 2/3; Files: apps/web-mvc/wwwroot/js/_overlay/overlay-core.js
