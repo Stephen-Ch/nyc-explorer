@@ -68,5 +68,28 @@
     target.appendChild(svg);
     return { d: d, count: Array.isArray(points) ? points.length : 0 };
   };
+
+  /**
+   * renderPolylineOrError(containerSelector, response)
+   * If response.polyline exists → decode & render SVG.
+   * Else → append <div data-testid="overlay-error">No polyline</div>.
+   * Returns { status: 'ok'|'error', count?: number, d?: string, reason?: string }
+   */
+  NS.renderPolylineOrError = function(containerSelector, response){
+    var target = document.querySelector(containerSelector) || document.body;
+    if (!response || typeof response !== 'object') {
+      return { status: 'error', reason: 'invalid-response' };
+    }
+    if (typeof response.polyline === 'string' && response.polyline.length) {
+      var pts = NS.toPointsFromPolyline(response.polyline);
+      var res = NS.renderSvgPolyline(containerSelector, pts);
+      return { status: 'ok', count: res.count, d: res.d || '' };
+    }
+    var div = document.createElement('div');
+    div.setAttribute('data-testid', 'overlay-error');
+    div.textContent = 'No polyline';
+    target.appendChild(div);
+    return { status: 'error', reason: 'missing-polyline' };
+  };
 })();
 
