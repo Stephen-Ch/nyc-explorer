@@ -350,6 +350,8 @@ P87 — NAV-BOOTSTRAP-EXTRACT — routed inline bootstrap into /js/nav-bootstrap
 
 [2025-11-10 12:50] nyc-explorer/overlay-drift-20251108-155953 OR-03 — Overlay module stubs (unused) (#tests=0, green=true)
 
+[2025-11-10 13:07] nyc-explorer/overlay-drift-20251108-155953 OR-05 — startup-baked overlay flag include (#tests=94/98, green=true)
+
 **Parked Items**
 - (None currently)
 

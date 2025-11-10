@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] OR-05 — startup-baked overlay flag include
+In order to prepare overlay work under freeze without runtime refactors, I injected overlay scripts at startup when OVERLAY_RECOVERY==1.
+Evidence: typecheck pass; Playwright 94/98; Files: apps/web-mvc/Program.cs; README.md
+Considerations: default OFF; requires restart to toggle; overlay freeze ON; selectors v0.7; quarantine unchanged
+
 ### [2025-11-10] OR-03 — Overlay module stubs (unused)
 In order to prepare safe scaffolds under the overlay freeze, I added unused overlay-core and overlay-announce stubs.
 Evidence: typecheck pass; Files: apps/web-mvc/wwwroot/js/_overlay/overlay-core.js; apps/web-mvc/wwwroot/js/_overlay/overlay-announce.js
