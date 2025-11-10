@@ -19,6 +19,11 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] OR-06B — happy overlay smoke passing
+In order to advance overlay recovery safely, I unskipped the happy overlay smoke and loaded overlay-core in the test to verify availability.
+Evidence: typecheck pass; Playwright 95/98; Files: tests/e2e/overlay.smoke.spec.ts
+Considerations: tests-only; overlay freeze ON; selectors v0.7; other overlay tests remain skipped; quarantine unchanged
+
 ### [2025-11-10] OR-06A — core helpers in overlay-core.js (toPointsFromPolyline/buildSvgPath)
 In order to prepare overlay render logic under freeze, I added toPointsFromPolyline (placeholder enc: decoder) and buildSvgPath helper to overlay-core.js.
 Evidence: typecheck pass; Playwright 94/98; Files: apps/web-mvc/wwwroot/js/_overlay/overlay-core.js

@@ -354,6 +354,8 @@ P87 — NAV-BOOTSTRAP-EXTRACT — routed inline bootstrap into /js/nav-bootstrap
 
 [2025-11-10 13:21] nyc-explorer/overlay-drift-20251108-155953 OR-06A — core helpers in overlay-core.js (toPointsFromPolyline/buildSvgPath) (#tests=94/98, green=true)
 
+[2025-11-10 13:55] nyc-explorer/overlay-drift-20251108-155953 OR-06B — happy overlay smoke passing (#tests=95/98, green=true)
+
 **Parked Items**
 - (None currently)
 
