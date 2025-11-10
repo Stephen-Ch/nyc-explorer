@@ -10,6 +10,7 @@ declare global {
       toPointsFromPolyline: (poly: string) => Array<[number, number]>;
       renderSvgPolyline: (containerSelector: string | null, points: Array<[number, number]>) => { d: string; count: number };
       renderPolylineOrError: (containerSelector: string | null, response: any) => { status: 'ok' | 'error'; count?: number; d?: string; reason?: string };
+      renderTimeoutBanner: (sel: string | null, err: any) => { status: 'error'; reason: 'timeout'|'ignored' };
     };
   }
 }
@@ -47,7 +48,15 @@ test.describe('overlay smoke (frozen)', () => {
     expect(msg).toBe('No polyline');
   });
 
-  test.skip('timeout surfaces retry UX (RED)', async ({ page }) => {
-    // Unskip in OR-07 when resilience paths are implemented
+  test('timeout shows timeout banner', async ({ page }) => {
+    const fp = path.resolve(__dirname, '../fixtures/overlay/route-timeout.json');
+    const data = JSON.parse(fs.readFileSync(fp, 'utf-8'));
+    await page.goto('/');
+    await page.addScriptTag({ url: '/js/_overlay/overlay-core.js' });
+    const res = await page.evaluate((err) => window.NYCOverlayCore!.renderTimeoutBanner(null, err), data.error);
+    const msg = await page.locator('[data-testid="overlay-timeout"]').innerText();
+    expect(res.status).toBe('error');
+    expect(res.reason).toBe('timeout');
+    expect(msg).toBe('Route provider timed out');
   });
 });
