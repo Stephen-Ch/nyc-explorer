@@ -19,6 +19,21 @@ Files: <main files touched>
 
 ## History (newest first)
 
+### [2025-11-10] OR-03 — Overlay module stubs (unused)
+In order to prepare safe scaffolds under the overlay freeze, I added unused overlay-core and overlay-announce stubs.
+Evidence: typecheck pass; Files: apps/web-mvc/wwwroot/js/_overlay/overlay-core.js; apps/web-mvc/wwwroot/js/_overlay/overlay-announce.js
+Considerations: docs-only effect; overlay freeze ON; selectors v0.7; quarantine unchanged
+
+### [2025-11-10] OR-01 — Overlay fixtures (happy/missing polyline/timeout)
+In order to prepare overlay smoke tests under freeze, I added three provider fixtures.
+Evidence: typecheck pass; Files: tests/fixtures/overlay/route-happy.json; tests/fixtures/overlay/route-missing-polyline.json; tests/fixtures/overlay/route-timeout.json
+Considerations: docs-only; overlay freeze ON; selectors v0.7; quarantine unchanged
+
+### [2025-11-10] OR-00 — Overlay Recovery Plan (v1)
+In order to unblock overlay work under freeze, I added a recovery plan scaffold with slices and rollback.
+Evidence: typecheck pass; Files: docs/plans/overlay-recovery.md
+Considerations: docs-only; overlay freeze ON; selectors v0.7; quarantine unchanged
+
 ### [2025-11-10] S7-01 — DOC-INDEX — add INDEX + header
 In order to reduce drift, I added INDEX.md and stamped Protocol header.
 Evidence: typecheck pass; Files: docs/INDEX.md, docs/Protocol.md

@@ -344,6 +344,12 @@ P87 — NAV-BOOTSTRAP-EXTRACT — routed inline bootstrap into /js/nav-bootstrap
 
 [2025-11-10 10:55] nyc-explorer/overlay-drift-20251108-155953 S7-01 DOC-INDEX — add INDEX + header (#tests=0, green=true)
 
+[2025-11-10 12:05] nyc-explorer/overlay-drift-20251108-155953 OR-00 — Overlay Recovery Plan (v1) (#tests=0, green=true)
+
+[2025-11-10 12:26] nyc-explorer/overlay-drift-20251108-155953 OR-01 — Overlay fixtures (happy/missing polyline/timeout) (#tests=0, green=true)
+
+[2025-11-10 12:50] nyc-explorer/overlay-drift-20251108-155953 OR-03 — Overlay module stubs (unused) (#tests=0, green=true)
+
 **Parked Items**
 - (None currently)
 
