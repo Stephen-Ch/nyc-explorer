@@ -1,24 +1,26 @@
 Code Smell Analysis & Refactoring Suggestions
 NYC Explorer Codebase Review
-Analysis Date: 2025-11-03
+Analysis Date: 2025-11-03 (Updated: 2025-11-10)
 Reviewer: GitHub Copilot
 Scope: Analyze codebase for code smells and potential brittleness per docs/Project.md and docs/code-review.md
 
-Smell Roll-up (2025-11-03)
-- Open: 10
-- In progress: 0
-- Done: 9
+Smell Roll-up (2025-11-10)
+- Open: 8
+- In progress: 1 (overlay integration)
+- Done: 10
 
 Executive Summary
-The codebase exhibits several critical maintainability issues:
+The codebase has undergone significant refactoring since 2025-11-03:
 
-901-line Program.cs with 880+ lines of embedded HTML containing multiple inline <script> blocks
-~700 lines of duplicated JavaScript for From/To typeahead functionality
-Magic numbers scattered throughout (debounce delays, max POIs per block, marker sizes, z-indexes)
-Poor separation of concerns with business logic embedded in inline scripts
-Missing error handling and logging in several critical paths
-Code duplication in file path construction
-Risk Level: HIGH - The current structure significantly impedes maintainability, testability, and future enhancements.
+✅ Program.cs reduced from 901 lines → 196 lines (78% reduction)
+✅ HTML externalized to HomeHtmlProvider with template-based injection
+✅ Overlay recovery complete: 8 helper functions + 3 smoke tests GREEN (97/98 suite)
+✅ window.ENV injection hardened with structured guards
+⚠️ ~700 lines of duplicated From/To typeahead logic still present (in progress)
+⚠️ Magic numbers remain scattered (constants extraction pending)
+⚠️ Error handling gaps in PoiController (logging missing)
+
+Risk Level: MEDIUM (improved from HIGH) - Core architectural issues addressed; remaining work is incremental cleanup.
 
 ## Progress since 2025-11-03
 - MVC shadow route now fronts `HomeHtmlProvider`, ensuring graceful fallback to the static template while Program.cs stays slim.
@@ -28,13 +30,36 @@ Risk Level: HIGH - The current structure significantly impedes maintainability, 
 - `window.ENV` injection hardened by the Program.cs split; values hydrate via structured object guards.
 - Typeahead flows restored with shared current-button handlers; the remaining module extraction stays on deck.
 - 2025-11-09: `ErrorMessages` strings centralized for current-location statuses, the HTML template converted to an interpolated raw string, and a reusable `renderTypeaheadList` helper landed; the geo-from typeahead now uses the helper (green `dotnet build` + `npm run typecheck`).
-- 2025-11-10: Collapsed the geo typeahead plumbing behind `initGeoTypeahead` in `wwwroot/js/geo-typeahead.js`, swapped Program.cs to a lean bootstrap that calls the initializer, and confirmed parity with `dotnet build` + `npm run typecheck`.
+- 2025-11-10 AM: Collapsed the geo typeahead plumbing behind `initGeoTypeahead` in `wwwroot/js/geo-typeahead.js`, swapped Program.cs to a lean bootstrap that calls the initializer, and confirmed parity with `dotnet build` + `npm run typecheck`.
+- **2025-11-10 PM: Overlay Recovery Complete (OR-00 through OR-08B)** — 16 slices, 18 commits:
+  - Created overlay module structure: `wwwroot/js/_overlay/overlay-core.js` (8 helpers) + `overlay-announce.js` (1 stub)
+  - Added 3 overlay fixtures (happy, missing-polyline, timeout) with passing smoke tests (3/3 GREEN)
+  - Implemented flag-gated loading: overlay scripts load by default; `OVERLAY_RECOVERY=0` disables (opt-out)
+  - All helpers are inert (no automatic UI wiring); legacy `route-overlay.js` untouched
+  - Test suite: 97/98 passing (1 quarantine unchanged: route-adapter-real timeout)
+  - Selectors v0.7 locked throughout recovery (no drift)
+  - RFC + approval checklist + CI-Policy documented
 
 Critical Code Smells
-1. CRITICAL: Massive Inline HTML String Literal (Long Method)
-Location: apps/web-mvc/Program.cs lines 17-881
+1. ✅ RESOLVED: Massive Inline HTML String Literal (Long Method)
+Location: apps/web-mvc/Program.cs (formerly lines 17-881)
 
-Issue:
+**Status: RESOLVED** — Program.cs reduced from 901 lines → 196 lines via HomeHtmlProvider extraction.
+
+**Status: RESOLVED** — Program.cs reduced from 901 lines → 196 lines via HomeHtmlProvider extraction.
+
+**Current State (2025-11-10):**
+- Program.cs: 196 lines (lean bootstrap + HomeHtmlProvider class)
+- HomeHtmlProvider: Handles HTML template, ENV injection, ErrorMessages serialization, overlay script injection
+- HTML template: Interpolated raw string literal (still inline, but structured)
+- Overlay scripts: Load by default (inert helpers); `OVERLAY_RECOVERY=0` to disable
+
+**Remaining Work:**
+- Extract HomeHtmlProvider to separate file (`Infrastructure/HomeHtmlProvider.cs`)
+- Move HTML template to external file or Razor view
+- Further JS module extraction (typeahead, route-ui)
+
+**Original Issue (2025-11-03):**
 
 app.MapGet("/", () => Results.Content(
     """
@@ -48,90 +73,81 @@ app.MapGet("/", () => Results.Content(
     </html>
     """,
   "text/html; charset=utf-8"));
-Problems:
 
-901 total lines in a single file, with 880+ being a string literal
-No syntax highlighting or IntelliSense for HTML/JavaScript
-Impossible to properly format or lint embedded code
-Violates Single Responsibility Principle
-Makes code reviews extremely difficult
-Cannot reuse HTML/JS components
-Specific Code Examples:
+**Problems (2025-11-03):**
+- 901 total lines in a single file, with 880+ being a string literal
+- No syntax highlighting or IntelliSense for HTML/JavaScript
+- Impossible to properly format or lint embedded code
+- Violates Single Responsibility Principle
+- Makes code reviews extremely difficult
+- Cannot reuse HTML/JS components
 
-Inline script #1 (lines 62-135): Route adapter initialization (~74 lines)
-Inline script #2 (lines 137-159): Marker label sanitization (~23 lines)
-Inline script #3 (lines 161-810): Geocoding & route UI logic (~650 lines)
-Refactoring Suggestions:
+**Specific Code Examples (2025-11-03):**
+- Inline script #1 (lines 62-135): Route adapter initialization (~74 lines)
+- Inline script #2 (lines 137-159): Marker label sanitization (~23 lines)
+- Inline script #3 (lines 161-810): Geocoding & route UI logic (~650 lines)
 
-Current state: externalized static template via HomeHtmlProvider + MVC backstop; next: JS module extraction (adapters already split).
-Extract JavaScript Modules: Split inline scripts into separate .js files in wwwroot/js/:
-adapters.js - Adapter initialization logic
-marker-sanitizer.js - Marker label processing
-geocoding-ui.js - Typeahead and geocoding logic
-route-ui.js - Route finding and rendering
-Use View Components: For complex UI sections
-Target: Reduce Program.cs to <100 lines
-2. CRITICAL: Extensive Code Duplication (DRY Violation)
-Location: apps/web-mvc/Program.cs lines 163-560 (From typeahead) & lines 404-557 (To typeahead)
+**Refactoring Applied (2025-11-09 to 2025-11-10):**
+1. ✅ Extracted HomeHtmlProvider class with Configure() and Get() methods
+2. ✅ Converted to interpolated raw string literal for better structure
+3. ✅ Added ErrorMessages constants for reusable strings
+4. ✅ Implemented overlay script injection (flag-gated, default ON)
+5. ✅ Created separate overlay modules: `wwwroot/js/_overlay/overlay-core.js` (8 functions), `overlay-announce.js` (1 stub)
 
-Issue: Nearly identical ~300-line blocks for "From" and "To" geocoding typeaheads:
+**Next Steps:**
+- Extract HomeHtmlProvider to separate file (`Infrastructure/HomeHtmlProvider.cs`)
+- Move HTML template to external file or Razor view
+- Further JS module extraction (typeahead dedupe, route-ui)
+- Target: <100 lines in Program.cs main file
+2. ⚠️ IN PROGRESS: Extensive Code Duplication (DRY Violation)
+Location: HTML template in HomeHtmlProvider (formerly Program.cs lines 163-560)
 
-From Typeahead (lines 163-403):
+**Status: IN PROGRESS** — Partial extraction completed; ~600 lines of From/To typeahead duplication remain.
 
+**Current State (2025-11-10):**
+- `renderTypeaheadList` helper extracted (shared for geo-from list rendering)
+- `ErrorMessages` constants centralized (locating, usingCurrentLocation, locationUnavailable)
+- `initGeoTypeahead` module created in `wwwroot/js/geo-typeahead.js`
+- Shared current-button handlers for both From/To flows
+
+**Remaining Duplication:**
+- From Typeahead vs. To Typeahead: ~600 lines of nearly identical logic
+- `setActiveOption` / `setActiveToOption`: Same logic, different variables
+- `selectOption` / `selectToOption`: Same logic, different variables
+- `renderGeoOptions` / `renderGeoToOptions`: Same logic, different variables (partially addressed)
+- `runGeoSearch` / `runGeoToSearch`: Same logic, different variables
+- Event handlers: Nearly identical keyboard/input handling
+
+**Original Issue (2025-11-03):**
+
+**Original Issue (2025-11-03):**
+
+**From Typeahead (lines 163-403):**
+```javascript
 const geoFromInput = document.querySelector('[data-testid="geo-from"]'),
   geoFromList = document.getElementById('geo-from-list'),
   geoStatus = document.querySelector('[data-testid="geo-status"]'),
   geoCurrentButton = document.querySelector('[data-testid="geo-current"][data-target="from"]'),
   // ... 240+ more lines
-To Typeahead (lines 404-557):
+```
 
+**To Typeahead (lines 404-557):**
+```javascript
 let geoToQueryId = 0, geoToOptions = [], geoToActiveIndex = -1, geoToSearchTimer = 0;
 const hideGeoToList = (clearStatus = false) => {
   geoToList.innerHTML = '';
   // ... nearly identical logic repeated
-Duplication Count:
+```
 
-setActiveOption / setActiveToOption: Same logic, different variables
-selectOption / selectToOption: Same logic, different variables
-renderGeoOptions / renderGeoToOptions: Same logic, different variables
-runGeoSearch / runGeoToSearch: Same logic, different variables
-Event handlers: Nearly identical keyboard/input handling
-Total Duplicated Lines: ~600+
+**Next Steps:**
+- Apply `renderTypeaheadList` to geo-to flow
+- Collapse twin keyboard/select helpers behind shared utilities
+- Migrate typeahead logic into `wwwroot/js/typeahead.js` module
+- Expected Reduction: ~600 lines → ~200 lines (70% reduction)
+3. ⚠️ OPEN: Magic Numbers Throughout Codebase
+Location: Multiple files (home.js, HTML template)
 
-Status: In progress — shared handlers cover both "Current" flows and `renderTypeaheadList` now renders the geo-from list; geo-to rendering and the keyboard/selection helpers remain duplicated.
-
-Refactoring Suggestions:
-
-Create Reusable Typeahead Component:
-function createTypeahead(config) {
-  const { input, listbox, statusElement, currentButton, adapter } = config;
-  // Single implementation used by both From and To
-}
-
-// Usage:
-const fromTypeahead = createTypeahead({
-  input: geoFromInput,
-  listbox: geoFromList,
-  statusElement: geoStatus,
-  currentButton: geoCurrentButton
-});
-
-const toTypeahead = createTypeahead({
-  input: geoToInput,
-  listbox: geoToList,
-  statusElement: geoStatus,
-  currentButton: geoCurrentToButton
-});
-Extract to Class/Module: Create a Typeahead class or module pattern
-Expected Reduction: ~600 lines → ~200 lines (70% reduction)
-Near-term next steps:
-- Apply `renderTypeaheadList` to the geo-to flow and collapse the twin keyboard/select helpers behind shared utilities.
-- Swap remaining literal status strings for `ErrorMessages` constants during the helper roll-out.
-- Once both flows share the helper surface, migrate the typeahead logic into `wwwroot/js/typeahead.js` and load it from the template.
-3. Magic Numbers Throughout Codebase
-Location: Multiple files
-
-Issues Found:
+**Status: OPEN** — No constants extraction yet; magic numbers remain scattered.
 
 In home.js line 60:
 
