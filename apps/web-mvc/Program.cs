@@ -85,15 +85,11 @@ internal static class HomeHtmlProvider
       usingCurrentLocation = ErrorMessages.UsingCurrentLocation,
       locationUnavailable = ErrorMessages.LocationUnavailable,
     });
-    var html = HtmlTemplate
-      .Replace("__APP_CONFIG__", configJson)
-      .Replace("__ERROR_MESSAGES__", messagesJson);
     
     var orFlag = Environment.GetEnvironmentVariable("OVERLAY_RECOVERY");
     var overlayOff = orFlag == "0"; // default ON unless explicitly "0"
-    html = HomeHtmlCore.WithOverlayScripts(html, overlayEnabled: !overlayOff);
     
-    _html = HomeHtmlCore.InjectEnvScript(html, configJson);
+    _html = HomeHtmlCore.ProcessTemplate(HtmlTemplate, configJson, messagesJson, overlayEnabled: !overlayOff);
     }
 
     public static string GetHtml()

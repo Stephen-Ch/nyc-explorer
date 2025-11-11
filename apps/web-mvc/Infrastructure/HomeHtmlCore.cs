@@ -33,4 +33,17 @@ internal static class HomeHtmlCore
 
     return script + html;
   }
+
+  /// <summary>
+  /// Replaces placeholders in the inline template, then injects overlay scripts and ENV.
+  /// </summary>
+  public static string ProcessTemplate(string template, string configJson, string messagesJson, bool overlayEnabled)
+  {
+    var html = (template ?? string.Empty)
+      .Replace("__APP_CONFIG__", configJson ?? "{}")
+      .Replace("__ERROR_MESSAGES__", messagesJson ?? "{}");
+    html = WithOverlayScripts(html, overlayEnabled);
+    html = InjectEnvScript(html, configJson ?? "{}");
+    return html;
+  }
 }
