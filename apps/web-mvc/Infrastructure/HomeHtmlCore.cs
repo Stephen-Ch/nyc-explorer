@@ -18,4 +18,19 @@ internal static class HomeHtmlCore
     // Replace first occurrence (case-sensitive match is fine because our template uses lowercase)
     return html.Replace(needle, scripts + needle);
   }
+
+  /// <summary>
+  /// Injects window.ENV script into &lt;head&gt; with app configuration.
+  /// </summary>
+  public static string InjectEnvScript(string html, string appConfigJson)
+  {
+    var script = $"<script id=\"app-env\">window.ENV = {appConfigJson};</script>";
+    var idx = html.IndexOf("</head>", StringComparison.OrdinalIgnoreCase);
+    if (idx >= 0)
+    {
+      return html.Insert(idx, script);
+    }
+
+    return script + html;
+  }
 }

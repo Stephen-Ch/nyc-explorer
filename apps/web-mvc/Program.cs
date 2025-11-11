@@ -93,7 +93,7 @@ internal static class HomeHtmlProvider
     var overlayOff = orFlag == "0"; // default ON unless explicitly "0"
     html = HomeHtmlCore.WithOverlayScripts(html, overlayEnabled: !overlayOff);
     
-    _html = InjectEnvScript(html, configJson);
+    _html = HomeHtmlCore.InjectEnvScript(html, configJson);
     }
 
     public static string GetHtml()
@@ -108,23 +108,11 @@ internal static class HomeHtmlProvider
           usingCurrentLocation = ErrorMessages.UsingCurrentLocation,
           locationUnavailable = ErrorMessages.LocationUnavailable,
         }));
-      _html = InjectEnvScript(html, "{}");
+      _html = HomeHtmlCore.InjectEnvScript(html, "{}");
     }
 
     return _html;
     }
-
-  private static string InjectEnvScript(string html, string appConfigJson)
-  {
-    var script = $"<script id=\"app-env\">window.ENV = {appConfigJson};</script>";
-    var idx = html.IndexOf("</head>", StringComparison.OrdinalIgnoreCase);
-    if (idx >= 0)
-    {
-      return html.Insert(idx, script);
-    }
-
-    return script + html;
-  }
 
   private const string HtmlTemplate = $$"""
     <html>
