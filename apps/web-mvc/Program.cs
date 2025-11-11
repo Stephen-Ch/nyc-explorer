@@ -70,7 +70,7 @@ app.MapControllerRoute(
 
 app.MapControllers();
 
-app.Run("http://localhost:5000");
+app.Run();
 
 internal static class HomeHtmlProvider
 {
