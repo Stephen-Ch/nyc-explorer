@@ -91,11 +91,7 @@ internal static class HomeHtmlProvider
     
     var orFlag = Environment.GetEnvironmentVariable("OVERLAY_RECOVERY");
     var overlayOff = orFlag == "0"; // default ON unless explicitly "0"
-    var overlayScripts = "<script src=\"/js/_overlay/overlay-core.js\"></script><script src=\"/js/_overlay/overlay-announce.js\"></script>";
-    if (!overlayOff && html.Contains("</body>"))
-    {
-      html = html.Replace("</body>", overlayScripts + "</body>");
-    }
+    html = HomeHtmlCore.WithOverlayScripts(html, overlayEnabled: !overlayOff);
     
     _html = InjectEnvScript(html, configJson);
     }
