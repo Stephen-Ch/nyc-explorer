@@ -1,0 +1,9 @@
+{
+  "request": { "from": "40.74105,-73.98970", "to": "40.75800,-73.98550" },
+  "error": {
+    "kind": "timeout",
+    "message": "Provider timeout after 10000 ms",
+    "status": 504,
+    "elapsed_ms": 10000
+  }
+}

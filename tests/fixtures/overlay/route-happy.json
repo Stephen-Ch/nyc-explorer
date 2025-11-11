@@ -1,0 +1,13 @@
+{
+  "request": { "from": "40.74105,-73.98970", "to": "40.75800,-73.98550" },
+  "response": {
+    "distance_m": 2100,
+    "duration_ms": 900000,
+    "polyline": "enc:abc123_dummy_polyline",
+    "steps": [
+      { "i": 0, "lat": 40.74105, "lng": -73.98970, "instruction": "Head north on Broadway" },
+      { "i": 1, "lat": 40.74840, "lng": -73.98570, "instruction": "Turn right onto W 34th St" },
+      { "i": 2, "lat": 40.75800, "lng": -73.98550, "instruction": "Arrive at destination" }
+    ]
+  }
+}

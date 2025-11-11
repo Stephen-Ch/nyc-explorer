@@ -1,10 +1,10 @@
 Code Smell Analysis & Refactoring Suggestions
 NYC Explorer Codebase Review
-Analysis Date: 2025-11-03 (Updated: 2025-11-10)
+Analysis Date: 2025-11-03 (Updated: 2025-11-11)
 Reviewer: GitHub Copilot
 Scope: Analyze codebase for code smells and potential brittleness per docs/Project.md and docs/code-review.md
 
-Smell Roll-up (2025-11-10)
+Smell Roll-up (2025-11-11)
 - Open: 8
 - In progress: 1 (overlay integration)
 - Done: 10
@@ -39,6 +39,7 @@ Risk Level: MEDIUM (improved from HIGH) - Core architectural issues addressed; r
   - Test suite: 97/98 passing (1 quarantine unchanged: route-adapter-real timeout)
   - Selectors v0.7 locked throughout recovery (no drift)
   - RFC + approval checklist + CI-Policy documented
+- 2025-11-11: Extracted `HomeHtmlCore.WithOverlayScripts`, `.InjectEnvScript`, and `.ProcessTemplate`; `HomeHtmlProvider.Configure()` now delegates entirely to the core. Removed the hard-coded `app.Run("http://localhost:5000")` so Playwright servers can bind their own ports. `dotnet build`/`npm run typecheck` remain GREEN; overlay smoke E2E currently under re-validation pending rerun after the server fix.
 
 Critical Code Smells
 1. ✅ RESOLVED: Massive Inline HTML String Literal (Long Method)
@@ -48,9 +49,10 @@ Location: apps/web-mvc/Program.cs (formerly lines 17-881)
 
 **Status: RESOLVED** — Program.cs reduced from 901 lines → 196 lines via HomeHtmlProvider extraction.
 
-**Current State (2025-11-10):**
-- Program.cs: 196 lines (lean bootstrap + HomeHtmlProvider class)
-- HomeHtmlProvider: Handles HTML template, ENV injection, ErrorMessages serialization, overlay script injection
+**Current State (2025-11-11):**
+- Program.cs: 195 lines (lean bootstrap + HomeHtmlProvider class)
+- HomeHtmlProvider: Delegates template replacement, overlay gating, and env injection to `HomeHtmlCore`
+- HomeHtmlCore: Hosts `WithOverlayScripts`, `InjectEnvScript`, and `ProcessTemplate` helpers (extracted 2025-11-10–11)
 - HTML template: Interpolated raw string literal (still inline, but structured)
 - Overlay scripts: Load by default (inert helpers); `OVERLAY_RECOVERY=0` to disable
 
@@ -58,6 +60,7 @@ Location: apps/web-mvc/Program.cs (formerly lines 17-881)
 - Extract HomeHtmlProvider to separate file (`Infrastructure/HomeHtmlProvider.cs`)
 - Move HTML template to external file or Razor view
 - Further JS module extraction (typeahead, route-ui)
+- Re-run overlay Playwright suite post `app.Run()` fix; tests currently pending due to prior server binding failures
 
 **Original Issue (2025-11-03):**
 
