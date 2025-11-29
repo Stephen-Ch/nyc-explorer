@@ -1,7 +1,7 @@
-# Working With Stephen — Lite Guide (10-24-25)
+# Working With Stephen — Lite Guide (v1)
 
 > **What this is:** People & style guide for collaborating with Stephen.  
-> **Canonical rules:** For gating, Decisions format, tests, and process, see `/docs/Protocol_10-24-25.md`.
+> **Canonical rules:** For gating, Decisions format, tests, and process, see `docs/protocol/protocol-v7.md`.
 
 ---
 
@@ -49,7 +49,7 @@ One or two sentences of context, then bullets or a ≤5‑step checklist. Keep r
   - **Demo video + GIF** (whenever there is something visible to check).
   - **Green test output** (unit/e2e as applicable).
   - **Updated README** (only if user‑facing behavior or setup changed).
-  - **Append one Decisions line** to `/docs/code-review.md` (use the protocol format).
+  - **Append one Decisions line** to `/docs/code-review.md` (use the format: `[YYYY-MM-DD] <BRANCH> <ID> — <Summary> (#tests=N, green=Y)`).
 - **Optional** when relevant: short troubleshooting notes or perf measurements.
 
 **Decisions line suffix for traceability**  
@@ -98,4 +98,4 @@ If there is an issue tracker, add a suffix: `; issue=GH-123` (GitHub) or `; issu
 
 ---
 
-*This guide is about how to work **with Stephen**; the **Protocol** is how we **do the work**. When in doubt, follow the Protocol and use this guide to tune tone, pacing, and collaboration.*
+*This guide is about how to work **with Stephen**; **`docs/protocol/protocol-v7.md`** is how we **do the work**. When in doubt, follow the Protocol and use this guide to tune tone, pacing, and collaboration.*
