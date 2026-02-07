@@ -5,7 +5,7 @@
 ## Context
 - **Story ID:** <ID>
 - **Sprint Goal excerpt:** <paste>
-- **Linked docs:** `/docs/Protocol_10-24-25.md`, `/docs/Code-Review-Guide_10-24-25.md`
+- **Linked docs:** `docs/Start-Here-For-AI.md`, `docs/vibe-coding/protocol/protocol-v7.md`, `docs/Code-Review-Guide.md`
 
 ## Behavior Contract (copied)
 - Given ...

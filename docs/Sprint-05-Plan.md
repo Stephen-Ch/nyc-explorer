@@ -1,3 +1,9 @@
+# Sprint 05 Plan — Archived
+
+This file has been archived to reduce clutter in `docs/`.
+
+Current location:
+- `docs/archive/2026-01-11/sprints/Sprint-05-Plan.md`
 # Sprint 05 Plan — Geocoding & Routing (v0.1)
 
 ## Sprint Goal (Manhattan only)

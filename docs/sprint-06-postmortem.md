@@ -1,3 +1,9 @@
+# Sprint 06 Postmortem — Archived
+
+This file has been archived to reduce clutter in `docs/`.
+
+Current location:
+- `docs/archive/2026-01-11/sprints/sprint-06-postmortem.md`
 # Sprint-06 Postmortem — Provider-ready routing + turn list
 
 _Date: 2025-11-06_

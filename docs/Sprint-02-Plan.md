@@ -1,3 +1,9 @@
+# Sprint 02 Plan — Archived
+
+This file has been archived to reduce clutter in `docs/`.
+
+Current location:
+- `docs/archive/2026-01-11/sprints/Sprint-02-Plan.md`
 # Sprint 02 Plan — NYC Explorer
 
 **Goal:** Complete preflight infrastructure, then deliver POI detail pages, client search, and expanded content (Union Square + Flatiron).

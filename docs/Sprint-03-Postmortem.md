@@ -1,3 +1,9 @@
+# Sprint 03 Postmortem — Archived
+
+This file has been archived to reduce clutter in `docs/`.
+
+Current location:
+- `docs/archive/2026-01-11/sprints/Sprint-03-Postmortem.md`
 # Sprint 03 Post-Mortem — NYC Explorer
 
 ## Summary

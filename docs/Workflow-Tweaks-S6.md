@@ -1,3 +1,9 @@
+# Workflow Tweaks (Sprint 6) — Archived
+
+This file has been archived to reduce clutter in `docs/`.
+
+Current location:
+- `docs/archive/2026-01-11/workflow/Workflow-Tweaks-S6.md`
 # Workflow Tweaks — Sprint 6
 
 ## Keep Doing

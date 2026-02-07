@@ -1,3 +1,9 @@
+# Sprint 06 Plan — Archived
+
+This file has been archived to reduce clutter in `docs/`.
+
+Current location:
+- `docs/archive/2026-01-11/sprints/Sprint-06-Plan.md`
 # Sprint‑06 Plan — Provider‑ready routing (fixture‑backed) + turn list + LOC relief
 
 **Dates:** TBD (one‑week sprint)  

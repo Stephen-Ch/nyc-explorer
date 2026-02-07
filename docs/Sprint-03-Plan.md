@@ -1,3 +1,9 @@
+# Sprint 03 Plan — Archived
+
+This file has been archived to reduce clutter in `docs/`.
+
+Current location:
+- `docs/archive/2026-01-11/sprints/Sprint-03-Plan.md`
 # Sprint 03 — Plan (v0.1)
 
 **Goal:** Implement navigation from list/map to detail pages, expand POI content, add CI automation, and document setup.

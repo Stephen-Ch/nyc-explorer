@@ -1,7 +1,7 @@
 # Code Review Decisions Log — NYC Explorer
 
 **Purpose**  
-Track all development decisions in chronological order using the standardized format from Code-Review-Guide_10-24-25.md.
+Track all development decisions in chronological order using the standardized format from Code-Review-Guide.md.
 
 **Format**  
 ```

@@ -1,7 +1,7 @@
 # Code-Review-Guide — 10-24-25
 
 **Purpose**  
-Reviewer-facing checklist. Keep this lean. All gating and read-order rules live in `/docs/Protocol_10-24-25.md`.
+Reviewer-facing checklist. Keep this lean. All gating and read-order rules live in `docs/Start-Here-For-AI.md` and the canonical kit under `docs/vibe-coding/`.
 
 ---
 
@@ -24,7 +24,7 @@ Reviewer-facing checklist. Keep this lean. All gating and read-order rules live 
 
 **Example**
 ```
-[2025-10-24 11:02] rawls-game/feat/route ROUTE-7 — add review route + e2e (#tests=5, green=true)
+[2026-01-11 08:00] nyc-explorer/feat/map MAP-1 — add marker a11y focus ring (#tests=21, green=true)
 ```
 
 ---

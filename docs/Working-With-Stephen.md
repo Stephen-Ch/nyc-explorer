@@ -1,7 +1,7 @@
 # Working With Stephen — Lite Guide (10-24-25)
 
 > **What this is:** People & style guide for collaborating with Stephen.  
-> **Canonical rules:** For gating, Decisions format, tests, and process, see `/docs/Protocol_10-24-25.md`.
+> **Canonical rules:** For gating, Decisions format, tests, and process, see `docs/Start-Here-For-AI.md` and `docs/vibe-coding/protocol/protocol-v7.md`.
 
 ---
 

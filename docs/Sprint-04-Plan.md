@@ -1,3 +1,9 @@
+# Sprint 04 Plan — Archived
+
+This file has been archived to reduce clutter in `docs/`.
+
+Current location:
+- `docs/archive/2026-01-11/sprints/Sprint-04-Plan.md`
 # Sprint 04 — From/To Routing & DevOps Loop (v2)
 
 **Dates:** TBD (target 1–2 days)  

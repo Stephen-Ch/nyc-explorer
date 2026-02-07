@@ -1,3 +1,9 @@
+# Sprint 05 Postmortem — Archived
+
+This file has been archived to reduce clutter in `docs/`.
+
+Current location:
+- `docs/archive/2026-01-11/sprints/Sprint-05-Postmortem.md`
 # Sprint 05 Postmortem
 
 ## Summary

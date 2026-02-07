@@ -98,7 +98,7 @@ BASE_URL=http://localhost:5000 npx playwright test --project=chromium
 
 ## Copilot working prompt (paste)
 ```
-READ: /docs/Protocol_10-24-25.md, /docs/code-review.md (last 3 lines), /docs/Playbook_10-24-25.md, /docs/Copilot-Instructions_10-24-25.md
+READ: /docs/Start-Here-For-AI.md, /docs/vibe-coding/protocol/protocol-v7.md, /docs/vibe-coding/protocol/copilot-instructions-v7.md, /docs/code-review.md (last 3 lines)
 STORY: MAP-1 — Render map + list from content/poi.v1.json (Manhattan only; focus Union Square + Flatiron)
 BEHAVIOR (incl. edge + error):
 - Given the home route loads in Manhattan scope
