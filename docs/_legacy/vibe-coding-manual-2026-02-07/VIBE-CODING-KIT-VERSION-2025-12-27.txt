@@ -1,0 +1,15 @@
+Version: 2025-12-27
+Repo: DealersChoice (DC-API)
+Adopted-from: Mortality kit update pattern
+Enhancements: 
+- Coverage Checklist + Proof-of-Experience + Bundle warnings policy + Dev-server hygiene
+- Version marker maintenance rule (MANDATORY update on any vibe-coding change)
+
+Changes in this version:
+- Added maintenance rule to README.md and copilot-instructions-v7.md
+- Rule enforces version marker update whenever docs/vibe-coding/ files are modified
+
+Notes:
+- docs/vibe-coding is the portable source of truth
+- Replace entire folder when a newer marker exists (compare dates)
+- Legacy copies in docs/protocol/ are deprecated and point to vibe-coding/
