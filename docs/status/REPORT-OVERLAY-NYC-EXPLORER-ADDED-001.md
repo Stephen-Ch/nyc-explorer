@@ -1,8 +1,11 @@
 # Status Report: NYC Explorer Overlay Added
 
-**Report ID:** OVERLAY-NYC-EXPLORER-ADDED-001
+**Report ID:** REPORT-OVERLAY-NYC-EXPLORER-ADDED-001
 **Date:** 2026-02-08
 **Scope:** docs-only
+**Docs root:** docs
+**Commit:** 298e38f
+**PR:** N/A (solo repo; direct merge to main)
 
 ## Files Created
 
