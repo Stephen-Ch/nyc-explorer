@@ -15,7 +15,8 @@
 | Provenance / Research Docs | 16 |
 | Knowledge Base (research-adjacent) | 2 |
 | Status Reports | 1 |
-| **Total indexed** | **27** |
+| Audits | 1 |
+| **Total indexed** | **29** |
 
 ---
 
@@ -80,6 +81,12 @@
 | ID | Title | Path | Status |
 |----|-------|------|--------|
 | R-027 | Solution Report | [docs/status/solution-report.md](../status/solution-report.md) | Complete |
+
+## Audits
+
+| ID | Title | Path | Status |
+|----|-------|------|--------|
+| R-028 | Docs PASS 2 Trim Audit | [docs/research/R-028-NYC-Docs-Pass2-Trim-Audit.md](R-028-NYC-Docs-Pass2-Trim-Audit.md) | Complete (no trims needed) |
 
 ---
 
