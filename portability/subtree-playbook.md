@@ -11,19 +11,19 @@
 
 ```bash
 # ADD to new repo (one-time):
-git subtree add --prefix=docs-engineering/vibe-coding \
-  https://github.com/OurProjectsRandD/vibe-coding-bundle.git main --squash
+git subtree add --prefix=<DOCS_ROOT>/vibe-coding \
+  https://github.com/ExampleOrg/vibe-coding-bundle.git main --squash
 
 # UPDATE existing repo (safe pull):
-git subtree pull --prefix=docs-engineering/vibe-coding \
-  https://github.com/OurProjectsRandD/vibe-coding-bundle.git main --squash
+git subtree pull --prefix=<DOCS_ROOT>/vibe-coding \
+  https://github.com/ExampleOrg/vibe-coding-bundle.git main --squash
 
 # VERIFY after update:
-ls docs-engineering/vibe-coding/standards/  # Should have research-standard.md
-ls docs-engineering/project/stack-profile.md  # Should NOT be touched
+ls <DOCS_ROOT>/vibe-coding/standards/  # Should have research-standard.md
+ls <DOCS_ROOT>/project/stack-profile.md  # Should NOT be touched
 ```
 
-**Golden rule:** Subtree touches ONLY `docs-engineering/vibe-coding/`. Project docs in `docs-engineering/project/` and `docs-engineering/research/` are YOURS.
+**Golden rule:** Subtree touches ONLY `<DOCS_ROOT>/vibe-coding/`. Project docs in `<DOCS_ROOT>/project/` and `<DOCS_ROOT>/research/` are YOURS.
 
 ---
 
@@ -44,14 +44,14 @@ ls docs-engineering/project/stack-profile.md  # Should NOT be touched
 
 | Path | Contents |
 |------|----------|
-| `docs-engineering/project/` | VISION.md, EPICS.md, NEXT.md, stack-profile.md |
-| `docs-engineering/research/` | R-### docs, ResearchIndex.md |
-| `docs-engineering/status/` | Branch status, return packets |
-| `docs-engineering/forGPT/` | Generated packet for ChatGPT sessions (see below) |
+| `<DOCS_ROOT>/project/` | VISION.md, EPICS.md, NEXT.md, stack-profile.md |
+| `<DOCS_ROOT>/research/` | R-### docs, ResearchIndex.md |
+| `<DOCS_ROOT>/status/` | Branch status, return packets |
+| `<DOCS_ROOT>/forGPT/` | Generated packet for ChatGPT sessions (see below) |
 
 > **forGPT Packet:** The `forGPT/` folder is a **generated mirror** of session-critical docs, NOT manually maintained stubs. Run `sync-forgpt.ps1` to refresh from canonical sources. See `Start-Here-For-AI.md § forGPT Packet: Generated, Safe, Portable` for lockdown guarantees and verification steps.
 >
-> **DOCS_ROOT Detection:** If both `docs-engineering/` and `docs/` exist, `docs-engineering/` takes precedence (deterministic, no ambiguity).
+> **DOCS_ROOT Detection:** If both `<DOCS_ROOT>/` and `docs/` exist, `<DOCS_ROOT>/` takes precedence (deterministic, no ambiguity).
 
 ---
 
@@ -61,7 +61,7 @@ Different repos use different docs folder names. The vibe-coding bundle supports
 
 | Docs Root | Example Repos | Notes |
 |-----------|---------------|-------|
-| `docs-engineering/` | LessonWriter, enterprise projects | Recommended for repos with separate runtime `docs/` folder |
+| `<DOCS_ROOT>/` | ExampleProject, enterprise projects | Recommended for repos with separate runtime `docs/` folder |
 | `docs/` | Most open-source, smaller projects | Simpler; use when no conflict with runtime docs |
 
 ### Critical Safety Rule
@@ -84,25 +84,25 @@ Reformat to research standard (R-### naming, required sections) is allowed, but 
 ### Prerequisites
 - [ ] Clean working tree (`git status` shows nothing staged/modified)
 - [ ] On a dedicated branch for the integration
-- [ ] Know your target prefix (recommend: `docs-engineering/vibe-coding`)
+- [ ] Know your target prefix (recommend: `<DOCS_ROOT>/vibe-coding`)
 
 ### Step 1: Create Target Folders
 
 ```bash
 # Create project-specific folders (these stay yours)
-mkdir -p docs-engineering/project
-mkdir -p docs-engineering/research
-mkdir -p docs-engineering/status
+mkdir -p <DOCS_ROOT>/project
+mkdir -p <DOCS_ROOT>/research
+mkdir -p <DOCS_ROOT>/status
 ```
 
 ### Step 2: Add the Subtree
 
 ```bash
 # Set upstream URL (replace with your bundle repo)
-UPSTREAM_URL="https://github.com/OurProjectsRandD/vibe-coding-bundle.git"
+UPSTREAM_URL="https://github.com/ExampleOrg/vibe-coding-bundle.git"
 
 # Add subtree with squash (cleaner history)
-git subtree add --prefix=docs-engineering/vibe-coding $UPSTREAM_URL main --squash
+git subtree add --prefix=<DOCS_ROOT>/vibe-coding $UPSTREAM_URL main --squash
 ```
 
 ### Step 3: Create Project-Specific Docs
@@ -111,29 +111,29 @@ Copy templates and fill in project-specific content:
 
 ```bash
 # Create stack profile from standard
-cp docs-engineering/vibe-coding/standards/stack-profile-standard.md \
-   docs-engineering/project/stack-profile.md
+cp <DOCS_ROOT>/vibe-coding/standards/stack-profile-standard.md \
+   <DOCS_ROOT>/project/stack-profile.md
 # Edit stack-profile.md with your project's actual stack
 
 # Create Control Deck docs
-touch docs-engineering/project/VISION.md
-touch docs-engineering/project/EPICS.md
-touch docs-engineering/project/NEXT.md
-touch docs-engineering/research/ResearchIndex.md
+touch <DOCS_ROOT>/project/VISION.md
+touch <DOCS_ROOT>/project/EPICS.md
+touch <DOCS_ROOT>/project/NEXT.md
+touch <DOCS_ROOT>/research/ResearchIndex.md
 ```
 
 ### Step 4: Verify Integration
 
 ```bash
 # Confirm bundle structure
-ls docs-engineering/vibe-coding/protocol/
+ls <DOCS_ROOT>/vibe-coding/protocol/
 # Should show: protocol-v7.md, copilot-instructions-v7.md, etc.
 
-ls docs-engineering/vibe-coding/standards/
+ls <DOCS_ROOT>/vibe-coding/standards/
 # Should show: research-standard.md, stack-profile-standard.md
 
 # Confirm project docs are separate
-ls docs-engineering/project/
+ls <DOCS_ROOT>/project/
 # Should show your project-specific files
 ```
 
@@ -150,7 +150,7 @@ git commit -m "docs: integrate vibe-coding bundle via subtree"
 
 ### The Safe Update Rule
 
-**Subtree pull only touches the subtree prefix.** Files outside `docs-engineering/vibe-coding/` are never modified by the pull.
+**Subtree pull only touches the subtree prefix.** Files outside `<DOCS_ROOT>/vibe-coding/` are never modified by the pull.
 
 ### Prerequisites
 - [ ] Clean working tree
@@ -160,9 +160,9 @@ git commit -m "docs: integrate vibe-coding bundle via subtree"
 ### Step 1: Pull Updates
 
 ```bash
-UPSTREAM_URL="https://github.com/OurProjectsRandD/vibe-coding-bundle.git"
+UPSTREAM_URL="https://github.com/ExampleOrg/vibe-coding-bundle.git"
 
-git subtree pull --prefix=docs-engineering/vibe-coding $UPSTREAM_URL main --squash
+git subtree pull --prefix=<DOCS_ROOT>/vibe-coding $UPSTREAM_URL main --squash
 ```
 
 ### Step 2: Review Changes
@@ -172,10 +172,10 @@ git subtree pull --prefix=docs-engineering/vibe-coding $UPSTREAM_URL main --squa
 git diff HEAD~1 --stat
 
 # Verify project docs untouched
-git diff HEAD~1 -- docs-engineering/project/
+git diff HEAD~1 -- <DOCS_ROOT>/project/
 # Should show nothing
 
-git diff HEAD~1 -- docs-engineering/research/
+git diff HEAD~1 -- <DOCS_ROOT>/research/
 # Should show nothing
 ```
 
@@ -187,8 +187,8 @@ git diff HEAD~1 -- docs-engineering/research/
 
 ```bash
 # If conflicts in bundle files, accept upstream:
-git checkout --theirs docs-engineering/vibe-coding/path/to/file.md
-git add docs-engineering/vibe-coding/path/to/file.md
+git checkout --theirs <DOCS_ROOT>/vibe-coding/path/to/file.md
+git add <DOCS_ROOT>/vibe-coding/path/to/file.md
 
 # Never accept "theirs" for project docs — they shouldn't conflict
 ```
@@ -197,10 +197,10 @@ git add docs-engineering/vibe-coding/path/to/file.md
 
 ```bash
 # Verify bundle has new content
-cat docs-engineering/vibe-coding/standards/research-standard.md | head -20
+cat <DOCS_ROOT>/vibe-coding/standards/research-standard.md | head -20
 
 # Verify project docs unchanged
-git diff HEAD~1 -- docs-engineering/project/stack-profile.md
+git diff HEAD~1 -- <DOCS_ROOT>/project/stack-profile.md
 # Should be empty
 
 git commit -m "docs: update vibe-coding bundle from upstream"
@@ -214,14 +214,18 @@ Sometimes you need project-specific extensions to bundle docs.
 
 **Rule:** Extensions live OUTSIDE the bundle and LINK to bundle docs.
 
+> **Invariant:** Repo-specific overlays (OVERLAY-INDEX.md, `<repo-name>.md`)
+> MUST live at `<DOCS_ROOT>/overlays/`, NEVER inside `<DOCS_ROOT>/vibe-coding/`.
+> See [OCTOPUS-INVARIANTS.md](../OCTOPUS-INVARIANTS.md) (authoritative).
+
 ### Example: Project-Specific Checklist
 
 Don't edit `vibe-coding/session-start-checklist.md`. Instead:
 
 ```markdown
-# docs-engineering/project/session-checklist-local.md
+# <DOCS_ROOT>/project/session-checklist-local.md
 
-> **Base checklist:** [../vibe-coding/session-start-checklist.md](../vibe-coding/session-start-checklist.md)
+> **Base checklist:** [session-start-checklist.md](../session-start-checklist.md)
 
 ## Additional Local Checks
 
@@ -234,7 +238,7 @@ Don't edit `vibe-coding/session-start-checklist.md`. Instead:
 Don't edit `vibe-coding/protocol/protocol-v7.md`. Instead:
 
 ```markdown
-# docs-engineering/project/gate-overrides.md
+# <DOCS_ROOT>/project/gate-overrides.md
 
 > **Base gates:** See stack-profile.md
 
@@ -254,7 +258,7 @@ Use `--squash` flag to collapse subtree commits into single merge commits.
 
 ### "I accidentally edited a file in the subtree"
 
-Your edits will be lost on next subtree pull. Move project-specific content to `docs-engineering/project/` instead.
+Your edits will be lost on next subtree pull. Move project-specific content to `<DOCS_ROOT>/project/` instead.
 
 ### "Conflict in project docs during subtree pull"
 
@@ -274,18 +278,18 @@ This shouldn't happen. If it does:
 
 ## Interim Workflow: Before Bundle Repo Exists
 
-> **Status:** As of 2026-02-06, the bundle currently lives inside `LessonWriter2.0/docs-engineering/vibe-coding/`. A dedicated `vibe-coding-bundle.git` repo does not yet exist.
+> **Status:** As of 2026-02-06, the bundle currently lives inside `ExampleProject/<DOCS_ROOT>/vibe-coding/`. A dedicated `vibe-coding-bundle.git` repo does not yet exist.
 
 If you need to integrate vibe-coding into another repo **before** the dedicated bundle repo is created, use `git subtree split`:
 
 ### Step 1: Create a Split Branch (in source repo)
 
 ```bash
-# In the repo that has vibe-coding (e.g., Lessonwriter)
-cd /path/to/lessonwriter-repo
+# In the repo that has vibe-coding (e.g., ExampleProject)
+cd /path/to/example-project-repo
 
 # Extract vibe-coding into a standalone branch
-git subtree split --prefix=LessonWriter2.0/docs-engineering/vibe-coding -b vibe-coding-bundle-temp
+git subtree split --prefix=ExampleProject/<DOCS_ROOT>/vibe-coding -b vibe-coding-bundle-temp
 ```
 
 This creates a branch where `vibe-coding/` contents are at the root—exactly what a dedicated bundle repo would look like.
@@ -298,29 +302,29 @@ cd /path/to/target-repo
 git checkout -b integrate-vibe-coding
 
 # Add source repo as temporary remote
-git remote add lessonwriter-temp /path/to/lessonwriter-repo
+git remote add source-temp /path/to/example-project-repo
 
 # Fetch the split branch
-git fetch lessonwriter-temp vibe-coding-bundle-temp
+git fetch source-temp vibe-coding-bundle-temp
 
 # Add subtree
-git subtree add --prefix=docs-engineering/vibe-coding lessonwriter-temp/vibe-coding-bundle-temp --squash
+git subtree add --prefix=<DOCS_ROOT>/vibe-coding source-temp/vibe-coding-bundle-temp --squash
 ```
 
 ### Step 3: Clean Up
 
 ```bash
 # Remove temporary remote from target repo
-git remote remove lessonwriter-temp
+git remote remove source-temp
 
 # Delete split branch from source repo
-cd /path/to/lessonwriter-repo
+cd /path/to/example-project-repo
 git branch -D vibe-coding-bundle-temp
 ```
 
 ### When Bundle Repo Is Created
 
-Once `https://github.com/OurProjectsRandD/vibe-coding-bundle.git` exists:
+Once `https://github.com/ExampleOrg/vibe-coding-bundle.git` exists:
 
 1. Update your remote: `git remote set-url vibe-coding-upstream <new-url>`
 2. Future pulls use standard workflow (see above)
@@ -341,7 +345,7 @@ Once `https://github.com/OurProjectsRandD/vibe-coding-bundle.git` exists:
 ### DOCS_ROOT Portability
 
 The sync script auto-detects DOCS_ROOT:
-- If `docs-engineering/` exists → DOCS_ROOT = `docs-engineering`
+- If `<DOCS_ROOT>/` exists → DOCS_ROOT = `docs-engineering`
 - Else if `docs/` exists → DOCS_ROOT = `docs`
 - Else STOP (blocker)
 
@@ -410,13 +414,13 @@ The manifest maps canonical sources to forGPT destinations with tier designation
 
 ```powershell
 # From anywhere in the repo:
-.\docs-engineering\vibe-coding\tools\sync-forgpt.ps1
+.\<DOCS_ROOT>\vibe-coding\tools\sync-forgpt.ps1
 
 # Script STOPS on dirty git tree by default. Use -Force to override:
-.\docs-engineering\vibe-coding\tools\sync-forgpt.ps1 -Force
+.\<DOCS_ROOT>\vibe-coding\tools\sync-forgpt.ps1 -Force
 
 # Preview without making changes:
-.\docs-engineering\vibe-coding\tools\sync-forgpt.ps1 -WhatIf
+.\<DOCS_ROOT>\vibe-coding\tools\sync-forgpt.ps1 -WhatIf
 ```
 
 #### 4. Verify VERSION-MANIFEST.md
@@ -486,7 +490,7 @@ The sync script:
 
 ## Recommended Folder Structure
 
-> **Note:** Some repos use `docs/` instead of `docs-engineering/`. The structure is the same; only the root name differs.
+> **Note:** Some repos use `docs/` instead of `<DOCS_ROOT>/`. The structure is the same; only the root name differs.
 
 ```
 <DOCS_ROOT>/                # docs-engineering OR docs

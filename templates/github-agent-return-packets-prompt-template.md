@@ -55,18 +55,18 @@ Use this when you need comprehensive research across multiple topics.
 PROMPT-ID: RP-{{DATE}}-{{ID_1}}-{{ID_2}}-{{ID_3}}
 
 ## Goal
-Produce 3 dated research reports (return packets) under docs-engineering/status/.
+Produce 3 dated research reports (return packets) under <DOCS_ROOT>/status/.
 Research ONLY—do NOT modify any runtime code.
 
 ## Required Reading (quote 1-2 lines from each to prove you read them)
-- docs-engineering/project/VISION.md
-- docs-engineering/project/EPICS.md
-- docs-engineering/project/NEXT.md
-- docs-engineering/testing/test-catalog.md
-- docs-engineering/project/BlackjackSensei-KB.md
+- <DOCS_ROOT>/project/VISION.md
+- <DOCS_ROOT>/project/EPICS.md
+- <DOCS_ROOT>/project/NEXT.md
+- <DOCS_ROOT>/testing/test-catalog.md
+- <DOCS_ROOT>/project/ExampleProject-KB.md
 
 ## Output Files
-Create these 3 files under docs-engineering/status/:
+Create these 3 files under <DOCS_ROOT>/status/:
 1. {{OUTPUT_1}}
 2. {{OUTPUT_2}}
 3. {{OUTPUT_3}}
@@ -133,18 +133,18 @@ Use this for focused research on a single topic.
 PROMPT-ID: RP-{{DATE}}-{{ID_1}}
 
 ## Goal
-Produce 1 dated research report (return packet) under docs-engineering/status/.
+Produce 1 dated research report (return packet) under <DOCS_ROOT>/status/.
 Research ONLY—do NOT modify any runtime code.
 
 ## Required Reading (quote 1-2 lines from each to prove you read them)
-- docs-engineering/project/VISION.md
-- docs-engineering/project/EPICS.md
-- docs-engineering/project/NEXT.md
-- docs-engineering/testing/test-catalog.md
-- docs-engineering/project/BlackjackSensei-KB.md
+- <DOCS_ROOT>/project/VISION.md
+- <DOCS_ROOT>/project/EPICS.md
+- <DOCS_ROOT>/project/NEXT.md
+- <DOCS_ROOT>/testing/test-catalog.md
+- <DOCS_ROOT>/project/ExampleProject-KB.md
 
 ## Output File
-Create: docs-engineering/status/{{OUTPUT_1}}
+Create: <DOCS_ROOT>/status/{{OUTPUT_1}}
 
 ## Required Sections
 
@@ -187,7 +187,7 @@ END PROMPT
 
 ## After the Agent Completes
 
-1. **Review outputs** — Verify return packets exist in docs-engineering/status/
+1. **Review outputs** — Verify return packets exist in <DOCS_ROOT>/status/
 2. **Update NEXT.md** — Add "Inputs/Research" bullet linking to the return packets
 3. **Hand off to ChatGPT** — ChatGPT converts return packets into tiny-step prompts
 4. **Execute via Copilot** — Copilot runs prompts with Prompt Review Gate

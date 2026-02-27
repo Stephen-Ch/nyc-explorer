@@ -1,6 +1,6 @@
-# ChatGPT Protocol Primer — LessonWriter
+# ChatGPT Protocol Primer — Vibe-Coding Protocol
 
-> **File Version:** 2026-02-06 | **Bundle:** v7.2.0  
+> **File Version:** 2026-02-06  
 > **Purpose:** Paste this at the start of ChatGPT sessions to enforce dual-agent 95% confidence rule.
 
 ---
@@ -46,7 +46,7 @@ Always declare scope explicitly: `Scope: DOCS ONLY` or `Scope: CODE`
 ### 5. Research Indexing
 
 When Copilot produces research findings:
-- Remind them to save as `R-###` in `docs-engineering/research/`
+- Remind them to save as `R-###` in `<DOCS_ROOT>/research/`
 - Remind them to update `ResearchIndex.md` in the same commit
 
 ### 6. First Message to Copilot (MANDATORY)

@@ -1,7 +1,7 @@
 # Vibe-Coding Protocol Migration Instructions
 
-**Version:** v7.1.0  
-**Last Updated:** 2026-01-05
+**Version:** v7.2.6  
+**Last Updated:** 2026-02-26
 
 ## Purpose
 Guide for migrating vibe-coding protocol v7 to other projects (new projects or upgrading from older protocol versions).
@@ -18,7 +18,7 @@ The protocol is **project-agnostic** by design. Gates, sequencing rules, and enf
 Copy these files/directories unchanged from source project:
 
 ```
-docs-engineering/vibe-coding/protocol/
+<DOCS_ROOT>/vibe-coding/protocol/
 ├── protocol-v7.md                    # Core rules (gates, sequencing, enforcement)
 ├── copilot-instructions-v7.md        # Copilot-specific protocol (CUSTOMIZE later)
 ├── required-artifacts.md             # Doc Audit rules (CUSTOMIZE examples)
@@ -33,21 +33,21 @@ docs-engineering/vibe-coding/protocol/
     ├── EPICS.template.md
     └── NEXT.template.md
 
-docs/Start-Here-For-AI.md             # Session bootstrap (CUSTOMIZE project name)
-docs-engineering/vibe-coding/VIBE-CODING.VERSION.md   # Version tracking
+<DOCS_ROOT>/Start-Here-For-AI.md             # Session bootstrap (CUSTOMIZE project name)
+<DOCS_ROOT>/vibe-coding/VIBE-CODING.VERSION.md   # Version tracking
 .github/copilot-instructions.md       # Enforcer (points to protocol, CUSTOMIZE path)
 
 ### Doc Audit (Low-Noise v1) — Portable Install
 
-- Purpose: Control Deck placeholder scan (docs-engineering/project/* only) and NEXT freshness when PRs include non-docs changes.
+- Purpose: Control Deck placeholder scan (<DOCS_ROOT>/project/* only) and NEXT freshness when PRs include non-docs changes.
 - Copy these into the target repo:
-   - docs-engineering/vibe-coding/tools/doc-audit.ps1
+   - <DOCS_ROOT>/vibe-coding/tools/doc-audit.ps1
    - scripts/doc-audit.ps1
    - docs/vibe-coding.config.json
    - .github/workflows/doc-audit.yml
 - Run locally: pwsh ./scripts/doc-audit.ps1
 - CI behavior:
-   - Placeholder scan is Control Deck only (docs-engineering/project/VISION.md, EPICS.md, NEXT.md)
+   - Placeholder scan is Control Deck only (<DOCS_ROOT>/project/VISION.md, EPICS.md, NEXT.md)
    - NEXT.md update is required only when the PR changes any path outside doc-only prefixes (default: docs/)
 ```
 
@@ -57,26 +57,36 @@ Before customizing, run the diagnostic prompt below to identify what needs adapt
 
 ### Phase 3: Customize Project-Specific References
 
-**A) Remove Rawls-specific references:**
+**A) Remove project-specific references:**
 
 Search and replace in copied files:
-- File headers: `"— Rawls Game"` → `"— [Your Project Name]"`
+- File headers: `"— ExampleProject"` → `"— [Your Project Name]"`
 - Route references: `src/app/app.routes.ts` → `[your routes file path]`
-- Example content: Replace Rawls Game VISION/EPICS examples with placeholders
+- Example content: Replace ExampleProject VISION/EPICS examples with placeholders
 
-**B) Update copilot-instructions-v7.md:**
+**B) Keep copilot-instructions-v7.md portable; use an overlay for project-specific context:**
 
-Lines 35-79 contain Rawls-specific context. Replace with your project's:
+Do NOT edit `copilot-instructions-v7.md` directly — it is part of the kit head and will be overwritten on subtree pull. Instead, create a consumer overlay:
 
-1. **Project Context** (architecture, tech stack, key patterns):
-   ```markdown
-   ## Project Context
-   - Framework: [e.g., Angular 18, React 18, Next.js 14]
-   - State management: [e.g., RxJS, Zustand, Redux]
-   - Routing: [e.g., Angular Router, React Router, App Router]
-   - Build system: [e.g., Vite, Webpack, Turbopack]
-   - Test framework: [e.g., Karma+Jasmine, Jest+RTL, Vitest]
-   ```
+1. Copy `templates/copilot-instructions-overlay.example.md` to `<DOCS_ROOT>/overlays/copilot-instructions-overlay.md`
+2. Fill in project-specific context (framework, hot files, routes, build commands)
+3. Reference the overlay from `.github/copilot-instructions.md`
+
+See [templates/copilot-instructions-overlay.example.md](templates/copilot-instructions-overlay.example.md) for the full template.
+
+**C) Create consumer overlays from kit templates:**
+
+Do NOT edit kit head files — customize via overlays. Copy each template and fill in project-specific values:
+
+| Kit Template | Copy To | Purpose |
+|-------------|---------|----------|
+| `templates/overlay-index.example.md` | `<DOCS_ROOT>/overlays/overlay-index.md` | Overlay manifest |
+| `templates/stack-profile-overlay.example.md` | `<DOCS_ROOT>/overlays/stack-profile.md` | Install/build/test/start commands + constraints |
+| `templates/merge-commands-overlay.example.md` | `<DOCS_ROOT>/overlays/merge-commands.md` | Build Gate + Test Gate commands |
+| `templates/hot-files-overlay.example.md` | `<DOCS_ROOT>/overlays/hot-files.md` | Hot files requiring analysis-first workflow |
+| `templates/repo-policy-overlay.example.md` | `<DOCS_ROOT>/overlays/repo-policy.md` | Branch policy, PR rules, merge method |
+
+The Return Packet Gate reads hot-files.md to decide triggers. The merge prompt template reads merge-commands.md for build/test commands. Both fall back gracefully if overlays are missing, but creating them up front is recommended.
 
 2. **Hot Files** (files >300 LOC or high churn):
    ```markdown
@@ -102,24 +112,24 @@ Lines 35-79 contain Rawls-specific context. Replace with your project's:
 
 **C) Update protocol-v7.md cross-cutting section:**
 
-Line 234 references Rawls routes. Update with your project's route structure:
+Line 234 references ExampleProject routes. Update with your project's route structure:
 ```markdown
 For ANY cross-cutting change, your completion report MUST include a route coverage table using the actual [Project] routes from `[routes file path]`:
 ```
 
 **D) Update required-artifacts.md examples:**
 
-Lines 90-107 use Rawls Game as docs-engineering/project/VISION.md example. Replace with generic examples or your project's actual purpose statement.
+Lines 90-107 use ExampleProject as <DOCS_ROOT>/project/VISION.md example. Replace with generic examples or your project's actual purpose statement.
 
 ### Phase 4: Create Control Deck
 
 **If migrating to NEW project (no existing docs):**
 
-1. Copy templates to `docs-engineering/project/`:
+1. Copy templates to `<DOCS_ROOT>/project/`:
    ```
-   cp docs-engineering/vibe-coding/protocol/templates/VISION.template.md docs-engineering/project/VISION.md
-   cp docs-engineering/vibe-coding/protocol/templates/EPICS.template.md docs-engineering/project/EPICS.md
-   cp docs-engineering/vibe-coding/protocol/templates/NEXT.template.md docs-engineering/project/NEXT.md
+   cp <DOCS_ROOT>/vibe-coding/protocol/templates/VISION.template.md <DOCS_ROOT>/project/VISION.md
+   cp <DOCS_ROOT>/vibe-coding/protocol/templates/EPICS.template.md <DOCS_ROOT>/project/EPICS.md
+   cp <DOCS_ROOT>/vibe-coding/protocol/templates/NEXT.template.md <DOCS_ROOT>/project/NEXT.md
    ```
 
 2. Populate with actual content (work with product owner/Stephen to fill sections)
@@ -127,17 +137,17 @@ Lines 90-107 use Rawls Game as docs-engineering/project/VISION.md example. Repla
 3. Verify Population Gate PASS:
    ```bash
    # Run placeholder scan
-   grep -iE '(TBD|TODO|TEMPLATE|PLACEHOLDER|FILL IN|COMING SOON|XXX|FIXME|TO BE DETERMINED|<fill)' docs-engineering/project/VISION.md docs-engineering/project/EPICS.md docs-engineering/project/NEXT.md
+   grep -iE '(TBD|TODO|TEMPLATE|PLACEHOLDER|FILL IN|COMING SOON|XXX|FIXME|TO BE DETERMINED|<fill)' <DOCS_ROOT>/project/VISION.md <DOCS_ROOT>/project/EPICS.md <DOCS_ROOT>/project/NEXT.md
    
    # Should return no matches (exit code 1 means PASS)
    ```
 
-**If migrating to EXISTING project (has docs-engineering/project/):**
+**If migrating to EXISTING project (has <DOCS_ROOT>/project/):**
 
 1. Verify existing VISION/EPICS/NEXT meet required-artifacts.md thresholds:
-   - docs-engineering/project/VISION.md sections >= 25 words each
-   - docs-engineering/project/EPICS.md descriptions >= 15 words with goals + success criteria
-   - docs-engineering/project/NEXT.md NEXT STEP >= 10 words, DoD >= 10 words, Done When items >= 6 words
+   - <DOCS_ROOT>/project/VISION.md sections >= 25 words each
+   - <DOCS_ROOT>/project/EPICS.md descriptions >= 15 words with goals + success criteria
+   - <DOCS_ROOT>/project/NEXT.md NEXT STEP >= 10 words, DoD >= 10 words, Done When items >= 6 words
 
 2. If thresholds not met, expand content before running Doc Audit
 
@@ -149,8 +159,8 @@ Edit `.github/copilot-instructions.md` to point to new protocol location:
 # Copilot Instructions — [Your Project] (Enforcer)
 
 Before any work:
-1) Read `docs/Start-Here-For-AI.md`
-2) Follow `docs-engineering/vibe-coding/protocol/protocol-v7.md` + `docs-engineering/vibe-coding/protocol/copilot-instructions-v7.md`
+1) Read `<DOCS_ROOT>/Start-Here-For-AI.md`
+2) Follow `<DOCS_ROOT>/vibe-coding/protocol/protocol-v7.md` + `<DOCS_ROOT>/vibe-coding/protocol/copilot-instructions-v7.md`
 
 Non-negotiables (every response):
 1) Proof-of-Read (file + quote + "Applying: rule")
@@ -179,7 +189,7 @@ After migration complete, verify setup with Start-of-Session Doc Audit:
 1. Archive old protocol:
    ```bash
    mkdir -p docs/archive/deprecated/
-   mv docs-engineering/vibe-coding/protocol docs/archive/deprecated/protocol-v6
+   mv <DOCS_ROOT>/vibe-coding/protocol docs/archive/deprecated/protocol-v6
    ```
 
 2. Copy v7.1.0 bundle fresh (Phase 1 above)
@@ -189,7 +199,7 @@ After migration complete, verify setup with Start-of-Session Doc Audit:
    - Check old protocol for route coverage patterns
    - Preserve any working agreements specific to team
 
-4. Update Control Deck if format changed (e.g., docs-engineering/project/NEXT.md gained "Done When" section in v7)
+4. Update Control Deck if format changed (e.g., <DOCS_ROOT>/project/NEXT.md gained "Done When" section in v7)
 
 5. Run Doc Audit to verify Population Gate with new thresholds
 
@@ -214,7 +224,7 @@ SCOPE:
 - Read codebase structure to identify hot files (>300 LOC, routing/state/coordination)
 - Read routing config to identify cross-cutting coverage requirements
 - Read package.json + test/build config to identify tech stack
-- Read existing docs-engineering/project/ (if exists) to assess Control Deck population
+- Read existing <DOCS_ROOT>/project/ (if exists) to assess Control Deck population
 - Output assessment report with customization checklist
 
 TASKS:
@@ -225,7 +235,7 @@ C) Identify hot files (>300 LOC in src/) focusing on:
    - Global state management
    - Main layout/shell components
    - Content pipeline build scripts
-D) Check if docs-engineering/project/ exists:
+D) Check if <DOCS_ROOT>/project/ exists:
    - If YES: read VISION/EPICS/NEXT and assess word counts vs v7 thresholds
    - If NO: note Control Deck creation required
 E) Identify cross-cutting patterns (search src/ for shared CSS vars, component libraries, copy dictionaries)
@@ -235,7 +245,7 @@ F) Output assessment report with:
    - Hot files list (path + LOC + purpose)
    - Control Deck status (exists/needs-creation/needs-expansion)
    - Cross-cutting patterns requiring coverage tables
-   - Customization checklist (what to update in copilot-instructions-v7.md + protocol-v7.md)
+   - Customization checklist (what to update in overlay + protocol-v7.md)
 
 # END PROMPT
 \`\`\`
@@ -266,9 +276,9 @@ Routes requiring cross-cutting coverage:
 ...
 
 ## Control Deck Status
-- `docs-engineering/project/VISION.md`: [EXISTS (meets thresholds) / EXISTS (needs expansion) / MISSING]
-- `docs-engineering/project/EPICS.md`: [EXISTS / MISSING]
-- `docs-engineering/project/NEXT.md`: [EXISTS / MISSING]
+- `<DOCS_ROOT>/project/VISION.md`: [EXISTS (meets thresholds) / EXISTS (needs expansion) / MISSING]
+- `<DOCS_ROOT>/project/EPICS.md`: [EXISTS / MISSING]
+- `<DOCS_ROOT>/project/NEXT.md`: [EXISTS / MISSING]
 
 Population Gate blockers:
 - [list any sections below word-count thresholds or containing placeholders]
@@ -282,22 +292,28 @@ Patterns requiring route coverage tables:
 ## Customization Checklist
 
 ### copilot-instructions-v7.md
-- [ ] Update Project Context (lines 35-40): replace Rawls framework/stack with [your stack]
-- [ ] Update Hot Files list (lines 47-55): replace with hot files table above
-- [ ] Update Route Coverage Table pattern (lines 69-75): replace with routes from [routes file]
-- [ ] Update Content Pipeline section (if applicable): [describe your pipeline or remove]
+- [ ] Do NOT edit directly — create a consumer overlay at `<DOCS_ROOT>/overlays/copilot-instructions-overlay.md` instead
+- [ ] Copy `templates/copilot-instructions-overlay.example.md` and fill in project-specific context
+- [ ] Add hot files, routes, and build commands to the overlay
+
+### Consumer Overlays
+- [ ] Copy all templates from `templates/*-overlay.example.md` to `<DOCS_ROOT>/overlays/`
+- [ ] Fill in `stack-profile.md` with install/build/test/start commands
+- [ ] Fill in `merge-commands.md` with Build Gate and Test Gate commands
+- [ ] Fill in `hot-files.md` with files >300 LOC or high churn
+- [ ] Fill in `repo-policy.md` with branch/PR/merge conventions
 
 ### protocol-v7.md
 - [ ] Update cross-cutting route reference (line 234): replace `src/app/app.routes.ts` with `[your routes file]`
-- [ ] Update file header (line 1): "— Rawls Game" → "— [Your Project]"
+- [ ] Update file header (line 1): "— ExampleProject" → "— [Your Project]"
 
 ### required-artifacts.md
-- [ ] Update docs-engineering/project/VISION.md examples (lines 90-107): replace Rawls Game examples with [your project purpose] or generic placeholders
+- [ ] Update <DOCS_ROOT>/project/VISION.md examples (lines 90-107): replace ExampleProject examples with [your project purpose] or generic placeholders
 
 ### Start-Here-For-AI.md
 - [ ] Update project name references
 
-### Control Deck (docs-engineering/project/)
+### Control Deck (<DOCS_ROOT>/project/)
 - [ ] [Create VISION/EPICS/NEXT from templates OR expand existing to meet thresholds]
 
 ## Migration Readiness
@@ -365,16 +381,16 @@ These elements **must be adapted** to each project:
 - Build pipeline artifacts
 
 ### Control Deck Content
-- docs-engineering/project/VISION.md (product purpose, unique to each project)
-- docs-engineering/project/EPICS.md (feature roadmap, unique to each project)
-- docs-engineering/project/NEXT.md (current story, unique to each project)
+- <DOCS_ROOT>/project/VISION.md (product purpose, unique to each project)
+- <DOCS_ROOT>/project/EPICS.md (feature roadmap, unique to each project)
+- <DOCS_ROOT>/project/NEXT.md (current story, unique to each project)
 
 ---
 
 ## Common Migration Pitfalls
 
 1. **Forgetting to update copilot-instructions hot files** → AI doesn't know which files need analysis-first
-2. **Leaving Rawls routes in protocol-v7.md** → cross-cutting coverage tables show wrong routes
+2. **Leaving project-specific routes in protocol-v7.md** → cross-cutting coverage tables show wrong routes
 3. **Copying Control Deck templates without populating** → Doc Audit FAIL on placeholders
 4. **Not running assessment prompt first** → miss project-specific patterns requiring coverage
 5. **Changing gate formats** → breaks enforcement consistency across projects
@@ -391,5 +407,5 @@ For migration questions or protocol issues:
 
 ---
 
-**Last Updated:** 2026-01-05  
-**Protocol Version:** v7.1.0
+**Last Updated:** 2026-02-26  
+**Protocol Version:** v7.2.7

@@ -1,10 +1,58 @@
 # Vibe-Coding Kit Version
 
-**Version:** v7.1.5  
-**Effective Date:** 2026-02-07
+**Version:** v7.2.11  
+**Effective Date:** 2026-02-26
 
 ## Purpose
-Defines required artifacts + gates used by Doc Audit. This version number tracks changes to the portable vibe-coding workflow bundle, including protocol-v7, required artifacts, and Start-of-Session enforcement rules.
+Defines required artifacts + gates used by Doc Audit. This file is the **single source of truth** for the kit bundle version. Per-file `Bundle:` headers were removed in v7.2.2 to prevent version drift — see changelog below.
+
+## What Changed in v7.2.11
+- session-start.ps1: Added `Invoke-GitSafe` helper — runs git with stderr tolerance so progress output does not become a terminating error under `$ErrorActionPreference = "Stop"`
+- Replaced bare `git fetch`, `git subtree pull`, and `git remote add` calls with `Invoke-GitSafe`; real failures still throw (checked via `$LASTEXITCODE`)
+
+## What Changed in v7.2.10
+- check-protocol-v7-budget.ps1 resolves protocol path relative to kit head (`$PSScriptRoot` parent) instead of repo root; fixes consumer Budget Check
+
+## What Changed in v7.2.9
+- verify-protocol-index.ps1 resolves paths relative to kit head (`$PSScriptRoot` parent) instead of repo root; fixes Protocol Index Check when run from consumer subtree
+
+## What Changed in v7.2.8
+- session-start.ps1 prints kit version (`KitVersion: vX.Y.Z (Effective YYYY-MM-DD)`) after subtree pull
+- session-start.ps1 runs Consumer doc-audit (hard fail) after forGPT sync, with safe `-StartSession` parameter detection
+- Added `-SkipAudit` flag to bypass Consumer audit while still printing kit version
+- `-WhatIf` now prints `[WhatIf] Would run: Consumer doc-audit …` line (including whether `-StartSession` would be used)
+- Updated canonical-commands.md and session-start-checklist.md to document the new steps
+
+## What Changed in v7.2.7
+- Added consumer overlay example templates (overlay-index / stack-profile / merge-commands / hot-files / repo-policy)
+- Return Packet Gate now references consumer `<DOCS_ROOT>/overlays/hot-files.md` instead of hardcoded project-specific file names; project-specific example return packets replaced with generic naming patterns
+- Merge prompt template now references consumer `<DOCS_ROOT>/overlays/merge-commands.md` instead of hardcoded `npm run` commands
+- README.md and MIGRATION-INSTRUCTIONS.md updated to surface overlay templates and mapping
+
+## What Changed in v7.2.6
+- Clarified return packet policy: GitHub.com Agent may create return packets in `<DOCS_ROOT>/status/` (the only allowed research artifact creation by that agent)
+- Fixed Start-Here-For-AI.md location policy: consumer file at `<DOCS_ROOT>/Start-Here-For-AI.md`, not inside kit head
+- Updated MIGRATION-INSTRUCTIONS.md: customization via overlays instead of direct edits to copilot-instructions-v7.md
+- Clarified confidence scale: Prompt Review Gate HIGH aligns to ≥95%/≥99% Tiered Confidence thresholds
+
+## What Changed in v7.2.5
+- **PS 5.1 compatibility fix:** Replaced 3-arg `Join-Path` calls in sync-forgpt.ps1 with nested 2-arg `Join-Path` (PS 5.1 only supports 2 positional args; 3-arg form requires PS 7+ `-AdditionalChildPath`)
+- Minimum PowerShell target: 5.1 (ships with Windows by default)
+
+## What Changed in v7.2.4
+- Added North Star source-of-truth rule under Focus Control
+- Added Goal Anchor Fields block + placement guidance in required-artifacts
+- Wired North Star unknown STOP rule into working agreement
+
+## What Changed in v7.2.3
+- Added Focus Control to protocol-v7 (Goal Anchor, Drift Triggers, Reset Ritual, Parking Lot rule)
+- Wired drift reset enforcement into working-agreement-v1
+- Added Goal Anchor to session-start-checklist
+
+## What Changed in v7.2.2
+- **Version centralization:** Removed per-file `Bundle: vX.Y.Z` headers from all markdown files. VIBE-CODING.VERSION.md is now the sole version authority. Per-file `File Version:` (date) headers are retained.
+- Synced version to v7.2.2 (matching README.md and protocol-lite.md, the highest released version on main)
+- Replaced all hardcoded `docs-engineering/` paths with portable `<DOCS_ROOT>/` variable (233 replacements across 23 files)
 
 ## What Changed in v7.1.5
 - Added `tools/session-start.ps1` wrapper: chains kit subtree update → forGPT sync → 5-line Doc Audit
@@ -18,7 +66,7 @@ Defines required artifacts + gates used by Doc Audit. This version number tracks
 
 ## What Changed in v7.1.3
 - Added redirect banners to all legacy docs/protocol/ files
-- Clarified canonical source location (docs-engineering/vibe-coding/protocol/)
+- Clarified canonical source location (<DOCS_ROOT>/vibe-coding/protocol/)
 - Committed outstanding protocol changes from v7.1.2
 
 ## What Changed in v7.1.2
@@ -30,19 +78,24 @@ Defines required artifacts + gates used by Doc Audit. This version number tracks
 ## What Changed in v7.1.0
 - Added required-artifacts.md defining mandatory project docs (VISION/EPICS/NEXT)
 - Added 3-Party Approval Gate (Stephen + ChatGPT + Copilot) to alignment-mode.md
-- Added docs-engineering/project/NEXT.md Lightweight Rule (~30 line limit, update triggers, paperwork signal) to NEXT.template.md
+- Added <DOCS_ROOT>/project/NEXT.md Lightweight Rule (~30 line limit, update triggers, paperwork signal) to NEXT.template.md
 - Wired Start-of-Session Doc Audit to read VIBE-CODING.VERSION.md + required-artifacts.md before coding
 - Created Control Deck templates (VISION.template.md, EPICS.template.md, NEXT.template.md)
 
 ## Version History
+- v7.2.6 (2026-02-26): Return packet policy + Start-Here location + migration overlay guidance + confidence clarification
+- v7.2.5 (2026-02-26): PS 5.1 compatibility fix for sync-forgpt.ps1 (3-arg Join-Path → nested 2-arg)
+- v7.2.4 (2026-02-24): North Star source rule + Goal Anchor Fields
+- v7.2.3 (2026-02-24): Focus Control rules + working agreement + session-start checklist
+- v7.2.2 (2026-02-09): Version centralization — removed per-file Bundle tags; VIBE-CODING.VERSION.md is sole version authority
 - v7.1.5 (2026-02-07): Session-start wrapper (auto kit update + forGPT sync + doc audit)
 - v7.1.4 (2026-01-18): Green Gate build fix + file versioning + forGPT folder
 - v7.1.3 (2026-01-16): Legacy file redirect banners + canonical source clarification
 - v7.1.2 (2026-01-07): Reporting directory buckets (narrative only)
 - v7.1.1 (2026-01-05): Portable doc-audit tool + CI workflow
-- v7.1.0 (2026-01-04): Required artifacts + 3-Party Approval Gate + docs-engineering/project/NEXT.md Lightweight Rule
+- v7.1.0 (2026-01-04): Required artifacts + 3-Party Approval Gate + <DOCS_ROOT>/project/NEXT.md Lightweight Rule
 - v7.0.0 (2026-01-03): Protocol v7 with Vision & User Story Gate, Alignment Mode, Verification Mode
 
 ---
 
-Last updated: 2026-02-07
+Last updated: 2026-02-26

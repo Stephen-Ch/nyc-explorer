@@ -1,6 +1,6 @@
 # Canonical Commands
 
-> **CRITICAL RULE:** Never omit `docs-engineering/project/` or `docs-engineering/testing/` in printed commands. Never rely on linkified filenames. Always use `git -C ...` to enforce repo-root execution.
+> **CRITICAL RULE:** Never omit `<DOCS_ROOT>/project/` or `<DOCS_ROOT>/testing/` in printed commands. Never rely on linkified filenames. Always use `git -C ...` to enforce repo-root execution.
 
 ## Reporting Standard — Narrative Dirs Only; Raw Evidence Is Authority
 
@@ -12,7 +12,7 @@
 **B) Authority**
 - File locations and exact paths MUST be proven ONLY via raw command outputs:
   - `git -C $root diff --name-only`
-  - `git -C $root ls-files docs-engineering/project/VISION.md docs-engineering/project/EPICS.md docs-engineering/project/NEXT.md docs-engineering/testing/test-catalog.md`
+  - `git -C $root ls-files <DOCS_ROOT>/project/VISION.md <DOCS_ROOT>/project/EPICS.md <DOCS_ROOT>/project/NEXT.md <DOCS_ROOT>/testing/test-catalog.md`
   - Population Gate grep command + result
   - doc-audit output (including any "Checked:" lines)
 - If narrative conflicts with raw outputs, raw outputs win.
@@ -38,17 +38,17 @@ Get-Location
 
 ### A) Control Deck Existence Proof
 ```bash
-git -C "$(git rev-parse --show-toplevel)" ls-files docs-engineering/project/VISION.md docs-engineering/project/EPICS.md docs-engineering/project/NEXT.md
+git -C "$(git rev-parse --show-toplevel)" ls-files <DOCS_ROOT>/project/VISION.md <DOCS_ROOT>/project/EPICS.md <DOCS_ROOT>/project/NEXT.md
 ```
 
 ### B) Population Gate (Control Deck only)
 ```bash
-git -C "$(git rev-parse --show-toplevel)" grep -n -i -E "(TBD|TODO|TEMPLATE|PLACEHOLDER|FILL IN|COMING SOON|XXX|FIXME|TO BE DETERMINED|<fill)" -- docs-engineering/project/VISION.md docs-engineering/project/EPICS.md docs-engineering/project/NEXT.md
+git -C "$(git rev-parse --show-toplevel)" grep -n -i -E "(TBD|TODO|TEMPLATE|PLACEHOLDER|FILL IN|COMING SOON|XXX|FIXME|TO BE DETERMINED|<fill)" -- <DOCS_ROOT>/project/VISION.md <DOCS_ROOT>/project/EPICS.md <DOCS_ROOT>/project/NEXT.md
 ```
 
 ### C) Test Catalog Canonical Proof
 ```bash
-git -C "$(git rev-parse --show-toplevel)" ls-files docs-engineering/testing/test-catalog.md
+git -C "$(git rev-parse --show-toplevel)" ls-files <DOCS_ROOT>/testing/test-catalog.md
 ```
 
 ### D) Mandatory Location Proof
@@ -71,13 +71,16 @@ Where `<DOCS_ROOT>` is `docs-engineering` or `docs` (whichever contains `vibe-co
 
 **What it does (chained, in order):**
 1. **Kit update** — finds the `vibe-coding-kit` remote and runs `git subtree pull` to update the kit in the consumer repo. If the remote doesn't exist, it adds it automatically.
-2. **forGPT sync** — runs `sync-forgpt.ps1` if present, refreshing the forGPT packet.
-3. **Audit print** — outputs the 5-line Doc Audit block (RepoRoot, DOCS_ROOT, forGPT, ResearchIndex, OpenPRs).
+2. **Kit version print** — reads `VIBE-CODING.VERSION.md` and prints `KitVersion: vX.Y.Z (Effective YYYY-MM-DD)`.
+3. **forGPT sync** — runs `sync-forgpt.ps1` if present, refreshing the forGPT packet.
+4. **Consumer doc-audit (hard fail)** — runs `doc-audit.ps1 -Mode Consumer` (with `-StartSession` if supported). If it fails, the session STOPS with a non-zero exit. Use `-SkipAudit` to bypass.
+5. **Audit print** — outputs the session audit block (RepoRoot, DOCS_ROOT, forGPT, KitVersion, ConsumerAudit, ResearchIndex, OpenPRs).
 
 **Optional flags:**
 - `-SkipUpdate` — skip the subtree pull even if the remote exists
+- `-SkipAudit` — skip the Consumer doc-audit step (still prints kit version)
 - `-Force` — continue on dirty working tree (still reports Tree=DIRTY)
-- `-WhatIf` — print commands without executing subtree pull or forGPT sync
+- `-WhatIf` — print-only mode: no subtree pull, no forGPT sync, no doc-audit execution
 
 **Hard Stop rule:** If any other command is requested before the session audit has been run, reply:
 > Hard Stop. Run **RUN START OF SESSION DOCS AUDIT** first.

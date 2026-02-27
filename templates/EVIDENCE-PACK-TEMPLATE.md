@@ -11,8 +11,8 @@
 **Commands used:**
 ```powershell
 # Example — adapt search terms to your investigation
-Select-String -Path "docs-engineering/research/*.md" -Pattern "<your-term>"
-Select-String -Path "docs-engineering/research/ResearchIndex.md" -Pattern "<your-term>"
+Select-String -Path "<DOCS_ROOT>/research/*.md" -Pattern "<your-term>"
+Select-String -Path "<DOCS_ROOT>/research/ResearchIndex.md" -Pattern "<your-term>"
 ```
 
 **Matching document IDs found:**

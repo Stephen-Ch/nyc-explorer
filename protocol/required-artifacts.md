@@ -25,7 +25,7 @@ Use this table to find process rules and gates. Each row links to the canonical 
 
 Every project using the vibe-coding workflow MUST maintain these three Control Deck docs:
 
-### 1. docs-engineering/project/VISION.md
+### 1. <DOCS_ROOT>/project/VISION.md
 **Purpose:** Define project purpose, long-term vision, user promise, and non-goals.
 
 **Minimal content expectations:**
@@ -34,18 +34,18 @@ Every project using the vibe-coding workflow MUST maintain these three Control D
 - User Promise: What experience users can expect
 - Non-Goals: Explicit constraints or scope boundaries accepted
 
-**Template:** [docs-engineering/project/VISION.template.md](../../project/VISION.template.md)
+**Template:** [<DOCS_ROOT>/project/VISION.template.md](../../project/VISION.template.md)
 
-### 2. docs-engineering/project/EPICS.md
+### 2. <DOCS_ROOT>/project/EPICS.md
 **Purpose:** Track high-level epic list with IDs, status, and descriptions.
 
 **Minimal content expectations:**
 - Epic List: At least one EPIC-NNN entry
 - Each epic must have: Status (PLANNED | IN PROGRESS | COMPLETE), Description (1 paragraph with goals + success criteria)
 
-**Template:** [docs-engineering/project/EPICS.template.md](../../project/EPICS.template.md)
+**Template:** [<DOCS_ROOT>/project/EPICS.template.md](../../project/EPICS.template.md)
 
-### 3. docs-engineering/project/NEXT.md
+### 3. <DOCS_ROOT>/project/NEXT.md
 **Purpose:** Canonical active plan defining ACTIVE STORY + NEXT STEP for current work.
 
 **Minimal content expectations (REQUIRED):**
@@ -53,16 +53,29 @@ Every project using the vibe-coding workflow MUST maintain these three Control D
 - NEXT STEP: Single sentence describing the next tiny TDD step or docs-only change
 - DoD (Definition of Done): What proof confirms this step is complete (tests GREEN? docs exist? evidence gathered?)
 - Scope Guardrails: Hard boundaries (files/folders in-scope vs out-of-scope)
-- Done When: Specific exit criteria (e.g., "npm test passes", "docs-engineering/project/VISION.md exists")
-- Last Updated: Date (YYYY-MM-DD format) showing when docs-engineering/project/NEXT.md was last refreshed
-- **Inputs/Research (when applicable):** Links to return packets in docs-engineering/status/ that informed this work (see [return-packet-gate.md](return-packet-gate.md))
+- Done When: Specific exit criteria (e.g., "npm test passes", "<DOCS_ROOT>/project/VISION.md exists")
+- Last Updated: Date (YYYY-MM-DD format) showing when <DOCS_ROOT>/project/NEXT.md was last refreshed
+- **Inputs/Research (when applicable):** Links to return packets in <DOCS_ROOT>/status/ that informed this work (see [return-packet-gate.md](return-packet-gate.md))
 
-**Template:** [docs-engineering/project/NEXT.template.md](../../project/NEXT.template.md)
+**Goal Anchor Fields (Control Deck)**
+
+Copyable block:
+
+    Goal Anchor Fields (Control Deck)
+    North Star:
+    Current Slice:
+    Proof:
+    Out of Scope (optional, 1-3 bullets):
+    Parking Lot link (optional):
+
+**Placement rule:** Put Goal Anchor Fields in NEXT.md for the current work slice and/or in the active Epic section in EPICS.md. Update at most once per session to avoid churn.
+
+**Template:** [<DOCS_ROOT>/project/NEXT.template.md](../../project/NEXT.template.md)
 
 **Return Packet Linking Rule:**
 When return packets exist for the current story, NEXT.md MUST include an "Inputs/Research" section linking to those return packets. This creates traceability from the active story back to the research that informed it.
 
-**docs-engineering/project/NEXT.md Lightweight Rule:**
+**<DOCS_ROOT>/project/NEXT.md Lightweight Rule:**
 - Keep under ~30 lines total
 - Focus only on: Active Story, Next Step, DoD, Scope, Done-When
 - No essays or multi-paragraph explanations
@@ -105,17 +118,17 @@ When return packets exist for the current story, NEXT.md MUST include an "Inputs
 Start-of-Session Doc Audit (see [docs/Start-Here-For-AI.md](../../Start-Here-For-AI.md)) verifies:
 1. VIBE-CODING.VERSION.md exists (version + effective date)
 2. required-artifacts.md exists (this file)
-3. docs-engineering/project/VISION.md, docs-engineering/project/EPICS.md, docs-engineering/project/NEXT.md all exist with required content
+3. <DOCS_ROOT>/project/VISION.md, <DOCS_ROOT>/project/EPICS.md, <DOCS_ROOT>/project/NEXT.md all exist with required content
 
 **Doc Audit Rerun Detection:** After each commit, Doc Audit rerun is required if required-artifacts.md or Control Deck files changed since last audit. See [Start-Here-For-AI.md](../../Start-Here-For-AI.md) "Rerun Trigger Detection (Required Command)" for the exact git command and path matching rule.
 
-If ANY required artifact is missing or docs-engineering/project/NEXT.md is unclear/outdated:
+If ANY required artifact is missing or <DOCS_ROOT>/project/NEXT.md is unclear/outdated:
 - Work state: IN-PROGRESS → STOP CODING
 - Enter Alignment Mode (see [alignment-mode.md](alignment-mode.md))
 - Ask Stephen minimum questions to finalize VISION/EPICS/NEXT
 - Use templates to create missing docs
 
-If ALL required artifacts are present and docs-engineering/project/NEXT.md is clear:
+If ALL required artifacts are present and <DOCS_ROOT>/project/NEXT.md is clear:
 - Work state: READY
 - Proceed with coding using NEXT STEP as guide
 
@@ -130,20 +143,20 @@ If ALL required artifacts are present and docs-engineering/project/NEXT.md is cl
 Canonical placeholder marker set:
 - TBD, TODO, TEMPLATE, PLACEHOLDER, FILL IN, COMING SOON, XXX, FIXME, TO BE DETERMINED, <fill
 
-Any occurrence of these markers in Control Deck files (docs-engineering/project/VISION.md, docs-engineering/project/EPICS.md, docs-engineering/project/NEXT.md) is FAIL.
+Any occurrence of these markers in Control Deck files (<DOCS_ROOT>/project/VISION.md, <DOCS_ROOT>/project/EPICS.md, <DOCS_ROOT>/project/NEXT.md) is FAIL.
 
 **Safe scan command (copy/paste ready, repo root required):**
 
-  grep -iE '(TBD|TODO|TEMPLATE|PLACEHOLDER|FILL IN|COMING SOON|XXX|FIXME|TO BE DETERMINED|<fill)' docs-engineering/project/VISION.md docs-engineering/project/EPICS.md docs-engineering/project/NEXT.md
+  grep -iE '(TBD|TODO|TEMPLATE|PLACEHOLDER|FILL IN|COMING SOON|XXX|FIXME|TO BE DETERMINED|<fill)' <DOCS_ROOT>/project/VISION.md <DOCS_ROOT>/project/EPICS.md <DOCS_ROOT>/project/NEXT.md
 
 **Alternative with ripgrep (if available):**
 
-  rg -i '(TBD|TODO|TEMPLATE|PLACEHOLDER|FILL IN|COMING SOON|XXX|FIXME|TO BE DETERMINED|<fill)' docs-engineering/project/
+  rg -i '(TBD|TODO|TEMPLATE|PLACEHOLDER|FILL IN|COMING SOON|XXX|FIXME|TO BE DETERMINED|<fill)' <DOCS_ROOT>/project/
 
 **WARNING:** Running git ls-files VISION.md from docs/project will return nothing (relative path). Always anchor to repo root using Set-Location (git rev-parse --show-toplevel); git rev-parse --show-toplevel; Get-Location before any git path checks.
 
 **PASS example (no markers):**
-"Blackjack Sensei is a training-first blackjack game that helps players practice basic strategy and card counting."
+"ExampleProject is a training-first application that helps users practice core skills and track progress."
 
 **FAIL example (contains placeholder):**
 "Purpose: TBD — needs Stephen's input" (contains TBD placeholder marker)
@@ -153,19 +166,19 @@ Use objective word-count thresholds below to determine PASS vs FAIL.
 
 **Per-File Population Requirements (PASS criteria with objective thresholds):**
 
-### docs-engineering/project/VISION.md must include:
+### <DOCS_ROOT>/project/VISION.md must include:
 1. **Purpose** (non-placeholder): >= 25 words explaining why the project exists and what problem it solves
 2. **North Star** (non-placeholder): >= 25 words describing the 1-3 year vision
 3. **User Promise** (non-placeholder): >= 25 words describing the user experience
 4. **Non-Goals** (non-placeholder): At least 2 explicit constraints or scope boundaries ("We are NOT..." format), each >= 10 words
 
 **PASS example (Purpose section):**
-"Blackjack Sensei is a training-first blackjack game that helps players practice basic strategy and, optionally, card counting coaching in a low-stakes, learn-by-doing loop. It exists to make blackjack decision-making feel understandable, repeatable, and measurable for everyday players."
+"ExampleProject is a training-first application that helps users practice core skills and, optionally, advanced techniques in a low-stakes, learn-by-doing loop. It exists to make decision-making feel understandable, repeatable, and measurable for everyday users."
 
 **FAIL example (Purpose section):**
 "A game about politics." (only 4 words, lacks explanation of problem solved)
 
-### docs-engineering/project/EPICS.md must include:
+### <DOCS_ROOT>/project/EPICS.md must include:
 1. **At least 1 epic** with unique ID (e.g., EPIC-001, OC-PROTOCOL-V7). Rationale: early-stage projects shouldn't invent fake epics to pass; expand as roadmap solidifies.
 2. Each epic must have:
    - **Status**: One of PLANNED | IN PROGRESS | COMPLETE (not "TBD" or empty)
@@ -177,7 +190,7 @@ Use objective word-count thresholds below to determine PASS vs FAIL.
 **FAIL example (epic description):**
 "Build admin tools." (only 3 words, no goals or success criteria)
 
-### docs-engineering/project/NEXT.md must include:
+### <DOCS_ROOT>/project/NEXT.md must include:
 1. **ACTIVE STORY ID** (non-placeholder, not "TBD")
 2. **NEXT STEP** (non-placeholder): >= 10 words describing next tiny step
 3. **DoD** (Definition of Done, non-placeholder): >= 10 words
@@ -205,7 +218,7 @@ Use objective word-count thresholds below to determine PASS vs FAIL.
 **Population Gate Enforcement:**
 
 Population Gate is evaluated during Start-of-Session Doc Audit (after existence check). The verdict is printed once per session. Start-of-Session Doc Audit (see [docs/Start-Here-For-AI.md](../../Start-Here-For-AI.md)) MUST check Population Gate AFTER existence check:
-1. Files exist? (docs-engineering/project/VISION.md, docs-engineering/project/EPICS.md, docs-engineering/project/NEXT.md)
+1. Files exist? (<DOCS_ROOT>/project/VISION.md, <DOCS_ROOT>/project/EPICS.md, <DOCS_ROOT>/project/NEXT.md)
 2. **Population Gate: PASS or FAIL?** (scan for placeholders + verify minimum content)
 
 If Population Gate **FAIL** → STOP coding, enter Alignment Mode, remediate placeholders (see [alignment-mode.md](alignment-mode.md) "Populate Control Deck" section).
@@ -214,4 +227,4 @@ If Population Gate **PASS** → Work state READY, proceed with coding.
 
 ---
 
-Last updated: 2026-01-04
+Last updated: 2026-02-24

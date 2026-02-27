@@ -1,6 +1,6 @@
-# Working Agreement v1 — Blackjack Sensei
+# Working Agreement v1 — Vibe-Coding Protocol
 
-> **File Version:** 2026-01-18 | **Bundle:** v7.1.3
+> **File Version:** 2026-02-26
 
 ## 4-Party Workflow
 
@@ -10,7 +10,7 @@ This project uses a 4-party collaboration model:
 |-------|------|----------------|
 | **Stephen** | Owner/Decider | Names goals/constraints; approves outputs; final decision authority |
 | **ChatGPT** | Planner/Prompt Writer | Produces GitHub agent prompts; converts return packets into tiny-step prompts; updates NEXT.md |
-| **GitHub.com Agent** | Researcher | Executes return-packet prompts; creates docs-engineering/status/ research artifacts; no runtime code changes |
+| **GitHub.com Agent** | Researcher | Executes return-packet prompts; creates <DOCS_ROOT>/status/ research artifacts; no runtime code changes |
 | **Copilot VS Code** | Executor | Runs tiny-step prompts; applies Prompt Review Gate + Green Gate; commits code |
 
 See [return-packet-gate.md](return-packet-gate.md) for the handoff sequence diagram.
@@ -19,11 +19,13 @@ See [return-packet-gate.md](return-packet-gate.md) for the handoff sequence diag
 
 **Purpose:** Prevent "agent went rogue" incidents by enforcing clear role boundaries.
 
-### GitHub.com Coding Agents = Code Changes ONLY
+### GitHub.com Agent Scope
 
-- GitHub.com agents (Copilot Workspace, GitHub Actions with agent mode) are for **code-change tasks only**
-- Research and reporting uses **chat mode** or **local read-only scans**
-- Never request "create a .md file" when you mean "report findings in chat"
+GitHub.com agents (Copilot Workspace, GitHub Actions with agent mode) perform **code changes only**, with one exception:
+
+- **Return Packets:** GitHub.com Agent may create return-packet markdown files in `<DOCS_ROOT>/status/` as defined in [return-packet-gate.md](return-packet-gate.md). Return packets are the **only** allowed file creation by GitHub.com Agent in research mode.
+- All other research and reporting uses **chat mode** or **local read-only scans**.
+- Never request "create a .md file" when you mean "report findings in chat" — unless it is a return packet following the Return Packet Gate.
 
 ### Report-Only Handshake (REQUIRED for read-only tasks)
 
@@ -37,9 +39,11 @@ When requesting a read-only report (research, audit, investigation):
 
 | Bad Pattern | Why It's Wrong | Correct Alternative |
 |-------------|----------------|--------------------|
-| "Create a docs-engineering/status/report.md" for research | Creates file when only analysis needed | "Report findings in chat" |
+| Ad-hoc "Create a <DOCS_ROOT>/status/report.md" for research | Creates unstructured file when only analysis needed | "Report findings in chat" (or use Return Packet Gate for structured research) |
 | Research prompt without READ-ONLY scope | Agent may infer edits are allowed | Add explicit scope guardrail |
 | Code agent for audit/investigation | Wrong tool for job | Use chat mode or Copilot conversational |
+
+> **Note:** Creating a return packet via the [Return Packet Gate](return-packet-gate.md) is NOT an anti-pattern — it is the designated research artifact workflow for GitHub.com Agent.
 
 ### Scope Enforcement
 
@@ -55,10 +59,12 @@ When requesting a read-only report (research, audit, investigation):
 1. Proof-of-Read
 2. Prompt Review Gate
 3. Stay in scope
-4. Stop on error
-5. Green Gate (code prompts)
-6. Summarize files touched
-7. Maintain single-thread sequencing: one prompt → one report → next prompt (never overlap)
+4. If drift triggers occur, STOP and execute Reset Ritual before answering Best next step / Confidence
+5. If North Star is unknown, STOP before Best next step / Confidence and request the Control Deck sentence
+6. Stop on error
+7. Green Gate (code prompts)
+8. Summarize files touched
+9. Maintain single-thread sequencing: one prompt → one report → next prompt (never overlap)
 
 ## Timeboxing + Pivot Rule (MANDATORY for environmental issues)
 
@@ -75,28 +81,13 @@ Do NOT persist beyond the timebox. Environmental issues often require changes ou
 - AI asks clarifying questions BEFORE starting work
 - If confidence < HIGH, AI must STOP and explain why
 
-## 95% Confidence Gate (Dual-Agent Requirement)
+## Confidence Gate (Dual-Agent Requirement)
 
-**Rule:** Both ChatGPT (Planner) and Copilot (Executor) MUST enforce the 95% confidence threshold.
+Both ChatGPT (Planner) and Copilot (Executor) MUST enforce the tiered confidence threshold (≥95% low-risk, ≥99% production). Below threshold → STOP and enter RESEARCH-ONLY mode.
 
-### ChatGPT Responsibility
-- MUST NOT produce implementation prompts when confidence <95%
-- MUST produce RESEARCH-ONLY prompts when more evidence is needed
-- MUST include Confidence Statement in prompt drafts
+For full thresholds, dual-agent responsibilities, handshake phrases, and no-guessing enforcement, see the canonical definition:
 
-### Copilot Responsibility  
-- MUST NOT execute code changes when confidence <95%
-- MUST STOP and request evidence gathering
-- MUST output: "Confidence <95% — entering RESEARCH-ONLY mode"
-
-### Handshake Phrases
-| Phrase | Meaning |
-|--------|---------|
-| "Confidence <95% — entering RESEARCH-ONLY mode" | Both agents agree research is needed |
-| "RESEARCH-ONLY complete — confidence now ≥95%" | Research produced sufficient evidence |
-| "Switching to INSTRUMENTATION (CODE-OK)" | Diagnostic code required for evidence |
-
-See [protocol-v7.md](protocol-v7.md) → "No Guessing / 95% Research Gate" for full rules.
+→ [protocol-v7.md § No Guessing / Tiered Confidence Gate](protocol-v7.md#no-guessing--tiered-confidence-gate-mandatory)
 
 ## Commit Standards
 - Format: `<type>: <short description> (tests green)`

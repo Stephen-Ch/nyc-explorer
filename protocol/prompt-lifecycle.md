@@ -1,4 +1,4 @@
-# Prompt Lifecycle — Blackjack Sensei
+# Prompt Lifecycle — Vibe-Coding Protocol
 
 ## Purpose
 Define explicit states for prompts to prevent stale execution, duplicate work, and scope confusion.
@@ -10,9 +10,9 @@ Define explicit states for prompts to prevent stale execution, duplicate work, a
 - Working tree is clean (or prompt explicitly allows dirty)
 - Branch context matches prompt expectations
 - All required files exist and are readable
-- **Story alignment:** Prompt includes Story ID + NEXT STEP citation from `docs-engineering/project/NEXT.md` (EXCEPTION: MERGE/CLOSEOUT prompts and docs-only protocol work may omit Story ID if explicitly scoped as "protocol maintenance")
+- **Story alignment:** Prompt includes Story ID + NEXT STEP citation from `<DOCS_ROOT>/project/NEXT.md` (EXCEPTION: MERGE/CLOSEOUT prompts and docs-only protocol work may omit Story ID if explicitly scoped as "protocol maintenance")
 
-**Protocol maintenance definition:** Prompts scoped exclusively to docs-engineering/vibe-coding/protocol/** (canonical) with GOAL explicitly labeled "protocol maintenance". Legacy docs/protocol/** may be edited ONLY for deprecation notices or cross-reference updates; prefer canonical vibe-coding/protocol/** for substantial changes. Does NOT include arbitrary docs edits outside these directories.
+**Protocol maintenance definition:** Prompts scoped exclusively to <DOCS_ROOT>/vibe-coding/protocol/** (canonical) with GOAL explicitly labeled "protocol maintenance". Legacy docs/protocol/** may be edited ONLY for deprecation notices or cross-reference updates; prefer canonical vibe-coding/protocol/** for substantial changes. Does NOT include arbitrary docs edits outside these directories.
 
 ### IN-PROGRESS
 - Work has started but not yet committed
@@ -46,7 +46,7 @@ If the prompt's required start state doesn't match current repo state, STOP imme
 - Prompt says "implement feature X" but feature X already exists → mark OBSOLETE and STOP
 - Prompt requires clean tree but tree is dirty → STOP (unless prompt explicitly allows dirty state)
 - Prompt references files that don't exist → STOP and report missing dependencies
-- **Prompt lacks Story ID + NEXT STEP citation** from `docs-engineering/project/NEXT.md` → cannot be READY, STOP and request clarification (EXCEPTION: MERGE/CLOSEOUT prompts and docs-only protocol maintenance work may proceed without Story ID if explicitly scoped)
+- **Prompt lacks Story ID + NEXT STEP citation** from `<DOCS_ROOT>/project/NEXT.md` → cannot be READY, STOP and request clarification (EXCEPTION: MERGE/CLOSEOUT prompts and docs-only protocol maintenance work may proceed without Story ID if explicitly scoped)
 
 ### Exception: Merge/Closeout Prompts
 Merge prompts (S2C/M1) and closeout prompts explicitly expect state = COMPLETE. For these prompts ONLY:

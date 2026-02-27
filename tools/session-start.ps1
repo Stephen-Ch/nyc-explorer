@@ -1,25 +1,54 @@
 ﻿<#
 .SYNOPSIS
-  Session-start wrapper: updates vibe-coding-kit subtree > syncs forGPT packet > prints 5-line Doc Audit.
+  Session-start wrapper: updates kit subtree > prints kit version > syncs forGPT > runs Consumer doc-audit > prints audit block.
 .DESCRIPTION
   Run this from ANY consumer repo (any subdirectory). It detects repo root and DOCS_ROOT automatically.
   Designed to be invoked by Copilot when the user says: RUN START OF SESSION DOCS AUDIT
 .PARAMETER SkipUpdate
   Skip the subtree pull even if the vibe-coding-kit remote exists.
+.PARAMETER SkipAudit
+  Skip the Consumer doc-audit step (still prints kit version).
 .PARAMETER Force
   Continue on dirty tree instead of hard-stopping. Tree=DIRTY will still be reported.
 .PARAMETER WhatIf
-  Print commands that would run without executing subtree pull or forGPT sync.
+  Print commands that would run without executing subtree pull, forGPT sync, or doc-audit.
 #>
 [CmdletBinding()]
 param(
     [switch]$SkipUpdate,
+    [switch]$SkipAudit,
     [switch]$Force,
     [switch]$WhatIf
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+# -- Helper: run git tolerant of stderr progress ---------------
+function Invoke-GitSafe {
+    <#
+    .SYNOPSIS
+      Runs git with stderr tolerance so progress output does not
+      become a terminating error under $ErrorActionPreference=Stop.
+      Throws only when git returns a non-zero exit code.
+    #>
+    [CmdletBinding()]
+    param([Parameter(ValueFromRemainingArguments)][string[]]$GitArgs)
+    $prevEAP = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $output = & git @GitArgs 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            $ErrorActionPreference = $prevEAP
+            $errText = ($output | Where-Object { $_ -is [System.Management.Automation.ErrorRecord] } | Out-String).Trim()
+            if (-not $errText) { $errText = ($output | Out-String).Trim() }
+            throw "git $($GitArgs -join ' ') failed (exit $LASTEXITCODE): $errText"
+        }
+        return $output
+    } finally {
+        $ErrorActionPreference = $prevEAP
+    }
+}
 
 # -- 0. Repo root ----------------------------------------------
 try {
@@ -72,6 +101,18 @@ if (-not (Test-Path (Join-Path $repoRoot $subtreePrefix))) {
     exit 1
 }
 
+# -- 2b. Overlay-outside-head check (Octopus Invariant 2) ------
+# See OCTOPUS-INVARIANTS.md — overlays MUST NOT live inside the kit head.
+$overlaysInsideHead = Join-Path $repoRoot "$docsRoot/vibe-coding/overlays"
+if (Test-Path $overlaysInsideHead) {
+    Write-Error "HARD STOP: Overlays detected inside kit head ($docsRoot/vibe-coding/overlays/). Move overlays to $docsRoot/overlays/ and re-run. See OCTOPUS-INVARIANTS.md."
+    exit 1
+}
+$overlayIndex = Join-Path $repoRoot "$docsRoot/overlays/OVERLAY-INDEX.md"
+if (-not (Test-Path $overlayIndex)) {
+    Write-Host "WARNING: Overlay index missing at $docsRoot/overlays/OVERLAY-INDEX.md. Create it per OCTOPUS-INVARIANTS.md." -ForegroundColor Yellow
+}
+
 # -- 3. Kit update (subtree pull) ------------------------------
 $kitUpdateResult = "NOOP"
 $kitRemoteUrl = "https://github.com/Stephen-Ch/vibe-coding-kit.git"
@@ -96,7 +137,7 @@ if ($SkipUpdate) {
             Write-Host "[WhatIf] Would run: git remote add $kitRemoteName $kitRemoteUrl" -ForegroundColor Cyan
         } else {
             Write-Host "Adding remote '$kitRemoteName'..." -ForegroundColor Yellow
-            git remote add $kitRemoteName $kitRemoteUrl 2>&1
+            Invoke-GitSafe remote add $kitRemoteName $kitRemoteUrl | Out-Null
         }
     }
 
@@ -106,11 +147,11 @@ if ($SkipUpdate) {
         $kitUpdateResult = "SKIPPED(WhatIf)"
     } else {
         Write-Host "Fetching $kitRemoteName..." -ForegroundColor Yellow
-        git fetch $kitRemoteName 2>&1 | Out-Null
+        Invoke-GitSafe fetch $kitRemoteName | Out-Null
 
         Write-Host "Pulling subtree ($subtreePrefix)..." -ForegroundColor Yellow
         try {
-            $pullOutput = git subtree pull --prefix $subtreePrefix $kitRemoteName main --squash 2>&1
+            $pullOutput = Invoke-GitSafe subtree pull --prefix $subtreePrefix $kitRemoteName main --squash
             $pullText = ($pullOutput | Out-String).Trim()
             if ($pullText -match "Already up to date") {
                 $kitUpdateResult = "NOOP"
@@ -126,6 +167,21 @@ if ($SkipUpdate) {
         }
     }
 }
+
+# -- 3b. Kit version print ------------------------------------
+$kitVersion = "(unknown)"
+$kitEffective = "(unknown)"
+$versionFile = Join-Path $repoRoot (Join-Path $subtreePrefix "VIBE-CODING.VERSION.md")
+if (Test-Path $versionFile) {
+    $vContent = Get-Content $versionFile -Raw
+    if ($vContent -match '\*\*Version:\*\*\s*(v[\d.]+)') {
+        $kitVersion = $Matches[1]
+    }
+    if ($vContent -match '\*\*Effective Date:\*\*\s*(\d{4}-\d{2}-\d{2})') {
+        $kitEffective = $Matches[1]
+    }
+}
+Write-Host "KitVersion: $kitVersion (Effective $kitEffective)" -ForegroundColor Green
 
 # -- 4. forGPT sync -------------------------------------------
 $forGptStatus = "MISSING"
@@ -162,6 +218,51 @@ if (Test-Path $vmPath) {
     if ($vmContent -match '\*\*Git Commit\*\*\s*\|\s*`([^`]+)`') {
         $vmCommit = $Matches[1]
     }
+}
+
+# -- 4b. Consumer doc-audit (hard fail) -----------------------
+$auditResult = "SKIPPED"
+$auditScript = Join-Path $repoRoot (Join-Path $subtreePrefix "tools/doc-audit.ps1")
+if ($SkipAudit) {
+    $auditResult = "SKIPPED(Flag)"
+} elseif ($WhatIf) {
+    # Detect whether doc-audit supports -StartSession
+    $auditHasStartSession = $false
+    try {
+        $auditParams = (Get-Command $auditScript -ErrorAction SilentlyContinue).Parameters
+        if ($auditParams -and $auditParams.ContainsKey('StartSession')) {
+            $auditHasStartSession = $true
+        }
+    } catch { }
+    if ($auditHasStartSession) {
+        Write-Host "[WhatIf] Would run: $auditScript -Mode Consumer -StartSession" -ForegroundColor Cyan
+    } else {
+        Write-Host "[WhatIf] Would run: $auditScript -Mode Consumer" -ForegroundColor Cyan
+    }
+    $auditResult = "SKIPPED(WhatIf)"
+} elseif (Test-Path $auditScript) {
+    Write-Host "Running Consumer doc-audit..." -ForegroundColor Yellow
+    # Detect whether doc-audit supports -StartSession
+    $auditHasStartSession = $false
+    try {
+        $auditParams = (Get-Command $auditScript -ErrorAction SilentlyContinue).Parameters
+        if ($auditParams -and $auditParams.ContainsKey('StartSession')) {
+            $auditHasStartSession = $true
+        }
+    } catch { }
+    if ($auditHasStartSession) {
+        & $auditScript -Mode Consumer -StartSession
+    } else {
+        & $auditScript -Mode Consumer
+    }
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "HARD STOP: Consumer doc-audit FAILED (exit $LASTEXITCODE). Fix issues above before proceeding." -ForegroundColor Red
+        exit 1
+    }
+    $auditResult = "PASS"
+} else {
+    Write-Host "WARNING: doc-audit.ps1 not found at $auditScript" -ForegroundColor Yellow
+    $auditResult = "MISSING"
 }
 
 # -- 5. ResearchIndex -----------------------------------------
@@ -201,6 +302,7 @@ Write-Host "========== SESSION START AUDIT ==========" -ForegroundColor Cyan
 Write-Host "RepoRoot=$repoRoot | Branch=$branch | Tree=$treeState"
 Write-Host "DOCS_ROOT=$docsRoot | Reason=$docsReason"
 Write-Host "forGPT=$forGptStatus | VERSION-MANIFEST=$vmDate | Commit=$vmCommit | KitUpdate=$kitUpdateResult"
+Write-Host "KitVersion=$kitVersion | Effective=$kitEffective | ConsumerAudit=$auditResult"
 Write-Host "ResearchIndex=$riPath | LastUpdated=$riDate"
 Write-Host "OpenPRs=$prCount - $prList"
 Write-Host "=========================================" -ForegroundColor Cyan

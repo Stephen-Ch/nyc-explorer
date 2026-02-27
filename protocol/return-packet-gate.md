@@ -1,6 +1,6 @@
 # Return Packet Gate — Vibe-Coding Protocol
 
-> **File Version:** 2026-01-18 | **Bundle:** v7.1.3
+> **File Version:** 2026-02-26
 
 ## Purpose
 
@@ -10,7 +10,7 @@ The Return Packet Gate is a research checkpoint that produces dated status docum
 
 ## What Is a Return Packet?
 
-A **return packet** is a markdown research artifact stored in `docs-engineering/status/` with the naming convention:
+A **return packet** is a markdown research artifact stored in `<DOCS_ROOT>/status/` with the naming convention:
 
 ```
 return-packet-YYYY-MM-DD-<topic-slug>.md
@@ -28,6 +28,12 @@ Return packets contain:
 
 Return packets are **research-only**; they never contain runtime code changes.
 
+### Execution Policy
+
+**GitHub.com Agent** is the designated creator of return packets in `<DOCS_ROOT>/status/`. This is the **only** allowed research artifact creation by that agent — no ad-hoc research docs, no unstructured reports. All other research output from GitHub.com Agent must be delivered in chat.
+
+This policy aligns with the Agent Safety Policy in [working-agreement-v1.md](working-agreement-v1.md).
+
 ---
 
 ## When to Run the Return Packet Gate
@@ -39,7 +45,7 @@ Run the gate when ANY of these conditions apply:
 | Trigger | Description |
 |---------|-------------|
 | **Alignment Mode** | NEXT.md is unclear, stale, or conflicting with repo state |
-| **Hot-file work** | About to touch: SignalR, GameRepository.cs, Main.js, useGameSignalR.js, identity code |
+| **Hot-file work** | About to touch any file listed in `<DOCS_ROOT>/overlays/hot-files.md` (consumer-defined). If hot-files.md is missing, create it from `templates/hot-files-overlay.example.md` before proceeding with hot-file work. |
 | **High uncertainty** | Domain is unfamiliar; no prior experience with this area |
 | **Regression risk** | Recent incidents or postmortems in this area |
 | **Cross-system work** | Change spans backend + frontend + database |
@@ -51,7 +57,7 @@ Consider running the gate for:
 - Large refactors (>5 files)
 - New feature areas not covered by existing tests
 - Work touching auth/identity flows
-- Changes to SignalR payload contracts
+- Changes to real-time messaging payload contracts
 
 ---
 
@@ -59,7 +65,7 @@ Consider running the gate for:
 
 A return packet passes review when:
 
-- [ ] **Exists in docs-engineering/status/** with correct naming convention
+- [ ] **Exists in <DOCS_ROOT>/status/** with correct naming convention
 - [ ] **Has required reading quotes** with line numbers
 - [ ] **Executive summary** answers: current state, gap, goal, non-goal, first step
 - [ ] **Code map** uses tables with file/method/line columns
@@ -82,7 +88,7 @@ The Return Packet Gate operates across 4 parties with clear responsibilities:
 |-------|------|----------------|
 | **Stephen** | Owner/Decider | Names goal, constraints, scope; approves outputs |
 | **ChatGPT** | Planner/Prompt Writer | Produces GitHub agent prompt using template; converts return packets into tiny-step prompts |
-| **GitHub.com Agent** | Researcher | Executes return-packet prompt; creates docs-engineering/status/ artifacts |
+| **GitHub.com Agent** | Researcher | Executes return-packet prompt; creates <DOCS_ROOT>/status/ artifacts |
 | **Copilot VS Code** | Executor | Runs tiny-step prompts; commits code; applies Green Gate |
 
 ### Handoff Sequence
@@ -97,13 +103,13 @@ The Return Packet Gate operates across 4 parties with clear responsibilities:
 ┌─────────────────────────────────────────────────────────────────┐
 │ 2. ChatGPT produces GitHub agent prompt                         │
 │    Uses template from:                                          │
-│    docs-engineering/vibe-coding/templates/github-agent-return-packets-      │
+│    <DOCS_ROOT>/vibe-coding/templates/github-agent-return-packets-      │
 │    prompt-template.md                                           │
 └─────────────────────────────────────────────────────────────────┘
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │ 3. GitHub.com Agent executes prompt                             │
-│    Creates return packet(s) in docs-engineering/status/                     │
+│    Creates return packet(s) in <DOCS_ROOT>/status/                     │
 │    Research only — no runtime code changes                      │
 └─────────────────────────────────────────────────────────────────┘
                               ▼
@@ -132,8 +138,7 @@ When return packets exist, NEXT.md MUST link to them under an "Inputs/Research" 
 ## Inputs/Research
 
 Return packets informing this work:
-- [return-packet-2026-01-09-ci-multiplayer-regression-epic-003.md](../status/return-packet-2026-01-09-ci-multiplayer-regression-epic-003.md)
-- [return-packet-2026-01-09-signalr-diagnostics-td-diag-001.md](../status/return-packet-2026-01-09-signalr-diagnostics-td-diag-001.md)
+- [return-packet-YYYY-MM-DD-<topic-slug>.md](../status/return-packet-YYYY-MM-DD-<topic-slug>.md)
 ```
 
 This creates traceability from the active story back to the research that informed it.
@@ -155,13 +160,13 @@ Contains:
 
 ## Example Return Packets
 
-Real examples from this project:
+Example naming patterns (replace placeholders with your project's topics):
 
 | File | Topic | Date |
 |------|-------|------|
-| [return-packet-2026-01-09-ci-multiplayer-regression-epic-003.md](../../status/return-packet-2026-01-09-ci-multiplayer-regression-epic-003.md) | CI-meaningful multiplayer regression tests | 2026-01-09 |
-| [return-packet-2026-01-09-signalr-diagnostics-td-diag-001.md](../../status/return-packet-2026-01-09-signalr-diagnostics-td-diag-001.md) | SignalR diagnostics logging plan | 2026-01-09 |
-| [return-packet-2026-01-09-mongodb-concurrency-td-be-002.md](../../status/return-packet-2026-01-09-mongodb-concurrency-td-be-002.md) | MongoDB concurrency risk map | 2026-01-09 |
+| `return-packet-YYYY-MM-DD-realtime-debug-001.md` | Real-time messaging diagnostics | *(your date)* |
+| `return-packet-YYYY-MM-DD-data-integrity-001.md` | Data layer concurrency/integrity | *(your date)* |
+| `return-packet-YYYY-MM-DD-ci-regression-001.md` | CI regression test coverage | *(your date)* |
 
 ---
 

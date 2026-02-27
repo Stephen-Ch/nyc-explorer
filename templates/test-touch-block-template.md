@@ -15,11 +15,11 @@ Include this block in any prompt that may modify `*.spec.ts` files:
 ## Test-Touch Block
 
 **Required reading before editing tests:**
-- `docs-engineering/testing/test-catalog.md` (Must check canonical existence via `git -C <root> ls-files docs-engineering/testing/test-catalog.md`)
-- In reports: narrative lists directory buckets only; prove catalog location via raw `git -C $root ls-files docs-engineering/testing/test-catalog.md` output.
+- `<DOCS_ROOT>/testing/test-catalog.md` (Must check canonical existence via `git -C <root> ls-files <DOCS_ROOT>/testing/test-catalog.md`)
+- In reports: narrative lists directory buckets only; prove catalog location via raw `git -C $root ls-files <DOCS_ROOT>/testing/test-catalog.md` output.
 
 **After editing any spec file:**
-1. Update the corresponding row in `docs-engineering/testing/test-catalog.md`
+1. Update the corresponding row in `<DOCS_ROOT>/testing/test-catalog.md`
 2. If spec lacks the Spec Header Standard, add it
 3. Include in completion report:
    - "Tests touched:" list each spec + paste its `@human` line
@@ -53,7 +53,7 @@ Include this block in any prompt that may modify `*.spec.ts` files:
 
 **Example property chain comment:**
 
-    // Production artifact: src/assets/content/rawls-values.generated.json
+    // Production artifact: src/assets/content/values.generated.json
     // Property chain: categories[].followUps[]
     // Position IDs: {categoryId}-q\d+ (e.g., liberty-q0)
     // Challenge IDs: {positionId}-fu\d+ (e.g., liberty-q0-fu0)

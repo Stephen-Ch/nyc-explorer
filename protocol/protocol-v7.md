@@ -1,6 +1,6 @@
-# Protocol v7 — Blackjack Sensei
+# Protocol v7 — Vibe-Coding Protocol
 
-> **File Version:** 2026-02-06 | **Bundle:** v7.2.1
+> **File Version:** 2026-02-26
 
 **v7.2.1 Changes:**
 - Stack-aware gates now read from `stack-profile.md` (no interpretation)
@@ -14,6 +14,9 @@
    - "Best next step?" YES/NO
    - "Confidence:" HIGH/MEDIUM/LOW
    - "Work state:" READY|IN-PROGRESS|COMPLETE|MERGED|OBSOLETE
+
+   **Confidence scale note:** HIGH means you meet the Tiered Confidence thresholds for the scope (≥95% for docs/research, ≥99% for runtime code — see [Tiered Confidence Gate](#no-guessing--tiered-confidence-gate-mandatory)). If you cannot claim those thresholds, set Confidence to MEDIUM or LOW and STOP.
+
    **Prompt Review Gate (ROLE CLARITY):** The Prompt Review Gate is performed by **Copilot** (the executor) on the prompt text **before** running any commands. ChatGPT may draft prompts, but Copilot must first output the gate decision (YES/NO, confidence, PROCEED/STOP). If STOP, Copilot must ask the minimum questions or request edits and must not execute anything.
 
    **STOP conditions:** 
@@ -44,7 +47,7 @@
    **Prompt overrides protocol:** Prompts may impose stricter sequencing than this protocol, but must state it explicitly in a single line:
    - STRICT SEQUENCE: Proof-of-Read must occur before ANY commands.
    
-   **Work State Definitions:** See [prompt-lifecycle.md](protocol/prompt-lifecycle.md) for state definitions and STOP rules.
+   **Work State Definitions:** See [prompt-lifecycle.md](prompt-lifecycle.md) for state definitions and STOP rules.
 
 ## Prompt Classes (Request Types)
 
@@ -53,7 +56,7 @@ Two request types are recognized:
 **FORMAL WORK PROMPT** (required for execution):
 - Required for: ANY terminal commands, file edits, tests/builds, commits, merges
 - Format: Single fenced code block with PROMPT-ID + GOAL + SCOPE + TASKS + END PROMPT marker
-- Enforcement: MUST include Story ID + NEXT STEP citation from docs-engineering/project/NEXT.md (exception: protocol maintenance)
+- Enforcement: MUST include Story ID + NEXT STEP citation from <DOCS_ROOT>/project/NEXT.md (exception: protocol maintenance)
 - All gates apply: Prompt Review Gate, Command Lock, Proof-of-Read, Green Gate
 
 **CONVERSATIONAL REQUEST** (discussion/analysis only):
@@ -64,31 +67,31 @@ Two request types are recognized:
 
 ## Vision & User Story Gate (MANDATORY for work prompts)
 
-**Canonical Active Plan:** `docs-engineering/project/NEXT.md` is the single source of truth for ACTIVE STORY + NEXT STEP.
+**Canonical Active Plan:** `<DOCS_ROOT>/project/NEXT.md` is the single source of truth for ACTIVE STORY + NEXT STEP.
 
 Every work prompt MUST include:
-1. **Story ID** (from docs-engineering/project/NEXT.md)
-2. **Next step sentence** (verbatim or near-verbatim from docs-engineering/project/NEXT.md)
+1. **Story ID** (from <DOCS_ROOT>/project/NEXT.md)
+2. **Next step sentence** (verbatim or near-verbatim from <DOCS_ROOT>/project/NEXT.md)
 3. **DoD snippet** (1 sentence Definition of Done)
 4. **Copy Source Decision** (TS vs JSON vs content schema vs admin pipeline) when touching user-facing copy
-5. **3-Party Approval Gate declaration:** "3-Party Approval Gate: satisfied" OR "in Alignment Mode" (see [alignment-mode.md](protocol/alignment-mode.md) → 3-Party Approval Gate (Canonical))
+5. **3-Party Approval Gate declaration:** "3-Party Approval Gate: satisfied" OR "in Alignment Mode" (see [alignment-mode.md](alignment-mode.md) → 3-Party Approval Gate (Canonical))
 
 **"Best next step? YES" is ONLY allowed if:**
-- The prompt's GOAL matches NEXT STEP for the ACTIVE STORY (docs-engineering/project/NEXT.md), AND
+- The prompt's GOAL matches NEXT STEP for the ACTIVE STORY (<DOCS_ROOT>/project/NEXT.md), AND
 - It is a single tiny step with a testable proof (RED→GREEN or docs-only evidence), AND
 - Repo safety gates are satisfied (clean tree, tests pass, build passes), AND
-- 3-Party Approval Gate is satisfied (see [alignment-mode.md](protocol/alignment-mode.md) → 3-Party Approval Gate (Canonical))
+- 3-Party Approval Gate is satisfied (see [alignment-mode.md](alignment-mode.md) → 3-Party Approval Gate (Canonical))
 
-**docs-engineering/project/NEXT.md Freshness Rule:** "Best next step? YES" is only possible when the ACTIVE NEXT STEP is still current. If you just completed it (work shipped per DoD), the next action is closeout/advance docs-engineering/project/NEXT.md, NOT new feature work. See [Start-Here-For-AI.md](../../Start-Here-For-AI.md) "docs-engineering/project/NEXT.md Freshness Rule" for detection command and enforcement.
+**<DOCS_ROOT>/project/NEXT.md Freshness Rule:** "Best next step? YES" is only possible when the ACTIVE NEXT STEP is still current. If you just completed it (work shipped per DoD), the next action is closeout/advance <DOCS_ROOT>/project/NEXT.md, NOT new feature work. See [Start-Here-For-AI.md](../../Start-Here-For-AI.md) "<DOCS_ROOT>/project/NEXT.md Freshness Rule" for detection command and enforcement.
 
-**Population Gate Pre-Flight:** Population Gate is verified during the Start-of-Session Doc Audit (after reading docs-engineering/project/VISION.md, docs-engineering/project/EPICS.md, and docs-engineering/project/NEXT.md), not in the Prompt Review Gate. The Doc Audit MUST have been run in this session and returned Population Gate PASS before any coding work. If Doc Audit has not been run or returned FAIL, STOP and run/remediate it first (see [Start-Here-For-AI.md](../../Start-Here-For-AI.md)).
+**Population Gate Pre-Flight:** Population Gate is verified during the Start-of-Session Doc Audit (after reading <DOCS_ROOT>/project/VISION.md, <DOCS_ROOT>/project/EPICS.md, and <DOCS_ROOT>/project/NEXT.md), not in the Prompt Review Gate. The Doc Audit MUST have been run in this session and returned Population Gate PASS before any coding work. If Doc Audit has not been run or returned FAIL, STOP and run/remediate it first (see [Start-Here-For-AI.md](../../Start-Here-For-AI.md)).
 
 **Doc Audit Sequencing (Session Prerequisite):** Doc Audit is a session-level prerequisite that occurs AFTER Proof-of-Read, never before the Prompt Review Gate. Work prompts in a fresh session must run Doc Audit first as per the ordered sequence in [Start-Here-For-AI.md](../../Start-Here-For-AI.md): Prompt Review Gate → Proof-of-Read → Doc Audit → (if PASS) proceed to work. After each commit, run the rerun-trigger detection command defined in [Start-Here-For-AI.md](../../Start-Here-For-AI.md) to determine if Doc Audit must be rerun. When `tools/session-start.ps1` exists in the vibe-coding subtree, the **RUN START OF SESSION DOCS AUDIT** command invokes it; the wrapper chains kit update → forGPT sync → 5-line audit print automatically.
 
 **Tech Debt Rule:** Any TECH-DEBT prompt and any new tech-debt row MUST include a Story ID (even if it's a "Maintenance/Protocol" story). Put it in the tech-debt row description as: "Story: <ID> — …".
 
 **Alignment Mode (Start-of-Session):**
-If `docs-engineering/project/NEXT.md` is missing/unclear/outdated OR **Control Deck Population Gate FAIL** (placeholders detected in docs-engineering/project/VISION.md, docs-engineering/project/EPICS.md, or docs-engineering/project/NEXT.md) → STOP coding and enter Alignment Mode. See [alignment-mode.md](protocol/alignment-mode.md) for 3-Party Approval Gate (Canonical), placeholder remediation, and questions to ask Stephen + Copilot before coding. Update `docs-engineering/project/*` (VISION/EPICS/NEXT) before any code work.
+If `<DOCS_ROOT>/project/NEXT.md` is missing/unclear/outdated OR **Control Deck Population Gate FAIL** (placeholders detected in <DOCS_ROOT>/project/VISION.md, <DOCS_ROOT>/project/EPICS.md, or <DOCS_ROOT>/project/NEXT.md) → STOP coding and enter Alignment Mode. See [alignment-mode.md](alignment-mode.md) for 3-Party Approval Gate (Canonical), placeholder remediation, and questions to ask Stephen + Copilot before coding. Update `<DOCS_ROOT>/project/*` (VISION/EPICS/NEXT) before any code work.
 
 2. **Proof-of-Read**: Proof-of-Read MUST appear after the Gate and BEFORE any searches or edits (file path + quote of 1-2 complete sentences 10-50 words + "Applying: <rule name>"). Repo sanity commands may run between the Gate and Proof-of-Read.
 3. **Single-Block Prompts**: All operator prompts are one fenced code block ending with `# END PROMPT`.
@@ -102,23 +105,71 @@ If `docs-engineering/project/NEXT.md` is missing/unclear/outdated OR **Control D
 6. **Measure Production First**: If a prompt asserts "production has X / doesn't have Y" or any feature is content-dependent, the FIRST step is to identify the production artifact (generated JSON/db/API), record property chains + counts + one example item, and add/confirm a shape-proof + contract test BEFORE changing behavior. Tests must use real production JSON for content-dependent behavior; avoid invented fixtures.
 7. **Terminology Lock**: Terminology caused model drift; lock UI copy to a dictionary; never infer data shape from labels.
 8. **Guard Rejection Visibility**: Any canActivate/redirect-to-review must emit a single reason code in dev (console or debug overlay); no console spam in prod; deterministic route behavior remains.
-9. **Verification Mode**: Read-only audit prompts must not include edits, tests, builds, or merges. See [verification-mode.md](protocol/verification-mode.md) for allowed commands, forbidden actions, required output format, and STOP boundaries.
+9. **Verification Mode**: Read-only audit prompts must not include edits, tests, builds, or merges. See [verification-mode.md](verification-mode.md) for allowed commands, forbidden actions, required output format, and STOP boundaries.
 10. **Search + Recovery Reporting**: If a prompt performs codebase searching, the report MUST include:
    - "Search method used: rg | git grep | Select-String"
    - "Recovery applied: <none | retry | fallback>"
+
+## Focus Control
+
+### Goal Anchor (Mandatory per session)
+
+- North Star (1 sentence): what "done" means in human terms
+- Current Slice (1 sentence): smallest shippable outcome for today
+- Proof (1-3 bullets): observable checks that confirm progress
+
+**Rule:** No cleanup/research/process work may start unless Goal Anchor exists for the session.
+
+#### North Star Source of Truth
+
+- North Star MUST come from the project Control Deck (VISION/EPICS/NEXT or equivalent)
+- The AI MUST NOT invent North Star
+- If North Star is not found in available docs/context, the AI MUST:
+    - Output: "North Star: UNKNOWN (needs Control Deck)"
+    - Propose ONE clearly labeled candidate sentence based on evidence
+    - Ask Stephen to confirm or replace with a single sentence
+    - STOP (do not proceed with implementation planning until confirmed)
+
+### Drift Triggers (Objective STOP conditions)
+
+If ANY trigger occurs, the AI MUST STOP and run Reset Ritual before continuing:
+- Two consecutive prompts without advancing a Proof item
+- >=20 minutes spent on process/docs/cleanup without shipping progress
+- BranchAudit FAIL OR forbidden-prefix branches exist
+- User expresses confusion/frustration ("chaos", "this is nuts", "lost faith", etc.)
+- Scope expands before finishing Current Slice (new epics/stories/topics mid-slice)
+
+### Reset Ritual (90 seconds)
+
+Steps:
+- Restate Goal Anchor
+- List top 3 active threads
+- Park 2 threads to Future Work (with an explicit outcome + proof)
+- Choose 1 next action that advances Proof
+- Write the next prompt constrained to that one action only
+
+**Rule:** The next prompt after a reset MUST target only one Proof-advancing action.
+
+### Parking Lot rule (prevents distraction)
+
+When a new concern appears:
+- Capture it to Future Work in <2 minutes
+- Immediately return to Current Slice
+
+**Rule:** Parking entries must be "outcome + proof", not status.
 
 ## Green Gate — Stack-Aware Rules
 
 **Purpose:** Ensure builds/tests pass before commit, using the correct toolchain for the project type.
 
-**Authority:** Gate decisions MUST come from [`docs-engineering/project/stack-profile.md`](../../project/stack-profile.md). Do not interpret or guess — read the declared gates.
+**Authority:** Gate decisions MUST come from [`<DOCS_ROOT>/project/stack-profile.md`](../../project/stack-profile.md). Do not interpret or guess — read the declared gates.
 
 **Standard:** See [stack-profile-standard.md](../standards/stack-profile-standard.md) for how to create/update stack profiles.
 
 ### A) Read Stack Profile First
 
 Before running any gate commands:
-1. Open `docs-engineering/project/stack-profile.md`
+1. Open `<DOCS_ROOT>/project/stack-profile.md`
 2. Find the "Gate Configuration" section
 3. Run ONLY the gates marked "Required: YES" for the change type
 
@@ -128,14 +179,14 @@ Before running any gate commands:
 
 **Build (REQUIRED per stack-profile):**
 
-    msbuild LessonWriter2_0.csproj /p:Configuration=Release
+    msbuild ExampleProject.csproj /p:Configuration=Release
 
 **Unit Tests (if test project exists):**
-- Check: `Test-Path **/LessonWriter.Tests.csproj` or similar
+- Check: `Test-Path **/ExampleProject.Tests.csproj` or similar
 - Current status: No .NET unit test framework configured (per R-004)
 - When tests exist: Run via VS Test Explorer or `vstest.console.exe`
 
-**Tech Debt:** CLI test runner not standardized yet. See [tech-debt-and-future-work.md](../project/tech-debt-and-future-work.md).
+**Tech Debt:** CLI test runner not standardized yet. See [tech-debt-and-future-work.md](../../project/tech-debt-and-future-work.md).
 
 ### C) JS Gate (React, Angular, Node.js Apps)
 
@@ -166,13 +217,13 @@ For docs-only changes (`.md` files only):
 
 ### E) Gate Summary (Read from stack-profile.md)
 
-Refer to [`docs-engineering/project/stack-profile.md`](../../project/stack-profile.md) for the authoritative gate configuration.
+Refer to [`<DOCS_ROOT>/project/stack-profile.md`](../../project/stack-profile.md) for the authoritative gate configuration.
 
-**LessonWriter2.0 Summary (per stack-profile):**
+**ExampleProject Summary (per stack-profile):**
 
 | Gate | Command | Required |
 |------|---------|----------|
-| .NET Build | `msbuild LessonWriter2_0.csproj /p:Configuration=Release` | ✅ YES |
+| .NET Build | `msbuild ExampleProject.csproj /p:Configuration=Release` | ✅ YES |
 | .NET Tests | (none configured) | N/A |
 | JS Build | (no build script) | N/A |
 | Playwright E2E | `npm run test:smoke` | Optional |
@@ -212,7 +263,7 @@ Tool absence (e.g., “rg not found”) is NOT an error if you switch to the nex
 - edits made before the Gate
 - failing tests/builds during code prompts (unless the prompt explicitly instructs fixing)
 - scope violations
-- missing required canonical docs (e.g., `docs-engineering/project/NEXT.md`, required handoff/protocol files)
+- missing required canonical docs (e.g., `<DOCS_ROOT>/project/NEXT.md`, required handoff/protocol files)
 
 ## Docs PR Consolidation Rule
 
@@ -289,33 +340,41 @@ If the change touches CSS scope/structure, default to a two-phase approach:
 
 ---
 
-## No Guessing / 95% Research Gate (MANDATORY)
+## No Guessing / Tiered Confidence Gate (MANDATORY)
 
 **Purpose:** Prevent speculative changes that cause churn, regressions, and wasted effort.
 
-### A) The 95% Rule
+### A) Tiered Confidence Rule
 
-**Rule:** If confidence is below 95%, you MUST enter RESEARCH-ONLY mode.
+Confidence thresholds vary by scope. Higher-risk scopes require higher confidence.
 
-| Confidence | Action |
-|------------|--------|
-| ≥95% | May proceed with implementation |
-| <95% | STOP — enter RESEARCH-ONLY mode |
+| Scope | Threshold | Action if below |
+|-------|-----------|------------------|
+| Low-risk (docs, tests, reports) | ≥95% | May proceed |
+| Production/runtime code | ≥99% | May proceed |
+| Any scope below threshold | — | STOP — enter RESEARCH-ONLY mode |
 
-**What "95% confidence" means:**
+**Clarification:** "Best next step?" and "Confidence" in the Prompt Review Gate are **Copilot's** (executor's) gate questions, not planner statements. Copilot evaluates confidence based on available evidence before deciding to proceed.
+
+**What "95% confidence" means (low-risk):**
 - You have verified evidence for every structural assumption
 - You know the exact files, line ranges, and dependencies affected
-- You have reproduced the issue or behavior under investigation
 - You can predict the outcome of your change with near-certainty
+
+**What "99% confidence" means (production/runtime):**
+- All of the above, PLUS:
+- You have reproduced the issue or behavior under investigation
+- You have confirmed no side effects on adjacent features
+- You have identified or written tests that cover the change
 
 ### B) Dual-Agent Research Requirement
 
-When confidence is <95%, **both AI agents** (ChatGPT and Copilot) MUST request more research before proceeding:
+When confidence is below the applicable threshold, **both AI agents** (ChatGPT and Copilot) MUST request more research before proceeding:
 
-- **ChatGPT (Planner):** MUST NOT produce implementation prompts when confidence <95%. Instead, produce a RESEARCH-ONLY prompt.
-- **Copilot (Executor):** MUST NOT execute code changes when confidence <95%. Instead, STOP and request evidence gathering.
+- **ChatGPT (Planner):** MUST NOT produce implementation prompts when confidence is below threshold. Instead, produce a RESEARCH-ONLY prompt.
+- **Copilot (Executor):** MUST NOT execute code changes when confidence is below threshold. Instead, STOP and request evidence gathering.
 
-**Handshake phrase:** "Confidence <95% — entering RESEARCH-ONLY mode"
+**Handshake phrase:** "Confidence <95% — entering RESEARCH-ONLY mode" (or "<99%" for production scope)
 
 ### C) No Guessing Enforcement
 
@@ -355,19 +414,27 @@ RESEARCH-ONLY mode is triggered when:
 
 ### C) Prior Research Lookup (MANDATORY)
 
-**Rule:** Every RESEARCH-ONLY output MUST include a "Prior Research Lookup" section that:
+**Rule:** Every RESEARCH-ONLY output MUST include a "Prior Research Lookup" section. The lookup MUST happen BEFORE any new investigation begins.
 
-1. **States the exact search commands used:**
-   - `rg "<term>" docs-engineering/research/` or `grep -r "<term>" docs-engineering/research/`
-   - `Select-String -Path "docs-engineering/research/*.md" -Pattern "<term>"`
-   - Search terms used (e.g., "affix", "NRE", "scoring")
+**Step 1 — Run the tool:**
+```powershell
+.\tools\check-prior-research.ps1 -Terms "<term1>","<term2>"
+```
+This searches `<DOCS_ROOT>/research/ResearchIndex.md` and all `R-###-*.md` files. If the tool is unavailable (e.g., in ChatGPT), use manual grep:
+```powershell
+Select-String -Path "<DOCS_ROOT>/research/*.md" -Pattern "<term>"
+```
 
+**Step 2 — Read matches:** If the tool returns matches, READ the referenced documents before proceeding. Do not start new research if the answer already exists.
+
+**Step 3 — Document the lookup in your output:**
+
+1. **States the exact search commands used** (tool invocation or manual grep)
 2. **Lists any matching document IDs found:**
    - R-### (Research docs)
    - REPORT-### (Analysis reports)
    - POLICY-### (Policy docs)
    - Which documents were actually read
-
 3. **OR explicitly states:** "No relevant prior research found" (only after searching ResearchIndex.md + research/ folder)
 
 **If this section is missing, the RESEARCH-ONLY output is INVALID.** Stop and add the lookup before drawing conclusions.
@@ -509,22 +576,25 @@ Every Evidence Pack MUST end with a Confidence Statement:
 ### A) Every Research Effort Produces R-###
 
 **Rule:** Every research session MUST create a research document:
-- Location: `docs-engineering/research/R-###-<Title>.md`
+- Location: `<DOCS_ROOT>/research/R-###-<Title>.md`
 - Naming: Sequential 3-digit number (e.g., R-016, R-017)
 - Content: Evidence Pack + Confidence Statement
 
 ### B) ResearchIndex.md Update Required
 
-**Rule:** Every new R-### document MUST be added to `docs-engineering/research/ResearchIndex.md` in the same commit.
+**Rule:** Every new R-### document MUST be added to `<DOCS_ROOT>/research/ResearchIndex.md` in the same commit.
 
-Index entry MUST include:
+Index entry MUST use the structured format defined in
+[research-standard.md](../standards/research-standard.md#researchindexmd-format-canonical-reference)
+and include:
 - Report ID
 - Date
 - PROMPT-ID (if applicable)
 - Area
+- Status + Confidence
+- **Keywords** (3–8, lowercase, comma-separated — critical for search)
 - Summary (1 sentence)
-- Key Paths/Files
-- Evidence Commands used
+- File path
 
 ### C) No Orphan Research
 
@@ -567,7 +637,7 @@ Docs-only PRs (no runtime code) MAY be merged with less scrutiny, but MUST still
 ### A) Manual Test Is a Document
 
 **Rule:** Every manual test session MUST produce a checklist document:
-- Location: `docs-engineering/testing/manual/` or in the relevant R-### report
+- Location: `<DOCS_ROOT>/testing/manual/` or in the relevant R-### report
 - Format: Numbered test cases with IDs
 
 ### B) Required Checklist Format
@@ -627,7 +697,7 @@ When requesting an Agent Report, use this structure:
     - Smallest safe diff steps (ordered list of minimal changes)
     - Tests impacted (which test files/specs to update)
     
-    Output: Single markdown report in docs-engineering/status/, no fenced code blocks.
+    Output: Single markdown report in <DOCS_ROOT>/status/, no fenced code blocks.
     
     # END PROMPT
 
@@ -693,12 +763,12 @@ Choose ONE:
 ## Required Reading (Proof-of-Read List)
 
 Before starting work, read and quote from these files:
-- `docs-engineering/vibe-coding/protocol/protocol-v7.md` (this file)
-- `docs-engineering/vibe-coding/protocol/copilot-instructions-v7.md`
-- `docs-engineering/vibe-coding/protocol/stay-on-track.md`
-- `docs-engineering/vibe-coding/protocol/working-agreement-v1.md`
-- `docs-engineering/status/branches.md`
-- `docs-engineering/testing/test-catalog.md` (required when touching tests)
+- `<DOCS_ROOT>/vibe-coding/protocol/protocol-v7.md` (this file)
+- `<DOCS_ROOT>/vibe-coding/protocol/copilot-instructions-v7.md`
+- `<DOCS_ROOT>/vibe-coding/protocol/stay-on-track.md`
+- `<DOCS_ROOT>/vibe-coding/protocol/working-agreement-v1.md`
+- `<DOCS_ROOT>/status/branches.md`
+- `<DOCS_ROOT>/testing/test-catalog.md` (required when touching tests)
 
 **Required Reading Integrity Check (MANDATORY):**
 If a required-reading document is missing from the repo:
@@ -715,20 +785,20 @@ You may NOT proceed with work while required-reading files are missing.
 ### Work Prompts (S0A / S1A / S2A)
 
 Full reading set:
-- `docs-engineering/vibe-coding/protocol/protocol-v7.md`
-- `docs-engineering/vibe-coding/protocol/copilot-instructions-v7.md`
-- `docs-engineering/vibe-coding/protocol/stay-on-track.md`
-- `docs-engineering/vibe-coding/protocol/working-agreement-v1.md`
+- `<DOCS_ROOT>/vibe-coding/protocol/protocol-v7.md`
+- `<DOCS_ROOT>/vibe-coding/protocol/copilot-instructions-v7.md`
+- `<DOCS_ROOT>/vibe-coding/protocol/stay-on-track.md`
+- `<DOCS_ROOT>/vibe-coding/protocol/working-agreement-v1.md`
 - Relevant story doc(s) for the work
-- `docs-engineering/testing/test-catalog.md` (if tests may be touched)
+- `<DOCS_ROOT>/testing/test-catalog.md` (if tests may be touched)
 
 ### Closeout Prompts (S2C merge/closeout)
 
 Minimal reading set (merge-focused):
-- `docs-engineering/vibe-coding/protocol/protocol-v7.md` (S2C / Merge Checklist section)
-- `docs-engineering/vibe-coding/templates/closeout-artifact-verification-template.md`
-- `docs-engineering/status/branches.md`
-- `docs-engineering/vibe-coding/protocol/stay-on-track.md` (only when scope includes strict guardrails)
+- `<DOCS_ROOT>/vibe-coding/protocol/protocol-v7.md` (S2C / Merge Checklist section)
+- `<DOCS_ROOT>/vibe-coding/templates/closeout-artifact-verification-template.md`
+- `<DOCS_ROOT>/status/branches.md`
+- `<DOCS_ROOT>/vibe-coding/protocol/stay-on-track.md` (only when scope includes strict guardrails)
 
 **Note**: S2C prompts that include additional work beyond merge should use the full Work Prompt reading set.
 
@@ -768,6 +838,43 @@ PROMPT-ID: <ID>
 - Use 4-space indentation for command output, code snippets, and examples
 - The response IS the report - one continuous markdown document
 - Operator must be able to copy the entire response with one selection
+
+## Lean Prompts and Context Budgeting (MANDATORY)
+
+**Purpose:** Preserve context window budget. Large pasted docs and verbose reports consume tokens that should be spent on reasoning and code.
+
+### Two-Layer Prompt Pattern
+
+Prompts should separate execution instructions from reference material:
+
+1. **Execution Prompt** — The tasks, scope, and gates (compact; fits in one screen)
+2. **Read List** — File paths only, not pasted content. The executor reads them on demand.
+
+**Example read list (preferred):**
+
+    Read before work:
+    - protocol/protocol-v7.md (§ Green Gate)
+    - <DOCS_ROOT>/project/NEXT.md
+
+**Anti-pattern (banned by default):** Pasting entire file contents into a prompt. Link to file paths + quote only the relevant lines (10-50 words) instead.
+
+### Delta-Only Reports
+
+Completion reports must include ONLY:
+
+- **Changes made** (files + what changed, 1 line per file)
+- **Proof** (command output, test results — summarized unless failing)
+- **Verdict** (PASS/FAIL + next step)
+
+**Raw evidence** (full terminal output, large diffs) is included ONLY when:
+- A gate is failing and the output is needed for diagnosis
+- The operator explicitly requests it
+
+### Report Size Guardrail
+
+If a report would exceed ~200 lines, split into:
+1. Summary report (changes + verdict)
+2. Evidence appendix (linked, not inlined — saved to `<DOCS_ROOT>/status/` if needed)
 
 ## Lint-Suppress Before Lint-Fix (MANDATORY DEFAULT)
 
@@ -874,7 +981,7 @@ See `docs/protocol/closeout-artifact-verification-template.md`.
 
 Any branch that reaches 🟢 GREEN must be merged (S2C) in the same session.
 
-If you cannot merge immediately, add a **PARKED** row to `docs-engineering/status/branches.md` including:
+If you cannot merge immediately, add a **PARKED** row to `<DOCS_ROOT>/status/branches.md` including:
 - Why parked
 - Exact next prompt ID to resume
 - Date/time parked
@@ -901,7 +1008,7 @@ If you cannot merge immediately, add a **PARKED** row to `docs-engineering/statu
 - Shared UI components (headers, footers, navigation)
 - Monospace rendering or typography standards
 
-For ANY cross-cutting change, your completion report MUST include a route coverage table using the actual Rawls routes from `src/app/app.routes.ts`:
+For ANY cross-cutting change, your completion report MUST include a route coverage table using the actual project routes from `src/app/app.routes.ts`:
 
    Route        | Status
    -------------|-------------------------------
@@ -1042,7 +1149,7 @@ When a goal is blocked by environmental, infrastructure, or external issues:
 
 ## Waiting-for-Approver Workflow (MANDATORY)
 
-**Purpose:** Define allowed work while PRs await Sharad (or other approver) review.
+**Purpose:** Define allowed work while PRs await Maintainer (or other approver) review.
 
 ### A) Allowed While Waiting
 

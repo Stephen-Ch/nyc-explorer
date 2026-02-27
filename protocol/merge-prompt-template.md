@@ -1,7 +1,11 @@
-# Merge Prompt Template — Blackjack Sensei
+# Merge Prompt Template — Vibe-Coding Protocol
+
+> **File Version:** 2026-02-26
 
 ## Purpose
 Define the canonical fast-forward-only merge workflow to ensure clean git history and reproducible merge procedures.
+
+Build and test commands are **not hardcoded** in this template. Read your repo-specific commands from `<DOCS_ROOT>/overlays/merge-commands.md` (preferred) or `<DOCS_ROOT>/overlays/stack-profile.md` (fallback). If these overlays are missing, create them from the kit templates before attempting merge gates.
 
 ## REPO ROOT ANCHOR (MANDATORY FIRST COMMANDS)
 Run these before any other command, from any shell:
@@ -10,9 +14,9 @@ Run these before any other command, from any shell:
     git rev-parse --show-toplevel
     git rev-parse --show-prefix
     Get-Location
-All subsequent git/grep commands must use `git -C "$root" ...` and full canonical paths `docs-engineering/project/*`, `docs-engineering/testing/*`. Never rely on bare filenames or linkified paths.
+All subsequent git/grep commands must use `git -C "$root" ...` and full canonical paths `<DOCS_ROOT>/project/*`, `<DOCS_ROOT>/testing/*`. Never rely on bare filenames or linkified paths.
 For Control Deck checks, use the explicit Population Gate command:
-    git -C $root grep -n -i -E "(TBD|TODO|TEMPLATE|PLACEHOLDER|FILL IN|COMING SOON|XXX|FIXME|TO BE DETERMINED|<fill)" -- docs-engineering/project/VISION.md docs-engineering/project/EPICS.md docs-engineering/project/NEXT.md
+    git -C $root grep -n -i -E "(TBD|TODO|TEMPLATE|PLACEHOLDER|FILL IN|COMING SOON|XXX|FIXME|TO BE DETERMINED|<fill)" -- <DOCS_ROOT>/project/VISION.md <DOCS_ROOT>/project/EPICS.md <DOCS_ROOT>/project/NEXT.md
 
 ## Prerequisites
 - Work state: COMPLETE (feature branch committed, tests GREEN, build GREEN)
@@ -30,10 +34,10 @@ On feature branch:
     git log --oneline -1
     # Record commit hash
     
-    npm run test
+    <your-test-command>        # from <DOCS_ROOT>/overlays/merge-commands.md
     # Must be GREEN
     
-    npm run build
+    <your-build-command>       # from <DOCS_ROOT>/overlays/merge-commands.md
     # Must be GREEN (classify warnings: NEW vs PRE-EXISTING)
 
 If any gate fails, STOP. Fix on feature branch before proceeding.
@@ -67,10 +71,10 @@ STOP condition: If merge fails with "fatal: Not possible to fast-forward", repor
 ### Step 5: Verify on Main
 Run gates again on main:
 
-    npm run test
+    <your-test-command>        # from <DOCS_ROOT>/overlays/merge-commands.md
     # Must be GREEN (same test count as feature branch)
     
-    npm run build
+    <your-build-command>       # from <DOCS_ROOT>/overlays/merge-commands.md
     # Must be GREEN (same bundle size and warnings as feature branch)
 
 If results differ between main and feature branch, STOP and investigate.
@@ -99,7 +103,7 @@ After successful merge, report must include:
 
 ### 2. Raw Evidence Outputs (authoritative; paste verbatim)
 - `git -C $root diff --name-only`
-- `git -C $root ls-files docs-engineering/project/VISION.md docs-engineering/project/EPICS.md docs-engineering/project/NEXT.md docs-engineering/testing/test-catalog.md`
+- `git -C $root ls-files <DOCS_ROOT>/project/VISION.md <DOCS_ROOT>/project/EPICS.md <DOCS_ROOT>/project/NEXT.md <DOCS_ROOT>/testing/test-catalog.md`
 - Population Gate command + result
 - doc-audit output
 

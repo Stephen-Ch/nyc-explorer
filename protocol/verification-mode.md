@@ -1,4 +1,4 @@
-# Verification Mode — Blackjack Sensei
+# Verification Mode — Vibe-Coding Protocol
 
 ## Purpose
 Verification Mode defines read-only audit prompts that confirm repo state, file contents, counts, or compliance WITHOUT making changes. This prevents audits from drifting into fixes.
@@ -54,7 +54,7 @@ NO changes to repo state:
 
 ## Required Output Format
 
-All evidence commands must use canonical paths (docs-engineering/project/*, docs-engineering/testing/*) and must not rely on bare filenames or subfolder-relative paths.
+All evidence commands must use canonical paths (<DOCS_ROOT>/project/*, <DOCS_ROOT>/testing/*) and must not rely on bare filenames or subfolder-relative paths.
 
 Every Verification Mode prompt must produce an "Evidence Map" containing:
 
@@ -88,7 +88,7 @@ Example: "Verification found protocol-v7.md missing Work state requirement. STOP
     SCOPE GUARDRAILS: Read-only audit. NO edits.
     
     TASKS:
-    1) Read docs-engineering/vibe-coding/protocol/protocol-v7.md lines 1-30
+    1) Read <DOCS_ROOT>/vibe-coding/protocol/protocol-v7.md lines 1-30
     2) Search for "Work state" in Prompt Review Gate section
     3) Output Evidence Map:
        - File: protocol-v7.md

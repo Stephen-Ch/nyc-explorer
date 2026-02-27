@@ -80,7 +80,7 @@ Declare which gates apply:
 
 ## Stack Profile Location
 
-**Canonical path:** `docs/project/stack-profile.md` or `docs-engineering/project/stack-profile.md`
+**Canonical path:** `docs/project/stack-profile.md` or `<DOCS_ROOT>/project/stack-profile.md`
 
 The stack profile is **project-specific** and lives OUTSIDE the vibe-coding bundle. It is never overwritten by subtree updates.
 
@@ -99,7 +99,7 @@ The stack profile is **project-specific** and lives OUTSIDE the vibe-coding bund
 | **Language** | C# 7.3, VB.NET |
 | **Runtime** | .NET Framework 4.8 |
 | **Build Tool** | MSBuild |
-| **Solution/Project** | LessonWriter2_0.csproj |
+| **Solution/Project** | ExampleProject.csproj |
 
 ## Secondary Stacks
 
@@ -112,7 +112,7 @@ The stack profile is **project-specific** and lives OUTSIDE the vibe-coding bund
 ### Runtime Code Changes
 | Gate | Command | Required |
 |------|---------|----------|
-| .NET Build | `msbuild LessonWriter2_0.csproj /p:Configuration=Release` | YES |
+| .NET Build | `msbuild ExampleProject.csproj /p:Configuration=Release` | YES |
 | .NET Tests | N/A (no test framework configured) | N/A |
 | JS Build | N/A (test harness only, no build script) | N/A |
 | Playwright E2E | `npm run test:smoke` | Optional |
