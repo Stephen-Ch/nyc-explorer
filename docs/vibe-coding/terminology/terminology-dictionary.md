@@ -23,7 +23,7 @@
 
 ## Data Shape Contract
 
-**Production JSON structure (src/assets/content/rawls-values.generated.json):**
+**Production JSON structure (src/assets/content/values.generated.json):**
 ```json
 {
   "categories": [

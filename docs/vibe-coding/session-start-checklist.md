@@ -8,7 +8,8 @@
 
 ## Pre-Flight Checks (< 2 minutes)
 
-- [ ] **RUN START OF SESSION DOCS AUDIT** — This single command chains: kit update (subtree pull) → forGPT sync → 5-line audit print. Run it first; everything below is verified automatically.
+- [ ] **RUN START OF SESSION DOCS AUDIT** — This single command chains: kit update (subtree pull) → kit version print → forGPT sync → Consumer doc-audit (hard fail) → audit print. Run it first; everything below is verified automatically (including overlay structure and required files).
+- [ ] **Goal Anchor** — Write North Star, Current Slice, and Proof before any work.
 - [ ] **NEXT.md Status** — Open [NEXT.md](../project/NEXT.md). Confirm Status = ACTIVE or PAUSED with clear Next Step.
 - [ ] **Open PRs** — Run `gh pr list --state open` or check GitHub. Note any blocking dependencies.
 - [ ] **Branch Hygiene** — Run `git branch -a --no-merged origin/develop | Select-String -NotMatch "docs/"`. If runtime branches exist without PRs, address first.
@@ -37,5 +38,6 @@
 | [PAUSE.md](PAUSE.md) | Handoff docs (if paused) |
 | [ResearchIndex.md](../research/ResearchIndex.md) | Research catalog |
 | [protocol-v7.md](protocol/protocol-v7.md) | Full protocol rules |
+| [PROTOCOL-INDEX.md](protocol/PROTOCOL-INDEX.md) | Navigate protocol-v7 by task |
 | [branches.md](../status/branches.md) | Branch/PR tracking |
 | [tech-debt-and-future-work.md](../project/tech-debt-and-future-work.md) | Known issues |

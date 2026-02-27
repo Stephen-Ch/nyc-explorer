@@ -1,27 +1,23 @@
 # Protocol Lite — Quick Reference
 
-> **File Version:** 2026-02-06 | **Bundle:** v7.2.0  
+> **File Version:** 2026-02-09  
 > **Purpose:** Reduce session startup cognitive load. For full rules, see [protocol-v7.md](protocol/protocol-v7.md).
 
 ---
 
-## The 95% Rule (Core Gate)
+## The Tiered Confidence Rule (Core Gate)
 
-**If confidence is below 95%, STOP and gather evidence.**
+**If confidence is below the threshold for the scope, STOP and gather evidence.**
 
-| Confidence | Action |
-|------------|--------|
-| ≥95% | May proceed with implementation |
-| <95% | Enter RESEARCH-ONLY mode |
+| Scope | Threshold | Action |
+|-------|-----------|--------|
+| Low-risk (docs, tests, reports) | ≥95% | May proceed |
+| Production/runtime code | ≥99% | May proceed |
+| Below threshold | — | Enter RESEARCH-ONLY mode |
 
-**What 95% confidence means:**
-- Verified evidence for every structural assumption
-- Know exact files, line ranges, and dependencies affected
-- Can predict the outcome with near-certainty
+For definitions of what 95%/99% confidence means, dual-agent requirements, and handshake phrases, see the canonical section:
 
-**Handshake phrase:** "Confidence <95% — entering RESEARCH-ONLY mode"
-
-→ Full rules: [protocol-v7.md § No Guessing / 95% Research Gate](protocol/protocol-v7.md#no-guessing--95-research-gate-mandatory)
+→ [protocol-v7.md § No Guessing / Tiered Confidence Gate](protocol/protocol-v7.md#no-guessing--tiered-confidence-gate-mandatory)
 
 ---
 
@@ -50,7 +46,7 @@
 
 ## Evidence Pack (When <95%)
 
-Every research effort produces an **Evidence Pack** in `docs-engineering/research/R-###-<Title>.md`.
+Every research effort produces an **Evidence Pack** in `<DOCS_ROOT>/research/R-###-<Title>.md`.
 
 **Required sections:**
 1. Repro Steps
@@ -71,11 +67,11 @@ Run the gate that matches your project type:
 
 | Stack | Gate Command |
 |-------|--------------|
-| .NET (ASP.NET MVC) | `msbuild LessonWriter2_0.csproj /p:Configuration=Release` |
+| .NET (ASP.NET MVC) | `msbuild ExampleProject.csproj /p:Configuration=Release` |
 | JS (if package.json has scripts) | `npm run build` + `npm run test` |
 | Docs-only | Population Gate (no TBD/TODO/PLACEHOLDER) |
 
-**LessonWriter2.0:** .NET Gate required. JS Gate N/A (no build script).
+**ExampleProject:** .NET Gate required. JS Gate N/A (no build script).
 
 → Full rules: [protocol-v7.md § Green Gate — Stack-Aware Rules](protocol/protocol-v7.md#green-gate--stack-aware-rules)
 
@@ -102,7 +98,7 @@ Run the gate that matches your project type:
 
 ---
 
-## Approver Workflow (Waiting for Sharad)
+## Approver Workflow (Waiting for Maintainer)
 
 **Allowed while PRs await approval:**
 - Continue work on feature branches

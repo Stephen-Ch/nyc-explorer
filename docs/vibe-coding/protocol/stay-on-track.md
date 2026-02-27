@@ -1,6 +1,6 @@
-# Stay on Track — Blackjack Sensei
+# Stay on Track — Vibe-Coding Protocol
 
-> **File Version:** 2026-01-18 | **Bundle:** v7.1.3
+> **File Version:** 2026-01-18
 
 ## Purpose
 Keep AI focused and prevent scope creep.
@@ -38,7 +38,7 @@ If you went off track:
 
 ## Cross-cutting changes require coverage proof
 
-When changing shared patterns (palette CSS variables, voice/tone, layout grids, CTA buttons, disclaimers, UI copy dictionaries, monospace rendering), you MUST verify coverage across the real Rawls routes/screens:
+When changing shared patterns (palette CSS variables, voice/tone, layout grids, CTA buttons, disclaimers, UI copy dictionaries, monospace rendering), you MUST verify coverage across the real project routes/screens:
 
 Mandatory route coverage list (match `src/app/app.routes.ts`):
 - / (IntroComponent)

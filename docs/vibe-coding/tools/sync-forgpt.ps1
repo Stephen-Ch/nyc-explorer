@@ -64,7 +64,7 @@ function Find-ProjectRoot {
         if (Test-Path $docsEng) {
             return $current
         }
-        # Check for docs at current level (but not if it's a nested folder like LessonWriter2.0/docs)
+        # Check for docs at current level (but not if it's a nested folder like ExampleProject/docs)
         $docs = Join-Path $current "docs"
         $hasGit = Test-Path (Join-Path $current ".git")
         if ((Test-Path $docs) -and $hasGit) {
@@ -175,7 +175,7 @@ Write-Host "  TOTAL files: $totalCount" -ForegroundColor White
 Write-Host "`nVerifying source files..." -ForegroundColor Yellow
 $missingFiles = @()
 foreach ($entry in $manifest.files) {
-    $srcPath = Join-Path $projectRoot $docsRoot $entry.src
+    $srcPath = Join-Path (Join-Path $projectRoot $docsRoot) $entry.src
     if (-not (Test-Path $srcPath)) {
         $missingFiles += $entry.src
         Write-Host "  MISSING: $docsRoot/$($entry.src)" -ForegroundColor Red
@@ -242,7 +242,7 @@ $syncedCoreCount = 0
 $syncedExtraCount = 0
 
 foreach ($entry in $manifest.files) {
-    $srcPath = Join-Path $projectRoot $docsRoot $entry.src
+    $srcPath = Join-Path (Join-Path $projectRoot $docsRoot) $entry.src
     $destPath = Join-Path $forGptDir $entry.dest
     
     # Safety check: ensure dest is inside forGPT folder

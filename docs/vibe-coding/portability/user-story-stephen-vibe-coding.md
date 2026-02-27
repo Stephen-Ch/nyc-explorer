@@ -1,6 +1,6 @@
 # User Story: What Stephen Wants From Vibe-Coding
 
-> **File Version:** 2026-02-06 | **Bundle:** v7.2.0  
+> **File Version:** 2026-02-06  
 > **Scope:** Portable across repos via subtree
 
 ---
@@ -18,7 +18,7 @@
 - [ ] AI never guesses — every structural claim has file/line/DB evidence
 - [ ] Research is saved and indexed, not repeated session after session
 - [ ] One prompt at a time — no background work, no parallel execution
-- [ ] PRs are minimal and reviewable (Sharad can approve without confusion)
+- [ ] PRs are minimal and reviewable (Maintainer can approve without confusion)
 - [ ] Session state is recoverable (PAUSE.md + forGPT packet = instant resume)
 - [ ] ChatGPT writes prompts; Copilot executes; roles never blur
 
@@ -65,7 +65,7 @@
 
 | Requirement | Why |
 |-------------|-----|
-| **Save every research output** | `docs-engineering/research/R-###-<Title>.md` |
+| **Save every research output** | `<DOCS_ROOT>/research/R-###-<Title>.md` |
 | **Index immediately** | Add to `ResearchIndex.md` in the same commit |
 | **Check before creating** | Search ResearchIndex + research/ folder first |
 | **Reuse existing** | Link to prior R-### docs instead of re-investigating |
@@ -79,9 +79,9 @@
 
 | Expectation | Rationale |
 |-------------|-----------|
-| **Minimum PRs** | Fewer PRs = easier for Sharad to review |
+| **Minimum PRs** | Fewer PRs = easier for Maintainer to review |
 | **Docs PR consolidation** | All docs-only changes go to one PR when possible |
-| **No merges without Sharad** | He's the approver; don't merge without his OK |
+| **No merges without Maintainer** | He's the approver; don't merge without his OK |
 | **Branch naming** | `docs/...` for docs-only, `fix/...` for bugs, `feat/...` for features |
 | **One concern per PR** | Don't mix unrelated changes |
 
@@ -105,7 +105,7 @@
 ```
 Session Start:
 1. Sync forGPT packet: .\sync-forgpt.ps1
-2. Upload docs-engineering/forGPT to ChatGPT
+2. Upload <DOCS_ROOT>/forGPT to ChatGPT
 3. Tell ChatGPT: "Read Start-Here-For-AI.md first"
 
 During Work:

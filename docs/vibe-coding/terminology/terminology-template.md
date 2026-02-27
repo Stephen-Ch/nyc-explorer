@@ -38,6 +38,6 @@ Fill this table BEFORE changing vocabulary or UI labels:
 
 ---
 
-## Example: Rawls Game
+## Example: ExampleProject
 
-See `docs-engineering/project/CONTENT-RULES.md` (lines 5-27) for the filled-in version of this template.
+See `<DOCS_ROOT>/project/CONTENT-RULES.md` (lines 5-27) for the filled-in version of this template.
