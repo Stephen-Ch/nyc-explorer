@@ -1,0 +1,2 @@
+Ignored files under docs/ (1 file):
+.gitignore:1:docs/artifacts/*  docs/artifacts/VIS-1/P14-map.png

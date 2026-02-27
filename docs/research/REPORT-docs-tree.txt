@@ -1,0 +1,265 @@
+Folder PATH listing for volume OS
+Volume serial number is 5249-A8F3
+C:\USERS\SCHUR\WORKSPACES\NYC EXPLORER\DOCS
+ª   Adapters.md
+ª   Artifacts.md
+ª   CHANGELOG.md
+ª   CI-Policy.md
+ª   Code-Review-Guide.md
+ª   Code-Review-Template.md
+ª   code-review.md
+ª   CODE-SMELL-ANALYSIS.md
+ª   Copilot-Instructions.md
+ª   INDEX.md
+ª   KB-Index.md
+ª   NYCExplorer_Playwright.md
+ª   Playbook.md
+ª   project-history.md
+ª   Project.md
+ª   Protocol.md
+ª   README.md
+ª   REPORT-closeout-ff-blocker.md
+ª   REPORT-docs-ignored-files.txt
+ª   REPORT-docs-ignored.txt
+ª   REPORT-docs-ondisk.csv
+ª   REPORT-docs-pass0-inventory.md
+ª   REPORT-docs-pass0_5-decision-pack.md
+ª   REPORT-docs-tracked-files.txt
+ª   REPORT-docs-tracked.txt
+ª   REPORT-docs-tree-files.txt
+ª   selectors.md
+ª   Session-Start.md
+ª   Sprint-02-Plan.md
+ª   Sprint-03-Plan.md
+ª   Sprint-03-Postmortem.md
+ª   Sprint-04-Plan.md
+ª   Sprint-04-Postmortem.md
+ª   Sprint-05-Plan.md
+ª   Sprint-05-Postmortem.md
+ª   Sprint-06-Plan.md
+ª   sprint-06-postmortem.md
+ª   Start-Here-For-AI.md
+ª   Workflow-Tweaks-S6.md
+ª   Working-With-Stephen.md
+ª   
++---approvals
+ª       OR-08A-approval.md
+ª       
++---archive
+ª   +---2026-01-11
+ª       ª   README.md
+ª       ª   
+ª       +---historical
+ª       ª       kickoff.md
+ª       ª       NYC-Explorer-Protocol-Enforcement-CheatSheet.md
+ª       ª       nyc-explorer-system-reset-2025-11-09.md
+ª       ª       overlay-review-2025-11-11.md
+ª       ª       README.md
+ª       ª       
+ª       +---legacy-protocol
+ª       ª       copilot-instructions-v7.md
+ª       ª       Copilot-Instructions.md
+ª       ª       Playbook.md
+ª       ª       protocol-v7.md
+ª       ª       Protocol.md
+ª       ª       Session-Start.md
+ª       ª       working-agreement-v1.md
+ª       ª       
+ª       +---loose
+ª       ª       .gitignore
+ª       ª       README.md
+ª       ª       Root Cause Summary.pdf
+ª       ª       
+ª       +---sprints
+ª       ª       README.md
+ª       ª       Sprint-02-Plan.md
+ª       ª       Sprint-03-Plan.md
+ª       ª       Sprint-03-Postmortem.md
+ª       ª       Sprint-04-Plan.md
+ª       ª       Sprint-04-Postmortem.md
+ª       ª       Sprint-05-Plan.md
+ª       ª       Sprint-05-Postmortem.md
+ª       ª       Sprint-06-Plan.md
+ª       ª       sprint-06-postmortem.md
+ª       ª       
+ª       +---timewalk
+ª       ª       NYC-TimeWalk-Imagery-Pipeline-and-3D-Standards-2025-10-29.md
+ª       ª       NYC-TimeWalk-Imagery-Rights-and-Labeling-Policy-2025-10-29.md
+ª       ª       NYC-TimeWalk-One-Pager-Pitch.md
+ª       ª       NYC-TimeWalk-README-Quickstart.md
+ª       ª       NYC-TimeWalk-Stack-Decision-Record.md
+ª       ª       README.md
+ª       ª       
+ª       +---workflow
+ª               README.md
+ª               Workflow-Tweaks-S6.md
+ª               
++---artifacts
+ª   ª   .gitkeep
+ª   ª   
+ª   +---VIS-1
+ª           P14-map.png
+ª           
++---feedback
+ª       Sprint-02-Retrospective.md
+ª       
++---handoffs
+ª   ª   README.md
+ª   ª   
+ª   +---archive
+ª           .gitkeep
+ª           
++---historical-data
+ª       README.md
+ª       
++---kb
+ª       01-Product-Vision.md
+ª       02-MVP-Scope-and-Acceptance.md
+ª       03-Terminology-and-Taxonomy.md
+ª       04-Data-Model-and-Indices.md
+ª       05-Routing-Scoring-Policy.md
+ª       06-Editorial-Standards-and-Citation-Guide.md
+ª       07-Researcher-UI-Spec.md
+ª       08-Research-Team-Playbooks.md
+ª       09-Checklists.md
+ª       10-Freemium-Business-Model.md
+ª       11-Governance-Rights-and-Ethics.md
+ª       12-Roadmap-and-V10-ARVR.md
+ª       13-Templates.md
+ª       14-Data-Sources.md
+ª       15-Open-Decisions.md
+ª       16-Glossary.md
+ª       
++---plans
+ª       .gitkeep
+ª       overlay-recovery.md
+ª       
++---postmortems
+ª       GPT Overlay Breakdown postmortem.md
+ª       overlay-2025-11-09.md
+ª       
++---project
+ª       AI-WORKFLOW.md
+ª       EPICS.md
+ª       EPICS.template.md
+ª       NEXT.md
+ª       NEXT.template.md
+ª       README.md
+ª       VISION.md
+ª       VISION.template.md
+ª       
++---protocol
+ª       copilot-instructions-v7.md
+ª       protocol-v7.md
+ª       working-agreement-v1.md
+ª       
++---recovery
+ª       overlay-recovery-plan.md
+ª       
++---releases
+ª       Sprint-04-ReleaseNotes.md
+ª       
++---research
+ª       README.md
+ª       REPORT-docs-tree.txt
+ª       ResearchIndex.md
+ª       
++---rfc
+ª       2025-11-10-freeze-lift-proposal.md
+ª       2025-11-10-overlay-recovery-rfc.md
+ª       
++---status
+ª       branches.md
+ª       solution-report.md
+ª       tech-debt-and-future-work.md
+ª       
++---templates
+ª       high-risk-plan.md
+ª       
++---testing
+ª       test-catalog.md
+ª       
++---vibe-coding
+ª   ª   FILE-VERSIONING.md
+ª   ª   MIGRATION-INSTRUCTIONS.md
+ª   ª   PAUSE.md
+ª   ª   protocol-lite.md
+ª   ª   protocol-primer.md
+ª   ª   README.md
+ª   ª   session-start-checklist.md
+ª   ª   VIBE-CODING-KIT-VERSION-2025-12-27.txt
+ª   ª   VIBE-CODING.VERSION.md
+ª   ª   
+ª   +---portability
+ª   ª       subtree-playbook.md
+ª   ª       user-story-stephen-vibe-coding.md
+ª   ª       
+ª   +---protocol
+ª   ª       alignment-mode.md
+ª   ª       canonical-commands.md
+ª   ª       copilot-instructions-v7.md
+ª   ª       merge-prompt-template.md
+ª   ª       prompt-lifecycle.md
+ª   ª       protocol-v7.md
+ª   ª       required-artifacts.md
+ª   ª       return-packet-gate.md
+ª   ª       stay-on-track.md
+ª   ª       verification-mode.md
+ª   ª       working-agreement-v1.md
+ª   ª       
+ª   +---standards
+ª   ª       research-standard.md
+ª   ª       stack-profile-standard.md
+ª   ª       
+ª   +---templates
+ª   ª       closeout-artifact-verification-template.md
+ª   ª       EVIDENCE-PACK-TEMPLATE.md
+ª   ª       github-agent-return-packets-prompt-template.md
+ª   ª       MANUAL-TEST-TEMPLATE.md
+ª   ª       test-touch-block-template.md
+ª   ª       
+ª   +---terminology
+ª   ª       terminology-dictionary.md
+ª   ª       terminology-template.md
+ª   ª       
+ª   +---tools
+ª           doc-audit.ps1
+ª           session-start.ps1
+ª           sync-forgpt.ps1
+ª           
++---wireframes
+ª       UI-wireframe.md
+ª       
++---workspace
++---_legacy
+    +---vibe-coding-manual-2026-02-07
+        ª   MIGRATION-INSTRUCTIONS.md
+        ª   README.md
+        ª   VIBE-CODING-KIT-VERSION-2025-12-27.txt
+        ª   VIBE-CODING.VERSION.md
+        ª   
+        +---protocol
+        ª       alignment-mode.md
+        ª       canonical-commands.md
+        ª       copilot-instructions-v7.md
+        ª       merge-prompt-template.md
+        ª       prompt-lifecycle.md
+        ª       protocol-v7.md
+        ª       required-artifacts.md
+        ª       return-packet-gate.md
+        ª       stay-on-track.md
+        ª       verification-mode.md
+        ª       working-agreement-v1.md
+        ª       
+        +---templates
+        ª       closeout-artifact-verification-template.md
+        ª       github-agent-return-packets-prompt-template.md
+        ª       test-touch-block-template.md
+        ª       
+        +---terminology
+        ª       terminology-dictionary.md
+        ª       terminology-template.md
+        ª       
+        +---tools
+                doc-audit.ps1
+                

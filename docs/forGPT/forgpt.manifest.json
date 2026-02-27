@@ -1,0 +1,13 @@
+{
+  "description": "forGPT packet manifest for NYC Explorer. Paths are DOCS_ROOT-relative.",
+  "files": [
+    { "src": "project/VISION.md",       "dest": "VISION.md",       "tier": "core" },
+    { "src": "project/EPICS.md",        "dest": "EPICS.md",        "tier": "core" },
+    { "src": "project/NEXT.md",         "dest": "NEXT.md",         "tier": "core" },
+    { "src": "Start-Here-For-AI.md",    "dest": "Start-Here-For-AI.md", "tier": "core" },
+    { "src": "vibe-coding/VIBE-CODING.VERSION.md", "dest": "VIBE-CODING.VERSION.md", "tier": "core" },
+    { "src": "vibe-coding/protocol/protocol-v7.md", "dest": "protocol-v7.md", "tier": "extra" },
+    { "src": "vibe-coding/protocol/copilot-instructions-v7.md", "dest": "copilot-instructions-v7.md", "tier": "extra" },
+    { "src": "research/ResearchIndex.md", "dest": "ResearchIndex.md", "tier": "extra" }
+  ]
+}

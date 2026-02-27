@@ -1,0 +1,1 @@
+fatal: ls-files -i must be used with either -o or -c
