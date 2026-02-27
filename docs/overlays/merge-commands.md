@@ -1,22 +1,15 @@
-# Merge Commands — Consumer Overlay Template
+# Merge Commands — NYC Explorer
 
-> **File Version:** 2026-02-26
+> **File Version:** 2026-02-27
 
 ## Purpose
 
-Defines the exact Build Gate and Test Gate commands for this repo's merge workflow. The merge prompt template reads these commands instead of hardcoding stack-specific invocations.
+Defines the exact Build Gate and Test Gate commands for NYC Explorer's merge workflow. The merge prompt template reads these commands instead of hardcoding stack-specific invocations.
 
 ## Overlay Review Gate
 
-Before accepting this overlay into the consumer repo:
-
-- Best next step? (YES/NO)
-- Confidence: (0-100)
-
-## Instructions
-
-Copy into consumer repo at `<DOCS_ROOT>/overlays/merge-commands.md` and edit there.  
-Do NOT edit this template inside the kit head — it will be overwritten on subtree pull.
+- Best next step? YES
+- Confidence: 95
 
 ---
 
@@ -25,7 +18,7 @@ Do NOT edit this template inside the kit head — it will be overwritten on subt
 Run before merge and again after merge on main:
 
 ```
-<your-test-command>
+npm run e2e:auto
 ```
 
 Must be GREEN (all tests pass). If any test fails, STOP.
@@ -35,15 +28,23 @@ Must be GREEN (all tests pass). If any test fails, STOP.
 Run before merge and again after merge on main:
 
 ```
-<your-build-command>
+npm run typecheck
 ```
 
 Must be GREEN. Classify warnings as NEW or PRE-EXISTING. NEW warnings = STOP.
 
-## Additional Gates (optional)
+## Additional Gates
 
-Add any repo-specific gates below (e.g., lint, type-check, bundle budget):
+.NET build (CI also runs this implicitly via Playwright `webServer`):
 
 ```
-<your-additional-gate-command>
+dotnet build apps/web-mvc /p:BuildProjectReferences=false
 ```
+
+CI-specific meta gate (runs in GitHub Actions):
+
+```
+npx playwright test tests/meta --reporter=list
+```
+
+Overlay freeze guard (CI enforces — blocks edits to `apps/web-mvc/Program.cs` and `apps/web-mvc/wwwroot/js/route-overlay.js` unless explicitly authorized).
