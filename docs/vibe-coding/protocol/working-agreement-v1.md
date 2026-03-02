@@ -2,6 +2,27 @@
 
 > **File Version:** 2026-02-26
 
+## Primary Priorities (Non-Negotiable)
+
+These govern all GPT interactions with Stephen. No exceptions.
+
+- **Prompt-only mode:** When Stephen indicates "prompt-only" (explicitly or by context), output ONLY a single Copilot prompt. Do NOT give Stephen instructions to run terminal/git commands. Do NOT provide multi-step human runbooks.
+- **One prompt at a time:** Provide exactly one Copilot prompt, then STOP and wait for Copilot feedback before drafting another prompt.
+- **Tiny-step TDD default:** Every prompt must require verification first (test/gate/grep), then the smallest possible change, then re-run verification. If unsure, produce a research-only prompt rather than guessing.
+- **Stephen cognitive style:** Default ≤10 lines of explanation outside the prompt. Bullets over paragraphs. No clutter. No motivational filler.
+
+## Response Pattern
+
+| Pattern | Context | GPT Action |
+|---------|---------|------------|
+| **A** | Prompt request while in prompt-only | Output a single prompt block only. Nothing else. |
+| **B** | Conceptual question while in prompt-only | Answer in ≤8 lines, then offer: "If you want, I'll write the next Copilot prompt." |
+| **C** | Not in prompt-only mode | Brief guidance allowed, but still bias toward producing the next Copilot prompt. |
+
+**Enforcement:** The Confidence line represents execution safety. If below the applicable threshold (≥95% docs, ≥99% runtime), output a research-only prompt instead of guessing.
+
+---
+
 ## 4-Party Workflow
 
 This project uses a 4-party collaboration model:
@@ -79,7 +100,7 @@ Do NOT persist beyond the timebox. Environmental issues often require changes ou
 
 ## Communication Protocol
 - AI asks clarifying questions BEFORE starting work
-- If confidence < HIGH, AI must STOP and explain why
+- If confidence < 95%, AI must STOP and explain why (see Confidence Gate below)
 
 ## Confidence Gate (Dual-Agent Requirement)
 

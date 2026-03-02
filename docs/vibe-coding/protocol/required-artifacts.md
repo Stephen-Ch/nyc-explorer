@@ -115,12 +115,12 @@ When return packets exist for the current story, NEXT.md MUST include an "Inputs
 
 ## Doc Audit Workflow
 
-Start-of-Session Doc Audit (see [docs/Start-Here-For-AI.md](../../Start-Here-For-AI.md)) verifies:
+Start-of-Session Doc Audit (see consumer Start-Here doc; repo-specific, referenced in copilot-instructions.md) verifies:
 1. VIBE-CODING.VERSION.md exists (version + effective date)
 2. required-artifacts.md exists (this file)
 3. <DOCS_ROOT>/project/VISION.md, <DOCS_ROOT>/project/EPICS.md, <DOCS_ROOT>/project/NEXT.md all exist with required content
 
-**Doc Audit Rerun Detection:** After each commit, Doc Audit rerun is required if required-artifacts.md or Control Deck files changed since last audit. See [Start-Here-For-AI.md](../../Start-Here-For-AI.md) "Rerun Trigger Detection (Required Command)" for the exact git command and path matching rule.
+**Doc Audit Rerun Detection:** After each commit, Doc Audit rerun is required if required-artifacts.md or Control Deck files changed since last audit. See the consumer Start-Here doc "Rerun Trigger Detection (Required Command)" for the exact git command and path matching rule.
 
 If ANY required artifact is missing or <DOCS_ROOT>/project/NEXT.md is unclear/outdated:
 - Work state: IN-PROGRESS → STOP CODING
@@ -217,7 +217,7 @@ Use objective word-count thresholds below to determine PASS vs FAIL.
 
 **Population Gate Enforcement:**
 
-Population Gate is evaluated during Start-of-Session Doc Audit (after existence check). The verdict is printed once per session. Start-of-Session Doc Audit (see [docs/Start-Here-For-AI.md](../../Start-Here-For-AI.md)) MUST check Population Gate AFTER existence check:
+Population Gate is evaluated during Start-of-Session Doc Audit (after existence check). The verdict is printed once per session. Start-of-Session Doc Audit (see consumer Start-Here doc; repo-specific, referenced in copilot-instructions.md) MUST check Population Gate AFTER existence check:
 1. Files exist? (<DOCS_ROOT>/project/VISION.md, <DOCS_ROOT>/project/EPICS.md, <DOCS_ROOT>/project/NEXT.md)
 2. **Population Gate: PASS or FAIL?** (scan for placeholders + verify minimum content)
 

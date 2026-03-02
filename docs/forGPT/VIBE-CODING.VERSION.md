@@ -1,10 +1,48 @@
 # Vibe-Coding Kit Version
 
-**Version:** v7.2.11  
-**Effective Date:** 2026-02-26
+**Version:** v7.2.22  
+**Effective Date:** 2026-03-02
 
 ## Purpose
-Defines required artifacts + gates used by Doc Audit. This file is the **single source of truth** for the kit bundle version. Per-file `Bundle:` headers were removed in v7.2.2 to prevent version drift — see changelog below.
+Defines required artifacts + gates used by Doc Audit. This file is the **single source of truth** for the kit bundle version. Per-file `Bundle:` headers were removed in v7.2.2 to prevent version drift -- see changelog below.
+
+## What Changed in v7.2.22
+- Removed remaining HIGH/MED/LOW confidence language from working-agreement-v1.md, protocol-v7.md (Enforcement), and stay-on-track.md; replaced with percentage thresholds (≥95% / ≥99%).
+- Removed hard-coded Start-Here-For-AI.md filename links in required-artifacts.md; replaced with consumer-agnostic plain-text references.
+
+## What Changed in v7.2.21
+- Session-start chain wired into copilot-instructions-v7.md as mandatory first command.
+- Standard Start-Here callout snippet added (templates/start-here-session-start-callout.example.md).
+- Cross-link added in protocol-v7.md for consumer Start-Here docs.
+
+## What Changed in v7.2.20
+- Primary Priorities (Non-Negotiable) + Response Pattern added to working-agreement-v1.md; governs prompt-only + TDD + cognitive style for all GPT interactions.
+- Cross-links added in protocol-v7.md and copilot-instructions-v7.md.
+
+## What Changed in v7.2.19
+- Confidence line canonicalized to `Confidence: <percentage>%` across Prompt Review Gate, templates, and overlays; old HIGH/MEDIUM/LOW and (0-100) forms deprecated.
+
+## What Changed in v7.2.18
+- Docs: canonical commands now prefer run-vibe universal runner (path-agnostic).
+
+## What Changed in v7.2.17
+- run-vibe.ps1 forwards named flags correctly in PS 5.1 (hashtable splatting); previous string-array splatting treated switches as positional args
+
+## What Changed in v7.2.16
+- run-vibe.ps1 now declares explicit wrapper parameters for common tool flags (e.g., -WriteReport, -Mode, -StartSession) so PS 5.1 binding succeeds; -ToolArgs kept as escape hatch
+
+## What Changed in v7.2.15
+- Added run-vibe.ps1 universal runner; canonical commands no longer hardcode DOCS_ROOT
+- Discovery pattern in canonical-commands.md lets Copilot find the runner automatically
+
+## What Changed in v7.2.14
+- Added end-session.ps1 repo hygiene command (tracked changes hard-stop, orphan branch report, optional status report); documented in canonical-commands and session-start-checklist
+
+## What Changed in v7.2.13
+- sync-forgpt.ps1 derives DOCS_ROOT script-relatively (supports nested docs roots); same `$PSScriptRoot`-based pattern as session-start and doc-audit, with legacy `Find-ProjectRoot`/`Find-DocsRoot` walk as fallback
+
+## What Changed in v7.2.12
+- DOCS_ROOT detection is now script-relative (supports nested docs roots without junctions); both session-start.ps1 and doc-audit.ps1 derive DOCS_ROOT from `$PSScriptRoot/../../` when the kit head leaf is `vibe-coding`, with legacy repo-root detection as fallback
 
 ## What Changed in v7.2.11
 - session-start.ps1: Added `Invoke-GitSafe` helper — runs git with stderr tolerance so progress output does not become a terminating error under `$ErrorActionPreference = "Stop"`

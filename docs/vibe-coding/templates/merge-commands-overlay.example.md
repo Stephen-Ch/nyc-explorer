@@ -11,7 +11,7 @@ Defines the exact Build Gate and Test Gate commands for this repo's merge workfl
 Before accepting this overlay into the consumer repo:
 
 - Best next step? (YES/NO)
-- Confidence: (0-100)
+- Confidence: <percentage>%
 
 ## Instructions
 
