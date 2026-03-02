@@ -5,16 +5,23 @@
 
 This repo uses the vibe-coding workflow structure and enforcement rules.
 
-**Quick-start command (optional):** To run the full session-start audit automatically:
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File docs/vibe-coding/tools/session-start.ps1
-```
+## RUN START OF SESSION DOCS AUDIT
+
+**Automated path (preferred):**
+
+    powershell -NoProfile -ExecutionPolicy Bypass -File docs/vibe-coding/tools/run-vibe.ps1 -Tool session-start
+
+Chains: kit update → forGPT sync → doc-audit -StartSession → 5-line gate print. No manual steps needed.
+
+**Manual fallback** (only if `run-vibe.ps1` is unavailable):
+
+    powershell -NoProfile -ExecutionPolicy Bypass -File docs/vibe-coding/tools/session-start.ps1
 
 **How we work:** See the [Stephen ↔ ChatGPT ↔ Copilot workflow](project/AI-WORKFLOW.md) for the prompt-only collaboration loop.
 
 **Workflow source of truth lives under `docs/vibe-coding`. Start every session by opening:**
 1. [docs/vibe-coding/README.md](vibe-coding/README.md)
-2. [docs/vibe-coding/protocol/protocol-v7.md](vibe-coding/protocol/protocol-v7.md)
+2. [docs/vibe-coding/protocol/PROTOCOL-INDEX.md](vibe-coding/protocol/PROTOCOL-INDEX.md)
 3. [docs/vibe-coding/protocol/copilot-instructions-v7.md](vibe-coding/protocol/copilot-instructions-v7.md)
 
 ## Start-of-Session Vision Check (MANDATORY)
@@ -105,7 +112,7 @@ After each completion/ship report where the NEXT STEP is finished, check the las
 ## Required Reading (EVERY PROMPT)
 Before doing anything (even docs work), the AI MUST read:
 1. docs/vibe-coding/README.md (source of truth)
-2. docs/vibe-coding/protocol/protocol-v7.md (source of truth)
+2. docs/vibe-coding/protocol/PROTOCOL-INDEX.md (source of truth)
 3. docs/vibe-coding/protocol/copilot-instructions-v7.md (source of truth)
 4. docs/vibe-coding/protocol/stay-on-track.md (source of truth)
 5. docs/vibe-coding/protocol/working-agreement-v1.md (source of truth)
@@ -137,7 +144,7 @@ NYC Explorer uses Playwright e2e + TypeScript typecheck as the default Green Gat
 ## What to upload to a new AI session (priority)
 - docs/Start-Here-For-AI.md
 - docs/vibe-coding/README.md
-- docs/vibe-coding/protocol/protocol-v7.md
+- docs/vibe-coding/protocol/PROTOCOL-INDEX.md
 - docs/vibe-coding/protocol/copilot-instructions-v7.md
 - docs/vibe-coding/protocol/stay-on-track.md
 - docs/vibe-coding/protocol/working-agreement-v1.md

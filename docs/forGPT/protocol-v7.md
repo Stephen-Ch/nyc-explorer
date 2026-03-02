@@ -1,6 +1,6 @@
 # Protocol v7 — Vibe-Coding Protocol
 
-> **File Version:** 2026-02-26
+> **File Version:** 2026-03-02
 
 **v7.2.1 Changes:**
 - Stack-aware gates now read from `stack-profile.md` (no interpretation)
@@ -12,18 +12,18 @@
 1. **Prompt Review Gate + Command Lock (MANDATORY FIRST OUTPUT)**: Immediately after PROMPT-ID and BEFORE Proof-of-Read, the AI must output exactly 4 lines:
    - "What:" (1-line summary of what you will do)
    - "Best next step?" YES/NO
-   - "Confidence:" HIGH/MEDIUM/LOW
+   - "Confidence: <percentage>%"
    - "Work state:" READY|IN-PROGRESS|COMPLETE|MERGED|OBSOLETE
 
-   **Confidence scale note:** HIGH means you meet the Tiered Confidence thresholds for the scope (≥95% for docs/research, ≥99% for runtime code — see [Tiered Confidence Gate](#no-guessing--tiered-confidence-gate-mandatory)). If you cannot claim those thresholds, set Confidence to MEDIUM or LOW and STOP.
+   **Confidence scale note:** The percentage uses the same scale as the Tiered Confidence Gate and Evidence Pack (≥95% for docs/research, ≥99% for runtime code — see [Tiered Confidence Gate](#no-guessing--tiered-confidence-gate-mandatory)). If you cannot meet the applicable threshold, STOP and explain.
 
    **Prompt Review Gate (ROLE CLARITY):** The Prompt Review Gate is performed by **Copilot** (the executor) on the prompt text **before** running any commands. ChatGPT may draft prompts, but Copilot must first output the gate decision (YES/NO, confidence, PROCEED/STOP). If STOP, Copilot must ask the minimum questions or request edits and must not execute anything.
 
    **STOP conditions:** 
-   - If "Best next step? NO" OR "Confidence:" != HIGH, STOP immediately and explain why.
+   - If "Best next step? NO" OR Confidence is below the applicable threshold (< 95% docs, < 99% runtime), STOP immediately and explain why.
    - If "Work state:" != READY, STOP immediately (EXCEPTION: merge/closeout prompts require state = COMPLETE).
    - If prompt is unclear, request clarification from operator.
-   - If the prompt adds stricter sequencing/format/tool constraints beyond this protocol (e.g., “Proof-of-Read immediately after Gate”, “Stop immediately on any error”, “no fenced code blocks”, “no rg”), and you are not prepared to follow them exactly with the available tools, you MUST set "Best next step? NO" (or "Confidence: MEDIUM") and STOP with the smallest prompt correction needed.
+   - If the prompt adds stricter sequencing/format/tool constraints beyond this protocol (e.g., “Proof-of-Read immediately after Gate”, “Stop immediately on any error”, “no fenced code blocks”, “no rg”), and you are not prepared to follow them exactly with the available tools, you MUST set "Best next step? NO" (or lower your Confidence below threshold) and STOP with the smallest prompt correction needed.
    
    **Command Lock:** NO terminal commands, NO file edits, NO searches until the Prompt Review Gate is printed. If you realize you already ran a command before printing the gate, STOP immediately and report exactly what you ran. The Prompt Review Gate must appear before the first command (including git, npm, editors, search, generators, etc.) in EVERY report without exception. Before any git/grep commands, anchor to repo root using: Set-Location (git rev-parse --show-toplevel); git rev-parse --show-toplevel; Get-Location. Never run git pathspec checks from a subfolder.
    
@@ -87,6 +87,8 @@ Every work prompt MUST include:
 **Population Gate Pre-Flight:** Population Gate is verified during the Start-of-Session Doc Audit (after reading <DOCS_ROOT>/project/VISION.md, <DOCS_ROOT>/project/EPICS.md, and <DOCS_ROOT>/project/NEXT.md), not in the Prompt Review Gate. The Doc Audit MUST have been run in this session and returned Population Gate PASS before any coding work. If Doc Audit has not been run or returned FAIL, STOP and run/remediate it first (see [Start-Here-For-AI.md](../../Start-Here-For-AI.md)).
 
 **Doc Audit Sequencing (Session Prerequisite):** Doc Audit is a session-level prerequisite that occurs AFTER Proof-of-Read, never before the Prompt Review Gate. Work prompts in a fresh session must run Doc Audit first as per the ordered sequence in [Start-Here-For-AI.md](../../Start-Here-For-AI.md): Prompt Review Gate → Proof-of-Read → Doc Audit → (if PASS) proceed to work. After each commit, run the rerun-trigger detection command defined in [Start-Here-For-AI.md](../../Start-Here-For-AI.md) to determine if Doc Audit must be rerun. When `tools/session-start.ps1` exists in the vibe-coding subtree, the **RUN START OF SESSION DOCS AUDIT** command invokes it; the wrapper chains kit update → forGPT sync → 5-line audit print automatically.
+
+**Consumer Start-Here callout:** Consumer repos should include the standard session-start callout snippet from [templates/start-here-session-start-callout.example.md](../templates/start-here-session-start-callout.example.md) in their Start-Here-For-AI.md to ensure the automated chain is the default entry point.
 
 **Tech Debt Rule:** Any TECH-DEBT prompt and any new tech-debt row MUST include a Story ID (even if it's a "Maintenance/Protocol" story). Put it in the tech-debt row description as: "Story: <ID> — …".
 
@@ -332,11 +334,13 @@ If the change touches CSS scope/structure, default to a two-phase approach:
 
 ### D) Confidence Gate Update
 
-- **HIGH:** Evidence captured and consistent with plan
-- **MEDIUM:** Evidence incomplete or partially verified
-- **LOW:** No evidence gathered; proceeding on assumption
+- **≥95%:** Evidence captured and consistent with plan (docs/research scope)
+- **≥99%:** Evidence captured, reproduced, and side-effects ruled out (runtime/code scope)
+- **Below threshold:** Evidence incomplete or contradicts plan — STOP and gather evidence first
 
-**Rule:** If Confidence is MEDIUM or LOW due to missing structural evidence, STOP and gather evidence first.
+**Rule:** If Confidence is below the applicable threshold due to missing structural evidence, STOP and gather evidence first.
+
+**Note:** This is the same percentage scale used in the Prompt Review Gate and Evidence Pack Confidence Statement.
 
 ---
 
@@ -354,7 +358,7 @@ Confidence thresholds vary by scope. Higher-risk scopes require higher confidenc
 | Production/runtime code | ≥99% | May proceed |
 | Any scope below threshold | — | STOP — enter RESEARCH-ONLY mode |
 
-**Clarification:** "Best next step?" and "Confidence" in the Prompt Review Gate are **Copilot's** (executor's) gate questions, not planner statements. Copilot evaluates confidence based on available evidence before deciding to proceed.
+**Clarification:** "Best next step?" and "Confidence" in the Prompt Review Gate are **Copilot's** (executor's) gate questions, not planner statements. Copilot evaluates confidence as a percentage using the same scale as the Evidence Pack Confidence Statement.
 
 **What "95% confidence" means (low-risk):**
 - You have verified evidence for every structural assumption
@@ -366,6 +370,8 @@ Confidence thresholds vary by scope. Higher-risk scopes require higher confidenc
 - You have reproduced the issue or behavior under investigation
 - You have confirmed no side effects on adjacent features
 - You have identified or written tests that cover the change
+
+**Primary Priorities:** See [working-agreement-v1.md → Primary Priorities (Non-Negotiable)](working-agreement-v1.md#primary-priorities-non-negotiable) for prompt-only mode, one-prompt rule, tiny-step TDD default, and Stephen cognitive style. These govern all GPT interactions.
 
 ### B) Dual-Agent Research Requirement
 
@@ -820,10 +826,10 @@ PROMPT-ID: <ID>
 2. **Prompt Review Gate** (mandatory, exactly 4 lines, BEFORE any work or Proof-of-Read):
    - What: (1-line summary)
    - Best next step? YES/NO
-   - Confidence: HIGH/MEDIUM/LOW
+   - Confidence: <percentage>%
    - Work state: READY|IN-PROGRESS|COMPLETE|MERGED|OBSOLETE
    
-   **Command Lock enforcement:** NO commands, edits, or searches are allowed before printing these 4 lines. If Confidence != HIGH, Best next step != YES, or Work state != READY (except merge/closeout requiring COMPLETE), STOP and explain.
+   **Command Lock enforcement:** NO commands, edits, or searches are allowed before printing these 4 lines. If Confidence is below the applicable threshold (< 95% docs, < 99% runtime), Best next step != YES, or Work state != READY (except merge/closeout requiring COMPLETE), STOP and explain.
 3. **Proof-of-Read** (mandatory after the Gate; must appear before any searches or edits; 1-2 complete sentences 10-50 words per file)
 4. **Work** (execute tasks only after gate passes; repo sanity commands may run before Proof-of-Read)
 5. **Green Gate** (run tests + build)
@@ -989,7 +995,7 @@ If you cannot merge immediately, add a **PARKED** row to `<DOCS_ROOT>/status/bra
 ## Enforcement
 
 - Missing Proof-of-Read → STOP
-- Confidence < HIGH → STOP and clarify
+- Confidence < 95% → STOP and clarify (< 99% for runtime/code execution)
 - Test/build failure → STOP and fix before proceeding
 - Missing artifact verification in S2C → incomplete closeout
 

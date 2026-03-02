@@ -25,10 +25,26 @@ instead of executing.
 
 ---
 
+## Session Start (MANDATORY FIRST COMMAND)
+
+Before any work in a fresh session, run the session-start chain:
+
+    powershell -NoProfile -ExecutionPolicy Bypass -File <SUBTREE>/tools/run-vibe.ps1 -Tool session-start
+
+This chains kit update → forGPT sync → doc-audit -StartSession → prints the 5-line gate. If any other command is requested first, reply: **Hard Stop. Run RUN START OF SESSION DOCS AUDIT first.**
+
+Fallback (if run-vibe unavailable): `<DOCS_ROOT>/vibe-coding/tools/session-start.ps1`
+
+See [canonical-commands.md → Session Start](canonical-commands.md#session-start-docs-audit-mandatory-first-command) for flags and chain details.
+
+---
+
 ## Non-Negotiables (Formal Work Prompts)
 
 These are Copilot-specific execution rules. For the full gate definitions,
 see [Core Rules](protocol-v7.md#core-rules-non-negotiable).
+
+**Primary Priorities:** Follow [working-agreement-v1.md → Primary Priorities (Non-Negotiable)](working-agreement-v1.md#primary-priorities-non-negotiable) for prompt-only + one-prompt + tiny-step TDD + brevity rules.
 
 1. **PROMPT-ID first line** -- the completion report must start with
    `PROMPT-ID: <id>`. No headings or text before it.
@@ -104,9 +120,11 @@ and the existing hook is stable. Otherwise STOP and ask the operator.
 
 ### Confidence integration
 
-- HIGH: evidence captured and consistent with plan.
-- MED: evidence incomplete but work can proceed with pivot.
-- LOW: evidence contradicts prompt (requires STOP).
+- ≥95% (docs/research) / ≥99% (runtime): evidence captured and consistent with plan.
+- Below threshold: evidence incomplete — STOP or enter RESEARCH-ONLY mode.
+- Evidence contradicts prompt: STOP immediately (see Contradiction STOP above).
+
+**Note:** Uses the same `Confidence: <percentage>%` scale as the Prompt Review Gate and Evidence Pack.
 
 ---
 
