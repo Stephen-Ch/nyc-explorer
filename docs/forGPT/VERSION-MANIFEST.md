@@ -6,10 +6,10 @@
 
 | Field | Value |
 |-------|-------|
-| **Generated** | 2026-03-02 13:56:50 |
+| **Generated** | 2026-03-02 14:29:50 |
 | **DOCS_ROOT** | `docs` |
-| **Git Branch** | `main` |
-| **Git Commit** | `808e65f` |
+| **Git Branch** | `chore/nycx-docs-std-002-hygiene` |
+| **Git Commit** | `5110647` |
 | **CORE Files** | 5 |
 | **EXTRA Files** | 3 |
 | **TOTAL Files** | 8 |
@@ -30,7 +30,7 @@
 | CORE | VIBE-CODING.VERSION.md | docs/vibe-coding/VIBE-CODING.VERSION.md | `39FF1BA499709800` |
 | extra | protocol-v7.md | docs/vibe-coding/protocol/protocol-v7.md | `34CA0DA33BA89B66` |
 | extra | copilot-instructions-v7.md | docs/vibe-coding/protocol/copilot-instructions-v7.md | `F2175298ADB1A765` |
-| extra | ResearchIndex.md | docs/research/ResearchIndex.md | `7468B31B0BF41F8D` |
+| extra | ResearchIndex.md | docs/research/ResearchIndex.md | `DDA1C311D30B4BF9` |
 
 ---
 

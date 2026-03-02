@@ -1,8 +1,8 @@
 # Research Index — NYC Explorer
 
-**Last updated:** 2026-02-07  
-**Coverage:** Links to all identified research, audit, postmortem, and investigation artifacts.  
-**Method:** Index-in-place (no physical moves in this pass).
+Last updated: 2026-03-02  
+Coverage: Links to all identified research, audit, postmortem, and investigation artifacts.  
+Method: Index-in-place (no physical moves in this pass).
 
 ## Summary
 
@@ -54,13 +54,13 @@
 |----|-------|------|--------|
 | R-009 | PROVENANCE.md (master) | [data/historical/PROVENANCE.md](../../data/historical/PROVENANCE.md) | Complete |
 | R-010 | PROVENANCE.csv | [data/historical/PROVENANCE.csv](../../data/historical/PROVENANCE.csv) | Complete |
-| R-011 | Provenance 1852 | [data/historical/NYC-Explorer_Provenance_1852.md](../../data/historical/NYC-Explorer_Provenance_1852.md) | Complete |
-| R-012 | Provenance 1877 | [data/historical/NYC-Explorer_Provenance_1877.md](../../data/historical/NYC-Explorer_Provenance_1877.md) | Complete |
-| R-013 | Provenance 1902 | [data/historical/NYC-Explorer_Provenance_1902.md](../../data/historical/NYC-Explorer_Provenance_1902.md) | Complete |
-| R-014 | Provenance 1927 | [data/historical/NYC-Explorer_Provenance_1927.md](../../data/historical/NYC-Explorer_Provenance_1927.md) | Complete |
-| R-015 | Provenance 1952 | [data/historical/NYC-Explorer_Provenance_1952.md](../../data/historical/NYC-Explorer_Provenance_1952.md) | Complete |
-| R-016 | Provenance 1977 | [data/historical/NYC-Explorer_Provenance_1977.md](../../data/historical/NYC-Explorer_Provenance_1977.md) | Complete |
-| R-017 | Provenance 2002 | [data/historical/NYC-Explorer_Provenance_2002.md](../../data/historical/NYC-Explorer_Provenance_2002.md) | Complete |
+| R-011 | Provenance 1852 | [data/historical/attractions/1852/NYC-Explorer_Provenance_1852.md](../../data/historical/attractions/1852/NYC-Explorer_Provenance_1852.md) | Complete |
+| R-012 | Provenance 1877 | [data/historical/attractions/1877/NYC-Explorer_Provenance_1877.md](../../data/historical/attractions/1877/NYC-Explorer_Provenance_1877.md) | Complete |
+| R-013 | Provenance 1902 | [data/historical/attractions/1902/NYC-Explorer_Provenance_1902.md](../../data/historical/attractions/1902/NYC-Explorer_Provenance_1902.md) | Complete |
+| R-014 | Provenance 1927 | [data/historical/attractions/1927/NYC-Explorer_Provenance_1927.md](../../data/historical/attractions/1927/NYC-Explorer_Provenance_1927.md) | Complete |
+| R-015 | Provenance 1952 | [data/historical/attractions/1952/NYC-Explorer_Provenance_1952.md](../../data/historical/attractions/1952/NYC-Explorer_Provenance_1952.md) | Complete |
+| R-016 | Provenance 1977 | [data/historical/attractions/1977/NYC-Explorer_Provenance_1977.md](../../data/historical/attractions/1977/NYC-Explorer_Provenance_1977.md) | Complete |
+| R-017 | Provenance 2002 | [data/historical/attractions/2002/NYC-Explorer_Provenance_2002.md](../../data/historical/attractions/2002/NYC-Explorer_Provenance_2002.md) | Complete |
 | R-018 | Manhattan Scope Plan | [data/historical/Manhattan_ScopePlan.md](../../data/historical/Manhattan_ScopePlan.md) | Complete |
 | R-019 | Lower Manhattan Scope Plan | [data/historical/LowerManhattan_ScopePlan_20251031-141045.md](../../data/historical/LowerManhattan_ScopePlan_20251031-141045.md) | Complete |
 | R-020 | Union Square-Flatiron Research Drop README | [data/historical/UnionSquare-Flatiron_ResearchDrop_README.md](../../data/historical/UnionSquare-Flatiron_ResearchDrop_README.md) | Complete |
