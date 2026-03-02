@@ -11,7 +11,7 @@ Declares the consumer repo's technology stack, standard commands, and environmen
 Before accepting this overlay into the consumer repo:
 
 - Best next step? (YES/NO)
-- Confidence: (0-100)
+- Confidence: <percentage>%
 
 ## Instructions
 

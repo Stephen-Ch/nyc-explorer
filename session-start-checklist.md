@@ -29,6 +29,15 @@
 
 ---
 
+## End of Session
+
+- [ ] **RUN END OF SESSION** -- Run `run-vibe -Tool end-session` to check repo hygiene (path-independent; no hardcoded DOCS_ROOT needed).
+- [ ] If tracked changes reported: commit or stash before closing.
+- [ ] If non-merged branches listed: open PRs or clean up per repo policy.
+- [ ] Optionally: add `-WriteReport` to save a status snapshot under `<DOCS_ROOT>/status/`.
+
+---
+
 ## Quick Links
 
 | Doc | Purpose |
