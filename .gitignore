@@ -15,3 +15,7 @@ apps/web-mvc/**/old_home.inline.html
 apps/web-mvc/**/prev_*.html
 apps/web-mvc/**/prev_*.cs
 wwwroot/js/typeahead.js
+
+# build / dev artifacts
+apps/web-mvc/build-errors.json
+route-inline-trimmed.js
