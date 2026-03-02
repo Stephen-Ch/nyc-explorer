@@ -1,32 +1,31 @@
 # NYC Explorer — Next
 
+## Completed Stories
+- **NYCX-DOCS-STD-001** — COMPLETE (2026-03-02). Docs standardization: Control Deck, vibe-coding subtree, ResearchIndex, archive bundle, dataset relocation, legacy redirects, Start-Here wiring.
+
 ## Active Story ID
-NYCX-DOCS-STD-001
+NYCX-DOCS-STD-002
 
 ## Next Step
-Commit session-critical folders, adopt vibe-coding kit subtree, create research index, relocate historical datasets, add legacy redirects, and push (docs-only).
+Clean up stale local branches and untracked files, update ResearchIndex LastUpdated field, and verify all docs links resolve correctly (docs-only hygiene pass).
 
 ## Definition of Done (DoD)
-Repo has tracked Control Deck + vibe-coding subtree + research index + archived bundle + datasets relocated; Start-Here is wired, and the docs tree is clean with no non-doc files committed.
+Repo has no stale local branches for merged/closed PRs, untracked artifacts are either committed or gitignored, ResearchIndex LastUpdated is current, and broken doc links are fixed.
 
 ## Scope Guardrails
 **In scope:**
-- All paths under `docs/**` and `data/**` (new dataset location).
+- All paths under `docs/**`, `.gitignore`, and local branch cleanup.
 
 **Out of scope:**
-- Runtime app code, package.json, playwright.config.ts, scripts/, .github/.
+- Runtime app code, package.json, playwright.config.ts, CI workflows.
 
 ## Done When
-- docs/archive/2026-01-11 committed (migration bundle)
-- docs/project, docs/status, docs/testing, docs/protocol, docs/handoffs tracked
-- docs/vibe-coding is a git subtree from vibe-coding-kit (v7.1.5+)
-- docs/research/ResearchIndex.md exists with links to all research
-- data/historical/ contains relocated datasets; docs/historical-data has redirect stub
-- docs/INDEX.md and docs/KB-Index.md are redirect stubs
-- docs/Start-Here-For-AI.md updated for new structure
+- Stale local branches (for merged/closed PRs) are deleted
+- Untracked files (build-errors.json, route-inline-trimmed.js, population-gate-check.ps1) are committed or gitignored
+- docs/research/ResearchIndex.md LastUpdated field is current
+- Doc link audit passes (no broken relative links in docs/)
 
 ## Inputs/Research
-- docs/REPORT-docs-pass0-inventory.md
-- docs/REPORT-docs-pass0_5-decision-pack.md
+- Session audit output from 2026-03-02 (ResearchIndex LastUpdated=MISSING)
 
-Last updated: 2026-02-07
+Last updated: 2026-03-02

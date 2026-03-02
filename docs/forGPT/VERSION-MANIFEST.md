@@ -6,10 +6,10 @@
 
 | Field | Value |
 |-------|-------|
-| **Generated** | 2026-03-02 13:10:47 |
+| **Generated** | 2026-03-02 13:56:50 |
 | **DOCS_ROOT** | `docs` |
 | **Git Branch** | `main` |
-| **Git Commit** | `12f23d7` |
+| **Git Commit** | `808e65f` |
 | **CORE Files** | 5 |
 | **EXTRA Files** | 3 |
 | **TOTAL Files** | 8 |
@@ -25,7 +25,7 @@
 |------|------|--------|----------------------|
 | CORE | VISION.md | docs/project/VISION.md | `4C6A1B8F88488DF7` |
 | CORE | EPICS.md | docs/project/EPICS.md | `5D52C74B7E3BB878` |
-| CORE | NEXT.md | docs/project/NEXT.md | `BD2BF8D79D86997E` |
+| CORE | NEXT.md | docs/project/NEXT.md | `0370568329589628` |
 | CORE | Start-Here-For-AI.md | docs/Start-Here-For-AI.md | `82A52ED5BD4239B4` |
 | CORE | VIBE-CODING.VERSION.md | docs/vibe-coding/VIBE-CODING.VERSION.md | `39FF1BA499709800` |
 | extra | protocol-v7.md | docs/vibe-coding/protocol/protocol-v7.md | `34CA0DA33BA89B66` |
