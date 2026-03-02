@@ -4,9 +4,9 @@
 Before issuing any command, edit, search, or tool call, output these four lines in order:
 What: <1-line plan>
 Best next step? YES/NO
-Confidence: HIGH/MEDIUM/LOW
+Confidence: <percentage>%
 Command Lock satisfied? YES/NO (STOP immediately if NO)
-Only continue with the rest of the response if all four lines are printed and the answers are YES / HIGH / YES.
+Only continue with the rest of the response if all four lines are printed and the answers are YES / ≥95% (or ≥99% for runtime) / YES.
 
 Include this block in any prompt that may modify `*.spec.ts` files:
 

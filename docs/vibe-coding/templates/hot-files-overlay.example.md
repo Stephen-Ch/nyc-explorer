@@ -11,7 +11,7 @@ Lists files and folders that require extra caution: analysis-first workflow, ful
 Before accepting this overlay into the consumer repo:
 
 - Best next step? (YES/NO)
-- Confidence: (0-100)
+- Confidence: <percentage>%
 
 ## Instructions
 

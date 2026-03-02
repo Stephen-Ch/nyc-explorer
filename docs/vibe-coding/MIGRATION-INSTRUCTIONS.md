@@ -1,13 +1,19 @@
 # Vibe-Coding Protocol Migration Instructions
 
-**Version:** v7.2.6  
-**Last Updated:** 2026-02-26
+**Version:** v7.2.19  
+**Last Updated:** 2026-03-02
 
 ## Purpose
 Guide for migrating vibe-coding protocol v7 to other projects (new projects or upgrading from older protocol versions).
 
 ## Core Principle
 The protocol is **project-agnostic** by design. Gates, sequencing rules, and enforcement mechanisms never change. Only project-specific context (hot files, routes, tech stack) requires customization.
+
+---
+
+## Breaking Changes (v7.2.19)
+
+- **Confidence line canonicalized to `Confidence: <percentage>%`** across Prompt Review Gate + templates. Old forms (`HIGH/MEDIUM/LOW`, `(0-100)`) are deprecated. After pulling this kit version, run `doc-audit -StartSession` and grep for old confidence formats (should return 0 hits).
 
 ---
 

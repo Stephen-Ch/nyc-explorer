@@ -78,21 +78,39 @@ if ($treeState -eq "DIRTY" -and -not $Force) {
 }
 
 # -- 2. Detect DOCS_ROOT --------------------------------------
+# Prefer script-relative: tools/ -> vibe-coding/ (kit head) -> DOCS_ROOT
 $docsRoot = $null
 $docsReason = ""
 
-$deDir = Join-Path $repoRoot "docs-engineering"
-$docsDir = Join-Path $repoRoot "docs"
+$kitHead = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+if ((Split-Path $kitHead -Leaf) -eq "vibe-coding") {
+    $docsRootFull = (Resolve-Path (Join-Path $kitHead "..")).Path
+    $repoRootNorm = $repoRoot -replace '/', '\'
+    $docsRootNorm = $docsRootFull -replace '/', '\'
+    if ($docsRootNorm.Length -gt $repoRootNorm.Length -and $docsRootNorm.StartsWith($repoRootNorm)) {
+        $docsRoot = ($docsRootNorm.Substring($repoRootNorm.Length).TrimStart('\')) -replace '\\', '/'
+        $docsReason = "script-relative (vibe-coding parent)"
+    } elseif ($docsRootNorm -eq $repoRootNorm) {
+        # DOCS_ROOT is repo root itself — use '.' to keep Join-Path sane
+        $docsRoot = "."
+        $docsReason = "script-relative (vibe-coding at repo root)"
+    }
+}
 
-if ((Test-Path $deDir) -and ((Test-Path (Join-Path $deDir "vibe-coding")) -or (Test-Path (Join-Path $deDir "forGPT")))) {
-    $docsRoot = "docs-engineering"
-    $docsReason = "docs-engineering/ contains vibe-coding or forGPT"
-} elseif (Test-Path $docsDir) {
-    $docsRoot = "docs"
-    $docsReason = "docs/ exists"
-} else {
-    Write-Error "HARD STOP: Neither docs-engineering/ nor docs/ found at repo root: $repoRoot"
-    exit 1
+# Fallback: repo-root detection (Kit source repo or unusual layout)
+if (-not $docsRoot) {
+    $deDir = Join-Path $repoRoot "docs-engineering"
+    $docsDir = Join-Path $repoRoot "docs"
+    if ((Test-Path $deDir) -and ((Test-Path (Join-Path $deDir "vibe-coding")) -or (Test-Path (Join-Path $deDir "forGPT")))) {
+        $docsRoot = "docs-engineering"
+        $docsReason = "docs-engineering/ contains vibe-coding or forGPT"
+    } elseif (Test-Path $docsDir) {
+        $docsRoot = "docs"
+        $docsReason = "docs/ exists"
+    } else {
+        Write-Error "HARD STOP: Neither docs-engineering/ nor docs/ found at repo root: $repoRoot"
+        exit 1
+    }
 }
 
 $subtreePrefix = "$docsRoot/vibe-coding"

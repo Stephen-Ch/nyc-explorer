@@ -96,20 +96,43 @@ function Find-DocsRoot {
     return $null
 }
 
-$projectRoot = Find-ProjectRoot
-if (-not $projectRoot) {
-    Write-Error "STOP: Cannot find project root (no docs-engineering or docs folder found). Run from inside a project with docs."
-    exit 1
+$projectRoot = $null
+$docsRoot = $null
+
+# -- Script-relative DOCS_ROOT detection (PS 5.1 safe) ---------
+# Preferred: tools/ -> vibe-coding/ (kit head) -> DOCS_ROOT
+$kitHead = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+if ((Split-Path $kitHead -Leaf) -eq "vibe-coding") {
+    $docsRootFull = (Resolve-Path (Join-Path $kitHead "..")).Path
+    try {
+        $projectRoot = (git rev-parse --show-toplevel 2>&1) -replace '/', '\'
+    } catch { }
+    if ($projectRoot -and (Test-Path $projectRoot)) {
+        $repoRootNorm = $projectRoot -replace '/', '\'
+        $docsRootNorm = $docsRootFull -replace '/', '\'
+        if ($docsRootNorm.Length -gt $repoRootNorm.Length -and $docsRootNorm.StartsWith($repoRootNorm)) {
+            $docsRoot = ($docsRootNorm.Substring($repoRootNorm.Length).TrimStart('\')) -replace '\\', '/'
+        } elseif ($docsRootNorm -eq $repoRootNorm) {
+            $docsRoot = "."
+        }
+    }
+}
+
+# Fallback: walk up from CWD (original logic for kit source repo or unusual layout)
+if (-not $projectRoot -or -not $docsRoot) {
+    $projectRoot = Find-ProjectRoot
+    if (-not $projectRoot) {
+        Write-Error "STOP: Cannot find project root (no docs-engineering or docs folder found). Run from inside a project with docs."
+        exit 1
+    }
+    $docsRoot = Find-DocsRoot -ProjectRoot $projectRoot
+    if (-not $docsRoot) {
+        Write-Error "STOP: Cannot detect DOCS_ROOT. Expected 'docs-engineering' or 'docs' folder in project root."
+        exit 1
+    }
 }
 
 Write-Host "Project root: $projectRoot" -ForegroundColor Cyan
-
-$docsRoot = Find-DocsRoot -ProjectRoot $projectRoot
-if (-not $docsRoot) {
-    Write-Error "STOP: Cannot detect DOCS_ROOT. Expected 'docs-engineering' or 'docs' folder in project root."
-    exit 1
-}
-
 Write-Host "DOCS_ROOT: $docsRoot" -ForegroundColor Cyan
 
 # Paths (using detected DOCS_ROOT)

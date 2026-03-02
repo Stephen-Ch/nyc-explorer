@@ -11,7 +11,7 @@ Ask yourself:
 1. Did I complete Proof-of-Read?
 2. Does my plan match the prompt's GOAL exactly?
 3. Am I staying within SCOPE GUARDRAILS?
-4. Is my confidence HIGH?
+4. Is my confidence ≥95% (≥99% for runtime/code execution)?
 5. Am I waiting for the previous Copilot report to be pasted/acknowledged before pushing for a new prompt?
 6. If something looks like a bug, have I confirmed the production content counts/state before “fixing” it?
 
@@ -19,7 +19,7 @@ Ask yourself:
 - [ ] Adding features not in the prompt
 - [ ] Changing files outside scope
 - [ ] Skipping Proof-of-Read
-- [ ] Confidence is MEDIUM or LOW
+- [ ] Confidence < 95% (< 99% for runtime/code execution)
 - [ ] Tests/build not run after code changes
 - [ ] Making assumptions instead of asking
 

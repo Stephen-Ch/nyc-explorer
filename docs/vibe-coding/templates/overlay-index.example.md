@@ -11,7 +11,7 @@ Lists the standard consumer overlay files. Copy this file to `<DOCS_ROOT>/overla
 Before accepting this overlay into the consumer repo:
 
 - Best next step? (YES/NO)
-- Confidence: (0-100)
+- Confidence: <percentage>%
 
 ## Instructions
 

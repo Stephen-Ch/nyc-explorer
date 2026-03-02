@@ -4,7 +4,7 @@
 Every closeout report must begin with these four lines before any commands, edits, or verification steps:
 What: <1-line plan>
 Best next step? YES/NO
-Confidence: HIGH/MEDIUM/LOW
+Confidence: <percentage>%
 Command Lock satisfied? YES/NO (STOP immediately if NO)
 Do not run git/npm/verification commands until the four-line gate is printed and passes.
 

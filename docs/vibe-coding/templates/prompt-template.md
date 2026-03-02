@@ -30,7 +30,7 @@ One or two sentences describing the desired outcome.
 ## Confidence Gate (answer BEFORE doing any work)
 
 1. Is this the best next prompt right now? (yes/no)
-2. Confidence % (0-100) that executing this is correct and safe.
+2. Confidence: <percentage>% that executing this is correct and safe.
 3. Risks/unknowns (max 5).
 4. If confidence <95%: STOP and output a single best-next RESEARCH-ONLY prompt.
 5. If confidence >=95%: proceed with implementation.

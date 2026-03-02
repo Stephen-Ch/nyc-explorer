@@ -103,16 +103,33 @@ if (-not [string]::IsNullOrWhiteSpace($prefix)) {
     Write-Host "Current Prefix: $prefix"
 }
 
-# Detect DOCS_ROOT (same logic as session-start.ps1)
+# Detect DOCS_ROOT — prefer script-relative, fall back to repo-root detection
+# Script-relative: tools/ -> vibe-coding/ (kit head) -> DOCS_ROOT
 $docsRoot = $null
-$deDir = Join-Path $repoRoot "docs-engineering"
-$docsDir = Join-Path $repoRoot "docs"
-if ((Test-Path $deDir) -and ((Test-Path (Join-Path $deDir "vibe-coding")) -or (Test-Path (Join-Path $deDir "forGPT")))) {
-    $docsRoot = "docs-engineering"
-} elseif (Test-Path $docsDir) {
-    $docsRoot = "docs"
-} else {
-    $docsRoot = "docs"  # fallback for config-path compatibility
+
+$kitHead = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+if ((Split-Path $kitHead -Leaf) -eq "vibe-coding") {
+    $docsRootFull = (Resolve-Path (Join-Path $kitHead "..")).Path
+    $repoRootNorm = $repoRoot -replace '/', '\'
+    $docsRootNorm = $docsRootFull -replace '/', '\'
+    if ($docsRootNorm.Length -gt $repoRootNorm.Length -and $docsRootNorm.StartsWith($repoRootNorm)) {
+        $docsRoot = ($docsRootNorm.Substring($repoRootNorm.Length).TrimStart('\')) -replace '\\', '/'
+    } elseif ($docsRootNorm -eq $repoRootNorm) {
+        $docsRoot = "."
+    }
+}
+
+# Fallback: repo-root detection (Kit source repo or unusual layout)
+if (-not $docsRoot) {
+    $deDir = Join-Path $repoRoot "docs-engineering"
+    $docsDir = Join-Path $repoRoot "docs"
+    if ((Test-Path $deDir) -and ((Test-Path (Join-Path $deDir "vibe-coding")) -or (Test-Path (Join-Path $deDir "forGPT")))) {
+        $docsRoot = "docs-engineering"
+    } elseif (Test-Path $docsDir) {
+        $docsRoot = "docs"
+    } else {
+        $docsRoot = "docs"  # fallback for config-path compatibility
+    }
 }
 
 Write-Host "DOCS_ROOT: $docsRoot"
