@@ -7,8 +7,8 @@ While overlay freeze is ON, edits to Program.cs or apps/web-mvc/wwwroot/js/route
 - Typecheck + Playwright GREEN
 - PR labeled `overlay-recovery` and mentions selectors v0.7
 
-## Overlay Freeze — Partial Lift (proposal)
-If this RFC is approved:
+## Overlay Freeze — Partial Lift (APPROVED 2026-03-04)
+This partial lift was approved via docs/approvals/OR-08A-approval.md (Stephen, Product Owner, 2026-03-04):
 - Program.cs and overlay JS allowed under ≤2 files / ≤60 LOC with GREEN tests.
-- Legacy overlay remains enabled; new core may load by default (inert).
+- Legacy overlay remains enabled; new core loads by default (inert); disable with OVERLAY_RECOVERY=0.
 - Logs required per slice; selectors v0.7 lock.
