@@ -1,6 +1,7 @@
 # Protocol v7 — Vibe-Coding Protocol
 
 > **File Version:** 2026-03-02
+> **Quick reference:** For mandatory gates only, see [hard-rules.md](hard-rules.md).
 
 **v7.2.1 Changes:**
 - Stack-aware gates now read from `stack-profile.md` (no interpretation)
@@ -96,6 +97,14 @@ Every work prompt MUST include:
 If `<DOCS_ROOT>/project/NEXT.md` is missing/unclear/outdated OR **Control Deck Population Gate FAIL** (placeholders detected in <DOCS_ROOT>/project/VISION.md, <DOCS_ROOT>/project/EPICS.md, or <DOCS_ROOT>/project/NEXT.md) → STOP coding and enter Alignment Mode. See [alignment-mode.md](alignment-mode.md) for 3-Party Approval Gate (Canonical), placeholder remediation, and questions to ask Stephen + Copilot before coding. Update `<DOCS_ROOT>/project/*` (VISION/EPICS/NEXT) before any code work.
 
 2. **Proof-of-Read**: Proof-of-Read MUST appear after the Gate and BEFORE any searches or edits (file path + quote of 1-2 complete sentences 10-50 words + "Applying: <rule name>"). Repo sanity commands may run between the Gate and Proof-of-Read.
+
+   **Comprehension Self-Check (Required):** Immediately after Proof-of-Read, the agent MUST answer these 3 questions in its output BEFORE proceeding to any work:
+   - Q1: "What exactly will change?" (name specific file(s)/section(s) and intended diff — one line)
+   - Q2: "What is explicitly out of scope?" (one line)
+   - Q3: "What is the next command + the pass/fail gate?" (exact next command — one line)
+
+   If the agent cannot answer any question with concrete specifics, it must STOP and ask Stephen (or enter RESEARCH-ONLY mode per existing rules). The self-check answers must appear every time Proof-of-Read is required.
+
 3. **Single-Block Prompts**: All operator prompts are one fenced code block ending with `# END PROMPT`.
 4. **Green Gate (Stack-Aware)**: See [Green Gate — Stack-Aware Rules](#green-gate--stack-aware-rules) below. At minimum, the primary build must pass before any commit.
 5. **Flake Protocol**: If a test fails then passes on rerun without code changes:
@@ -266,6 +275,32 @@ Tool absence (e.g., “rg not found”) is NOT an error if you switch to the nex
 - failing tests/builds during code prompts (unless the prompt explicitly instructs fixing)
 - scope violations
 - missing required canonical docs (e.g., `<DOCS_ROOT>/project/NEXT.md`, required handoff/protocol files)
+
+### D) STOP / PIVOT Rule (When Evidence Contradicts Prompt)
+
+When the agent discovers that the repo state differs from what the prompt assumed, it must follow one of two paths before making any edits.
+
+**PIVOT REPORT** (when a better alternative exists):
+
+    PIVOT REPORT
+    Expected (from prompt): <what prompt assumed>
+    Found (evidence): <what actually exists, with file:line>
+    Proposed pivot: <safer alternative>
+    Risk assessment: <why pivot is better>
+
+Proceed with pivot only if: identical behavior, equal or narrower scope, and the existing hook is stable. Otherwise STOP and ask the operator.
+
+**Contradiction STOP** (when evidence contradicts the prompt):
+
+    STOP: PROMPT CONTRADICTED BY EVIDENCE
+    Prompt assumption: <what prompt said>
+    Evidence: <what file:line actually shows>
+    Request: Clarify scope or update prompt
+
+**Confidence integration:**
+- ≥95% (docs/research) / ≥99% (runtime): evidence captured and consistent with plan.
+- Below threshold: evidence incomplete — STOP or enter RESEARCH-ONLY mode.
+- Evidence contradicts prompt: STOP immediately (see Contradiction STOP above).
 
 ## Docs PR Consolidation Rule
 
@@ -464,6 +499,10 @@ To exit RESEARCH-ONLY mode:
 1. Complete an Evidence Pack (see below)
 2. Confidence MUST reach ≥95%
 3. Explicitly declare: "RESEARCH-ONLY complete — confidence now ≥95%"
+
+### F) External Research Escalation
+
+When blocked by external facts and Copilot has no web access, follow [working-agreement-v1.md § External Research Escalation](working-agreement-v1.md).
 
 ---
 

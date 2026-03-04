@@ -53,6 +53,8 @@ see [Core Rules](protocol-v7.md#core-rules-non-negotiable).
    searches until these lines are printed (Command Lock).
 3. **Proof-of-Read** -- file + quote + "Applying: <rule>". Must appear after
    the Gate and before any searches or edits.
+   After Proof-of-Read, complete the **Comprehension Self-Check** (Q1: what changes, Q2: out of scope, Q3: next command + gate) before proceeding.
+   See [protocol-v7.md § Comprehension Self-Check](protocol-v7.md#comprehension-self-check-required).
 4. **Green Gate** -- run the stack-appropriate gate declared in the consumer
    repo's stack-profile. See [Green Gate](protocol-v7.md#green-gate--stack-aware-rules).
 5. **Stop on Error** -- non-zero exit -> stop, propose smallest fix, wait.
@@ -97,34 +99,15 @@ Full help trigger definitions and the agent report template are in
 
 ## STOP / PIVOT Rule
 
-When Copilot discovers that the repo state differs from what the prompt
-assumed, it must follow one of two paths before making any edits.
+When evidence contradicts the prompt, follow the PIVOT or Contradiction STOP format before making any edits.
 
-### PIVOT REPORT (when a better alternative exists)
+→ [protocol-v7.md § STOP / PIVOT Rule](protocol-v7.md#d-stop--pivot-rule-when-evidence-contradicts-prompt)
 
-    PIVOT REPORT
-    Expected (from prompt): <what prompt assumed>
-    Found (evidence): <what actually exists, with file:line>
-    Proposed pivot: <safer alternative>
-    Risk assessment: <why pivot is better>
+### External Research Escalation (no web access)
 
-Proceed with pivot only if: identical behavior, equal or narrower scope,
-and the existing hook is stable. Otherwise STOP and ask the operator.
+When blocked by external facts Copilot cannot verify locally, **STOP** and output `NEED GPT WEB RESEARCH`.
 
-### Contradiction STOP (when evidence contradicts the prompt)
-
-    STOP: PROMPT CONTRADICTED BY EVIDENCE
-    Prompt assumption: <what prompt said>
-    Evidence: <what file:line actually shows>
-    Request: Clarify scope or update prompt
-
-### Confidence integration
-
-- ≥95% (docs/research) / ≥99% (runtime): evidence captured and consistent with plan.
-- Below threshold: evidence incomplete — STOP or enter RESEARCH-ONLY mode.
-- Evidence contradicts prompt: STOP immediately (see Contradiction STOP above).
-
-**Note:** Uses the same `Confidence: <percentage>%` scale as the Prompt Review Gate and Evidence Pack.
+→ [working-agreement-v1.md § External Research Escalation](working-agreement-v1.md#external-research-escalation-when-copilot-lacks-web-access)
 
 ---
 

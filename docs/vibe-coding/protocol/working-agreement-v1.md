@@ -89,14 +89,20 @@ When requesting a read-only report (research, audit, investigation):
 
 ## Timeboxing + Pivot Rule (MANDATORY for environmental issues)
 
-When blocked by environmental issues (network, TLS, proxy, machine-specific):
+When blocked by environmental issues (network, TLS, proxy, machine-specific), follow the canonical timebox procedure (20-minute / 3-variation hard limit, then document and pivot).
 
-1. **Timebox:** Max 20 minutes OR 3 meaningful config variations
-2. **Document:** Create R-### research artifact + TD-### tech debt item
-3. **Park:** Link both in ResearchIndex.md and tech-debt-and-future-work.md
-4. **Pivot:** Continue with alternative high-ROI work (docs, CI gates, other stories)
+→ [protocol-v7.md § Environmental Debug Timebox](protocol-v7.md#environmental-debug-timebox-mandatory)
 
-Do NOT persist beyond the timebox. Environmental issues often require changes outside Copilot's scope.
+## External Research Escalation (When Copilot Lacks Web Access)
+
+- If the task requires **external facts** (platform quirks, library docs, standards, time-sensitive info) and Copilot cannot browse the web: **STOP**.
+- Before escalating, confirm the answer cannot be derived from repo evidence (grep, file reads, local scripts).
+- Request a **GPT Web/Deep Research** packet with exactly:
+  1. 1–3 precise questions
+  2. The decision the research will unlock
+  3. Repo evidence already checked (commands + outcomes)
+- Do **not** proceed with implementation until the research packet is returned OR Stephen explicitly waives it.
+- Non-external problems (paths, refs, grep, local scripts) must be solved locally — no escalation.
 
 ## Communication Protocol
 - AI asks clarifying questions BEFORE starting work

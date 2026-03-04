@@ -7,6 +7,7 @@
 
 ## Before You Start (Session Setup)
 
+- **Hard rules (mandatory gates only)** → [hard-rules.md](hard-rules.md) *(separate file, not a protocol-v7 anchor)*
 - Core rules and non-negotiables → [Core Rules](protocol-v7.md#core-rules-non-negotiable)
 - Focus Control (Goal Anchor, Drift Triggers, Reset Ritual) → [Focus Control](protocol-v7.md#focus-control)
 - North Star source of truth → [North Star Source of Truth](protocol-v7.md#north-star-source-of-truth)
