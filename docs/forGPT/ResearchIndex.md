@@ -1,6 +1,6 @@
 # Research Index — NYC Explorer
 
-Last updated: 2026-03-02  
+Last updated: 2026-03-04  
 Coverage: Links to all identified research, audit, postmortem, and investigation artifacts.  
 Method: Index-in-place (no physical moves in this pass).
 
