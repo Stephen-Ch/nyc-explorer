@@ -51,12 +51,12 @@
 
 ## Implementation Location
 
-**Source:** `src/app/shared/terminology.ts`
+**Source:** `<YourAppPath>/shared/terminology.ts`
 
 **Consumed by:**
-- `src/app/features/review.component.ts` (review screen labels)
-- `src/app/features/admin/admin-content-explorer.component.ts` (admin UI labels)
-- `src/app/features/components.ts` (SelectComponent placeholder)
+- `<YourAppPath>/features/review.component.ts` (review screen labels)
+- `<YourAppPath>/features/admin/admin-content-explorer.component.ts` (admin UI labels)
+- `<YourAppPath>/features/components.ts` (SelectComponent placeholder)
 
 ## Drift Prevention
 

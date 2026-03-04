@@ -68,11 +68,11 @@ Run the gate that matches your project type:
 
 | Stack | Gate Command |
 |-------|--------------|
-| .NET (ASP.NET MVC) | `msbuild ExampleProject.csproj /p:Configuration=Release` |
+| .NET (ASP.NET MVC) | `msbuild <YourProject>.csproj /p:Configuration=Release` |
 | JS (if package.json has scripts) | `npm run build` + `npm run test` |
 | Docs-only | Population Gate (no TBD/TODO/PLACEHOLDER) |
 
-**ExampleProject:** .NET Gate required. JS Gate N/A (no build script).
+**Mixed-stack project:** .NET Gate required. JS Gate N/A (no build script).
 
 → Full rules: [protocol-v7.md § Green Gate — Stack-Aware Rules](protocol/protocol-v7.md#green-gate--stack-aware-rules)
 

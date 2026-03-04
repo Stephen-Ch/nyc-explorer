@@ -129,7 +129,7 @@ Choose the appropriate evidence type:
 
 | Field | Value |
 |-------|-------|
-| **What we know** | App has two connection systems: TeachModel (EF) and TopLevelSqlConn (raw ADO.NET) |
+| **What we know** | App has two connection systems: <YourModel> (EF) and <YourConnectionName> (raw ADO.NET) |
 | **What we don't know** | Which one is actually used at runtime for the failing operation |
 | **Smallest next proof** | Query both connection strings; add logging to capture which path executes |
 | **Why confidence <95%** | Fixing the wrong connection config will have no effect |

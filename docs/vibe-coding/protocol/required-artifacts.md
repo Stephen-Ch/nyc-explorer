@@ -156,7 +156,7 @@ Any occurrence of these markers in Control Deck files (<DOCS_ROOT>/project/VISIO
 **WARNING:** Running git ls-files VISION.md from docs/project will return nothing (relative path). Always anchor to repo root using Set-Location (git rev-parse --show-toplevel); git rev-parse --show-toplevel; Get-Location before any git path checks.
 
 **PASS example (no markers):**
-"ExampleProject is a training-first application that helps users practice core skills and track progress."
+"AcmeApp is a training-first application that helps users practice core skills and track progress."
 
 **FAIL example (contains placeholder):**
 "Purpose: TBD — needs Stephen's input" (contains TBD placeholder marker)
@@ -173,7 +173,7 @@ Use objective word-count thresholds below to determine PASS vs FAIL.
 4. **Non-Goals** (non-placeholder): At least 2 explicit constraints or scope boundaries ("We are NOT..." format), each >= 10 words
 
 **PASS example (Purpose section):**
-"ExampleProject is a training-first application that helps users practice core skills and, optionally, advanced techniques in a low-stakes, learn-by-doing loop. It exists to make decision-making feel understandable, repeatable, and measurable for everyday users."
+"AcmeApp is a training-first application that helps users practice core skills and, optionally, advanced techniques in a low-stakes, learn-by-doing loop. It exists to make decision-making feel understandable, repeatable, and measurable for everyday users."
 
 **FAIL example (Purpose section):**
 "A game about politics." (only 4 words, lacks explanation of problem solved)

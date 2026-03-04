@@ -190,11 +190,10 @@ Before running any gate commands:
 
 **Build (REQUIRED per stack-profile):**
 
-    msbuild ExampleProject.csproj /p:Configuration=Release
+    msbuild <YourProject>.csproj /p:Configuration=Release
 
 **Unit Tests (if test project exists):**
-- Check: `Test-Path **/ExampleProject.Tests.csproj` or similar
-- Current status: No .NET unit test framework configured (per R-004)
+- Check: `Test-Path **/<YourProject>.Tests.csproj` or similar
 - When tests exist: Run via VS Test Explorer or `vstest.console.exe`
 
 **Tech Debt:** CLI test runner not standardized yet. See [tech-debt-and-future-work.md](../../project/tech-debt-and-future-work.md).
@@ -230,14 +229,14 @@ For docs-only changes (`.md` files only):
 
 Refer to [`<DOCS_ROOT>/project/stack-profile.md`](../../project/stack-profile.md) for the authoritative gate configuration.
 
-**ExampleProject Summary (per stack-profile):**
+**Example Summary (per stack-profile):**
 
 | Gate | Command | Required |
 |------|---------|----------|
-| .NET Build | `msbuild ExampleProject.csproj /p:Configuration=Release` | ✅ YES |
+| .NET Build | `msbuild <YourProject>.csproj /p:Configuration=Release` | ✅ YES |
 | .NET Tests | (none configured) | N/A |
-| JS Build | (no build script) | N/A |
-| Playwright E2E | `npm run test:smoke` | Optional |
+| JS Build | (per stack-profile) | N/A |
+| E2E | (per stack-profile) | Optional |
 
 ---
 
@@ -584,8 +583,8 @@ Every research effort MUST produce an Evidence Pack containing:
     | bin/X.dll | abc123... | 2026-02-05 10:30 |
     
     ### Connection Targets
-    - TeachModel: <server>/<database>
-    - TopLevelSqlConn: <server>/<database>
+    - <ConnectionName1>: <server>/<database>
+    - <ConnectionName2>: <server>/<database>
     
     ### Observed Error
     <exact message or behavior>
@@ -989,9 +988,8 @@ If a report would exceed ~200 lines, split into:
 
 Hot files include any of the following:
 - Files over ~300 LOC that coordinate routing, state, or persistence
-- Known churn magnets (question.component.ts, session.store.ts, app.routes.ts, content.service.ts, scripts/content-build.js, or anything the operator flags as "hot")
+- Known churn magnets (list yours in a consumer overlay; see [hot-files-overlay.example.md](../templates/hot-files-overlay.example.md))
 - Files touched in the last three prompts (detect via: git log --oneline --follow -3 -- <file>)
-- SignalR / Multiplayer hot files listed above (always hot)
 
 When a prompt touches a hot file, you MUST pick one of two paths:
 1. **Analysis-first prompt**: map the file’s responsibilities, enumerate entry points, and list all impacted tests before any edits.
@@ -1041,7 +1039,7 @@ If you cannot merge immediately, add a **PARKED** row to `<DOCS_ROOT>/status/bra
 ## Coverage Checklist for cross-cutting work (MANDATORY)
 
 **Objective definition (a change is cross-cutting if ANY of):**
-- Touches 2+ routes (count distinct route definitions in app.routes.ts; parameterized variants like q1/:id, q2/:id count separately if separate route configs), OR
+- Touches 2+ routes (count distinct route definitions in your routing config; parameterized variants count separately if separate route configs), OR
 - Changes a shared file imported by 3+ components, OR
 - Modifies global CSS variables/shared copy dictionaries/typography standards
 
@@ -1053,16 +1051,15 @@ If you cannot merge immediately, add a **PARKED** row to `<DOCS_ROOT>/status/bra
 - Shared UI components (headers, footers, navigation)
 - Monospace rendering or typography standards
 
-For ANY cross-cutting change, your completion report MUST include a route coverage table using the actual project routes from `src/app/app.routes.ts`:
+For ANY cross-cutting change, your completion report MUST include a route coverage table using the actual project routes from your consumer overlay
+(see [project-routes-overlay.example.md](../templates/project-routes-overlay.example.md)):
 
    Route        | Status
    -------------|-------------------------------
-   /            | UPDATED or NO CHANGE REQUIRED (reason)
-   /select      | UPDATED or NO CHANGE REQUIRED (reason)
-   /q/:id*      | UPDATED or NO CHANGE REQUIRED (reason; mention q1/:id + q2/:id if touched)
-   /review      | UPDATED or NO CHANGE REQUIRED (reason)
-   /result      | UPDATED or NO CHANGE REQUIRED (reason)
-   /store       | UPDATED or NO CHANGE REQUIRED (reason)
+   /<route-1>   | UPDATED or NO CHANGE REQUIRED (reason)
+   /<route-2>   | UPDATED or NO CHANGE REQUIRED (reason)
+   /<feature>/:id | UPDATED or NO CHANGE REQUIRED (reason)
+   …            | (one row per route in your app)
 
 Status values must be exactly **UPDATED** or **NO CHANGE REQUIRED** with a short justification. Do not invent alternate labels. If you cannot complete this table, STOP and clarify scope.
 
@@ -1080,7 +1077,7 @@ Your completion report MUST include:
 **Proof-of-Experience Block (Before / After / Where):**
 - What the user sees now: quote the current copy or describe the DOM
 - What changed: show Before → After for the exact element(s)
-- Routes displaying this change: map to the same coverage list (/ , /select, /q/:id, /review, /result, /store)
+- Routes displaying this change: map to the same consumer overlay coverage list
 - Visual verification: screenshot description or DOM snippet confirming the new state
 
 Without proof-of-experience, UX work is incomplete and prone to regression.

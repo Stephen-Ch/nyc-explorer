@@ -30,4 +30,8 @@ Quick wins first (items 2–4, 6 are 1 prompt each). Item 1 has highest systemic
 
 ## Maintenance
 
+- v7.2.37: session-start-kit added (Kit-mode session start).
+- v7.2.36: kit CI workflow added (kit-gates).
+- v7.2.35: Scrubbed remaining secondary leak tokens from 9 files (protocol-lite, required-artifacts, verification-mode, terminology-dictionary, stack-profile-standard, EVIDENCE-PACK-TEMPLATE, github-agent-return-packets-prompt-template, terminology-template, subtree-playbook); all consumer-shipped docs now use generic placeholders.
+- v7.2.34: Scrubbed repo-specific leaks from vendor head (stay-on-track.md, protocol-v7.md); moved project-specific routes, components, csproj names, and connection targets to templates/project-routes-overlay.example.md.
 - v7.2.30: Removed literal internal-planning-directory path strings from all shipped markdown to eliminate consumer doc-audit WARN noise (rule preserved; only literal substrings removed).

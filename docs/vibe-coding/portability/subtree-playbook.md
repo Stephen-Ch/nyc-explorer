@@ -61,7 +61,7 @@ Different repos use different docs folder names. The vibe-coding bundle supports
 
 | Docs Root | Example Repos | Notes |
 |-----------|---------------|-------|
-| `<DOCS_ROOT>/` | ExampleProject, enterprise projects | Recommended for repos with separate runtime `docs/` folder |
+| `<DOCS_ROOT>/` | AcmeApp, enterprise projects | Recommended for repos with separate runtime `docs/` folder |
 | `docs/` | Most open-source, smaller projects | Simpler; use when no conflict with runtime docs |
 
 ### Critical Safety Rule
@@ -229,7 +229,7 @@ Don't edit `vibe-coding/session-start-checklist.md`. Instead:
 
 ## Additional Local Checks
 
-- [ ] Verify TopLevelSqlConn.config points to correct DB
+- [ ] Verify <YourConnectionName>.config points to correct DB
 - [ ] Check IIS Express is running on expected port
 ```
 
@@ -278,18 +278,18 @@ This shouldn't happen. If it does:
 
 ## Interim Workflow: Before Bundle Repo Exists
 
-> **Status:** As of 2026-02-06, the bundle currently lives inside `ExampleProject/<DOCS_ROOT>/vibe-coding/`. A dedicated `vibe-coding-bundle.git` repo does not yet exist.
+> **Status:** As of 2026-02-06, the bundle currently lives inside `<YourProject>/<DOCS_ROOT>/vibe-coding/`. A dedicated `vibe-coding-bundle.git` repo does not yet exist.
 
 If you need to integrate vibe-coding into another repo **before** the dedicated bundle repo is created, use `git subtree split`:
 
 ### Step 1: Create a Split Branch (in source repo)
 
 ```bash
-# In the repo that has vibe-coding (e.g., ExampleProject)
-cd /path/to/example-project-repo
+# In the repo that has vibe-coding (e.g., <YourProject>)
+cd /path/to/your-project-repo
 
 # Extract vibe-coding into a standalone branch
-git subtree split --prefix=ExampleProject/<DOCS_ROOT>/vibe-coding -b vibe-coding-bundle-temp
+git subtree split --prefix=<YourProject>/<DOCS_ROOT>/vibe-coding -b vibe-coding-bundle-temp
 ```
 
 This creates a branch where `vibe-coding/` contents are at the root—exactly what a dedicated bundle repo would look like.
