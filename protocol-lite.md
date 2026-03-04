@@ -41,6 +41,7 @@ For definitions of what 95%/99% confidence means, dual-agent requirements, and h
 **Exiting RESEARCH-ONLY:** Complete an Evidence Pack + confidence ≥95%
 
 → Full rules: [protocol-v7.md § RESEARCH-ONLY Command Lock](protocol/protocol-v7.md#research-only-command-lock-mandatory)
+→ Handoff template: [research-request-template.md](templates/research-request-template.md) — structured format for GPT↔Copilot research requests
 
 ---
 
@@ -147,6 +148,7 @@ If runtime branches exist without PRs: open PR or document in [branches.md](../s
 | Doc | Purpose |
 |-----|---------|
 | [protocol-v7.md](protocol/protocol-v7.md) | **Authoritative full protocol** |
+| [hard-rules.md](protocol/hard-rules.md) | **Mandatory gates only (<2KB)** |
 | [session-start-checklist.md](session-start-checklist.md) | Pre-flight checks |
 | [PAUSE.md](PAUSE.md) | Session handoff state |
 | [EVIDENCE-PACK-TEMPLATE.md](templates/EVIDENCE-PACK-TEMPLATE.md) | For <95% confidence |

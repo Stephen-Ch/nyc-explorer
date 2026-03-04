@@ -223,6 +223,22 @@ if ($auditMode -eq "Consumer") {
     Pass "Overlay index: skipped ($auditMode mode)"
 }
 
+# PRE-C) kit-workspace/ reference check (Consumer only)
+# kit-workspace/ ships via subtree but is kit-internal planning; consumers should not reference it.
+if ($auditMode -eq "Consumer") {
+    $kwRefs = Get-ChildItem -Path $repoRoot -Recurse -Include *.md -ErrorAction SilentlyContinue |
+        Where-Object { $_.FullName -notlike "*vibe-coding*kit-workspace*" } |
+        Select-String -Pattern 'kit-workspace/' -CaseSensitive:$false -ErrorAction SilentlyContinue
+    if ($kwRefs) {
+        Write-Host "WARNING: Consumer docs reference kit-workspace/ (kit-internal). These files are not intended for consumer use:" -ForegroundColor Yellow
+        $kwRefs | ForEach-Object { Write-Host "  $($_.Filename):$($_.LineNumber)" -ForegroundColor Yellow }
+    } else {
+        Pass "kit-workspace refs: no consumer-side references detected"
+    }
+} else {
+    Pass "kit-workspace refs: skipped ($auditMode mode)"
+}
+
 # A) Required files (Consumer only)
 if ($auditMode -eq "Consumer") {
     $missing = @()

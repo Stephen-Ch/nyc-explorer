@@ -201,6 +201,48 @@ if (Test-Path $versionFile) {
 }
 Write-Host "KitVersion: $kitVersion (Effective $kitEffective)" -ForegroundColor Green
 
+# -- 3c. Kit version lag check (WARN only) --------------------
+$kitVersionRemote = "(unavailable)"
+$kitLagResult = "SKIP"
+try {
+    # Determine the remote ref to read from
+    $lagRef = $null
+    if ($kitRemoteName) {
+        # Remote was already fetched in step 3; use its main ref
+        $lagRef = "$kitRemoteName/main"
+    } else {
+        # Kit mode or SkipUpdate — try fetching the ref directly
+        try {
+            git fetch $kitRemoteUrl main --depth=1 2>$null | Out-Null
+            $lagRef = "FETCH_HEAD"
+        } catch { }
+    }
+
+    if ($lagRef) {
+        $remoteContent = git show "${lagRef}:VIBE-CODING.VERSION.md" 2>$null | Out-String
+        if ($remoteContent -match '\*\*Version:\*\*\s*(v[\d.]+)') {
+            $kitVersionRemote = $Matches[1]
+        }
+    }
+} catch {
+    # Network unavailable or other error — continue silently
+}
+
+Write-Host "KitVersionLocal=$kitVersion" -ForegroundColor Gray
+if ($kitVersionRemote -eq "(unavailable)") {
+    Write-Host "KitVersionRemote=(unavailable)" -ForegroundColor Yellow
+    Write-Host "WARN: Could not check remote kit version (offline or fetch failed)." -ForegroundColor Yellow
+    $kitLagResult = "WARN(unavailable)"
+} elseif ($kitVersion -ne $kitVersionRemote) {
+    Write-Host "KitVersionRemote=$kitVersionRemote" -ForegroundColor Yellow
+    Write-Host "WARN: Kit version lag - local $kitVersion vs remote $kitVersionRemote. Run kit subtree pull to update." -ForegroundColor Yellow
+    $kitLagResult = "WARN(lag)"
+} else {
+    Write-Host "KitVersionRemote=$kitVersionRemote" -ForegroundColor Green
+    Write-Host "OK: Kit version is current." -ForegroundColor Green
+    $kitLagResult = "OK"
+}
+
 # -- 4. forGPT sync -------------------------------------------
 $forGptStatus = "MISSING"
 $vmDate = "MISSING"
@@ -320,7 +362,7 @@ Write-Host "========== SESSION START AUDIT ==========" -ForegroundColor Cyan
 Write-Host "RepoRoot=$repoRoot | Branch=$branch | Tree=$treeState"
 Write-Host "DOCS_ROOT=$docsRoot | Reason=$docsReason"
 Write-Host "forGPT=$forGptStatus | VERSION-MANIFEST=$vmDate | Commit=$vmCommit | KitUpdate=$kitUpdateResult"
-Write-Host "KitVersion=$kitVersion | Effective=$kitEffective | ConsumerAudit=$auditResult"
+Write-Host "KitVersion=$kitVersion | Effective=$kitEffective | KitLag=$kitLagResult | ConsumerAudit=$auditResult"
 Write-Host "ResearchIndex=$riPath | LastUpdated=$riDate"
 Write-Host "OpenPRs=$prCount - $prList"
 Write-Host "=========================================" -ForegroundColor Cyan

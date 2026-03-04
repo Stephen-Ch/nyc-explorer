@@ -1,10 +1,44 @@
 # Vibe-Coding Kit Version
 
-**Version:** v7.2.22  
-**Effective Date:** 2026-03-02
+**Version:** v7.2.33  
+**Effective Date:** 2026-03-03
 
 ## Purpose
 Defines required artifacts + gates used by Doc Audit. This file is the **single source of truth** for the kit bundle version. Per-file `Bundle:` headers were removed in v7.2.2 to prevent version drift -- see changelog below.
+
+## What Changed in v7.2.33
+- Add hard-rules quick reference (<2KB) with links; protocol-v7 remains authoritative.
+
+## What Changed in v7.2.32
+- Deduped STOP/PIVOT Rule (PIVOT REPORT + Contradiction STOP formats single-sourced in protocol-v7.md § Resilience Rules; copilot-instructions-v7.md now cross-links).
+
+## What Changed in v7.2.31
+- Deduped External Research Escalation (single-sourced in working-agreement-v1.md; copilot-instructions-v7.md now cross-links).
+
+## What Changed in v7.2.30
+- Removed consumer-facing kit-internal planning path literals from all shipped markdown to prevent persistent consumer doc-audit warnings (WARN rule remains: consumers should not reference kit-internal planning docs).
+
+## What Changed in v7.2.29
+- Redundancy reduction pilot: single-sourced Timeboxing + Pivot Rule in protocol-v7.md; replaced duplicated block in working-agreement-v1.md with cross-link.
+
+## What Changed in v7.2.28
+- Added templates/research-request-template.md — structured GPT↔Copilot research handoff format with mandatory fields, evidence pack section, and confidence gate alignment.
+
+## What Changed in v7.2.27
+- Added QUICKSTART.md — consumer-facing "add vibe-coding to your repo in ~5 minutes" guide with install, verify, update, and troubleshooting sections.
+
+## What Changed in v7.2.26
+- Added Comprehension Self-Check (3-question gate) as required step after Proof-of-Read in protocol-v7.md; cross-linked in copilot-instructions-v7.md.
+
+## What Changed in v7.2.25
+- session-start.ps1: added kit-version lag WARN — compares local vs remote kit version, emits WARN on mismatch or unavailability (never fails).
+
+## What Changed in v7.2.24
+- Added internal planning directory for kit maintainers: ROADMAP, SESSION-HANDOFF, GPT/Copilot session-start primers.
+- doc-audit.ps1: added consumer-mode WARN when consumer docs reference kit-internal planning files.
+
+## What Changed in v7.2.23
+- Add External Research Escalation rule (Copilot → GPT Web/Deep Research) to prevent guessing when web access is required; propagated to working-agreement-v1.md, copilot-instructions-v7.md, and protocol-v7.md cross-link.
 
 ## What Changed in v7.2.22
 - Removed remaining HIGH/MED/LOW confidence language from working-agreement-v1.md, protocol-v7.md (Enforcement), and stay-on-track.md; replaced with percentage thresholds (≥95% / ≥99%).
