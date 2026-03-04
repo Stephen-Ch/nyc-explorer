@@ -9,7 +9,7 @@
   Common tool flags are declared explicitly so PS 5.1 binds them correctly.
   Any unlisted flags can still be passed via -ToolArgs (escape hatch).
 .PARAMETER Tool
-  Which tool to run: session-start, end-session, sync-forgpt, doc-audit.
+  Which tool to run: session-start, session-start-kit, end-session, sync-forgpt, doc-audit.
 .PARAMETER WhatIf
   Print what would be executed without running it.
 .PARAMETER WriteReport
@@ -30,6 +30,7 @@
   Escape-hatch: extra arguments forwarded verbatim to the underlying tool.
 .EXAMPLE
   .\run-vibe.ps1 -Tool session-start
+  .\run-vibe.ps1 -Tool session-start-kit
   .\run-vibe.ps1 -Tool end-session -WriteReport
   .\run-vibe.ps1 -Tool doc-audit -Mode Consumer -StartSession
   .\run-vibe.ps1 -Tool sync-forgpt -WhatIf
@@ -37,7 +38,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory, Position = 0)]
-    [ValidateSet("session-start", "end-session", "sync-forgpt", "doc-audit")]
+    [ValidateSet("session-start", "session-start-kit", "end-session", "sync-forgpt", "doc-audit")]
     [string]$Tool,
 
     [switch]$WhatIf,

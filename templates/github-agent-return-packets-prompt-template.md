@@ -63,7 +63,7 @@ Research ONLY—do NOT modify any runtime code.
 - <DOCS_ROOT>/project/EPICS.md
 - <DOCS_ROOT>/project/NEXT.md
 - <DOCS_ROOT>/testing/test-catalog.md
-- <DOCS_ROOT>/project/ExampleProject-KB.md
+- <DOCS_ROOT>/project/<YourProject>-KB.md
 
 ## Output Files
 Create these 3 files under <DOCS_ROOT>/status/:
@@ -141,7 +141,7 @@ Research ONLY—do NOT modify any runtime code.
 - <DOCS_ROOT>/project/EPICS.md
 - <DOCS_ROOT>/project/NEXT.md
 - <DOCS_ROOT>/testing/test-catalog.md
-- <DOCS_ROOT>/project/ExampleProject-KB.md
+- <DOCS_ROOT>/project/<YourProject>-KB.md
 
 ## Output File
 Create: <DOCS_ROOT>/status/{{OUTPUT_1}}

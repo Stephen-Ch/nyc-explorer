@@ -1,10 +1,22 @@
 # Vibe-Coding Kit Version
 
-**Version:** v7.2.33  
-**Effective Date:** 2026-03-03
+**Version:** v7.2.37  
+**Effective Date:** 2026-03-04
 
 ## Purpose
 Defines required artifacts + gates used by Doc Audit. This file is the **single source of truth** for the kit bundle version. Per-file `Bundle:` headers were removed in v7.2.2 to prevent version drift -- see changelog below.
+
+## What Changed in v7.2.37
+- Added session-start Kit mode (run-vibe tool: session-start-kit) to run kit gates in the kit repo.
+
+## What Changed in v7.2.36
+- Added GitHub Actions CI to run kit gates on push/PR (doc-audit, verify-protocol-index, budget).
+
+## What Changed in v7.2.35
+- Scrubbed remaining project-specific leak tokens from secondary files (protocol-lite, required-artifacts, verification-mode, terminology-dictionary, stack-profile-standard, EVIDENCE-PACK-TEMPLATE, github-agent-return-packets-prompt-template, terminology-template, subtree-playbook); replaced with generic placeholders (`<YourProject>`, `<YourAppPath>`, `AcmeApp`, etc.).
+
+## What Changed in v7.2.34
+- Scrubbed project-specific examples (routes, component names, csproj, connection names) from vendor docs (stay-on-track.md, protocol-v7.md); replaced with generic placeholders; relocated specifics to templates/project-routes-overlay.example.md.
 
 ## What Changed in v7.2.33
 - Add hard-rules quick reference (<2KB) with links; protocol-v7 remains authoritative.
