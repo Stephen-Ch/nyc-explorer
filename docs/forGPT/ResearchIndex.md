@@ -16,7 +16,8 @@ Method: Index-in-place (no physical moves in this pass).
 | Knowledge Base (research-adjacent) | 2 |
 | Status Reports | 1 |
 | Audits | 1 |
-| **Total indexed** | **29** |
+| Testing / Environment | 1 |
+| **Total indexed** | **30** |
 
 ---
 
@@ -87,6 +88,12 @@ Method: Index-in-place (no physical moves in this pass).
 | ID | Title | Path | Status |
 |----|-------|------|--------|
 | R-028 | Docs PASS 2 Trim Audit | [docs/research/R-028-NYC-Docs-Pass2-Trim-Audit.md](R-028-NYC-Docs-Pass2-Trim-Audit.md) | Complete (no trims needed) |
+
+## Testing / Environment
+
+| ID | Title | Path | Status |
+|----|-------|------|--------|
+| R-029 | Playwright e2e blank browser (webServer/port verification) | [docs/research/R-029-Playwright-E2E-Blank-Browser-WebServer-Port.md](R-029-Playwright-E2E-Blank-Browser-WebServer-Port.md) | Open |
 
 ---
 

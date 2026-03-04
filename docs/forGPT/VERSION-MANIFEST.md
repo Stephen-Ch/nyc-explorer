@@ -6,10 +6,10 @@
 
 | Field | Value |
 |-------|-------|
-| **Generated** | 2026-03-04 12:30:24 |
+| **Generated** | 2026-03-04 18:20:20 |
 | **DOCS_ROOT** | `docs` |
 | **Git Branch** | `main` |
-| **Git Commit** | `271a612` |
+| **Git Commit** | `c6ed519` |
 | **CORE Files** | 5 |
 | **EXTRA Files** | 3 |
 | **TOTAL Files** | 8 |
@@ -30,7 +30,7 @@
 | CORE | VIBE-CODING.VERSION.md | docs/vibe-coding/VIBE-CODING.VERSION.md | `C05162356CDDC617` |
 | extra | protocol-v7.md | docs/vibe-coding/protocol/protocol-v7.md | `EDC507FDAA8388E0` |
 | extra | copilot-instructions-v7.md | docs/vibe-coding/protocol/copilot-instructions-v7.md | `2802180ADFD35AC7` |
-| extra | ResearchIndex.md | docs/research/ResearchIndex.md | `B8F4DE5AFD44DE2F` |
+| extra | ResearchIndex.md | docs/research/ResearchIndex.md | `B86726D378D82C25` |
 
 ---
 
