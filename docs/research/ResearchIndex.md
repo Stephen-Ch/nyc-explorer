@@ -121,6 +121,7 @@ Method: Index-in-place (no physical moves in this pass).
 | R-042 | PWA installability minimal plan (manifest/icons/SW + mobile head tags) | [docs/research/R-042-PWA-Installable-Minimal-Plan.md](R-042-PWA-Installable-Minimal-Plan.md) | Open |
 | R-043 | True street-walk detours + A* weighted attractions feasibility (routing options, gaps, next proofs) | [docs/research/R-043-StreetWalk-Detours-and-AStar-Feasibility.md](R-043-StreetWalk-Detours-and-AStar-Feasibility.md) | Open |
 | R-044 | Content model + storage decision rules (entity model, time/interest model, DB trigger thresholds, stage path) | [docs/research/R-044-Content-Model-and-Storage-Decision-Rules.md](R-044-Content-Model-and-Storage-Decision-Rules.md) | Open |
+| R-045 | Google Routes API v2 integration plan (computeRoutes WALK mode: endpoint, FieldMask, security proxy, pricing SKUs, cut list) | [docs/research/R-045-Google-Routes-v2-Integration-Plan.md](R-045-Google-Routes-v2-Integration-Plan.md) | Open |
 
 ---
 

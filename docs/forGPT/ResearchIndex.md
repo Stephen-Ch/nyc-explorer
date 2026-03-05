@@ -105,6 +105,7 @@ Method: Index-in-place (no physical moves in this pass).
 |----|-------|------|--------|
 | R-033 | Octopus ghost-heads sweep — cross-repo kit doc cleanup (4 repos, 48 files) | [docs/status/REPORT-OCTOPUS-GHOSTHEADS-SWEEP-SUMMARY-001.md](../status/REPORT-OCTOPUS-GHOSTHEADS-SWEEP-SUMMARY-001.md) | Complete 2026-02-08 |
 | R-044 | Content model + storage decision rules (entity model, time/interest model, DB trigger thresholds, stage path) | [docs/research/R-044-Content-Model-and-Storage-Decision-Rules.md](../research/R-044-Content-Model-and-Storage-Decision-Rules.md) | Open |
+| R-045 | Google Routes API v2 integration plan (computeRoutes WALK mode: endpoint, FieldMask, security proxy, pricing SKUs, cut list) | [docs/research/R-045-Google-Routes-v2-Integration-Plan.md](../research/R-045-Google-Routes-v2-Integration-Plan.md) | Open |
 
 ---
 
