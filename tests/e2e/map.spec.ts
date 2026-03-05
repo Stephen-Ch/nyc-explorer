@@ -1,10 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
-
 test('home page renders map and POI list from /content/poi.v1.json', async ({ page, request }) => {
   // First, verify the POI endpoint is working
-  const poiResponse = await request.get(`${BASE_URL}/content/poi.v1.json`);
+  const poiResponse = await request.get('/content/poi.v1.json');
   
   if (poiResponse.status() !== 200) {
     throw new Error('Cannot fetch POIs at /content/poi.v1.json');
@@ -17,7 +15,7 @@ test('home page renders map and POI list from /content/poi.v1.json', async ({ pa
   }
 
   // Navigate to home page
-  await page.goto(BASE_URL);
+  await page.goto('/');
 
   // Check for map container
   const mapContainer = page.locator('#map');

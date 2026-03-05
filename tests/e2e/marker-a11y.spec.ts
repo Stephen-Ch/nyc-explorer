@@ -1,9 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
-
 test('marker receives keyboard activation to navigate to detail page', async ({ request, page }) => {
-  const response = await request.get(`${BASE_URL}/content/poi.v1.json`);
+  const response = await request.get('/content/poi.v1.json');
   expect(response.ok()).toBeTruthy();
 
   const pois = await response.json();
@@ -12,7 +10,7 @@ test('marker receives keyboard activation to navigate to detail page', async ({ 
 
   const first = pois[0];
 
-  await page.goto(`${BASE_URL}/`);
+  await page.goto('/');
 
   const markers = page.locator('[data-testid="poi-marker"]');
   await expect(markers).toHaveCount(pois.length);
@@ -20,6 +18,6 @@ test('marker receives keyboard activation to navigate to detail page', async ({ 
   await markers.first().focus();
   await page.keyboard.press('Enter');
 
-  await page.waitForURL(`${BASE_URL}/poi/${first.id}`);
+  await page.waitForURL(`/poi/${first.id}`);
   await expect(page.locator('#poi-title')).toContainText(first.name);
 });
