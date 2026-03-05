@@ -13,7 +13,8 @@ test('back-to-map link navigates from detail page to home with map and POIs', as
   const { id } = firstPOI;
   
   // Navigate to detail page
-  await page.goto(`/poi/${id}`);
+  // waitUntil:'commit' avoids hanging on subresource load (e.g. missing images)
+  await page.goto(`/poi/${id}`, { waitUntil: 'commit' });
   
   // Verify we're on the detail page
   await expect(page.locator('#poi-title')).toBeVisible();

@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 /**
  * Playwright configuration for NYC Explorer
- * Auto-starts ASP.NET Core server on http://localhost:5000
+ * Auto-starts ASP.NET Core server on http://127.0.0.1:5000
  */
 export default defineConfig({
   testDir: './tests',
@@ -13,7 +13,7 @@ export default defineConfig({
   reporter: 'list',
 
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:5000',
+    baseURL: process.env.BASE_URL || 'http://127.0.0.1:5000',
     viewport: { width: 1280, height: 800 },
     trace: 'on-first-retry',
   },
@@ -26,8 +26,8 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'dotnet run --urls http://localhost:5000',
-    url: 'http://localhost:5000',
+    command: 'dotnet run --urls http://127.0.0.1:5000',
+    url: 'http://127.0.0.1:5000',
     reuseExistingServer: true,
     timeout: 120000,
     cwd: 'apps/web-mvc',
