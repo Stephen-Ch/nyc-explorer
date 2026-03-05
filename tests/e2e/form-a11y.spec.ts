@@ -1,9 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
-
 test('inputs have accessible labels: Search, From, To', async ({ page }) => {
-  await page.goto(`${BASE_URL}/`);
+  await page.goto('/');
 
   // These will pass only when <label for="..."> exists and is bound to the inputs.
   await expect(page.getByLabel('Search')).toBeVisible();

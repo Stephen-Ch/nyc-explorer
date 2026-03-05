@@ -1,13 +1,11 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
-
 test('home page loads Leaflet and renders ≥3 markers', async ({ page }) => {
   // Navigate to home page
-  const response = await page.goto(BASE_URL);
+  const response = await page.goto('/');
   
   if (!response || !response.ok()) {
-    throw new Error(`Navigation failed: ${response?.status()} at ${BASE_URL}`);
+    throw new Error(`Navigation failed: ${response?.status()} at /`);
   }
 
   // Check if Leaflet is loaded
