@@ -18,8 +18,8 @@ Method: Index-in-place (no physical moves in this pass).
 | Audits | 1 |
 | Testing / Environment | 4 |
 | Audits (cross-repo) | 1 |
-| Data Provenance | 1 |
-| **Total indexed** | **35** |
+| Data Provenance | 2 |
+| **Total indexed** | **36** |
 
 ---
 
@@ -111,6 +111,7 @@ Method: Index-in-place (no physical moves in this pass).
 | ID | Title | Path | Status |
 |----|-------|------|--------|
 | R-034 | Attraction data source-of-truth (location + rules) | [docs/research/R-034-Attraction-Data-Source-Of-Truth.md](R-034-Attraction-Data-Source-Of-Truth.md) | Open |
+| R-035 | Interest taxonomy seed survey (existing tags/themes + counts) | [docs/research/R-035-Interest-Taxonomy-Seed-Survey.md](R-035-Interest-Taxonomy-Seed-Survey.md) | Open |
 
 ---
 
