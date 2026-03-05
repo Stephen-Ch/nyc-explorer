@@ -1,9 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
-
 test('route controls appear on home page', async ({ page }) => {
-  await page.goto(BASE_URL);
+  await page.goto('/');
 
   const fromInput = page.locator('[data-testid="route-from"]');
   const toInput = page.locator('[data-testid="route-to"]');

@@ -1,10 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
-
 test('search input filters POI list by name (case-insensitive)', async ({ request, page }) => {
   // Fetch POI data to get a valid search query
-  const poiResponse = await request.get(`${BASE_URL}/content/poi.v1.json`);
+  const poiResponse = await request.get('/content/poi.v1.json');
   expect(poiResponse.ok()).toBeTruthy();
   
   const pois = await poiResponse.json();
@@ -15,7 +13,7 @@ test('search input filters POI list by name (case-insensitive)', async ({ reques
   const q = pois[0].name.slice(0, 6);
   
   // Navigate to home page
-  await page.goto(BASE_URL + '/');
+  await page.goto('/');
   
   // Verify search input is visible (will fail - RED)
   const searchInput = page.locator('[data-testid="search-input"]');
