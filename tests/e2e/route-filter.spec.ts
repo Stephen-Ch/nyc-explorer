@@ -1,16 +1,14 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
-
 test('route steps update when POIs are filtered', async ({ request, page }) => {
-  const response = await request.get(`${BASE_URL}/content/poi.v1.json`);
+  const response = await request.get('/content/poi.v1.json');
   expect(response.ok()).toBeTruthy();
 
   const pois = await response.json();
   const first = pois[0];
   const query = first.name.slice(0, 6);
 
-  await page.goto(`${BASE_URL}/`);
+  await page.goto('/');
 
   const search = page.locator('[data-testid="search-input"]');
   await search.fill(query);
