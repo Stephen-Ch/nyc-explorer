@@ -115,6 +115,9 @@ Method: Index-in-place (no physical moves in this pass).
 | R-036 | Eric MVP contract v0 (route + date span + interests + along-route rules) | [docs/research/R-036-Eric-MVP-Contract-v0.md](R-036-Eric-MVP-Contract-v0.md) | Open |
 | R-037 | Unified interest taxonomy v0 (POI tags + Events interest_tags + AA/Irish) | [docs/research/R-037-Unified-Interest-Taxonomy-v0.md](R-037-Unified-Interest-Taxonomy-v0.md) | Open |
 | R-038 | Data promotion v0: AllYears CSV → runtime poi.v1.json (+ interests/time) | [docs/research/R-038-Data-Promotion-CSV-to-POIJSON-v0.md](R-038-Data-Promotion-CSV-to-POIJSON-v0.md) | Open |
+| R-039 | PWA + mobile readiness audit (manifest, SW, installability, viewport, responsive map) | [docs/research/R-039-PWA-Mobile-Readiness-Audit.md](R-039-PWA-Mobile-Readiness-Audit.md) | Open |
+| R-040 | Along-route detour feasibility (walking corridor, polyline/Turf.js, provider options) | [docs/research/R-040-Along-Route-Detour-Feasibility.md](R-040-Along-Route-Detour-Feasibility.md) | Open |
+| R-041 | Eric MVP requirements snapshot (closed decisions + open questions + gap table) | [docs/research/R-041-Eric-MVP-Requirements-Snapshot.md](R-041-Eric-MVP-Requirements-Snapshot.md) | Open |
 
 ---
 
