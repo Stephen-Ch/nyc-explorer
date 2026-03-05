@@ -16,8 +16,9 @@ Method: Index-in-place (no physical moves in this pass).
 | Knowledge Base (research-adjacent) | 2 |
 | Status Reports | 1 |
 | Audits | 1 |
-| Testing / Environment | 1 |
-| **Total indexed** | **30** |
+| Testing / Environment | 4 |
+| Audits (cross-repo) | 1 |
+| **Total indexed** | **34** |
 
 ---
 
@@ -93,7 +94,16 @@ Method: Index-in-place (no physical moves in this pass).
 
 | ID | Title | Path | Status |
 |----|-------|------|--------|
-| R-029 | Playwright e2e blank browser (webServer/port verification) | [docs/research/R-029-Playwright-E2E-Blank-Browser-WebServer-Port.md](R-029-Playwright-E2E-Blank-Browser-WebServer-Port.md) | Open |
+| R-029 | Playwright e2e blank browser (webServer/port verification) | [docs/research/R-029-Playwright-E2E-Blank-Browser-WebServer-Port.md](R-029-Playwright-E2E-Blank-Browser-WebServer-Port.md) | Superseded by R-030 |
+| R-030 | Playwright `page.goto` hang — Chromium async DNS root cause on Windows | [docs/status/REPORT-PLAYWRIGHT-PAGEGOTO-HANG-LOCALHOST-DNS-001.md](../status/REPORT-PLAYWRIGHT-PAGEGOTO-HANG-LOCALHOST-DNS-001.md) | Complete — fix applied `5a8d2a6` |
+| R-031 | Playwright hardcoded `:5000` — scope audit (20 files) | [docs/status/REPORT-PLAYWRIGHT-HARDCODED-5000-SCOPEPLAN-001.md](../status/REPORT-PLAYWRIGHT-HARDCODED-5000-SCOPEPLAN-001.md) | Open — Slice-001 done, 18 files remain |
+| R-032 | E2E Slice-001 session report — `waitUntil:commit` fix + PWDEBUG blocker | [docs/status/REPORT-E2E-SLICE001-SESSION-2026-03-04.md](../status/REPORT-E2E-SLICE001-SESSION-2026-03-04.md) | Open — PWDEBUG blocker unresolved |
+
+## Audits (cross-repo)
+
+| ID | Title | Path | Status |
+|----|-------|------|--------|
+| R-033 | Octopus ghost-heads sweep — cross-repo kit doc cleanup (4 repos, 48 files) | [docs/status/REPORT-OCTOPUS-GHOSTHEADS-SWEEP-SUMMARY-001.md](../status/REPORT-OCTOPUS-GHOSTHEADS-SWEEP-SUMMARY-001.md) | Complete 2026-02-08 |
 
 ---
 
