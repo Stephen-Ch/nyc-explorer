@@ -1,6 +1,6 @@
 # Research Index — NYC Explorer
 
-Last updated: 2026-03-04  
+Last updated: 2026-03-05  
 Coverage: Links to all identified research, audit, postmortem, and investigation artifacts.  
 Method: Index-in-place (no physical moves in this pass).
 
@@ -18,7 +18,8 @@ Method: Index-in-place (no physical moves in this pass).
 | Audits | 1 |
 | Testing / Environment | 4 |
 | Audits (cross-repo) | 1 |
-| **Total indexed** | **34** |
+| Data Provenance | 1 |
+| **Total indexed** | **35** |
 
 ---
 
@@ -104,6 +105,12 @@ Method: Index-in-place (no physical moves in this pass).
 | ID | Title | Path | Status |
 |----|-------|------|--------|
 | R-033 | Octopus ghost-heads sweep — cross-repo kit doc cleanup (4 repos, 48 files) | [docs/status/REPORT-OCTOPUS-GHOSTHEADS-SWEEP-SUMMARY-001.md](../status/REPORT-OCTOPUS-GHOSTHEADS-SWEEP-SUMMARY-001.md) | Complete 2026-02-08 |
+
+## Data Provenance
+
+| ID | Title | Path | Status |
+|----|-------|------|--------|
+| R-034 | Attraction data source-of-truth (location + rules) | [docs/research/R-034-Attraction-Data-Source-Of-Truth.md](R-034-Attraction-Data-Source-Of-Truth.md) | Open |
 
 ---
 
