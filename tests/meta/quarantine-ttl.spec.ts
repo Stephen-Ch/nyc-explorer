@@ -30,7 +30,7 @@ test('quarantine skips expire within 48h', async () => {
 
   for await (const file of walk(TESTS_ROOT)) {
     const contents = await fs.readFile(file, 'utf8');
-    if (!contents.includes('test.skip') || !contents.includes('RED CONTRACT')) continue;
+    if (!contents.includes('test' + '.skip') || !contents.includes('RED' + ' CONTRACT')) continue;
     const lastChange = getLastChangeTimestamp(file);
     if (!lastChange) continue;
     const ageHours = (now - lastChange) / 3600;

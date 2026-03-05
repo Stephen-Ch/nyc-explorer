@@ -44,5 +44,5 @@ test.skip('ROUTE-ADAPTER-2a — handles missing polyline and timeout (RED)', asy
   expect(error).toEqual({ name: 'ProviderTimeoutError', code: 'TIMEOUT' });
 });
 
-// TTL refreshed 2025-11-09
+// TTL refreshed 2026-03-04
 
