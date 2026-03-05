@@ -1,9 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
-
 test('detail page renders primary image with credit line', async ({ request, page }) => {
-  const response = await request.get(`${BASE_URL}/content/poi.v1.json`);
+  const response = await request.get('/content/poi.v1.json');
   expect(response.ok()).toBeTruthy();
 
   const pois = await response.json();
@@ -12,7 +10,7 @@ test('detail page renders primary image with credit line', async ({ request, pag
   const withImage = pois.find((poi: any) => Array.isArray(poi.images) && poi.images.length > 0);
   expect(withImage).toBeTruthy();
 
-  await page.goto(`${BASE_URL}/poi/${withImage.id}`);
+  await page.goto(`/poi/${withImage.id}`, { waitUntil: 'commit' });
 
   const image = page.locator('img[data-testid="poi-image"]').first();
   await expect(image).toBeVisible();
