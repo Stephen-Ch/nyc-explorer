@@ -1,18 +1,16 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
-
 test('GET /content/poi.v1.json returns valid POI array', async ({ request }) => {
   let response;
   
   try {
-    response = await request.get(`${BASE_URL}/content/poi.v1.json`);
+    response = await request.get('/content/poi.v1.json');
   } catch (error) {
-    throw new Error(`Endpoint /content/poi.v1.json not available at ${BASE_URL}`);
+    throw new Error(`Endpoint /content/poi.v1.json not available`);
   }
 
   if (response.status() !== 200) {
-    throw new Error(`Endpoint /content/poi.v1.json not available at ${BASE_URL} (status: ${response.status()})`);
+    throw new Error(`Endpoint /content/poi.v1.json not available (status: ${response.status()})`);
   }
 
   const contentType = response.headers()['content-type'];

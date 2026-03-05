@@ -1,10 +1,8 @@
 // tests/e2e/placeholder-encoding.spec.ts
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
-
 test('search/from/to placeholders render with correct UTF-8 ellipsis', async ({ page }) => {
-  await page.goto(`${BASE_URL}/`);
+  await page.goto('/');
 
   const search = page.locator('[data-testid="search-input"]');
   const from = page.locator('[data-testid="route-from"]');
