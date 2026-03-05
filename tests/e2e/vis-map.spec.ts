@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { existsSync, mkdirSync } from 'fs';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
 const artifactDir = 'docs/artifacts/VIS-1';
 
 test('capture map screenshot for visual smoke', async ({ page }) => {
@@ -9,7 +8,7 @@ test('capture map screenshot for visual smoke', async ({ page }) => {
   mkdirSync(artifactDir, { recursive: true });
   
   // Navigate to home page
-  await page.goto(BASE_URL + '/');
+  await page.goto('/');
   
   // Wait for map to be visible
   await expect(page.locator('#map')).toBeVisible();
