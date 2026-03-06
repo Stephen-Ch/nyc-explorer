@@ -70,13 +70,13 @@ the research prompt and consolidates the remaining open questions.
 
 ---
 
-## Open Questions (DECISION NEEDED)
+## Open Questions
 
-| # | Question | Owner | Options |
-|---|----------|-------|---------|
-| D1 | Which geocoding provider for typed address? | Product | Google Places (billing), Nominatim (free, rate-limited), Pelias (self-host option) |
-| D2 | Is PWA installability in v0.1 scope? | Product | Yes → build manifest + SW (R-039 G2-G4, ~1 day) / No → defer to Sprint 07+ |
-| D3 | Is Turf.js acceptable as a client-side dependency for along-route? | Engineering | Yes → Option A / No → server-side Option B (R-040 D1) |
+| # | Question | Owner | Decision |
+|---|----------|-------|----------|
+| D1 | Which geocoding provider for typed address? | Product | **CLOSED** — Google-first, behind server-side proxy; swap-later acceptable. |
+| D2 | Is PWA installability in v0.1 scope? | Product | **CLOSED** — NICE-TO-HAVE for v0.1 (not required for DoD). |
+| D3 | Is Turf.js acceptable as a client-side dependency for along-route? | Engineering | **CLOSED** — Turf.js acceptable for v0.1 corridor filtering/scoring; replaceable later. |
 | D4 | Hardcoded 320 m radius or `App.config`-injectable? | Engineering | Hardcoded for MVP simplicity is preferred |
 | D5 | AA/Irish community interests (R-037 taxonomy): net-new, confirmed in scope? | Product | Confirmed net-new per R-035; need final sign-off |
 | D6 | Events without a resolved `location_id` — filter out, or show in list only (no map pin)? | Product | Filter out of map; show in list with "location unavailable" label |

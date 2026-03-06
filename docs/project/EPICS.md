@@ -42,6 +42,12 @@
 - AR/VR, offline packs, payments, social features
 - CMS or authoring pipeline
 - Mobile-specific layouts or PWA packaging
+- Installable PWA is NICE-TO-HAVE in v0.1 (not required for DoD).
+
+### 6. Eric-story MVP — Decisions (D1–D3)
+- D1 (Geocoding provider): YES — Google-first, behind server-side proxy; swap-later acceptable.
+- D2 (PWA installability): NICE-TO-HAVE for v0.1 (not required for DoD).
+- D3 (Along-route corridor math): YES — Turf.js acceptable for v0.1 corridor filtering/scoring; replaceable later.
 
 ---
 
