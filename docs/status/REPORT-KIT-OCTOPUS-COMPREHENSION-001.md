@@ -98,7 +98,7 @@
 ### Detection/Enforcement
 
 - **doc-audit.ps1** -- HARD FAIL if `<DOCS_ROOT>/vibe-coding/overlays/` exists; checks control deck population, NEXT freshness, overlay index.
-- **session-start.ps1** -- HARD STOP before subtree pull if overlays found inside kit head. Chains: kit update, forGPT sync, 5-line audit.
+- **session-start.ps1** -- HARD STOP before subtree pull if overlays found inside kit head. Chains: kit update, forGPT sync, session audit block.
 - **Prompt Review Gate** -- Every AI response must print the 4-line gate before any commands. Violation = STOP.
 - **Prior Research Lookup** -- Every RESEARCH-ONLY output must search ResearchIndex.md first; missing = INVALID.
 - **docs/status/REPORT-*.md** -- Audit trail of past investigations (decontamination, deduplication, etc.).

@@ -6,6 +6,12 @@
   Do NOT commit repo-specific data (epics, PRs, branches, sprint info) to the shared kit.
 -->
 
+> **Authority scope:** PAUSE.md is an **end-of-session / stop-work** artifact only.
+> A blank or template-state PAUSE.md during active work is **normal and expected** —
+> it does not indicate a process failure. Populate this file only when truly
+> stopping work (session close, extended break, handoff to another agent).
+> During active implementation, **NEXT.md** is the live work-state authority.
+
 > **Date:** YYYY-MM-DD  
 > **Status:** PAUSED — (reason)  
 > **Next session:** Resume from this doc

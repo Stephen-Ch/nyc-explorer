@@ -31,7 +31,7 @@ Before any work in a fresh session, run the session-start chain:
 
     powershell -NoProfile -ExecutionPolicy Bypass -File <SUBTREE>/tools/run-vibe.ps1 -Tool session-start
 
-This chains kit update → forGPT sync → doc-audit -StartSession → prints the 5-line gate. If any other command is requested first, reply: **Hard Stop. Run RUN START OF SESSION DOCS AUDIT first.**
+This chains kit update → forGPT sync → doc-audit -StartSession → prints the session audit block. If any other command is requested first, reply: **Hard Stop. Run RUN START OF SESSION DOCS AUDIT first.**
 
 Fallback (if run-vibe unavailable): `<DOCS_ROOT>/vibe-coding/tools/session-start.ps1`
 
