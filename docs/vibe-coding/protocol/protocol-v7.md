@@ -87,7 +87,7 @@ Every work prompt MUST include:
 
 **Population Gate Pre-Flight:** Population Gate is verified during the Start-of-Session Doc Audit (after reading <DOCS_ROOT>/project/VISION.md, <DOCS_ROOT>/project/EPICS.md, and <DOCS_ROOT>/project/NEXT.md), not in the Prompt Review Gate. The Doc Audit MUST have been run in this session and returned Population Gate PASS before any coding work. If Doc Audit has not been run or returned FAIL, STOP and run/remediate it first (see [Start-Here-For-AI.md](../../Start-Here-For-AI.md)).
 
-**Doc Audit Sequencing (Session Prerequisite):** Doc Audit is a session-level prerequisite that occurs AFTER Proof-of-Read, never before the Prompt Review Gate. Work prompts in a fresh session must run Doc Audit first as per the ordered sequence in [Start-Here-For-AI.md](../../Start-Here-For-AI.md): Prompt Review Gate → Proof-of-Read → Doc Audit → (if PASS) proceed to work. After each commit, run the rerun-trigger detection command defined in [Start-Here-For-AI.md](../../Start-Here-For-AI.md) to determine if Doc Audit must be rerun. When `tools/session-start.ps1` exists in the vibe-coding subtree, the **RUN START OF SESSION DOCS AUDIT** command invokes it; the wrapper chains kit update → forGPT sync → 5-line audit print automatically.
+**Doc Audit Sequencing (Session Prerequisite):** Doc Audit is a session-level prerequisite that occurs AFTER Proof-of-Read, never before the Prompt Review Gate. Work prompts in a fresh session must run Doc Audit first as per the ordered sequence in [Start-Here-For-AI.md](../../Start-Here-For-AI.md): Prompt Review Gate → Proof-of-Read → Doc Audit → (if PASS) proceed to work. After each commit, run the rerun-trigger detection command defined in [Start-Here-For-AI.md](../../Start-Here-For-AI.md) to determine if Doc Audit must be rerun. When `tools/session-start.ps1` exists in the vibe-coding subtree, the **RUN START OF SESSION DOCS AUDIT** command invokes it; the wrapper chains kit update → forGPT sync → session audit block automatically.
 
 **Consumer Start-Here callout:** Consumer repos should include the standard session-start callout snippet from [templates/start-here-session-start-callout.example.md](../templates/start-here-session-start-callout.example.md) in their Start-Here-For-AI.md to ensure the automated chain is the default entry point.
 
@@ -168,6 +168,37 @@ When a new concern appears:
 - Immediately return to Current Slice
 
 **Rule:** Parking entries must be "outcome + proof", not status.
+
+## Staleness Classification (Session Boundary vs Active Work)
+
+**Purpose:** Prevent false-alarm investigations during active implementation. Not every out-of-date file is a problem. This table defines severity so agents and operators can distinguish expected drift from real breakage.
+
+| File / Artifact | Mid-Session Staleness | Severity | Required Action |
+|---|---|---|---|
+| **forGPT/ copies** | Expected between sync points | **Normal** | No action. forGPT is a checkpoint snapshot, not a live mirror (see below). |
+| **VERSION-MANIFEST.md** | Expected between sync points | **Normal** | No action. Hashes prove what was synced and when; mismatch after edits is routine. |
+| **PAUSE.md** (blank/template) | Expected during active work | **Normal** | No action. PAUSE.md is populated at session close only. |
+| **branches.md** | Expected after branch operations | **Normal** | No action until end-of-session cleanup. |
+| **NEXT.md** not updated after completing step | — | **Actionable** | Update before next prompt. NEXT.md is the live work-state authority. |
+| **Manifest mismatches after fresh sync** | — | **Actionable** | Re-run sync; if it fails again, investigate. |
+| **Source file missing from manifest** | — | **Bug** | Investigate immediately. |
+| **Sync script error** | — | **Bug** | Investigate immediately. |
+| **Required file missing after session-start audit** | — | **Bug** | Fix before proceeding. |
+
+### forGPT Freshness Rule
+
+forGPT is a **point-in-time snapshot** for agent handoff, not a live mirror of canonical docs.
+
+**Sync schedule (when forGPT MUST be current):**
+- Session start (automated via `session-start.ps1`)
+- Session end (run `run-vibe -Tool sync-forgpt` before handoff)
+- Explicit agent handoff (GPT ↔ Copilot)
+- Major milestone close
+
+**Between sync points, stale forGPT copies are NOT a workflow failure.**
+Do not investigate or repair forGPT mid-session unless there is evidence of **actual breakage** — meaning: sync script errors, missing expected files after sync, or manifest/file mismatch immediately after a fresh sync run.
+
+Small timing gaps (edits after last sync) are routine, low-severity drift — not system failures.
 
 ## Green Gate — Stack-Aware Rules
 

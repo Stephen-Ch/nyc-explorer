@@ -337,6 +337,25 @@ if (Test-Path $riCandidate) {
     }
 }
 
+# -- 5b. NEXT.md date + ResearchIndex drift warning -----------
+$nextDate = $null
+$nextCandidate = Join-Path $repoRoot "$docsRoot/project/NEXT.md"
+if (Test-Path $nextCandidate) {
+    $nextContent = Get-Content $nextCandidate -Raw
+    if ($nextContent -match 'Last [Uu]pdated:\s*(\d{4}-\d{2}-\d{2})') {
+        $nextDate = [datetime]::ParseExact($Matches[1], 'yyyy-MM-dd', $null)
+    }
+}
+
+$riDateParsed = $null
+if ($riDate -ne "MISSING") {
+    try { $riDateParsed = [datetime]::ParseExact($riDate, 'yyyy-MM-dd', $null) } catch { }
+}
+
+if ($nextDate -and $riDateParsed -and $riDateParsed -gt $nextDate) {
+    Write-Host "WARNING: ResearchIndex.md ($riDate) is newer than NEXT.md ($($nextDate.ToString('yyyy-MM-dd'))); review whether NEXT.md should be updated." -ForegroundColor Yellow
+}
+
 # -- 6. Open PRs ----------------------------------------------
 $prCount = "UNKNOWN"
 $prList = "gh CLI not available"
@@ -356,7 +375,7 @@ try {
     # gh not available or auth issue - UNKNOWN is fine
 }
 
-# -- 7. Print 5-line audit ------------------------------------
+# -- 7. Print session audit block ------------------------------
 Write-Host ""
 Write-Host "========== SESSION START AUDIT ==========" -ForegroundColor Cyan
 Write-Host "RepoRoot=$repoRoot | Branch=$branch | Tree=$treeState"

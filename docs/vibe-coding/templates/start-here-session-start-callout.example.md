@@ -8,7 +8,7 @@
 
     powershell -NoProfile -ExecutionPolicy Bypass -File <SUBTREE>/tools/run-vibe.ps1 -Tool session-start
 
-Chains: kit update → forGPT sync → doc-audit -StartSession → 5-line gate print. No manual steps needed.
+Chains: kit update → forGPT sync → doc-audit -StartSession → session audit block. No manual steps needed.
 
 **Manual fallback** (only if `run-vibe.ps1` is unavailable):
 

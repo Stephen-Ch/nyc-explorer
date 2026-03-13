@@ -94,7 +94,7 @@ Prevent consumer drift; ensure GPTs read current rules first. The v7.2.19--v7.2.
 - Add a short doc (in `docs/status/` or `portability/`) describing a "fresh consumer" verification procedure:
   1. Clone consumer repo
   2. Run `run-vibe.ps1 -Tool session-start`
-  3. Verify: kit update ran, forGPT sync ran, doc-audit -StartSession printed 5-line gate
+  3. Verify: kit update ran, forGPT sync ran, doc-audit -StartSession printed session audit block
 - Keep it manual/documented (no heavy automation needed at this stage)
 
 **Acceptance checks:**

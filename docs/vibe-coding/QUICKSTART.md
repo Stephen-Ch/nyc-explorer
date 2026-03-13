@@ -88,3 +88,4 @@ After updating:
 - [protocol-lite.md](protocol-lite.md) — quick reference
 - [templates/prompt-template.md](templates/prompt-template.md) — prompt template
 - [DOCS-HEALTH-CONTRACT.md](DOCS-HEALTH-CONTRACT.md) — documentation health contract
+- [critical-transition-checklist.md](critical-transition-checklist.md) — preflight for critical transitions (not a per-prompt gate)
