@@ -1,7 +1,7 @@
   # Start Here — Using GPT/Copilot with NYC Explorer
 
-**Version:** 2026-02-07  
-**Kit version:** v7.2.37 (subtree at `docs/vibe-coding/`)
+**Version:** 2026-03-14  
+**Kit version:** v7.2.40 (subtree at `docs/vibe-coding/`)
 This repo uses the vibe-coding workflow structure and enforcement rules.
 
 ## RUN START OF SESSION DOCS AUDIT
@@ -10,7 +10,7 @@ This repo uses the vibe-coding workflow structure and enforcement rules.
 
     powershell -NoProfile -ExecutionPolicy Bypass -File docs/vibe-coding/tools/run-vibe.ps1 -Tool session-start
 
-Chains: kit update → forGPT sync → doc-audit -StartSession → 5-line gate print. No manual steps needed.
+Chains: kit update → forGPT sync → doc-audit -StartSession → session audit block. No manual steps needed.
 
 **Manual fallback** (only if `run-vibe.ps1` is unavailable):
 
