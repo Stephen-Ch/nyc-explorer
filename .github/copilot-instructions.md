@@ -3,7 +3,7 @@
 ## Session Start (MANDATORY FIRST COMMAND)
 
 Run: `docs/vibe-coding/tools/run-vibe.ps1 -Tool session-start`
-Chains: kit update → forGPT sync → doc-audit -StartSession → prints 5-line gate.
+Chains: kit update → forGPT sync → doc-audit -StartSession → prints the session audit block.
 If run-vibe.ps1 is unavailable, run: `docs/vibe-coding/tools/session-start.ps1`
 Do not proceed until this is run successfully.
 
