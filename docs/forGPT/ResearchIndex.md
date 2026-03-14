@@ -1,6 +1,6 @@
 # Research Index — NYC Explorer
 
-Last updated: 2026-03-04  
+Last updated: 2026-03-05  
 Coverage: Links to all identified research, audit, postmortem, and investigation artifacts.  
 Method: Index-in-place (no physical moves in this pass).
 
@@ -18,7 +18,8 @@ Method: Index-in-place (no physical moves in this pass).
 | Audits | 1 |
 | Testing / Environment | 4 |
 | Audits (cross-repo) | 1 |
-| **Total indexed** | **34** |
+| Data Provenance | 5 |
+| **Total indexed** | **39** |
 
 ---
 
@@ -104,9 +105,24 @@ Method: Index-in-place (no physical moves in this pass).
 | ID | Title | Path | Status |
 |----|-------|------|--------|
 | R-033 | Octopus ghost-heads sweep — cross-repo kit doc cleanup (4 repos, 48 files) | [docs/status/REPORT-OCTOPUS-GHOSTHEADS-SWEEP-SUMMARY-001.md](../status/REPORT-OCTOPUS-GHOSTHEADS-SWEEP-SUMMARY-001.md) | Complete 2026-02-08 |
-| R-044 | Content model + storage decision rules (entity model, time/interest model, DB trigger thresholds, stage path) | [docs/research/R-044-Content-Model-and-Storage-Decision-Rules.md](../research/R-044-Content-Model-and-Storage-Decision-Rules.md) | Open |
-| R-045 | Google Routes API v2 integration plan (computeRoutes WALK mode: endpoint, FieldMask, security proxy, pricing SKUs, cut list) | [docs/research/R-045-Google-Routes-v2-Integration-Plan.md](../research/R-045-Google-Routes-v2-Integration-Plan.md) | Open |
-| R-046 | Google Routes proxy contract + mapping (request/response contract, FieldMask, duration gap, error semantics, deterministic test plan) | [docs/research/R-046-Google-Routes-Proxy-Contract-and-Mapping.md](../research/R-046-Google-Routes-Proxy-Contract-and-Mapping.md) | Open |
+
+## Data Provenance
+
+| ID | Title | Path | Status |
+|----|-------|------|--------|
+| R-034 | Attraction data source-of-truth (location + rules) | [docs/research/R-034-Attraction-Data-Source-Of-Truth.md](R-034-Attraction-Data-Source-Of-Truth.md) | Open |
+| R-035 | Interest taxonomy seed survey (existing tags/themes + counts) | [docs/research/R-035-Interest-Taxonomy-Seed-Survey.md](R-035-Interest-Taxonomy-Seed-Survey.md) | Open |
+| R-036 | Eric MVP contract v0 (route + date span + interests + along-route rules) | [docs/research/R-036-Eric-MVP-Contract-v0.md](R-036-Eric-MVP-Contract-v0.md) | Open |
+| R-037 | Unified interest taxonomy v0 (POI tags + Events interest_tags + AA/Irish) | [docs/research/R-037-Unified-Interest-Taxonomy-v0.md](R-037-Unified-Interest-Taxonomy-v0.md) | Open |
+| R-038 | Data promotion v0: AllYears CSV → runtime poi.v1.json (+ interests/time) | [docs/research/R-038-Data-Promotion-CSV-to-POIJSON-v0.md](R-038-Data-Promotion-CSV-to-POIJSON-v0.md) | Open |
+| R-039 | PWA + mobile readiness audit (manifest, SW, installability, viewport, responsive map) | [docs/research/R-039-PWA-Mobile-Readiness-Audit.md](R-039-PWA-Mobile-Readiness-Audit.md) | Open |
+| R-040 | Along-route detour feasibility (walking corridor, polyline/Turf.js, provider options) | [docs/research/R-040-Along-Route-Detour-Feasibility.md](R-040-Along-Route-Detour-Feasibility.md) | Open |
+| R-041 | Eric MVP requirements snapshot (closed decisions + open questions + gap table) | [docs/research/R-041-Eric-MVP-Requirements-Snapshot.md](R-041-Eric-MVP-Requirements-Snapshot.md) | Open |
+| R-042 | PWA installability minimal plan (manifest/icons/SW + mobile head tags) | [docs/research/R-042-PWA-Installable-Minimal-Plan.md](R-042-PWA-Installable-Minimal-Plan.md) | Open |
+| R-043 | True street-walk detours + A* weighted attractions feasibility (routing options, gaps, next proofs) | [docs/research/R-043-StreetWalk-Detours-and-AStar-Feasibility.md](R-043-StreetWalk-Detours-and-AStar-Feasibility.md) | Open |
+| R-044 | Content model + storage decision rules (entity model, time/interest model, DB trigger thresholds, stage path) | [docs/research/R-044-Content-Model-and-Storage-Decision-Rules.md](R-044-Content-Model-and-Storage-Decision-Rules.md) | Open |
+| R-045 | Google Routes API v2 integration plan (computeRoutes WALK mode: endpoint, FieldMask, security proxy, pricing SKUs, cut list) | [docs/research/R-045-Google-Routes-v2-Integration-Plan.md](R-045-Google-Routes-v2-Integration-Plan.md) | Open |
+| R-046 | Google Routes proxy contract + mapping (request/response contract, FieldMask, duration gap, error semantics, deterministic test plan) | [docs/research/R-046-Google-Routes-Proxy-Contract-and-Mapping.md](R-046-Google-Routes-Proxy-Contract-and-Mapping.md) | Open |
 
 ---
 

@@ -1,10 +1,25 @@
 # Vibe-Coding Kit Version
 
-**Version:** v7.2.37  
-**Effective Date:** 2026-03-04
+**Version:** v7.2.40  
+**Effective Date:** 2026-03-13
 
 ## Purpose
 Defines required artifacts + gates used by Doc Audit. This file is the **single source of truth** for the kit bundle version. Per-file `Bundle:` headers were removed in v7.2.2 to prevent version drift -- see changelog below.
+
+## What Changed in v7.2.40
+- Added critical-transition-checklist.md: compact, transition-triggered checklist for high-cost omission prevention (session start, subtree updates, broad staging, handoffs).
+- Light references added in session-start-checklist.md Quick Links and QUICKSTART.md further reading.
+- Not a per-prompt gate; does not add ceremony to normal implementation flow.
+
+## What Changed in v7.2.39
+- Added Staleness Classification table + forGPT Freshness Rule to protocol-v7.md (distinguishes expected mid-session drift from actionable problems and real breakage).
+- Clarified PAUSE.md authority scope: end-of-session only; blank during active work is normal.
+- Simplified session-start-checklist.md: reduced pre-flight to 3 blocking items; moved branch hygiene and research indexing to end-of-session concerns.
+- Adjusted Quick Links table: NEXT.md marked as live work-state authority; PAUSE.md marked as end-of-session only.
+
+## What Changed in v7.2.38
+- Clarified session audit block terminology: replaced ambiguous "5-line gate/audit" references with "session audit block" across docs and script comment.
+- Added non-blocking warning in session-start when ResearchIndex.md is newer than NEXT.md (surfaces control-deck drift early).
 
 ## What Changed in v7.2.37
 - Added session-start Kit mode (run-vibe tool: session-start-kit) to run kit gates in the kit repo.
