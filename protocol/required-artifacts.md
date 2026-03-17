@@ -120,7 +120,15 @@ Start-of-Session Doc Audit (see consumer Start-Here doc; repo-specific, referenc
 2. required-artifacts.md exists (this file)
 3. <DOCS_ROOT>/project/VISION.md, <DOCS_ROOT>/project/EPICS.md, <DOCS_ROOT>/project/NEXT.md all exist with required content
 
-**Doc Audit Rerun Detection:** After each commit, Doc Audit rerun is required if required-artifacts.md or Control Deck files changed since last audit. See the consumer Start-Here doc "Rerun Trigger Detection (Required Command)" for the exact git command and path matching rule.
+**Doc Audit Rerun Detection:** After each commit, Doc Audit rerun is required if `required-artifacts.md` or Control Deck files changed since last audit. Run:
+
+    git diff --name-only HEAD~1..HEAD
+
+Rerun required if any output path matches:
+- `<DOCS_ROOT>/project/` (any Control Deck file — VISION.md, EPICS.md, NEXT.md)
+- `<DOCS_ROOT>/vibe-coding/protocol/required-artifacts.md`
+
+**EXCEPTION:** If `HEAD~1` does not exist (initial commit or detached HEAD), treat as rerun required.
 
 If ANY required artifact is missing or <DOCS_ROOT>/project/NEXT.md is unclear/outdated:
 - Work state: IN-PROGRESS → STOP CODING
@@ -227,4 +235,4 @@ If Population Gate **PASS** → Work state READY, proceed with coding.
 
 ---
 
-Last updated: 2026-02-24
+Last updated: 2026-03-14

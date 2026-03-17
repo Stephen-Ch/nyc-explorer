@@ -1,6 +1,6 @@
 # Copilot Instructions v7 -- Vibe-Coding Protocol
 
-> **File Version:** 2026-02-10
+> **File Version:** 2026-03-16
 >
 > **Portable.** This file contains Copilot-specific execution guidance only.
 > All canonical rules live in [protocol-v7.md](protocol-v7.md).
@@ -181,6 +181,20 @@ Every completion report must include:
 
 Consumer repos may add stack-specific required fields (e.g., spec @human
 lines, test catalog updates) in their overlay.
+
+### Backend/Runtime Completion Reports — Additional Required Fields
+
+**Applies when:** the PR contains any runtime files (controllers, services/helpers,
+models/entities, repositories, migrations, middleware, routing, or API handlers).
+
+Every such completion report must answer all three with YES or NO:
+
+    Anything surprise you? YES/NO
+    Anything deserves a second look before merge? YES/NO
+    Is merge confidence below 95% anywhere in the changed runtime path? YES/NO
+
+**If ANY answer is YES:** the PR is NOT merge-ready. STOP and flag the concern
+before requesting review. See [protocol-v7.md § PR / Branch Hygiene Gate §D](protocol-v7.md#d-runtime-weighted-merge-review).
 
 ---
 
