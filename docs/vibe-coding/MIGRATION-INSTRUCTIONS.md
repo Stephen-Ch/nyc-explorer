@@ -1,7 +1,7 @@
 # Vibe-Coding Protocol Migration Instructions
 
 **Version:** v7.2.19  
-**Last Updated:** 2026-03-02
+**Last Updated:** 2026-03-14
 
 ## Purpose
 Guide for migrating vibe-coding protocol v7 to other projects (new projects or upgrading from older protocol versions).
@@ -39,7 +39,7 @@ Copy these files/directories unchanged from source project:
     ├── EPICS.template.md
     └── NEXT.template.md
 
-<DOCS_ROOT>/Start-Here-For-AI.md             # Session bootstrap (CUSTOMIZE project name)
+<DOCS_ROOT>/Start-Here-For-AI.md             # Consumer thin shell — CREATE from templates/start-here-template.md (do NOT copy)
 <DOCS_ROOT>/vibe-coding/VIBE-CODING.VERSION.md   # Version tracking
 .github/copilot-instructions.md       # Enforcer (points to protocol, CUSTOMIZE path)
 
@@ -126,6 +126,21 @@ For ANY cross-cutting change, your completion report MUST include a route covera
 **D) Update required-artifacts.md examples:**
 
 Lines 90-107 use ExampleProject as <DOCS_ROOT>/project/VISION.md example. Replace with generic examples or your project's actual purpose statement.
+
+**E) Create consumer Start-Here from the thin-shell template:**
+
+Do NOT copy `Start-Here-For-AI.md` from another consumer repo. Consumer Start-Here files may contain large amounts of kit protocol text that immediately goes stale on the next kit update.
+
+Instead:
+
+```powershell
+Copy-Item "<DOCS_ROOT>/vibe-coding/templates/start-here-template.md" `
+          "<DOCS_ROOT>/Start-Here-For-AI.md"
+```
+
+Fill in `[Project Name]` and replace all `<DOCS_ROOT>` and `<SUBTREE>` placeholders with this repo's actual paths. Make no other content changes.
+
+**Do not add to Start-Here:** gate definitions, session-sequencing rules, rerun-trigger commands, Population Gate instructions, or any other kit protocol behavior. Those live in `<DOCS_ROOT>/vibe-coding/`. Copying them in creates cleanup work after every kit update.
 
 ### Phase 4: Create Control Deck
 
@@ -317,7 +332,9 @@ Patterns requiring route coverage tables:
 - [ ] Update <DOCS_ROOT>/project/VISION.md examples (lines 90-107): replace ExampleProject examples with [your project purpose] or generic placeholders
 
 ### Start-Here-For-AI.md
-- [ ] Update project name references
+- [ ] Create from `templates/start-here-template.md` (do NOT copy from another consumer repo)
+- [ ] Fill in `[Project Name]` and replace all `<DOCS_ROOT>` and `<SUBTREE>` placeholders
+- [ ] Do not add kit protocol text — keep thin; all protocol behavior lives in `<DOCS_ROOT>/vibe-coding/`
 
 ### Control Deck (<DOCS_ROOT>/project/)
 - [ ] [Create VISION/EPICS/NEXT from templates OR expand existing to meet thresholds]
