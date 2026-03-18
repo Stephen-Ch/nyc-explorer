@@ -26,6 +26,7 @@
 | **Active Sprint** | _(your sprint)_ |
 | **Branch** | _(your branch)_ |
 | **Blocking Issue** | _(if any)_ |
+| **Remote Reality** | PASS / WARN / BLOCKED — _(evidence date and summary)_ |
 
 ---
 
@@ -34,6 +35,12 @@
 | PR | Title | Status |
 |----|-------|--------|
 | #_ | _(title)_ | _(status)_ |
+
+## Active Branch Classification
+
+| Branch | Status | PR # | Notes |
+|--------|--------|------|-------|
+| _(branch)_ | ACTIVE / PR OPEN / PARKED / MERGED / OBSOLETE | _(#nn or none)_ | _(last commit date, next action)_ |
 
 ---
 
@@ -47,7 +54,7 @@
 ## How to Resume (5-minute checklist)
 
 1. [ ] Open this doc
-2. [ ] Run `gh pr list --state open` — check PR status
+2. [ ] **Remote Reality Check** — `git fetch origin`, then `gh pr list --state open --json number,title,headRefName,baseRefName,url`. Verify NEXT.md and active branches match remote state. Record PASS | WARN | BLOCKED in Current State above; repair mismatches or document as debt.
 3. [ ] Open [session-start-checklist.md](session-start-checklist.md) — run pre-flight
 4. [ ] Confirm your active story / next step
 5. [ ] Update this PAUSE.md before ending session
@@ -62,3 +69,4 @@
 | [session-start-checklist.md](session-start-checklist.md) | Session pre-flight |
 | [protocol-v7.md](protocol/protocol-v7.md) | Full protocol rules |
 | [EVIDENCE-PACK-TEMPLATE.md](templates/EVIDENCE-PACK-TEMPLATE.md) | For <95% confidence |
+| [Remote Reality Gate](protocol/protocol-v7.md#remote-reality-gate-mandatory-at-session-boundaries) | Gate definition, PASS/WARN/BLOCKED model, active branch classification |

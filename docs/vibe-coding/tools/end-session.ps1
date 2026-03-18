@@ -105,14 +105,16 @@ try {
 } catch { }
 
 # -- 4. Fetch origin (unless skipped) --------------------------
+$rrStatus = "BLOCKED"
+$rrNotes = @()
 if ($SkipFetch) {
-    Write-Host "[SkipFetch] Skipping git fetch origin" -ForegroundColor Yellow
+    Write-Host "[SkipFetch] Skipping git fetch --all --prune" -ForegroundColor Yellow
 } elseif ($WhatIf) {
-    Write-Host "[WhatIf] Would run: git fetch origin" -ForegroundColor Cyan
+    Write-Host "[WhatIf] Would run: git fetch --all --prune" -ForegroundColor Cyan
 } else {
-    Write-Host "Fetching origin..." -ForegroundColor Yellow
+    Write-Host "Fetching (--all --prune)..." -ForegroundColor Yellow
     try {
-        Invoke-GitSafe fetch origin | Out-Null
+        Invoke-GitSafe fetch --all --prune | Out-Null
     } catch {
         Write-Host "  Warning: fetch failed: $_" -ForegroundColor Yellow
     }
@@ -178,6 +180,56 @@ if ($nonMerged.Count -gt 0) {
     Write-Host "Non-merged branches (vs $baseRef): none" -ForegroundColor Green
 }
 
+# -- 8b. Remote Reality Check ----------------------------------
+Write-Host ""
+Write-Host "--- Remote Reality Check ---" -ForegroundColor Cyan
+
+# Ahead/behind vs default branch
+$rrAhead = 0; $rrBehind = 0
+$abStr = git rev-list --left-right --count "origin/$defaultBranch...HEAD" 2>$null
+if ($LASTEXITCODE -eq 0 -and ($abStr | Out-String) -match '(\d+)\s+(\d+)') {
+    $rrBehind = [int]$Matches[1]
+    $rrAhead  = [int]$Matches[2]
+    Write-Host ("  Ahead/Behind : behind {0} / ahead {1} vs origin/{2}" -f $rrBehind, $rrAhead, $defaultBranch) -ForegroundColor Cyan
+    if ($rrAhead -gt 0) { $rrNotes += "Branch is ahead of origin/$defaultBranch by $rrAhead commit(s) — push or explain" }
+    if ($rrBehind -gt 0) { $rrNotes += "Branch is behind origin/$defaultBranch by $rrBehind commit(s) — rebase or note" }
+} else {
+    Write-Host "  Ahead/Behind : unavailable (origin/$defaultBranch not found or not connected)" -ForegroundColor Yellow
+    $rrNotes += "ahead/behind vs origin/$defaultBranch unavailable"
+}
+
+# Open PR list via gh CLI
+if ($WhatIf) {
+    Write-Host "  [WhatIf] Would run: gh pr list --state open --json number,title,headRefName,baseRefName,url" -ForegroundColor Cyan
+} else {
+    $ghOk = $false
+    try { $null = gh --version 2>$null; if ($LASTEXITCODE -eq 0) { $ghOk = $true } } catch {}
+    if ($ghOk) {
+        try {
+            $rrPrs = gh pr list --state open --json number,title,headRefName,baseRefName,url 2>$null | ConvertFrom-Json
+            if ($null -eq $rrPrs -or $rrPrs.Count -eq 0) {
+                Write-Host "  Open PRs     : none" -ForegroundColor Green
+                if ($nonMerged.Count -gt 0) { $rrNotes += "Non-merged branches with no open PRs — classify each: ACTIVE / PARKED / OBSOLETE" }
+            } else {
+                Write-Host "  Open PRs ($($rrPrs.Count)):" -ForegroundColor Cyan
+                foreach ($pr in $rrPrs) {
+                    Write-Host ("    #{0} [{1} -> {2}] {3}" -f $pr.number, $pr.headRefName, $pr.baseRefName, $pr.title) -ForegroundColor Cyan
+                }
+            }
+            $rrStatus = if ($rrNotes.Count -eq 0) { "PASS" } else { "WARN" }
+        } catch {
+            Write-Host "  Open PRs     : gh pr list failed — record Remote Reality: BLOCKED in PAUSE.md" -ForegroundColor Yellow
+            $rrNotes += "gh pr list error"
+        }
+    } else {
+        Write-Host "  Open PRs     : gh not available — record Remote Reality: BLOCKED in PAUSE.md" -ForegroundColor Yellow
+        $rrNotes += "gh CLI not available"
+    }
+}
+
+foreach ($note in $rrNotes) { Write-Host "    -> $note" -ForegroundColor Yellow }
+Write-Host ("  Remote Reality: {0}" -f $rrStatus) -ForegroundColor $(if ($rrStatus -eq 'PASS') { 'Green' } else { 'Yellow' })
+
 # -- 9. Optional report file -----------------------------------
 if ($WriteReport) {
     $statusDir = Join-Path $repoRoot (Join-Path $docsRoot "status")
@@ -228,11 +280,21 @@ if ($WriteReport) {
         $reportLines += ""
         $reportLines += $branchBlock
         $reportLines += ""
+        $reportLines += "## Remote Reality"
+        $reportLines += ""
+        $reportLines += "**Status:** $rrStatus"
+        if ($rrNotes.Count -gt 0) {
+            $reportLines += ""
+            foreach ($note in $rrNotes) { $reportLines += "- $note" }
+        }
+        $reportLines += ""
         $reportLines += "## Suggested Next Steps"
         $reportLines += ""
         $reportLines += "- If tracked changes exist: commit or stash before closing the session."
         $reportLines += "- If non-merged branches exist: open PRs or delete after merge per repo policy."
         $reportLines += "- If untracked items exist: decide whether to add, .gitignore, or remove."
+        $reportLines += "- If Remote Reality: WARN — repair mismatches or document as debt in NEXT.md/branches.md."
+        $reportLines += "- If Remote Reality: BLOCKED — note 'Remote Reality: BLOCKED' in PAUSE.md with reason."
 
         $reportContent = $reportLines -join "`n"
 
@@ -251,6 +313,7 @@ if ($hasTracked) {
     exit 1
 } else {
     Write-Host "END OF SESSION: Clean." -ForegroundColor Green
+    Write-Host "Remote Reality: $rrStatus" -ForegroundColor $(if ($rrStatus -eq 'PASS') { 'Green' } else { 'Yellow' })
     exit 0
 }
 

@@ -1,10 +1,16 @@
 # Vibe-Coding Kit Version
 
-**Version:** v7.2.40  
-**Effective Date:** 2026-03-13
+**Version:** v7.2.41  
+**Effective Date:** 2026-03-18
 
 ## Purpose
 Defines required artifacts + gates used by Doc Audit. This file is the **single source of truth** for the kit bundle version. Per-file `Bundle:` headers were removed in v7.2.2 to prevent version drift -- see changelog below.
+
+## What Changed in v7.2.41
+- Added Remote Reality Gate MVP: PASS/WARN/BLOCKED status model, active runtime branch definition, and branch classification labels (ACTIVE/PARKED/PR OPEN/MERGED/OBSOLETE) added to protocol-v7.md.
+- session-start-checklist.md: added stale control-deck detection gate — mismatch between NEXT.md/branches.md and GitHub reality must be repaired or documented as debt before proceeding.
+- PAUSE.md: banned unverified closure language ("ready to pause", "good shape", "clean enough") without remote-reality evidence; added required evidence checklist for session close.
+- tools/end-session.ps1: extended to run git fetch --all --prune, print ahead/behind vs origin/develop, and surface open PR list via gh CLI (degrades to WARN/BLOCKED if gh unavailable).
 
 ## What Changed in v7.2.40
 - Added critical-transition-checklist.md: compact, transition-triggered checklist for high-cost omission prevention (session start, subtree updates, broad staging, handoffs).
