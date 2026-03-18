@@ -11,6 +11,7 @@
 - [ ] **RUN START OF SESSION DOCS AUDIT** — This single command chains: kit update (subtree pull) → kit version print → forGPT sync → Consumer doc-audit (hard fail) → audit print. Run it first; everything below is verified automatically (including overlay structure and required files).
 - [ ] **Goal Anchor** — Write North Star, Current Slice, and Proof before any work.
 - [ ] **NEXT.md Status** — Open [NEXT.md](../project/NEXT.md). Confirm Status = ACTIVE or PAUSED with clear Next Step.
+- [ ] **Remote Reality Check** *(after any break)* — Run `git fetch origin`, then `gh pr list --state open --json number,title,headRefName,baseRefName,url`. Confirm NEXT.md and active branches match remote state. Repair mismatches or document as debt before starting work. Status: PASS | WARN | BLOCKED — see [protocol-v7.md § Remote Reality Gate](protocol/protocol-v7.md#remote-reality-gate-mandatory-at-session-boundaries).
 
 ### Informational (review if relevant, do not block on these)
 
@@ -29,6 +30,8 @@
 |-------|--------|
 | NEXT.md unclear | Update NEXT.md before proceeding |
 | PRs blocking | Note in prompt; consider docs-only work |
+| Remote Reality: WARN | Repair mismatch or document as debt in NEXT.md/branches.md before starting work |
+| Remote Reality: BLOCKED | Note in PAUSE.md; proceed with awareness of unverified remote state |
 
 ---
 
