@@ -1,6 +1,6 @@
 # Protocol v7 — Vibe-Coding Protocol
 
-> **File Version:** 2026-03-02
+> **File Version:** 2026-03-16
 > **Quick reference:** For mandatory gates only, see [hard-rules.md](hard-rules.md).
 
 **v7.2.1 Changes:**
@@ -83,13 +83,13 @@ Every work prompt MUST include:
 - Repo safety gates are satisfied (clean tree, tests pass, build passes), AND
 - 3-Party Approval Gate is satisfied (see [alignment-mode.md](alignment-mode.md) → 3-Party Approval Gate (Canonical))
 
-**<DOCS_ROOT>/project/NEXT.md Freshness Rule:** "Best next step? YES" is only possible when the ACTIVE NEXT STEP is still current. If you just completed it (work shipped per DoD), the next action is closeout/advance <DOCS_ROOT>/project/NEXT.md, NOT new feature work. See [Start-Here-For-AI.md](../../Start-Here-For-AI.md) "<DOCS_ROOT>/project/NEXT.md Freshness Rule" for detection command and enforcement.
+**<DOCS_ROOT>/project/NEXT.md Freshness Rule:** "Best next step? YES" is only possible when the ACTIVE NEXT STEP is still current. If you just completed it (work shipped per DoD), the next action is closeout/advance <DOCS_ROOT>/project/NEXT.md, NOT new feature work. Detection: run `git diff --name-only HEAD~1..HEAD`; if `<DOCS_ROOT>/project/NEXT.md` is not in the diff after the NEXT STEP is shipped, STOP and advance NEXT.md before starting new work.
 
 **Population Gate Pre-Flight:** Population Gate is verified during the Start-of-Session Doc Audit (after reading <DOCS_ROOT>/project/VISION.md, <DOCS_ROOT>/project/EPICS.md, and <DOCS_ROOT>/project/NEXT.md), not in the Prompt Review Gate. The Doc Audit MUST have been run in this session and returned Population Gate PASS before any coding work. If Doc Audit has not been run or returned FAIL, STOP and run/remediate it first (see [Start-Here-For-AI.md](../../Start-Here-For-AI.md)).
 
-**Doc Audit Sequencing (Session Prerequisite):** Doc Audit is a session-level prerequisite that occurs AFTER Proof-of-Read, never before the Prompt Review Gate. Work prompts in a fresh session must run Doc Audit first as per the ordered sequence in [Start-Here-For-AI.md](../../Start-Here-For-AI.md): Prompt Review Gate → Proof-of-Read → Doc Audit → (if PASS) proceed to work. After each commit, run the rerun-trigger detection command defined in [Start-Here-For-AI.md](../../Start-Here-For-AI.md) to determine if Doc Audit must be rerun. When `tools/session-start.ps1` exists in the vibe-coding subtree, the **RUN START OF SESSION DOCS AUDIT** command invokes it; the wrapper chains kit update → forGPT sync → session audit block automatically.
+**Doc Audit Sequencing (Session Prerequisite):** Doc Audit is a session-level prerequisite that occurs AFTER Proof-of-Read, never before the Prompt Review Gate. Work prompts in a fresh session must run Doc Audit first as per the ordered sequence: Prompt Review Gate → Proof-of-Read → Doc Audit → (if PASS) proceed to work. After each commit, run the rerun-trigger detection to determine if Doc Audit must be rerun (see [required-artifacts.md](../required-artifacts.md) "Doc Audit Rerun Detection" for the git command and path rule). When `tools/session-start.ps1` exists in the vibe-coding subtree, the **RUN START OF SESSION DOCS AUDIT** command invokes it; the wrapper chains kit update → forGPT sync → session audit block automatically.
 
-**Consumer Start-Here callout:** Consumer repos should include the standard session-start callout snippet from [templates/start-here-session-start-callout.example.md](../templates/start-here-session-start-callout.example.md) in their Start-Here-For-AI.md to ensure the automated chain is the default entry point.
+**Consumer Start-Here:** Consumer repos should create `<DOCS_ROOT>/Start-Here-For-AI.md` from [templates/start-here-template.md](../templates/start-here-template.md) — a thin-shell consumer file containing only repo-specific paths, overlays, and local notes. Do not copy kit protocol text into it.
 
 **Tech Debt Rule:** Any TECH-DEBT prompt and any new tech-debt row MUST include a Story ID (even if it's a "Maintenance/Protocol" story). Put it in the tech-debt row description as: "Story: <ID> — …".
 
@@ -702,6 +702,39 @@ If PRs are aging (>2 days without merge), flag for review.
 ### C) Docs-Only PRs
 
 Docs-only PRs (no runtime code) MAY be merged with less scrutiny, but MUST still be tracked and not abandoned.
+
+### D) Runtime-Weighted Merge Review
+
+**Runtime file definition:** controllers, services/helpers, models/entities,
+repositories, migrations, middleware, routing, and API handlers. Docs-only
+files (markdown, config comments, test fixtures) do not count toward this threshold.
+
+**Merge block — any Yes answer from the completion report self-state check
+(see [copilot-instructions-v7.md § Backend/Runtime Completion Reports](copilot-instructions-v7.md#backendruntime-completion-reports--additional-required-fields))
+blocks merge until the concern is resolved or explicitly accepted by Stephen.**
+
+**Hostile Self-Audit (mandatory) — triggered by EITHER condition:**
+
+1. **Volume trigger:** PR changes 9 or more runtime files.
+
+2. **Cross-layer trigger:** PR changes a cross-layer runtime slice, defined as
+   any combination that spans request-handling + business-logic + persistence:
+   - controller + helper/service + entity/model
+   - controller + helper/service + database/migration
+   - controller + model/entity + repository/query/persistence
+   - or equivalent: any two of {controller, service, model} plus the third
+     OR any of those three plus a migration or query file
+
+When triggered, before requesting merge the executor MUST:
+
+    1. Re-read every changed runtime file top-to-bottom.
+    2. For each file, answer: "Does this change introduce an assumption
+       the rest of the runtime path does not yet satisfy?"
+    3. Report findings in the completion report under:
+       Hostile Self-Audit: PASS (no cross-layer assumptions violated)
+       — or —
+       Hostile Self-Audit: FAIL — <one-line description per concern>
+    4. If FAIL: treat as merge-blocked until concern is resolved.
 
 ---
 
