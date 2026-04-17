@@ -28,7 +28,7 @@ test('ROUTE-ADAPTER-2a — provider payload normalizes path + steps (RED)', asyn
 });
 
 test.skip('ROUTE-ADAPTER-2a — handles missing polyline and timeout (RED)', async ({ page }) => {
-  // RED CONTRACT — timeout handling pending
+  // DEFERRED: timeout handling — see R-045 cut list item 6
   await page.addInitScript(() => { const w = window as any; w.__nycMock = { ...(w.__nycMock || {}), route: false }; });
   await page.goto('/');
   const normalized = await page.evaluate((payload) => (window as any).App.adapters.normalizeRoutePayload(payload), stepsOnly);
