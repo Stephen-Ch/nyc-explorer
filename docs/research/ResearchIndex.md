@@ -128,7 +128,7 @@ Method: Index-in-place (no physical moves in this pass).
 | R-045 | Google Routes API v2 integration plan (computeRoutes WALK mode: endpoint, FieldMask, security proxy, pricing SKUs, cut list) | [docs/research/R-045-Google-Routes-v2-Integration-Plan.md](R-045-Google-Routes-v2-Integration-Plan.md) | Open |
 | R-046 | Google Routes proxy contract + mapping (request/response contract, FieldMask, duration gap, error semantics, deterministic test plan) | [docs/research/R-046-Google-Routes-Proxy-Contract-and-Mapping.md](R-046-Google-Routes-Proxy-Contract-and-Mapping.md) | Open |
 | R-051 | X-Branch reconnaissance queue (ranked recon opportunities, selection rules, low-attention operating pattern) | [docs/research/R-051-X-Branch-Recon-Queue.md](R-051-X-Branch-Recon-Queue.md) | Complete |
-| R-052 | Example POI research objects (3 model candidate packets: ready, flagged-gap, deferred) | [docs/research/R-052-Example-POI-Research-Objects.md](R-052-Example-POI-Research-Objects.md) | Complete |
+| R-052 | Deep-research output contract: candidate packet specimens (A/B/C disposition, neutral placeholders) | [docs/research/R-052-Example-POI-Research-Objects.md](R-052-Example-POI-Research-Objects.md) | Complete |
 
 ---
 

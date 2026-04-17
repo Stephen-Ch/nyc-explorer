@@ -1,238 +1,297 @@
-# R-052 — Example POI Research Objects
+# R-052 — Deep-Research Output Contract: Candidate Packet Specimens
 
 | Field | Value |
 |-------|-------|
 | Date | 2026-04-17 |
-| PROMPT-ID | NYCX-POI-EXAMPLE-OBJECTS-001 |
+| PROMPT-ID | NYCX-R052-CONTRACT-SPECIMENS-REWRITE-001 |
 | Area | Data / POI pipeline / Quality |
 | Status | Complete |
-| Confidence | 90% |
+| Confidence | 92% |
 | Evidence Links | R-050, R-049, R-034, `content/poi.v1.json`, `tests/schema/poi.schema.ts` |
 
 ## Purpose
 
-Provide 3 concrete example "candidate packet" objects that show what research-to-assimilation output should look like for NYC Explorer POIs. These are **model examples only** — not actual promoted POIs, not runtime content, and not commitments to include these landmarks.
+Define the exact output shape that future deep-research batches and x-branch recon spikes should produce when researching POI candidates. This doc contains **structural specimens**, not real content — the specimens use neutral placeholder names and labeled source slots so they cannot be confused with actual accepted POIs.
 
-Future deep-research prompts and x-branch recon spikes should produce output shaped like these examples, making review and assimilation faster for Stephen.
+## What This Doc Is For
 
-## Current Runtime Shape (Observed)
+- **For deep-research prompts:** "Produce candidate packets shaped like the specimens in R-052."
+- **For x-branch recon spikes:** The spike report's candidate output section should match this structure.
+- **For Stephen's review:** Every candidate packet arriving for assimilation review should be classifiable as A (promotion-ready), B (one flagged gap), or C (deferred). If the output doesn't fit one of these categories, the research prompt needs rework.
 
-From `content/poi.v1.json` and `tests/schema/poi.schema.ts`, a runtime POI has this shape:
+This doc does **not** define promotion policy (that is R-050) or the runtime schema (that is `poi.schema.ts`). It defines the **handoff shape** between research and assimilation.
 
-```json
-{
-  "id": "string (min 1, kebab-case)",
-  "name": "string (min 1)",
-  "summary": "string (min 1, ~1 sentence)",
-  "description": "string (min 1, ~2-5 sentences)",
-  "coords": { "lat": "number", "lng": "number" },
-  "neighborhood": "string (min 1)",
-  "tags": ["string array"],
-  "year": "number (canonical era)",
-  "sources": [{ "title": "string", "url": "string (valid URL)", "publisher": "string" }],
-  "images": [{ "src": "string", "credit": "string", "license": "string" }],
-  "borough": "Manhattan (literal)",
-  "area": "string (currently enum: Union Square | Flatiron District)",
-  "block": "string (cross-street description)",
-  "route_id": "string (optional)",
-  "order": "number (optional)"
-}
-```
+## Current Runtime Shape Constraints (Observed)
 
-**Schema note:** The current `area` field is a strict enum (`Union Square` | `Flatiron District`). Expansion neighborhoods will require a schema update before promotion. This is a known barrier (see prior PR #8 / R-051 recon queue item #9).
+From `content/poi.v1.json` and `tests/schema/poi.schema.ts`:
 
-## What Makes a Good Research Candidate Object
+| Field | Type | Required | Constraints |
+|-------|------|----------|-------------|
+| `id` | string | Yes | min 1 char, kebab-case, should include era suffix (e.g., `slug-1852`) |
+| `name` | string | Yes | min 1 char |
+| `summary` | string | Yes | min 1 char, ~1 sentence |
+| `description` | string | Yes | min 1 char, ~2–5 sentences, historically grounded |
+| `coords` | object | Yes | `{ lat: number, lng: number }` — from authoritative source, never inferred |
+| `neighborhood` | string | Yes | min 1 char |
+| `tags` | string[] | Yes | ≥ 1 from controlled interest-tag list |
+| `year` | number | Yes | one of 7 canonical eras: 1852, 1877, 1902, 1927, 1952, 1977, 2002 |
+| `sources` | array | Yes | `[{ title: string, url: string (valid URL), publisher: string }]` — ≥ 1 primary or secondary |
+| `images` | array | Yes | `[{ src: string, credit: string, license: string }]` — may be empty/null if flagged image-pending |
+| `borough` | string | Yes | literal `"Manhattan"` |
+| `area` | string | Yes | currently enum `"Union Square"` or `"Flatiron District"` — expansion neighborhoods require schema update |
+| `block` | string | Yes | cross-street description |
+| `route_id` | string | Optional | route group identifier (e.g., `FIDI-1852`) |
+| `order` | number | Optional | position within route |
 
-Based on R-050 criteria:
+**Key constraint:** The `area` enum is currently locked to Union Square / Flatiron District. Any candidate from a different neighborhood will require a schema update before runtime promotion. This is a known barrier, not a reason to reject a candidate packet.
 
-1. **Source quality:** At least 1 primary or secondary source with a real URL — not Wikipedia-only, not a blog, not "TBD."
-2. **BBL grounding:** BBL from a primary source (LPC/DOF/ZoLa) or explicitly marked N/A for parks/multi-lot.
-3. **Coordinates:** From an authoritative source (ZoLa lot centroid, official agency data) — never inferred from a vague address.
-4. **Visible uncertainty:** Any gap or unresolved question is flagged inline, not hidden. Fields that cannot be filled are present but marked `null` or `"PENDING"` with a note.
-5. **Era assignment:** One of the 7 canonical eras (1852, 1877, 1902, 1927, 1952, 1977, 2002).
-6. **Tags:** At least 1 from the controlled interest-tag list.
-7. **Images:** At least 1 with license info, or explicitly flagged `image-pending`.
+## How Future Deep-Research Output Should Be Structured
+
+Each candidate packet produced by deep-research work should include:
+
+1. **A JSON-shaped object** with all fields from the table above, using `null` for genuinely unknown values (never omitting fields silently).
+2. **Inline flags** (`⚠️`) on any field that is uncertain, pending, or below the R-050 quality bar.
+3. **A disposition note** classifying the candidate as:
+   - **A — Promotion-ready:** All R-050 checklist items pass. Human assimilation review still required.
+   - **B — Flagged gap:** Passes most criteria but has one explicitly identified gap that does not block promotion.
+   - **C — Deferred:** Interesting but has unresolved issues that prevent promotion until resolved.
+4. **A short evidence summary** explaining source quality, coordinate provenance, and any verification work done or remaining.
+
+A candidate packet is an **input to Stephen's editorial review**, not an output of it. "Promotion-ready" means the evidence is sufficient for review — not that the candidate is pre-approved.
 
 ---
 
-## Example A — Strong, Clean, Promotion-Ready
+## Specimen A — Promotion-Ready Candidate Packet
 
-> **MODEL EXAMPLE ONLY — not an actual promoted POI.**
-> Uses Federal Hall as a real landmark for illustration. If promoted, it would go through the full R-050 checklist and Stephen's approval.
+> **STRUCTURAL SPECIMEN — not real content. Names, coordinates, and sources are placeholders.**
 
 ```jsonc
 {
-  // EXAMPLE OBJECT — not runtime content
-  "id": "federal-hall-1852",
-  "name": "Federal Hall National Memorial",
-  "summary": "Site of George Washington's 1789 inauguration; current Greek Revival building completed 1842.",
-  "description": "Federal Hall stands at the corner of Wall and Nassau Streets on the site where George Washington took the oath of office as the first U.S. President in 1789. The current building, a Greek Revival customs house completed in 1842, became a National Memorial in 1939 and is operated by the National Park Service. The bronze statue of Washington on the front steps is one of Lower Manhattan's most recognized landmarks.",
-  "coords": { "lat": 40.7074, "lng": -74.0102 },
-  "neighborhood": "Financial District",
-  "tags": ["architecture", "politics", "landmark"],
-  "year": 1852,
+  // SPECIMEN — structural example only
+  "id": "example-candidate-a-1902",
+  "name": "EXAMPLE_CANDIDATE_A",
+  "summary": "[One-sentence factual summary of the landmark, grounded in a primary source.]",
+  "description": "[2–5 sentences of historically grounded description. At least 1 primary fact cited. Written or human-reviewed — not auto-generated filler.]",
+  "coords": { "lat": 0.0000, "lng": 0.0000 },
+  // Coordinates: from ZoLa lot centroid or equivalent authoritative source.
+  // Cross-checked against lot geometry or official site boundary.
+  "neighborhood": "EXAMPLE_NEIGHBORHOOD",
+  "tags": ["architecture", "landmark"],
+  // Tags: ≥ 1 from the controlled interest-tag list.
+  "year": 1902,
+  // Year: one of the 7 canonical eras.
   "sources": [
     {
-      "title": "Federal Hall National Memorial — National Register of Historic Places",
-      "url": "https://npgallery.nps.gov/NRHP/AssetDetail/NRHP/66000539",
-      "publisher": "National Park Service"
+      "title": "[Primary source title — e.g., LPC designation report, NPS nomination, NRHP listing]",
+      "url": "PRIMARY_SOURCE_URL",
+      // A real, verifiable URL to an institutional/archival source with direct authority.
+      // Examples of acceptable source types: LPC reports, NPS nominations, DOF/ACRIS records,
+      // NYPL digitized materials, city agency publications.
+      "publisher": "[Institutional publisher name]"
     },
     {
-      "title": "Federal Hall — NYC Landmarks Preservation Commission Designation Report",
-      "url": "https://s-media.nyc.gov/agencies/lpc/lp/0082.pdf",
-      "publisher": "NYC LPC"
+      "title": "[Secondary source title — e.g., museum website, reputable press, scholarly article]",
+      "url": "SECONDARY_SOURCE_URL",
+      // A real URL to an institutional or reputable secondary source.
+      // Acceptable: organization websites, NYT, academic papers, CultureNOW.
+      // NOT acceptable as sole source: Wikipedia, blogs, social media, undated pages.
+      "publisher": "[Publisher name]"
     }
   ],
   "images": [
     {
-      "src": "/images/federal-hall.jpg",
-      "credit": "Library of Congress, Prints & Photographs Division",
-      "license": "Public domain"
+      "src": "/images/example-candidate-a.jpg",
+      "credit": "[Credit line — e.g., Library of Congress, NYPL Digital Collections]",
+      "license": "[License — e.g., Public domain, CC-BY-SA-4.0]"
     }
   ],
   "borough": "Manhattan",
-  "area": "Financial District",
-  "block": "Wall St & Nassau St",
-  "route_id": "FIDI-1852",
+  "area": "EXAMPLE_NEIGHBORHOOD",
+  // Note: if this neighborhood is not in the current area enum, flag as schema-barrier.
+  "block": "[Cross-street description, e.g., Main St & 2nd Ave]",
+  "route_id": "EXNB-1902",
+  // Route group: assigned at promotion time or in seed data. Editorial decision.
   "order": 1
 }
 ```
 
-**Why this is a good model:**
-- **Source quality:** 2 primary sources (NPS National Register + LPC designation report). Both are institutional with real URLs.
-- **BBL:** Derivable from LPC report or ZoLa (Block 00046, Lot 0021). Not included in the JSON because BBL is a verification artifact, not a runtime field — but it was checked.
-- **Coordinates:** From ZoLa lot centroid for the BBL, cross-checked against NPS site map.
-- **Era assignment:** 1852 (first canonical era; building completed 1842, active and significant through this period).
-- **Tags:** 3 relevant tags from the controlled list.
-- **Images:** Public domain (Library of Congress) — no licensing risk.
-- **R-050 alignment:** Passes all checklist items. No deferred or uncertain fields. This is what "ready to promote" looks like.
+**Disposition: A — Promotion-ready**
+
+| Check | Status |
+|-------|--------|
+| Sources | ≥ 1 primary + ≥ 1 secondary, both with real URLs |
+| Coordinates | From authoritative source, cross-checked |
+| BBL (verification artifact) | Derived from primary source, confirmed via ZoLa |
+| Summary/description | Factual, historically grounded, human-reviewed |
+| Tags | ≥ 1 from controlled list |
+| Year | Canonical era assigned |
+| Images | ≥ 1 with license info |
+| No Wikipedia-only | Confirmed |
+| Not from _legacy/ | Confirmed |
+
+**What "promotion-ready" means here:** The evidence is sufficient for Stephen's assimilation review. It does not mean pre-approved — Stephen still makes the editorial decision.
 
 ---
 
-## Example B — Strong Candidate with One Flagged Gap
+## Specimen B — Strong Candidate with One Unresolved Gap
 
-> **MODEL EXAMPLE ONLY — not an actual promoted POI.**
-> Uses Stonewall Inn as a real landmark for illustration. The flagged gap is for demonstration purposes.
+> **STRUCTURAL SPECIMEN — not real content.**
 
 ```jsonc
 {
-  // EXAMPLE OBJECT — not runtime content
-  "id": "stonewall-inn-1952",
-  "name": "Stonewall Inn",
-  "summary": "Site of the 1969 uprising that catalyzed the modern LGBTQ rights movement.",
-  "description": "The Stonewall Inn at 51–53 Christopher Street was the site of the Stonewall uprising in June 1969, when patrons resisted a police raid. The event is widely regarded as the catalyst for the modern LGBTQ rights movement in the United States. The building was designated a National Historic Landmark in 2000 and is part of the Stonewall National Monument (est. 2016).",
-  "coords": { "lat": 40.7338, "lng": -74.0020 },
-  "neighborhood": "Greenwich Village",
-  "tags": ["lgbtq", "politics", "landmark"],
+  // SPECIMEN — structural example only
+  "id": "example-candidate-b-1952",
+  "name": "EXAMPLE_CANDIDATE_B",
+  "summary": "[One-sentence factual summary.]",
+  "description": "[2–5 sentences, historically grounded.]",
+  "coords": { "lat": 0.0000, "lng": 0.0000 },
+  // Coordinates: from authoritative source, cross-checked.
+  "neighborhood": "EXAMPLE_NEIGHBORHOOD_2",
+  "tags": ["politics", "landmark"],
   "year": 1952,
   "sources": [
     {
-      "title": "Stonewall — National Historic Landmark Nomination",
-      "url": "https://npgallery.nps.gov/NRHP/AssetDetail/NRHP/99000562",
-      "publisher": "National Park Service"
+      "title": "[Primary source — e.g., NHL nomination]",
+      "url": "PRIMARY_SOURCE_URL",
+      "publisher": "[Institutional publisher]"
     },
     {
-      "title": "Stonewall Inn — NYC LPC Designation Report",
-      "url": "https://s-media.nyc.gov/agencies/lpc/lp/2574.pdf",
-      "publisher": "NYC LPC"
+      "title": "[Secondary source — e.g., LPC report]",
+      "url": "SECONDARY_SOURCE_URL",
+      "publisher": "[Institutional publisher]"
     }
   ],
   "images": null,
-  // ⚠️ IMAGE-PENDING: No confirmed public-domain or CC-licensed image found yet.
-  // A Wikimedia Commons photo exists but license needs verification before use.
-  // This does NOT block promotion per R-050 but the POI ships as image-pending.
+  // ⚠️ IMAGE-PENDING: No confirmed public-domain or appropriately licensed image
+  // found yet. Research identified potential candidates in [source collection] but
+  // license status has not been verified.
+  // Per R-050: images are recommended, not required. This candidate is promotable
+  // but ships as image-pending.
   "borough": "Manhattan",
-  "area": "Greenwich Village",
-  "block": "Christopher St & 7th Ave S",
-  "route_id": "GRNVLG-1952",
+  "area": "EXAMPLE_NEIGHBORHOOD_2",
+  "block": "[Cross-street description]",
+  "route_id": "EXNB2-1952",
   "order": 1
 }
 ```
 
-**Why this is a good model:**
-- **Source quality:** 2 primary sources (NPS NHL nomination + LPC report). Strong provenance.
-- **BBL:** Derivable from LPC report (Block 00610, Lots 0038+0039 — multi-lot). Cross-checkable via ZoLa.
-- **Coordinates:** From ZoLa, confirmed against NPS monument boundary.
-- **Era assignment:** 1952 (the canonical era containing the 1969 event — no 1960s era exists; 1952 is the closest prior snapshot).
-- **Flagged gap — images:** The `images` field is explicitly `null` with a comment explaining why. This makes the gap visible to the reviewer rather than hiding it behind a placeholder. R-050 says images are "recommended" not "required" — so this is promotable but flagged.
-- **Tags:** 3 tags from the controlled list including `lgbtq`.
-- **R-050 alignment:** Passes all required checklist items. The one gap (images) is documented and does not block promotion.
+**Disposition: B — Flagged gap (images)**
+
+| Check | Status |
+|-------|--------|
+| Sources | PASS — primary + secondary with real URLs |
+| Coordinates | PASS |
+| BBL | PASS |
+| Summary/description | PASS |
+| Tags | PASS |
+| Year | PASS |
+| Images | ⚠️ PENDING — does not block promotion but flagged |
+| No Wikipedia-only | PASS |
+
+**What this specimen demonstrates:**
+- One gap is acceptable if it is **explicitly flagged** with an inline `⚠️` comment explaining what is missing and why it does not block promotion.
+- The `images` field is `null` rather than populated with a fake placeholder — honesty over cosmetics.
+- The disposition note clearly states the gap and its severity.
+- A reviewer can see at a glance what needs follow-up without re-reading the sources.
 
 ---
 
-## Example C — Historically Interesting but Deferred
+## Specimen C — Deferred Lead Packet
 
-> **MODEL EXAMPLE ONLY — not an actual promoted POI.**
-> Uses a composite "Collect Pond" example to illustrate a candidate that should be deferred.
+> **STRUCTURAL SPECIMEN — not real content.**
 
 ```jsonc
 {
-  // EXAMPLE OBJECT — not runtime content
-  // STATUS: DEFERRED — see notes below
-  "id": "collect-pond-park-1852",
-  "name": "Collect Pond Park",
-  "summary": "Modern park on the site of the historic Collect Pond, Manhattan's original freshwater source.",
-  "description": "Collect Pond Park occupies a portion of the site where the Collect Pond (also called Fresh Water Pond) once stood. The pond was a major freshwater source for early Manhattan and was filled in by 1811 due to pollution. The area later became the Five Points neighborhood. The modern park was created in 1999.",
-  "coords": { "lat": 40.7146, "lng": -74.0013 },
-  // ⚠️ COORDS UNCERTAIN: Coordinates are approximate — derived from the modern park
-  // location, but the historical Collect Pond covered a larger area. No single lot
-  // centroid accurately represents the 1852-era feature. Needs cross-reference
-  // against NYPL historical maps (Viele 1865 water map or 1836 Colton map).
-  "neighborhood": "Civic Center",
-  "tags": ["public-space", "infrastructure"],
+  // SPECIMEN — structural example only
+  // STATUS: DEFERRED — multiple unresolved issues (see below)
+  "id": "example-deferred-c-1852",
+  "name": "EXAMPLE_DEFERRED_C",
+  "summary": "[One-sentence summary of a historically interesting candidate.]",
+  "description": "[2–5 sentences. Content may be partially sourced but not independently verified.]",
+  "coords": { "lat": 0.0000, "lng": 0.0000 },
+  // ⚠️ COORDS UNCERTAIN: Coordinates are approximate. Derived from a modern
+  // reference point but the historical feature's footprint differs. Needs
+  // cross-reference against archival maps before promotion.
+  "neighborhood": "EXAMPLE_NEIGHBORHOOD_3",
+  "tags": ["public-space"],
   "year": 1852,
   "sources": [
     {
-      "title": "The Collect Pond — Mapping NYC Water Infrastructure",
-      "url": "https://example.org/placeholder-primary-source",
-      // ⚠️ SOURCE PENDING: This URL is a placeholder. A real primary source
-      // (e.g., NYPL map collection, NYC DEP historical records) must be found
-      // before promotion. The Wikipedia article on Collect Pond cites several
-      // potential primaries but they have not been independently verified.
-      "publisher": "PENDING — needs primary source"
+      "title": "[Only available source — e.g., Wikipedia article or secondary summary]",
+      "url": "SCAFFOLDING_SOURCE_URL",
+      // ⚠️ SOURCE INSUFFICIENT: This source is scaffolding-tier only (e.g., Wikipedia,
+      // general reference). A primary or secondary source with institutional authority
+      // must be found before promotion.
+      // Per R-050: "A POI whose only source is Wikipedia is not promotion-ready."
+      "publisher": "PENDING — needs primary or secondary source"
     }
   ],
   "images": null,
-  // ⚠️ IMAGE-PENDING: Historical illustrations exist (NYPL Digital Collections)
-  // but specific items and licenses have not been confirmed.
+  // ⚠️ IMAGE-PENDING: Potential historical images may exist in archival collections
+  // but have not been identified or license-checked.
   "borough": "Manhattan",
-  "area": "Civic Center",
-  "block": "Centre St & Leonard St",
+  "area": "EXAMPLE_NEIGHBORHOOD_3",
+  // ⚠️ AREA ENUM BARRIER: This neighborhood is not in the current schema enum.
+  // Requires schema update before runtime promotion.
+  "block": "[Approximate cross-street description]",
   "route_id": null,
-  // ⚠️ ROUTE-ID UNASSIGNED: No route group exists for Civic Center yet.
-  // Editorial decision required before this can be assigned.
+  // ⚠️ ROUTE-ID UNASSIGNED: No route group exists for this neighborhood yet.
+  // Editorial decision required.
   "order": null
 }
 ```
 
-**Why this is a good model for deferral:**
-- **Historical interest:** The Collect Pond is genuinely significant — it shaped Manhattan's geography, infrastructure, and settlement patterns. It is the kind of candidate that would be exciting to include.
-- **But it has multiple unresolved issues:**
-  1. **Coordinates uncertain** — the modern park is only an approximation of the historical feature. R-050 says "never infer precise coordinates from vague addresses."
-  2. **No verified primary source** — the only readily available information is from Wikipedia and secondary summaries. R-050 says "A POI whose only source is Wikipedia is not promotion-ready."
-  3. **Route group undefined** — no `CIVIC-1852` route exists yet; this is an editorial dependency.
-  4. **Area enum barrier** — "Civic Center" is not in the current schema enum. Requires schema update.
-- **Correct disposition per R-050:** DEFER until (a) a primary source is found and verified, (b) coordinates are cross-checked against historical maps, and (c) the schema is expanded.
-- **What this demonstrates:** How to make uncertainty visible in the object itself. Every uncertain field has an inline comment. The object is complete in structure but honestly incomplete in evidence. A reviewer can see exactly what needs to happen before promotion.
+**Disposition: C — Deferred**
+
+| Check | Status |
+|-------|--------|
+| Sources | ⚠️ FAIL — scaffolding-only, no primary or secondary |
+| Coordinates | ⚠️ UNCERTAIN — approximate, not cross-checked |
+| BBL | ⚠️ NOT VERIFIED |
+| Summary/description | Partial — not independently verified |
+| Tags | PASS |
+| Year | PASS |
+| Images | ⚠️ PENDING |
+| Area enum | ⚠️ BARRIER — schema update needed |
+| Route group | ⚠️ UNASSIGNED |
+
+**What this specimen demonstrates:**
+- A candidate can be historically significant and still not promotion-ready. Defer is not rejection — it means "needs more work."
+- Every uncertain or missing field has an inline `⚠️` flag explaining the gap and what must happen to resolve it.
+- The disposition table makes the failure points scannable.
+- The packet is structurally complete (all fields present) even though many are flagged — this lets a reviewer see at a glance what the candidate would need.
+- Events that were shoehorned into place packets with weak place evidence should look like this: deferred, with the weakness made visible.
+
+**When to defer vs. reject:** Per R-050, defer if the evidence gap is closable (e.g., a primary source likely exists but hasn't been found). Reject if the candidate fundamentally cannot meet the criteria (e.g., no verifiable address, only source is a blog).
 
 ---
 
-## How Future Deep-Research Prompts Should Use These Examples
+## Rules for Using These Specimens in Future Deep-Research Prompts
 
-1. **Shape target:** Produce candidate packets that match this JSON structure. All fields present, even if some are `null` with flagged notes.
+1. **Shape compliance:** Every candidate packet must include all fields from the runtime schema table above. Use `null` for unknown values — never omit fields silently.
 
-2. **Quality bar:** Every candidate should be classifiable as A (ready), B (one flagged gap), or C (deferred). If most candidates are C-quality, the research question may be premature — the data needs more verification upstream before assimilation work begins.
+2. **Disposition classification:** Every candidate must be classified A, B, or C with a disposition table. If most candidates in a batch are C-quality, the research question may be premature.
 
-3. **Inline uncertainty:** Do not hide gaps. Mark them with `⚠️` comments in the JSON. This makes Stephen's review faster — he can scan for warning flags without re-reading the source material.
+3. **Inline uncertainty flags:** Use `⚠️` comments directly in the JSON on the affected field. Do not bury gaps in prose below the object.
 
-4. **Source standard:** At least 1 non-Wikipedia source with a real URL. Placeholder URLs must be labeled `placeholder` or `PENDING` so they are not mistaken for verified citations.
+4. **Source honesty:** Use labeled placeholders (`PRIMARY_SOURCE_URL`, `SECONDARY_SOURCE_URL`, `SCAFFOLDING_SOURCE_URL`) in specimens. In real candidate packets, use real URLs — never fabricate URLs that look real. If a source has not been found yet, write `"PENDING — [what kind of source is needed]"`.
 
-5. **Batch sizing:** A deep-research prompt producing candidate packets should aim for 3–5 candidates per batch. This keeps review manageable and aligns with the x-branch recon pattern (R-051).
+5. **Batch sizing:** 3–5 candidates per deep-research batch. This keeps review manageable and aligns with the x-branch recon pattern (R-051).
 
-6. **Not a commitment:** Producing a candidate packet does not mean the POI will be promoted. The packet is an input to Stephen's editorial review, not an output of it.
+6. **Not a commitment:** A candidate packet is an input to Stephen's editorial review, not a pre-approved promotion.
+
+7. **Events are not place packets:** If the research target is an event rather than a place, do not force it into this structure with weak place evidence. Events require a separate schema decision (R-050 open question #1). Flag event-shaped candidates and defer them.
+
+## What These Specimens Are NOT
+
+- **Not real POIs.** No landmark names, no real coordinates, no real URLs.
+- **Not promotion decisions.** The A/B/C classification is a research output, not an editorial verdict.
+- **Not schema documentation.** The runtime schema lives in `tests/schema/poi.schema.ts`. This doc references it but does not replace it.
+- **Not promotion policy.** Promotion criteria live in R-050. This doc shows the output shape, not the rules.
+- **Not a template to copy-paste.** The specimens show structure and quality bar. Real candidate packets should have real content, real sources, and real evidence — just shaped like these specimens.
 
 ## Confidence Statement
 
-**Confidence:** 90%
-**Basis:** All 3 examples are grounded in the actual runtime schema (`poi.v1.json` + `poi.schema.ts`) and R-050 promotion criteria. The landmarks used as illustrations are real and well-documented. The flagged gaps and deferral conditions reflect actual repo rules. The JSON structure matches runtime shape exactly.
-**Ready to proceed:** YES — these examples are immediately usable as reference for deep-research prompts and x-branch candidate-packet output.
+**Confidence:** 92%
+**Basis:** Specimens are grounded in the actual runtime schema (`poi.v1.json` + `poi.schema.ts`) and R-050 promotion criteria. All placeholder fields are labeled. The A/B/C disposition model covers the three cases that arise in practice (ready, one gap, deferred). No real landmarks or URLs are used.
+**Ready to proceed:** YES — these specimens are immediately usable as the target shape reference for deep-research prompts and x-branch candidate-packet output.
