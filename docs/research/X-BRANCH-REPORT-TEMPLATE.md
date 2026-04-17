@@ -40,13 +40,15 @@ List any follow-up questions the spike did not answer, edge cases not tested, or
 
 Based on the verdict, state the recommended next step:
 - **A:** Draft R-### research doc on main capturing the learning.
-- **B:** Cherry-pick or rewrite the named test/fixture on main in a real story.
+- **B:** Rewrite the named test/fixture on main via a separate tiny main-branch story.
 - **C:** Write a story proposal for NEXT.md.
 - **D:** Close PR, archive or delete the branch.
 
 ---
 
 ## Hostile Scrutiny Gate
+
+Copilot drafts the answers below as part of the spike report. The gate is **not self-certified**: ChatGPT reviews the answers adversarially, and the report is not accepted until Stephen approves the outcome.
 
 Answer each question YES or NO. All must be YES for the report to be accepted.
 

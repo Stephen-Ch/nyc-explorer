@@ -47,7 +47,7 @@ Before opening the PR, Copilot must verify:
 | `npm run typecheck` | PASS (0 errors) |
 | `npm run e2e:auto` | PASS (no new failures) |
 | Spike report drafted | Yes — uses X-BRANCH-REPORT-TEMPLATE.md |
-| Hostile scrutiny gate | All 5 questions answered YES |
+| Hostile scrutiny gate | All 5 questions answered YES (Copilot drafts; ChatGPT reviews adversarially; Stephen approves) |
 | No `docs/project/*` edits | Confirmed |
 | No quarantine skips removed | Confirmed |
 | All new tests fixture-backed | Confirmed |
@@ -57,7 +57,7 @@ Before opening the PR, Copilot must verify:
 Nothing from the spike branch crosses to main automatically. If the spike produces valuable learning:
 
 - **Learning** is captured in a `docs/research/R-###` doc on main (written fresh, not copied from the branch).
-- **Tests/fixtures** are rewritten or cherry-picked on main in a normal story commit.
+- **Tests/fixtures** are rewritten on main via a separate tiny main-branch story (not merged or cherry-picked from the spike branch).
 - **Code** is never merged — it is rewritten on main if the approach is proven viable.
 
 ## PR Reminder
