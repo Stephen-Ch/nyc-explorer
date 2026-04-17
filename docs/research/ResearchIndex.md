@@ -18,8 +18,8 @@ Method: Index-in-place (no physical moves in this pass).
 | Audits | 2 |
 | Testing / Environment | 5 |
 | Audits (cross-repo) | 1 |
-| Data Provenance | 7 |
-| **Total indexed** | **43** |
+| Data Provenance | 8 |
+| **Total indexed** | **44** |
 
 ---
 
@@ -127,6 +127,7 @@ Method: Index-in-place (no physical moves in this pass).
 | R-044 | Content model + storage decision rules (entity model, time/interest model, DB trigger thresholds, stage path) | [docs/research/R-044-Content-Model-and-Storage-Decision-Rules.md](R-044-Content-Model-and-Storage-Decision-Rules.md) | Open |
 | R-045 | Google Routes API v2 integration plan (computeRoutes WALK mode: endpoint, FieldMask, security proxy, pricing SKUs, cut list) | [docs/research/R-045-Google-Routes-v2-Integration-Plan.md](R-045-Google-Routes-v2-Integration-Plan.md) | Open |
 | R-046 | Google Routes proxy contract + mapping (request/response contract, FieldMask, duration gap, error semantics, deterministic test plan) | [docs/research/R-046-Google-Routes-Proxy-Contract-and-Mapping.md](R-046-Google-Routes-Proxy-Contract-and-Mapping.md) | Open |
+| R-051 | X-Branch reconnaissance queue (ranked recon opportunities, selection rules, low-attention operating pattern) | [docs/research/R-051-X-Branch-Recon-Queue.md](R-051-X-Branch-Recon-Queue.md) | Complete |
 
 ---
 
