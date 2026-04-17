@@ -26,7 +26,7 @@ const POISchema = z.object({
     license: z.string().min(1)
   })),
   borough: z.literal("Manhattan"),
-  area: z.enum(["Union Square", "Flatiron District"]),
+  area: z.string().min(1),
   block: z.string().min(1),
   route_id: z.string().optional(),
   order: z.number().optional()
