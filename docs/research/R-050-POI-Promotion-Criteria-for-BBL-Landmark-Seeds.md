@@ -33,7 +33,7 @@ What criteria must a BBL landmark seed (or related historical source material) s
 |------|--------|---------------------|
 | Primary sources > secondary; no invented BBLs | README_for_Copilot.md §0, §2 | Exact |
 | BBL must derive from a primary source (LPC, DOF/ACRIS/PIP, official open data) | README_for_Copilot.md §2 | Exact |
-| ≤ 3 attractions per block per era | README_for_Copilot.md §2 | Exact |
+| ≤ 3 attractions per block per era (current operational/runtime cap — not a credibility or provenance gate; overflow is flagged as "more available" in UI) | README_for_Copilot.md §2 | Exact |
 | Provenance = source_primary (institutional/archival) + source_secondary (press/wiki). Primary required for critical facts (BBL, dates, identities) | README_for_Copilot.md §2 | Exact |
 | Never infer precise coordinates from vague addresses; leave lat/lng NULL | README_for_Copilot.md §4 | Exact |
 | BBL lookup sources: ZoLa → DOF → PLUTO → OASIS → ACRIS | BBL_Lookup_Playbook.md | Exact |
@@ -153,7 +153,7 @@ A seed row must be **rejected or deferred** if any of these apply:
 | Only source is Wikipedia with no linked primary citation | **Defer** until a primary or secondary source is found |
 | Only source is a blog, social media, or undated page | **Reject** |
 | Landmark has no clear historical significance (no LPC, NPS, or equivalent recognition) | **Defer** — needs editorial justification |
-| Density cap exceeded: > 3 attractions on the same block for the same era | **Defer** lowest-power item(s) — flag as "overflow" for potential future UI affordance |
+| Density cap exceeded: > 3 attractions on the same block for the same era | **Not a reject/defer for credibility.** This is a current operational/runtime curation cap, not a permanent truth rule. If more than 3 well-sourced candidates exist on a block, additional candidates are **eligible but not currently selected** — flag as overflow for future weighted/ranked experiences. Do not reject well-supported candidates solely because the cap is hit. |
 | Row is from `_legacy/` directory | **Reject** — use the canonical copy in `attractions/` or root |
 | Row has `needs_verification` status and no verification work has been done | **Defer** — cannot promote until verified |
 | Coordinates inferred from vague address without cross-check | **Reject** coordinates — must re-derive from authoritative source |
@@ -192,7 +192,7 @@ For each BBL landmark seed row being considered for promotion, verify:
 - [ ] **Tags:** ≥ 1 from controlled list
 - [ ] **Year:** Assigned to one of the 7 canonical eras
 - [ ] **Images:** ≥ 1 with license info (or flagged image-pending)
-- [ ] **Density check:** ≤ 3 attractions on this block for this era
+- [ ] **Density check (operational, not credibility):** Note if > 3 attractions exist on this block for this era. This is a current runtime cap, not a promotion-eligibility gate. Excess candidates are eligible but deferred for selection/ranking, not rejected for weak sourcing
 - [ ] **No Wikipedia-only:** At least 1 non-Wikipedia source
 - [ ] **Not from _legacy/:** Using canonical file copy
 - [ ] **Status:** Changed from `needs_verification` to `verified` after passing above checks
