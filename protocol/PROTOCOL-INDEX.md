@@ -65,6 +65,16 @@
 - Blocked goal procedure → [Blocked Goal Procedure](protocol-v7.md#blocked-goal-procedure-mandatory)
 - Waiting-for-approver workflow → [Approver Workflow](protocol-v7.md#waiting-for-approver-workflow-mandatory)
 
+## Session Boundaries & Workspace Gates
+
+- Remote Reality Gate → [Remote Reality Gate](protocol-v7.md#remote-reality-gate-mandatory-at-session-boundaries)
+- Workspace Reality Gate (session close) → [Workspace Reality Gate](protocol-v7.md#workspace-reality-gate-mandatory-at-session-close)
+- End-of-session full contract → [End-of-Session Full Contract](protocol-v7.md#end-of-session-full-contract-canonical-meaning-of-run-end-of-session)
+- Consumer-Kit Drift Gate (session start, consumer repos) → [Consumer-Kit Drift Gate](protocol-v7.md#consumer-kit-drift-gate-mandatory-at-session-start-in-consumer-repos)
+- Staleness Expiry Gate (handoff freshness) → [Staleness Expiry Gate](protocol-v7.md#staleness-expiry-gate-mandatory-at-session-boundaries)
+- Decision-Queue Gate (decision-item structure and lifecycle) → [Decision-Queue Gate](protocol-v7.md#decision-queue-gate-mandatory-at-session-boundaries)
+- Tool/Auth Fragility Gate (verification toolchain health) → [Tool/Auth Fragility Gate](protocol-v7.md#toolauth-fragility-gate-mandatory-at-session-boundaries)
+
 ## Deployment & Environment
 
 - Remote target preflight → [Remote Target Preflight](protocol-v7.md#remote-target-preflight-mandatory-for-devstageprod-automation)

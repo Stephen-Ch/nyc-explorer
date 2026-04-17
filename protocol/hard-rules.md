@@ -42,6 +42,7 @@
 
 - One continuous markdown document, PROMPT-ID through summary
 - ZERO fenced code blocks (4-space indentation instead)
+- **Scope:** This rule applies to completion reports. When producing a prompt for Stephen to copy, follow the [Prompt Output Contract](working-agreement-v1.md#prompt-output-contract-mandatory-formatting) instead.
 
 → [Response Structure](protocol-v7.md#response-structure)
 

@@ -88,7 +88,7 @@ Legacy duplicates under `docs/protocol` now contain redirect banners and exist o
 | Tool | Purpose |
 |------|---------|
 | `tools/doc-audit.ps1` | Docs health gate (must PASS before commit) |
-| `tools/session-start.ps1` | Session-start wrapper (subtree pull → forGPT sync → audit) |
+| `tools/session-start.ps1` | Session-start wrapper (subtree pull → version print → drift gate → staleness check → decision-queue check → tool/auth check → forGPT sync → audit) |
 | `tools/check-prior-research.ps1` | Prior research lookup (run BEFORE any RESEARCH-ONLY work) |
 | `tools/verify-protocol-index.ps1` | Validate protocol index anchor links |
 | `tools/check-protocol-v7-budget.ps1` | Protocol file size/heading budget check |

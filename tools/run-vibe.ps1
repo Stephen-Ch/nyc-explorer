@@ -21,7 +21,9 @@
 .PARAMETER SkipAudit
   (session-start) Skip Consumer doc-audit step.
 .PARAMETER Force
-  (session-start) Continue on dirty working tree.
+  (session-start) Continue on dirty working tree when -SkipUpdate is used.
+  When update runs, non-subtree dirty files are auto-stashed automatically;
+  dirty kit-subtree files always hard-stop. -Force does not bypass subtree merge safety.
 .PARAMETER Mode
   (doc-audit) Explicit mode: Kit or Consumer.
 .PARAMETER StartSession

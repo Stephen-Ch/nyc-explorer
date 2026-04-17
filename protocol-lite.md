@@ -126,10 +126,32 @@ Run the gate that matches your project type:
 
 Run through [session-start-checklist.md](session-start-checklist.md):
 
-1. Check NEXT.md status (ACTIVE/PAUSED/BLOCKED)
-2. Check open PRs (`gh pr list --state open`)
-3. Check for orphan branches
+1. **RUN START OF SESSION DOCS AUDIT** — kit update, version print, Consumer-Kit Drift Gate, forGPT sync, doc-audit
+2. Check NEXT.md status (ACTIVE/PAUSED/BLOCKED)
+3. Check open PRs + Remote Reality
 4. Confirm research is indexed
+
+→ Consumer-Kit Drift Gate: [protocol-v7.md § Consumer-Kit Drift Gate](protocol/protocol-v7.md#consumer-kit-drift-gate-mandatory-at-session-start-in-consumer-repos)
+→ Staleness Expiry Gate: [protocol-v7.md § Staleness Expiry Gate](protocol/protocol-v7.md#staleness-expiry-gate-mandatory-at-session-boundaries)
+→ Decision-Queue Gate: [protocol-v7.md § Decision-Queue Gate](protocol/protocol-v7.md#decision-queue-gate-mandatory-at-session-boundaries)
+→ Tool/Auth Fragility Gate: [protocol-v7.md § Tool/Auth Fragility Gate](protocol/protocol-v7.md#toolauth-fragility-gate-mandatory-at-session-boundaries)
+
+**End of session:** Run `run-vibe -Tool end-session` for the full contract (Active Lane + Remote Reality + Workspace Reality → `CLEAN FIELD READY: YES/NO`).
+
+→ Full contract: [protocol-v7.md § End-of-Session Full Contract](protocol/protocol-v7.md#end-of-session-full-contract-canonical-meaning-of-run-end-of-session)  
+→ Workspace Reality Gate: [protocol-v7.md § Workspace Reality Gate](protocol/protocol-v7.md#workspace-reality-gate-mandatory-at-session-close)
+
+---
+
+## Mid-Session Reset (Confusion Recovery)
+
+Say **RUN MID-SESSION RESET** when you lose confidence about the current state mid-session.
+
+Steps: **STOP edits → Reality Snapshot → Classify Confusion → Research-Only if <95% → State Next Safe Step**
+
+Confusion buckets: branch confusion, scope confusion, docs/state drift, hidden-work fear, confidence too low.
+
+→ Full protocol: [protocol-v7.md § Mid-Session Reset](protocol/protocol-v7.md#mid-session-reset-operator-confusion-recovery)
 
 ---
 

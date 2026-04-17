@@ -202,3 +202,13 @@ before requesting review. See [protocol-v7.md § PR / Branch Hygiene Gate §D](p
 
 Every S2C completion report must include the verification table from:
 [closeout-artifact-verification-template.md](../templates/closeout-artifact-verification-template.md)
+
+---
+
+## Friction Log — End-of-Session (v1.0 Pilot)
+
+Before closing any session, check whether qualifying kit/process friction occurred (see [standards/friction-log-standard.md](../standards/friction-log-standard.md) for triggers and exclusions).
+
+- If yes: append **one** MEDIUM/HIGH entry to `.kit-feedback/FRICTION-LOG.local.md` using the schema in the standard. Create the directory and file if they do not exist.
+- If no qualifying friction occurred: write nothing. Silence is the expected default.
+- Do **not** log normal coding retries, flaky tests, or repo-specific learning here.

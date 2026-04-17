@@ -107,16 +107,24 @@ try {
 # -- 4. Fetch origin (unless skipped) --------------------------
 $rrStatus = "BLOCKED"
 $rrNotes = @()
+
+# -- Tool/Auth Fragility tracking (populated throughout script) --
+$taGhStatus = "UNAVAILABLE"     # AVAILABLE | DEGRADED | UNAVAILABLE
+$taFetchStatus = "UNAVAILABLE"  # AVAILABLE | DEGRADED | UNAVAILABLE
+
 if ($SkipFetch) {
     Write-Host "[SkipFetch] Skipping git fetch --all --prune" -ForegroundColor Yellow
+    $taFetchStatus = "DEGRADED"
 } elseif ($WhatIf) {
     Write-Host "[WhatIf] Would run: git fetch --all --prune" -ForegroundColor Cyan
 } else {
     Write-Host "Fetching (--all --prune)..." -ForegroundColor Yellow
     try {
         Invoke-GitSafe fetch --all --prune | Out-Null
+        $taFetchStatus = "AVAILABLE"
     } catch {
         Write-Host "  Warning: fetch failed: $_" -ForegroundColor Yellow
+        $taFetchStatus = "DEGRADED"
     }
 }
 
@@ -205,6 +213,7 @@ if ($WhatIf) {
     $ghOk = $false
     try { $null = gh --version 2>$null; if ($LASTEXITCODE -eq 0) { $ghOk = $true } } catch {}
     if ($ghOk) {
+        $taGhStatus = "AVAILABLE"
         try {
             $rrPrs = gh pr list --state open --json number,title,headRefName,baseRefName,url 2>$null | ConvertFrom-Json
             if ($null -eq $rrPrs -or $rrPrs.Count -eq 0) {
@@ -220,6 +229,7 @@ if ($WhatIf) {
         } catch {
             Write-Host "  Open PRs     : gh pr list failed — record Remote Reality: BLOCKED in PAUSE.md" -ForegroundColor Yellow
             $rrNotes += "gh pr list error"
+            $taGhStatus = "DEGRADED"
         }
     } else {
         Write-Host "  Open PRs     : gh not available — record Remote Reality: BLOCKED in PAUSE.md" -ForegroundColor Yellow
@@ -229,6 +239,120 @@ if ($WhatIf) {
 
 foreach ($note in $rrNotes) { Write-Host "    -> $note" -ForegroundColor Yellow }
 Write-Host ("  Remote Reality: {0}" -f $rrStatus) -ForegroundColor $(if ($rrStatus -eq 'PASS') { 'Green' } else { 'Yellow' })
+
+# -- 8c. Worktree Check ----------------------------------------
+Write-Host ""
+Write-Host "--- Workspace Reality Check ---" -ForegroundColor Cyan
+
+$wrNotes = @()
+
+$worktreeRaw = @(git worktree list 2>$null)
+$worktreeCount = $worktreeRaw.Count
+$extraWorktrees = [Math]::Max(0, $worktreeCount - 1)
+
+Write-Host ("  Worktrees    : {0} total ({1} extra)" -f $worktreeCount, $extraWorktrees) -ForegroundColor $(if ($extraWorktrees -eq 0) { 'Green' } else { 'Yellow' })
+foreach ($wt in $worktreeRaw) { Write-Host "    $wt" -ForegroundColor Gray }
+if ($extraWorktrees -gt 2) {
+    $wrNotes += "Extra worktrees ($extraWorktrees) exceed cap (2) — BLOCKED"
+} elseif ($extraWorktrees -gt 1) {
+    $wrNotes += "Extra worktrees ($extraWorktrees) above default cap (1) — review and clean up"
+}
+
+# -- 8d. Stash Check -------------------------------------------
+$stashRaw = @(git stash list 2>$null)
+$stashCount = $stashRaw.Count
+
+Write-Host ("  Stashes      : {0}" -f $stashCount) -ForegroundColor $(if ($stashCount -eq 0) { 'Green' } elseif ($stashCount -le 2) { 'Yellow' } else { 'Red' })
+foreach ($st in $stashRaw) { Write-Host "    $st" -ForegroundColor Gray }
+if ($stashCount -gt 4) {
+    $wrNotes += "Stash count ($stashCount) exceeds cap (4) — BLOCKED"
+} elseif ($stashCount -gt 2) {
+    $wrNotes += "Stash count ($stashCount) above default cap (2) — review stashes"
+}
+
+# -- 8d-age. Stash Age Check -----------------------------------
+if ($stashCount -gt 0) {
+    $stashDated = @(git stash list --format="%gd|%ci" 2>$null)
+    $today = Get-Date
+    foreach ($entry in $stashDated) {
+        $parts = $entry -split '\|', 2
+        if ($parts.Count -eq 2) {
+            $ref = $parts[0].Trim()
+            try {
+                $stashDate = [datetime]::Parse($parts[1].Trim())
+                $ageDays = [int]($today - $stashDate).TotalDays
+                if ($ageDays -gt 14) {
+                    Write-Host "    $ref : ${ageDays}d old — EXPIRED (>14d)" -ForegroundColor Red
+                    $wrNotes += "Stash $ref is ${ageDays} days old — expired per Staleness Expiry (>14d); promote to branch or drop"
+                } elseif ($ageDays -gt 3) {
+                    Write-Host "    $ref : ${ageDays}d old — STALE (>3d)" -ForegroundColor Yellow
+                    $wrNotes += "Stash $ref is ${ageDays} days old — stale per Staleness Expiry (>3d); consider promoting to branch"
+                }
+            } catch {
+                # Date parse failure — skip age check for this entry
+            }
+        }
+    }
+}
+
+# Untracked/dirty count for Workspace Reality
+$dirtyAndUntracked = $statusLines.Count
+if ($dirtyAndUntracked -gt 0) {
+    $wrNotes += "Dirty/untracked files: $dirtyAndUntracked item(s) — classify or clean"
+}
+
+# Non-merged branch count for Workspace Reality
+if ($nonMerged.Count -gt 5) {
+    $wrNotes += "Non-merged branches ($($nonMerged.Count)) exceed cap (5) — BLOCKED"
+} elseif ($nonMerged.Count -gt 3) {
+    $wrNotes += "Non-merged branches ($($nonMerged.Count)) above default cap (3) — classify each"
+}
+
+# -- 8d-branchage. Stale Local Branch Age Check ----------------
+if ($nonMerged.Count -gt 0) {
+    $branchRefs = @(git for-each-ref --format="%(refname:short)|%(upstream)|%(committerdate:iso)" refs/heads/ 2>$null)
+    $today = Get-Date
+    foreach ($line in $branchRefs) {
+        $parts = $line -split '\|', 3
+        if ($parts.Count -eq 3) {
+            $bName = $parts[0].Trim()
+            $bUpstream = $parts[1].Trim()
+            $bDate = $parts[2].Trim()
+            # Only check non-merged branches with no upstream
+            if ($bUpstream -eq '' -and $nonMerged -contains $bName -and $bDate -ne '') {
+                try {
+                    $commitDate = [datetime]::Parse($bDate)
+                    $ageDays = [int]($today - $commitDate).TotalDays
+                    if ($ageDays -gt 30) {
+                        Write-Host "    branch $bName : ${ageDays}d since last commit — EXPIRED (>30d, no upstream)" -ForegroundColor Red
+                        $wrNotes += "Branch '$bName' last commit ${ageDays}d ago, no upstream — expired per Staleness Expiry (>30d)"
+                    } elseif ($ageDays -gt 14) {
+                        Write-Host "    branch $bName : ${ageDays}d since last commit — STALE (>14d, no upstream)" -ForegroundColor Yellow
+                        $wrNotes += "Branch '$bName' last commit ${ageDays}d ago, no upstream — stale per Staleness Expiry (>14d)"
+                    }
+                } catch {
+                    # Date parse failure — skip age check for this branch
+                }
+            }
+        }
+    }
+}
+
+# -- 8e. Workspace Reality Verdict ------------------------------
+$wrBlocked = @($wrNotes | Where-Object { $_ -match 'BLOCKED' })
+if ($wrBlocked.Count -gt 0) {
+    $wrStatus = "BLOCKED"
+} elseif ($wrNotes.Count -gt 0) {
+    $wrStatus = "WARN"
+} else {
+    $wrStatus = "PASS"
+}
+
+foreach ($note in $wrNotes) { Write-Host "    -> $note" -ForegroundColor Yellow }
+Write-Host ("  Workspace Reality: {0}" -f $wrStatus) -ForegroundColor $(if ($wrStatus -eq 'PASS') { 'Green' } elseif ($wrStatus -eq 'WARN') { 'Yellow' } else { 'Red' })
+
+# -- 8f. Active Lane Verdict -----------------------------------
+$alStatus = if ($hasTracked) { "DIRTY" } else { "CLEAN" }
 
 # -- 9. Optional report file -----------------------------------
 if ($WriteReport) {
@@ -288,6 +412,31 @@ if ($WriteReport) {
             foreach ($note in $rrNotes) { $reportLines += "- $note" }
         }
         $reportLines += ""
+        $reportLines += "## Workspace Reality"
+        $reportLines += ""
+        $reportLines += "**Status:** $wrStatus"
+        $reportLines += ""
+        $reportLines += "| Category | Count |"
+        $reportLines += "|----------|-------|"
+        $reportLines += "| Extra worktrees | $extraWorktrees |"
+        $reportLines += "| Stashes | $stashCount |"
+        $reportLines += "| Non-merged branches | $($nonMerged.Count) |"
+        $reportLines += "| Dirty/untracked files | $dirtyAndUntracked |"
+        if ($wrNotes.Count -gt 0) {
+            $reportLines += ""
+            foreach ($note in $wrNotes) { $reportLines += "- $note" }
+        }
+        $reportLines += ""
+        $reportLines += "## Combined Verdict"
+        $reportLines += ""
+        $cfReady = if (-not $hasTracked -and ($rrStatus -eq 'PASS') -and ($wrStatus -eq 'PASS')) { "YES" } else { "NO" }
+        $reportLines += "| Gate | Status |"
+        $reportLines += "|------|--------|"
+        $reportLines += "| Active Lane | $alStatus |"
+        $reportLines += "| Remote Reality | $rrStatus |"
+        $reportLines += "| Workspace Reality | $wrStatus |"
+        $reportLines += "| **CLEAN FIELD READY** | **$cfReady** |"
+        $reportLines += ""
         $reportLines += "## Suggested Next Steps"
         $reportLines += ""
         $reportLines += "- If tracked changes exist: commit or stash before closing the session."
@@ -305,16 +454,61 @@ if ($WriteReport) {
 }
 
 # -- 10. Footer + exit -----------------------------------------
+
+# -- Tool/Auth Fragility verdict --------------------------------
+$taStatus = "PASS"
+$taNotes = @()
+if ($taGhStatus -ne "AVAILABLE") {
+    $taNotes += "gh CLI: $taGhStatus"
+}
+if ($taFetchStatus -ne "AVAILABLE") {
+    $taNotes += "git fetch: $taFetchStatus"
+}
+if ($taGhStatus -eq "AVAILABLE" -and $taFetchStatus -eq "AVAILABLE") {
+    $taStatus = "PASS"
+} elseif ($taNotes.Count -gt 0) {
+    $taStatus = "WARN"
+}
+
+Write-Host ""
+Write-Host "--- Tool/Auth Fragility Gate ---" -ForegroundColor Cyan
+Write-Host ("  gh CLI         : {0}" -f $taGhStatus) -ForegroundColor $(if ($taGhStatus -eq 'AVAILABLE') { 'Green' } elseif ($taGhStatus -eq 'DEGRADED') { 'Yellow' } else { 'Red' })
+Write-Host ("  git fetch      : {0}" -f $taFetchStatus) -ForegroundColor $(if ($taFetchStatus -eq 'AVAILABLE') { 'Green' } elseif ($taFetchStatus -eq 'DEGRADED') { 'Yellow' } else { 'Red' })
+Write-Host ("  ToolAuth       : {0}" -f $taStatus) -ForegroundColor $(if ($taStatus -eq 'PASS') { 'Green' } elseif ($taStatus -eq 'WARN') { 'Yellow' } else { 'Red' })
+foreach ($note in $taNotes) { Write-Host "    -> $note" -ForegroundColor Yellow }
+
 Write-Host ""
 Write-Host "==========================================" -ForegroundColor Cyan
 
-if ($hasTracked) {
-    Write-Host "HARD STOP: Tracked changes exist. Commit or stash before closing session." -ForegroundColor Red
-    exit 1
-} else {
-    Write-Host "END OF SESSION: Clean." -ForegroundColor Green
-    Write-Host "Remote Reality: $rrStatus" -ForegroundColor $(if ($rrStatus -eq 'PASS') { 'Green' } else { 'Yellow' })
+# Combined verdict: CLEAN FIELD READY requires all three gates
+$cleanField = (-not $hasTracked) -and ($rrStatus -eq 'PASS') -and ($wrStatus -eq 'PASS')
+
+Write-Host ("  Active Lane      : {0}" -f $alStatus) -ForegroundColor $(if ($alStatus -eq 'CLEAN') { 'Green' } else { 'Red' })
+Write-Host ("  Remote Reality   : {0}" -f $rrStatus) -ForegroundColor $(if ($rrStatus -eq 'PASS') { 'Green' } elseif ($rrStatus -eq 'WARN') { 'Yellow' } else { 'Red' })
+Write-Host ("  Workspace Reality: {0}" -f $wrStatus) -ForegroundColor $(if ($wrStatus -eq 'PASS') { 'Green' } elseif ($wrStatus -eq 'WARN') { 'Yellow' } else { 'Red' })
+Write-Host ("  Tool/Auth        : {0}" -f $taStatus) -ForegroundColor $(if ($taStatus -eq 'PASS') { 'Green' } elseif ($taStatus -eq 'WARN') { 'Yellow' } else { 'Red' })
+Write-Host ""
+
+if ($cleanField) {
+    Write-Host "CLEAN FIELD READY: YES" -ForegroundColor Green
     exit 0
+} else {
+    Write-Host "CLEAN FIELD READY: NO" -ForegroundColor Yellow
+    if ($hasTracked) {
+        Write-Host "  -> Tracked changes exist. Commit to a branch (preferred) or stash for short-lived interruptions only." -ForegroundColor Red
+    }
+    if ($rrStatus -ne 'PASS') {
+        Write-Host "  -> Remote Reality: $rrStatus — resolve notes above or record in PAUSE.md." -ForegroundColor Yellow
+    }
+    if ($wrStatus -ne 'PASS') {
+        Write-Host "  -> Workspace Reality: $wrStatus — classify leftovers and resolve or park." -ForegroundColor Yellow
+    }
+    # Hard-stop (exit 1) if tracked changes exist OR Workspace Reality is BLOCKED
+    if ($hasTracked -or $wrStatus -eq 'BLOCKED') {
+        exit 1
+    } else {
+        exit 0
+    }
 }
 
 } finally {

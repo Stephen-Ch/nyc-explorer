@@ -44,6 +44,7 @@ Chains: kit update → forGPT sync → doc-audit -StartSession → session block
 | Epics | `<DOCS_ROOT>/project/EPICS.md` |
 | Next step | `<DOCS_ROOT>/project/NEXT.md` |
 | Research index | `<DOCS_ROOT>/research/ResearchIndex.md` |
+| Visibility contract | `<DOCS_ROOT>/overlays/visibility-contract.md` |
 
 ---
 

@@ -1,10 +1,44 @@
 # Vibe-Coding Kit Version
 
-**Version:** v7.2.41  
-**Effective Date:** 2026-03-18
+**Version:** v7.3.3  
+**Effective Date:** 2026-04-16
 
 ## Purpose
 Defines required artifacts + gates used by Doc Audit. This file is the **single source of truth** for the kit bundle version. Per-file `Bundle:` headers were removed in v7.2.2 to prevent version drift -- see changelog below.
+
+## What Changed in v7.3.3
+- **Friction Log v1.0 pilot:** New portable standard (`standards/friction-log-standard.md`) defining repo-root local friction logging for kit/process friction. Storage: `.kit-feedback/FRICTION-LOG.local.md` (local, untracked). Scope: MEDIUM/HIGH kit friction only, one entry max per session. Copilot end-of-session instruction added to `copilot-instructions-v7.md`. Reminder item added to `session-start-checklist.md` end-of-session section. No tool changes, no shared-directory logging, no scheduled synthesis. Repo-specific learning deferred to separate v1.1 track.
+
+## What Changed in v7.3.2
+- **NEXT.md freshness discipline:** session-start-checklist.md gains mandatory "NEXT.md Freshness" pre-flight item (review Immediate Next Steps for staleness before proceeding). End-of-session: conditional NEXT.md update added to protocol-v7.md § End-of-Session Full Contract (operator obligation 10) and session-start-checklist.md § End of Session. Mid-session: trigger-based (not routine) review note added to protocol-v7.md § Staleness Classification. No new files or scripts.
+
+## What Changed in v7.3.1
+- **Mid-Session Reset protocol:** Added operator confusion recovery procedure to protocol-v7.md (§ Focus Control). Trigger: `RUN MID-SESSION RESET`. Steps: stop edits → reality snapshot → classify confusion → research-only fallback if <95% → state next safe step. No scripts or templates — operator-driven protocol only.
+- protocol-lite.md: Added quick-reference entry with trigger phrase and link.
+- protocol/canonical-commands.md: Added `RUN MID-SESSION RESET` to the canonical command table.
+
+## What Changed in v7.3.0
+- **Visibility Contract v1:** New portable standard (`standards/visibility-contract-standard.md`) defining required/recommended/optional fields for consumer-repo project-state links (PR dashboard, branch ledger, next-step, pause/resume). Consumer-fill overlay template added (`templates/visibility-contract-overlay.example.md`). Session-start now surfaces visibility links when populated; suppresses noisy output when unpopulated. No hardcoded repo-specific values in the kit.
+- templates/overlay-index.example.md: Added visibility-contract row to the standard overlay manifest.
+- templates/start-here-template.md: Added visibility-contract row to Key Local Docs table.
+- **End-of-session hardening (stale-item detection):** protocol-v7.md gains WIP Storage Preference (branches preferred over stash), Cleanup Closure Rule, Staleness Expiry rows for git stash entries and local branches with no upstream, and exit-nonzero-on-WR-BLOCKED tool enforcement bullet.
+- tools/end-session.ps1: Added stash age audit (>3d stale / >14d expired) and branch age audit (>14d stale / >30d expired, no upstream). Hardened exit condition to exit 1 on Workspace Reality BLOCKED (not just tracked changes). Updated WIP storage message to prefer branches.
+- session-start-checklist.md: Updated end-of-session guidance to prefer branches over stash for WIP storage.
+
+## What Changed in v7.2.43
+- **5-gate session-boundary hardening wave:** Added Workspace Reality Gate (end-session), Consumer-Kit Drift Gate (session-start), Staleness Expiry Gate (session-start), Decision-Queue Gate (session-start), and Tool/Auth Fragility Gate (session-start + end-session) to protocol-v7.md with full PASS/WARN/BLOCKED verdict models.
+- tools/session-start.ps1: Implements Consumer-Kit Drift, Staleness Expiry, Decision-Queue, and Tool/Auth Fragility gates; all verdicts surfaced in the session audit block.
+- tools/end-session.ps1: Implements Workspace Reality Gate and Tool/Auth Fragility Gate; Workspace Reality participates in CLEAN FIELD READY formula; ToolAuth displayed as meta-gate in footer.
+- session-start-checklist.md: Added individual gate items for all 5 gates; updated RUN START chain description to include Staleness Expiry, Decision-Queue, Tool/Auth.
+- PAUSE.md: Added Decision Queue table template for handoff-state decision tracking.
+- protocol-lite.md: Added links for all 5 gates in Session Startup section.
+- README.md: Updated tools table to describe all gates.
+- Condensed-view patch audit: repaired protocol-lite drift (duplicate links, stale descriptions).
+
+## What Changed in v7.2.42
+- tools/session-start.ps1: non-subtree dirty files are now auto-stashed before kit subtree update and restored afterward, resolving the session-start deadlock where control-deck repairs blocked subtree pull. Dirty kit-subtree files still hard-stop.
+- tools/run-vibe.ps1: updated -Force parameter help to reflect auto-stash behavior.
+- protocol/canonical-commands.md: clarified session-start step 1 and -Force flag semantics.
 
 ## What Changed in v7.2.41
 - Added Remote Reality Gate MVP: PASS/WARN/BLOCKED status model, active runtime branch definition, and branch classification labels (ACTIVE/PARKED/PR OPEN/MERGED/OBSOLETE) added to protocol-v7.md.
