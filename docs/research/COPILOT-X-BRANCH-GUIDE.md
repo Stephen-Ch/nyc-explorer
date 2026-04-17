@@ -2,6 +2,8 @@
 
 This is a brief guide for Copilot's role in x-branch spike mode. X-branch mode is optional and does not replace normal story execution. See X-BRANCH-MODE.md for the full workflow description.
 
+> **Canonical rules live in X-BRANCH-MODE.md.** This guide is a quick-reference summary. If there is a conflict, X-BRANCH-MODE.md wins.
+
 X-branch spikes are **cloud-agent-only**. The local VS Code workspace is used for dispatch and orchestration only — **not** for spike implementation. There is **no local fallback**.
 
 ## Copilot's Job in X-Branch Mode
@@ -25,6 +27,10 @@ Copilot (local) does **not**:
 - Run gate commands locally for the spike.
 - Make helpful follow-up edits to spike code after dispatch — dispatch ends at PR creation.
 - Fall back to local execution if the cloud agent is unavailable — the spike must **STOP**.
+
+### PR-Only Correction Exception
+
+After dispatch, local Copilot or Stephen may fix **PR description typos** or **PR comment clarifications** only if no x-branch files are edited, no code/tests/docs on the branch are changed, and no gate results are altered manually. This covers PR metadata only.
 
 ## Branch Rules
 
@@ -62,7 +68,7 @@ Before marking the PR ready for review, the cloud agent must verify:
 | `npm run typecheck` | PASS (0 errors) |
 | `npm run e2e:auto` | PASS (no new failures) |
 | Spike report drafted | Yes — uses X-BRANCH-REPORT-TEMPLATE.md |
-| Hostile scrutiny gate | All 6 questions answered YES (cloud agent drafts; ChatGPT reviews adversarially; Stephen approves) |
+| Hostile scrutiny gate | All 7 questions answered YES (cloud agent drafts; ChatGPT reviews adversarially; Stephen approves) |
 | No `docs/project/*` edits | Confirmed |
 | No quarantine skips removed | Confirmed |
 | All new tests fixture-backed | Confirmed |

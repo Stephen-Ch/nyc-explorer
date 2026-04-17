@@ -47,6 +47,19 @@ Copilot's dispatch responsibility **ends** when the PR is created and the cloud 
 - Commit to the x-branch from the local workspace.
 - Offer to finish the spike locally if the cloud agent is slow or unavailable.
 
+### PR-Only Correction Exception
+
+After dispatch, local Copilot or Stephen may fix:
+- PR description typos
+- PR comment clarifications
+
+only if **all** of the following are true:
+- No files on the x-branch are edited.
+- No code, tests, or docs on the branch are changed.
+- No gate results are altered manually.
+
+This exception covers PR metadata only — it does not extend to spike code, branch files, or any action that touches the branch itself.
+
 ## Roles
 
 | Role | Responsibility |
@@ -121,8 +134,9 @@ The gate asks:
 4. Was the spike performed by the cloud agent on a remote branch with no local spike implementation?
 5. Is the learning clearly articulated and actionable?
 6. Is the promotion decision (A/B/C/D) justified by the evidence?
+7. If a TDD waiver was claimed, is the justification genuine and is the alternate evidence sufficient?
 
-All 6 must be YES. If any answer is NO, the report must be revised before adoption. If ChatGPT and Stephen disagree on any answer, Stephen's judgment is final.
+All 7 must be YES (question 7 applies only when a TDD waiver is present; answer YES if TDD was followed). If any answer is NO, the report must be revised before adoption. If ChatGPT and Stephen disagree on any answer, Stephen's judgment is final.
 
 ## Promotion Rules for Tests and Fixtures
 

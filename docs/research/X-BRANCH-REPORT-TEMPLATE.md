@@ -40,6 +40,8 @@ Summarize the primary insight gained. This is the artifact that may be promoted 
 
 List any follow-up questions the spike did not answer, edge cases not tested, or assumptions still unvalidated.
 
+> **Minimum standard:** This section must contain at least one concrete item. If nothing remains unproven, the spike question was likely too narrow or the evidence is being overstated — revisit and strengthen.
+
 ## Suggested Next Action
 
 Based on the verdict, state the recommended next step:
@@ -70,7 +72,7 @@ Complete this section when proposing a verdict of A, B, or C. For verdict D, wri
 | Field | Value |
 |-------|-------|
 | Proposed R-### path | `docs/research/R-###-<topic>.md` |
-| Proposed ResearchIndex row | _Date, PROMPT-ID, Area, Status, Confidence, Keywords, Summary, File_ |
+| Proposed ResearchIndex row | _Follow the repo's current ResearchIndex.md column format (see docs/research/ResearchIndex.md for the active schema)._ |
 | Proposed verdict | A / B / C |
 | Named test/fixture for promotion (B only) | _Test name and file, or N/A_ |
 | Code promotion | **NO** — code is never promoted from x-branches |
@@ -81,7 +83,7 @@ Complete this section when proposing a verdict of A, B, or C. For verdict D, wri
 
 Copilot drafts the answers below as part of the spike report. The gate is **not self-certified**: ChatGPT reviews the answers adversarially, and the report is not accepted until Stephen approves the outcome.
 
-Answer each question YES or NO. All 6 must be YES for the report to be accepted.
+Answer each question YES or NO. All 7 must be YES for the report to be accepted (question 7 applies only when a TDD waiver is present; answer YES if TDD was followed).
 
 | # | Question | Answer |
 |---|----------|--------|
@@ -91,6 +93,7 @@ Answer each question YES or NO. All 6 must be YES for the report to be accepted.
 | 4 | **Execution mode** — Was the spike performed by the cloud agent on a remote branch with no local spike implementation? | YES / NO |
 | 5 | **Learning quality** — Is the key learning clearly articulated and actionable? | YES / NO |
 | 6 | **Promotion decision** — Is the A/B/C/D verdict justified by the evidence above? | YES / NO |
+| 7 | **TDD waiver legitimacy** — If a TDD waiver was claimed, is the justification genuine and is the alternate evidence sufficient to compensate for the absence of RED → GREEN → VERIFY? (Answer YES if TDD was followed.) | YES / NO |
 
 **Verdict options:**
 
