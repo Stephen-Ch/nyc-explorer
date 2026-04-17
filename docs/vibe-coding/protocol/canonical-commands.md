@@ -83,6 +83,7 @@ $runner = Get-ChildItem -Path (git rev-parse --show-toplevel) -Recurse -Filter "
 | RUN END OF SESSION | `powershell -NoProfile -ExecutionPolicy Bypass -File <SUBTREE>/tools/run-vibe.ps1 -Tool end-session -WriteReport` |
 | RUN SYNC forGPT | `powershell -NoProfile -ExecutionPolicy Bypass -File <SUBTREE>/tools/run-vibe.ps1 -Tool sync-forgpt` |
 | RUN DOC AUDIT (Consumer) | `powershell -NoProfile -ExecutionPolicy Bypass -File <SUBTREE>/tools/run-vibe.ps1 -Tool doc-audit -Mode Consumer -StartSession` |
+| RUN MID-SESSION RESET | No script — operator-driven protocol. See [protocol-v7.md § Mid-Session Reset](protocol-v7.md#mid-session-reset-operator-confusion-recovery) |
 
 Add `-WhatIf` to preview without executing. Unlisted flags can be passed via `-ToolArgs @(...)`.
 
@@ -97,7 +98,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File <SUBTREE>/tools/run-vibe.ps1
 ```
 
 **What it does (chained, in order):**
-1. **Kit update** — finds the `vibe-coding-kit` remote and runs `git subtree pull` to update the kit in the consumer repo. If the remote doesn't exist, it adds it automatically.
+1. **Kit update** — finds the `vibe-coding-kit` remote and runs `git subtree pull` to update the kit in the consumer repo. If the remote doesn't exist, it adds it automatically. If non-subtree files are dirty (e.g. control-deck repairs), they are auto-stashed before the pull and restored afterward. Dirty kit-subtree files still hard-stop.
 2. **Kit version print** — reads `VIBE-CODING.VERSION.md` and prints `KitVersion: vX.Y.Z (Effective YYYY-MM-DD)`.
 3. **forGPT sync** — runs `sync-forgpt.ps1` if present, refreshing the forGPT packet.
 4. **Consumer doc-audit (hard fail)** — runs `doc-audit.ps1 -Mode Consumer` (with `-StartSession` if supported). If it fails, the session STOPS with a non-zero exit. Use `-SkipAudit` to bypass.
@@ -106,7 +107,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File <SUBTREE>/tools/run-vibe.ps1
 **Optional flags:**
 - `-SkipUpdate` — skip the subtree pull even if the remote exists
 - `-SkipAudit` — skip the Consumer doc-audit step (still prints kit version)
-- `-Force` — continue on dirty working tree (still reports Tree=DIRTY)
+- `-Force` — when `-SkipUpdate` is used, continue on dirty working tree (still reports Tree=DIRTY). When update runs, non-subtree files are auto-stashed automatically; `-Force` does not bypass subtree merge safety
 - `-WhatIf` — print-only mode: no subtree pull, no forGPT sync, no doc-audit execution
 
 **Hard Stop rule:** If any other command is requested before the session audit has been run, reply:

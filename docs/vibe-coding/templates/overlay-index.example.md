@@ -26,6 +26,7 @@ Do NOT edit this template inside the kit head — it will be overwritten on subt
 | merge-commands.md | `<DOCS_ROOT>/overlays/merge-commands.md` | Build Gate + Test Gate commands for merge workflow |
 | hot-files.md | `<DOCS_ROOT>/overlays/hot-files.md` | Files/folders requiring analysis-first or full-file replacement |
 | repo-policy.md | `<DOCS_ROOT>/overlays/repo-policy.md` | Branch policy, PR rules, merge method, naming conventions |
+| visibility-contract.md | `<DOCS_ROOT>/overlays/visibility-contract.md` | PR dashboard, branch ledger, next-step, and resume links |
 
 Each overlay has a kit template under `templates/<name>-overlay.example.md`.  
 Copy the template, fill in project-specific values, and commit to the consumer repo.

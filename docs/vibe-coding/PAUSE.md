@@ -12,7 +12,7 @@
 > stopping work (session close, extended break, handoff to another agent).
 > During active implementation, **NEXT.md** is the live work-state authority.
 
-> **Date:** YYYY-MM-DD  
+> **Date:** YYYY-MM-DD _(update on every pause and review — Staleness Expiry freshness timestamp)_  
 > **Status:** PAUSED — (reason)  
 > **Next session:** Resume from this doc
 
@@ -27,6 +27,7 @@
 | **Branch** | _(your branch)_ |
 | **Blocking Issue** | _(if any)_ |
 | **Remote Reality** | PASS / WARN / BLOCKED — _(evidence date and summary)_ |
+| **Workspace Reality** | PASS / WARN / BLOCKED — _(worktrees, stashes, unmerged branches, untracked clusters)_ |
 
 ---
 
@@ -42,6 +43,15 @@
 |--------|--------|------|-------|
 | _(branch)_ | ACTIVE / PR OPEN / PARKED / MERGED / OBSOLETE | _(#nn or none)_ | _(last commit date, next action)_ |
 
+## Decision Queue
+
+> **Mandatory for any item classified DECISION NEEDED above.**
+> Each entry must have all required fields. See [protocol-v7.md § Decision-Queue Gate](protocol/protocol-v7.md#decision-queue-gate-mandatory-at-session-boundaries).
+
+| Item | Decision Owner | Why Needed | Date Added | Recorded In |
+|------|---------------|------------|------------|-------------|
+| _(item label)_ | _(Stephen / Agent / name)_ | _(one-sentence decision statement)_ | _(YYYY-MM-DD)_ | _(link or "this file")_ |
+
 ---
 
 ## Next Actions
@@ -54,10 +64,11 @@
 ## How to Resume (5-minute checklist)
 
 1. [ ] Open this doc
-2. [ ] **Remote Reality Check** — `git fetch origin`, then `gh pr list --state open --json number,title,headRefName,baseRefName,url`. Verify NEXT.md and active branches match remote state. Record PASS | WARN | BLOCKED in Current State above; repair mismatches or document as debt.
-3. [ ] Open [session-start-checklist.md](session-start-checklist.md) — run pre-flight
-4. [ ] Confirm your active story / next step
-5. [ ] Update this PAUSE.md before ending session
+2. [ ] **Check PAUSE.md freshness** — If the Date above is older than 7 days, review and confirm all state before relying on it. See [protocol-v7.md § Staleness Expiry Gate](protocol/protocol-v7.md#staleness-expiry-gate-mandatory-at-session-boundaries).
+3. [ ] **Remote Reality Check** — `git fetch origin`, then `gh pr list --state open --json number,title,headRefName,baseRefName,url`. Verify NEXT.md and active branches match remote state. Record PASS | WARN | BLOCKED in Current State above; repair mismatches or document as debt.
+4. [ ] Open [session-start-checklist.md](session-start-checklist.md) — run pre-flight
+5. [ ] Confirm your active story / next step
+6. [ ] Update this PAUSE.md before ending session
 6. [ ] Commit any changes before closing VS Code
 
 ---
