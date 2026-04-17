@@ -23,6 +23,7 @@ Copilot (local) does **not**:
 - Run spike code locally.
 - Check out the x-branch locally.
 - Run gate commands locally for the spike.
+- Make helpful follow-up edits to spike code after dispatch — dispatch ends at PR creation.
 - Fall back to local execution if the cloud agent is unavailable — the spike must **STOP**.
 
 ## Branch Rules
@@ -45,6 +46,7 @@ Each spike prompt should contain:
 ## Prompt-Writing Principles
 
 - One question per spike — keep it narrow and answerable.
+- **TDD by default.** The spike prompt should instruct the cloud agent to follow RED → GREEN → VERIFY. If TDD is not feasible for the spike (e.g., pure config exploration), include a TDD waiver instruction in the prompt and note the justification in the spike report.
 - All new tests must be fixture-backed (no live API calls in CI).
 - Use `data-testid` selectors for any new UI test assertions.
 - Do not modify `docs/project/*` (VISION, EPICS, NEXT).
@@ -77,6 +79,10 @@ Nothing from the spike branch crosses to main automatically. If the spike produc
 ## PR Reminder
 
 The PR is a **remote review envelope**, not a merge path. It exists so Stephen can review the spike evidence, gate results, and report in GitHub's PR UI. The PR is closed without merging when review is complete.
+
+## Authority Reminder
+
+Copilot **proposes** (dispatch, report drafts, promotion packets). ChatGPT **recommends** (hostile scrutiny, verdict opinion). Stephen alone **approves** (adoption verdict, promotion to main). Copilot must never self-approve an adoption verdict or promote artifacts to main without Stephen's explicit approval.
 
 ## No Local Fallback
 

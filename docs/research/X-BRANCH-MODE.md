@@ -15,6 +15,8 @@ X-branch mode lets the team explore risky technical questions in disposable bran
 5. X-branch work does not remove quarantine skips.
 6. Spike implementation is **cloud-agent-only** — no local spike implementation in the VS Code workspace.
 7. There is **no local fallback**. If the GitHub cloud coding agent is unavailable, the spike must STOP.
+8. Copilot (local) does **not** make helpful follow-up edits to x-branch code. Dispatch ends at PR creation; all implementation belongs to the cloud agent.
+9. **TDD by default.** Spike implementations follow RED → GREEN → VERIFY. If a spike cannot follow TDD (e.g., pure config exploration), the report must include a TDD waiver with a one-sentence justification.
 
 ## When to Use X-Branch Mode
 
@@ -37,6 +39,14 @@ X-branch spikes use a **cloud-agent-only, remote branch/PR workflow**:
 - A spike is not considered started until the remote x-branch and PR exist.
 - If cloud agent launch is unavailable, **STOP** — there is no local fallback.
 
+### Dispatch Boundary
+
+Copilot's dispatch responsibility **ends** when the PR is created and the cloud agent is launched. Specifically, Copilot does **not**:
+- Make "helpful" local edits to spike code after dispatch.
+- Run spike tests locally as a convenience.
+- Commit to the x-branch from the local workspace.
+- Offer to finish the spike locally if the cloud agent is slow or unavailable.
+
 ## Roles
 
 | Role | Responsibility |
@@ -45,6 +55,14 @@ X-branch spikes use a **cloud-agent-only, remote branch/PR workflow**:
 | **GitHub cloud coding agent** | Performs the spike implementation on the remote x-branch: writes code, runs gates, drafts the spike report (including hostile scrutiny answers), and updates the PR. |
 | **ChatGPT** | Writes the spike prompt, performs hostile scrutiny review of the report, and recommends an adoption verdict (A/B/C/D). ChatGPT does not make the final decision. |
 | **Stephen** | Keeps working on main in parallel. Reviews the PR as a review envelope. Makes the final adoption decision (A/B/C/D) and approves or rejects promotion of learning back to main. |
+
+## Authority
+
+- Copilot **proposes** (dispatch, report drafts, promotion packets).
+- ChatGPT **recommends** (hostile scrutiny, verdict opinion).
+- Stephen alone **approves** (adoption verdict, promotion to main, merge/close decisions).
+
+No AI agent may self-approve an adoption verdict or promote artifacts to main without Stephen's explicit approval.
 
 ## Branch and PR Model
 
@@ -110,6 +128,31 @@ If any answer is NO, the report must be revised before adoption. If ChatGPT and 
 - Tests promoted from a spike must be fixture-backed and pass on main without the spike branch.
 - Fixtures must not embed secrets, live API keys, or ephemeral data.
 - Promoted tests are rewritten on main via a separate tiny main-branch story, not via merge or cherry-pick from the spike branch.
+
+## Provisional vs. Canonical Research
+
+Spike reports produced on x-branches are **provisional evidence** — they live in the PR and on the disposable branch. They are not canonical research until promoted.
+
+A spike report becomes **canonical** only when:
+1. The hostile scrutiny gate passes (ChatGPT + Stephen).
+2. Stephen approves an adoption verdict (A, B, or C).
+3. The learning is captured in a new `docs/research/R-###` doc written fresh on main (not copied or cherry-picked from the branch).
+4. The R-### doc is indexed in `docs/research/ResearchIndex.md`.
+
+Reports with verdict D (Reject/archive) remain provisional. They may be referenced for historical context but are not promoted to the canonical research set.
+
+## Post-Spike Promotion Flow
+
+When a spike completes and Stephen approves a verdict of A, B, or C, promotion follows these steps:
+
+1. **Draft promotion packet.** The spike report's Promotion Packet section (see X-BRANCH-REPORT-TEMPLATE.md) proposes the R-### path, ResearchIndex row, verdict, and named test/fixture (if B).
+2. **Stephen reviews** the promotion packet and approves or requests changes.
+3. **Write R-### doc on main.** The learning is written fresh on main using the canonical `docs/research/R-###` format — not copied from the spike branch.
+4. **Index on main.** The R-### doc is indexed in `docs/research/ResearchIndex.md` in the same commit.
+5. **Close PR.** The x-branch PR is closed without merging.
+6. **Delete branch** (optional). The remote x-branch may be deleted or left for historical reference.
+
+Code is **never** promoted via this flow. If verdict C creates a story, the story reimplements from scratch on main.
 
 ## Canonical Research Location
 

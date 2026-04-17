@@ -50,6 +50,33 @@ Based on the verdict, state the recommended next step:
 
 ---
 
+## TDD Waiver
+
+If the spike did **not** follow RED → GREEN → VERIFY, this section is **required**.
+
+| Field | Value |
+|-------|-------|
+| TDD followed? | YES / NO |
+| Waiver justification | _One sentence explaining why TDD was not feasible (e.g., "Pure config exploration with no testable code path")._ |
+
+If TDD was followed, write "TDD followed — no waiver needed" and leave the justification blank.
+
+---
+
+## Promotion Packet
+
+Complete this section when proposing a verdict of A, B, or C. For verdict D, write "No promotion — verdict D."
+
+| Field | Value |
+|-------|-------|
+| Proposed R-### path | `docs/research/R-###-<topic>.md` |
+| Proposed ResearchIndex row | _Date, PROMPT-ID, Area, Status, Confidence, Keywords, Summary, File_ |
+| Proposed verdict | A / B / C |
+| Named test/fixture for promotion (B only) | _Test name and file, or N/A_ |
+| Code promotion | **NO** — code is never promoted from x-branches |
+
+---
+
 ## Hostile Scrutiny Gate
 
 Copilot drafts the answers below as part of the spike report. The gate is **not self-certified**: ChatGPT reviews the answers adversarially, and the report is not accepted until Stephen approves the outcome.
