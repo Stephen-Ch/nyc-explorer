@@ -6,10 +6,10 @@
 
 | Field | Value |
 |-------|-------|
-| **Generated** | 2026-03-18 15:20:17 |
+| **Generated** | 2026-04-17 07:09:32 |
 | **DOCS_ROOT** | `docs` |
 | **Git Branch** | `main` |
-| **Git Commit** | `26c1d02` |
+| **Git Commit** | `7da3af5` |
 | **CORE Files** | 5 |
 | **EXTRA Files** | 3 |
 | **TOTAL Files** | 8 |
@@ -25,11 +25,11 @@
 |------|------|--------|----------------------|
 | CORE | VISION.md | docs/project/VISION.md | `4C6A1B8F88488DF7` |
 | CORE | EPICS.md | docs/project/EPICS.md | `E4ECC1FBB2564E7C` |
-| CORE | NEXT.md | docs/project/NEXT.md | `7AC50486FE517DD3` |
+| CORE | NEXT.md | docs/project/NEXT.md | `93EB83F012CF0AB1` |
 | CORE | Start-Here-For-AI.md | docs/Start-Here-For-AI.md | `F2D20C04822209B9` |
-| CORE | VIBE-CODING.VERSION.md | docs/vibe-coding/VIBE-CODING.VERSION.md | `83C7BACEAFDB4527` |
-| extra | protocol-v7.md | docs/vibe-coding/protocol/protocol-v7.md | `D78614C68C22A57F` |
-| extra | copilot-instructions-v7.md | docs/vibe-coding/protocol/copilot-instructions-v7.md | `389B9005B3BF9D06` |
+| CORE | VIBE-CODING.VERSION.md | docs/vibe-coding/VIBE-CODING.VERSION.md | `946292E651BA8340` |
+| extra | protocol-v7.md | docs/vibe-coding/protocol/protocol-v7.md | `D89FC80E18996B8D` |
+| extra | copilot-instructions-v7.md | docs/vibe-coding/protocol/copilot-instructions-v7.md | `0B8916852E0BF9EA` |
 | extra | ResearchIndex.md | docs/research/ResearchIndex.md | `8373F7881D295370` |
 
 ---

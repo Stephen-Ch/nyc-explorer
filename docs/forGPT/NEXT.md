@@ -30,4 +30,15 @@ OR-08A approval checklist is completed and explicitly marked Approved/Not Approv
 - R-007 Freeze-Lift Proposal: docs/rfc/2025-11-10-freeze-lift-proposal.md
 - R-008 Overlay Recovery RFC: docs/rfc/2025-11-10-overlay-recovery-rfc.md
 
-Last updated: 2026-03-04
+## Available Research (post-approval context)
+New research docs added 2026-03-05 — relevant for upcoming feature work after this approval story closes:
+- R-034 through R-038: Attraction data source-of-truth, interest taxonomy, Eric MVP contract, unified taxonomy, data promotion CSV→poi.v1.json
+- R-039, R-042: PWA/mobile readiness audit and minimal installability plan
+- R-040, R-043: Along-route detour feasibility and street-walk/A* routing feasibility
+- R-041: Eric MVP requirements snapshot (closed decisions + open questions)
+- R-044: Content model + storage decision rules
+- R-045, R-046: Google Routes API v2 integration plan and proxy contract
+
+See [docs/research/ResearchIndex.md](../research/ResearchIndex.md) for full index.
+
+Last updated: 2026-03-18
