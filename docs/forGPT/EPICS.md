@@ -14,7 +14,7 @@
 
 ### 2. Must-pass automated gates
 - [ ] `npm run typecheck` — zero TypeScript errors
-- [ ] `npm run e2e:auto` — 97 passed, 1 skipped (route-adapter-real intentionally quarantined)
+- [ ] `npm run e2e:auto` — all tests pass (exit code 0); one intentionally deferred test (`route-adapter-real` Test 2) is skipped and does not count as a failure. CI is fixture-backed only; live provider calls are manual/post-MVP.
 - [ ] `tests/schema/poi.spec.ts` — `content/poi.v1.json` matches schema (covered by e2e:auto)
 - [ ] `tests/schema/poi-count-10.spec.ts` — at least 10 POIs present (covered by e2e:auto)
 

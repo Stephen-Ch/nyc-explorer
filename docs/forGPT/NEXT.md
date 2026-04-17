@@ -3,42 +3,37 @@
 ## Completed Stories
 - **NYCX-DOCS-STD-001** — COMPLETE (2026-03-02). Docs standardization: Control Deck, vibe-coding subtree, ResearchIndex, archive bundle, dataset relocation, legacy redirects, Start-Here wiring.
 - **NYCX-DOCS-STD-002** — COMPLETE (2026-03-04). Docs hygiene: branch cleanup (none to delete), confirm ignore for build-errors.json + route-inline-trimmed.js, update ResearchIndex "Last updated" to 2026-03-04, doc link audit pass.
+- **NYCX-OVERLAY-FREEZE-LIFT-APPROVAL** — COMPLETE (2026-04-17). OR-08A approval checklist reviewed and confirmed Approved. All 5 preconditions verified with grounded evidence.
+- **NYCX-MVP-DOD-AUDIT-001** — COMPLETE (2026-04-17). MVP v0.1 DoD audited: all 6 core flows PASS, all 5 error states PASS, schema + typecheck PASS. Quarantine false-positive cleared (R-048, commit e874acb). Green baseline: 97 passed, 1 skipped, 0 failed.
 
 ## Active Story ID
-NYCX-OVERLAY-FREEZE-LIFT-APPROVAL
+NYCX-MVP-V01-DECLARATION-001
 
 ## Next Step
-Review freeze-lift materials and complete the OR-08A approval checklist (decision + sign-off only; no runtime wiring in this story).
+Review the green baseline evidence (R-047 audit, R-048 quarantine resolution) and formally declare MVP v0.1 complete or identify remaining blockers. Docs-only: update EPICS.md checkboxes and record the declaration in a closeout doc.
 
 ## Definition of Done (DoD)
-OR-08A approval checklist is completed and explicitly marked Approved/Not Approved, with decision rationale captured, and next action identified (wire overlay or revise plan).
+EPIC-001 MVP v0.1 is explicitly declared COMPLETE or BLOCKED with grounded evidence. If complete: EPICS.md checkboxes are checked, a closeout summary is recorded, and NEXT.md advances to the first post-MVP story. If blocked: exact blockers are listed with smallest unblock steps.
 
 ## Scope Guardrails
 **In scope:**
-- docs/approvals/OR-08A-approval.md, docs/rfc/*, docs/project/NEXT.md (this file after decision).
+- docs/project/EPICS.md (check DoD boxes if evidence supports it)
+- docs/project/NEXT.md (advance after declaration)
+- docs/status/ (closeout summary if declaring complete)
 
 **Out of scope:**
-- Runtime app code, overlay wiring, wwwroot, Program.cs, tests, package.json, CI workflows.
+- Runtime code, test changes, CI config
+- New feature work (post-MVP stories wait until declaration is done)
+- Overlay wiring, data promotion, proxy work
 
 ## Done When
-- OR-08A approval checklist is located and reviewed
-- Decision recorded: Approved or Not Approved (with rationale)
-- If Approved: note the immediate follow-on story (wire overlay / remove OVERLAY_RECOVERY flag) without doing it now
-- If Not Approved: note what's missing/blocked
+- EPIC-001 MVP v0.1 has an explicit COMPLETE or BLOCKED verdict
+- If COMPLETE: all EPICS.md DoD checkboxes checked with evidence references
+- NEXT.md points to the first post-MVP story or the smallest unblock step
 
 ## Inputs/Research
-- R-007 Freeze-Lift Proposal: docs/rfc/2025-11-10-freeze-lift-proposal.md
-- R-008 Overlay Recovery RFC: docs/rfc/2025-11-10-overlay-recovery-rfc.md
+- R-047: MVP v0.1 DoD Audit (docs/status/REPORT-MVP-V0.1-DOD-AUDIT-001.md)
+- R-048: Quarantine policy decision (docs/research/R-048-Quarantine-Live-Provider-Policy-Decision.md)
+- Green baseline: npm run typecheck PASS, npm run e2e:auto 97/1/0 (commit e874acb)
 
-## Available Research (post-approval context)
-New research docs added 2026-03-05 — relevant for upcoming feature work after this approval story closes:
-- R-034 through R-038: Attraction data source-of-truth, interest taxonomy, Eric MVP contract, unified taxonomy, data promotion CSV→poi.v1.json
-- R-039, R-042: PWA/mobile readiness audit and minimal installability plan
-- R-040, R-043: Along-route detour feasibility and street-walk/A* routing feasibility
-- R-041: Eric MVP requirements snapshot (closed decisions + open questions)
-- R-044: Content model + storage decision rules
-- R-045, R-046: Google Routes API v2 integration plan and proxy contract
-
-See [docs/research/ResearchIndex.md](../research/ResearchIndex.md) for full index.
-
-Last updated: 2026-03-18
+Last updated: 2026-04-17

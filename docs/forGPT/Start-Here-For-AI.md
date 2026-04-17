@@ -1,7 +1,7 @@
   # Start Here — Using GPT/Copilot with NYC Explorer
 
-**Version:** 2026-03-14  
-**Kit version:** v7.2.40 (subtree at `docs/vibe-coding/`)
+**Version:** 2026-04-17  
+**Kit version:** v7.3.3 (subtree at `docs/vibe-coding/`)
 This repo uses the vibe-coding workflow structure and enforcement rules.
 
 ## RUN START OF SESSION DOCS AUDIT

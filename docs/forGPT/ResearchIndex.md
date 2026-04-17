@@ -1,6 +1,6 @@
 # Research Index — NYC Explorer
 
-Last updated: 2026-03-05  
+Last updated: 2026-04-17  
 Coverage: Links to all identified research, audit, postmortem, and investigation artifacts.  
 Method: Index-in-place (no physical moves in this pass).
 
@@ -15,11 +15,11 @@ Method: Index-in-place (no physical moves in this pass).
 | Provenance / Research Docs | 16 |
 | Knowledge Base (research-adjacent) | 2 |
 | Status Reports | 1 |
-| Audits | 1 |
-| Testing / Environment | 4 |
+| Audits | 2 |
+| Testing / Environment | 5 |
 | Audits (cross-repo) | 1 |
 | Data Provenance | 5 |
-| **Total indexed** | **39** |
+| **Total indexed** | **41** |
 
 ---
 
@@ -90,6 +90,7 @@ Method: Index-in-place (no physical moves in this pass).
 | ID | Title | Path | Status |
 |----|-------|------|--------|
 | R-028 | Docs PASS 2 Trim Audit | [docs/research/R-028-NYC-Docs-Pass2-Trim-Audit.md](R-028-NYC-Docs-Pass2-Trim-Audit.md) | Complete (no trims needed) |
+| R-047 | MVP v0.1 DoD Audit — gate results + scorecard (EPIC-001) | [docs/status/REPORT-MVP-V0.1-DOD-AUDIT-001.md](../status/REPORT-MVP-V0.1-DOD-AUDIT-001.md) | Complete |
 
 ## Testing / Environment
 
@@ -99,6 +100,7 @@ Method: Index-in-place (no physical moves in this pass).
 | R-030 | Playwright `page.goto` hang — Chromium async DNS root cause on Windows | [docs/status/REPORT-PLAYWRIGHT-PAGEGOTO-HANG-LOCALHOST-DNS-001.md](../status/REPORT-PLAYWRIGHT-PAGEGOTO-HANG-LOCALHOST-DNS-001.md) | Complete — fix applied `5a8d2a6` |
 | R-031 | Playwright hardcoded `:5000` — scope audit (20 files) | [docs/status/REPORT-PLAYWRIGHT-HARDCODED-5000-SCOPEPLAN-001.md](../status/REPORT-PLAYWRIGHT-HARDCODED-5000-SCOPEPLAN-001.md) | Open — Slice-001 done, 18 files remain |
 | R-032 | E2E Slice-001 session report — `waitUntil:commit` fix + PWDEBUG blocker | [docs/status/REPORT-E2E-SLICE001-SESSION-2026-03-04.md](../status/REPORT-E2E-SLICE001-SESSION-2026-03-04.md) | Open — PWDEBUG blocker unresolved |
+| R-048 | Quarantine / live-provider policy decision (route-adapter-real TTL blocker) | [docs/research/R-048-Quarantine-Live-Provider-Policy-Decision.md](R-048-Quarantine-Live-Provider-Policy-Decision.md) | Complete |
 
 ## Audits (cross-repo)
 
