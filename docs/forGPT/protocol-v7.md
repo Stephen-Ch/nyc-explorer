@@ -1,6 +1,6 @@
 # Protocol v7 — Vibe-Coding Protocol
 
-> **File Version:** 2026-03-16
+> **File Version:** 2026-03-18
 > **Quick reference:** For mandatory gates only, see [hard-rules.md](hard-rules.md).
 
 **v7.2.1 Changes:**
@@ -735,6 +735,76 @@ When triggered, before requesting merge the executor MUST:
        — or —
        Hostile Self-Audit: FAIL — <one-line description per concern>
     4. If FAIL: treat as merge-blocked until concern is resolved.
+
+---
+
+## Remote Reality Gate (MANDATORY at Session Boundaries)
+
+**Purpose:** Verify that session close and session open are grounded in remote/GitHub truth, not only local git state. Local cleanliness is necessary but not sufficient.
+
+### Definitions
+
+**Active runtime branch:** Any local or remote branch that is not merged into the repo's default branch on GitHub AND has at least one of: an open PR, commits ahead of the default branch, or explicit ACTIVE/PAUSED classification in NEXT.md or branches.md.
+
+**Remote Reality Status (3-status model):**
+
+| Status | Meaning |
+|--------|---------|
+| **PASS** | Fetch succeeded; all active branches classified; NEXT.md and branches.md match current remote/PR state |
+| **WARN** | Mismatch found (stale NEXT.md, unclassified branch, PR on wrong base, branch ahead of origin) but repairable now; repair or document as debt before declaring session close |
+| **BLOCKED** | Remote verification could not complete (gh unavailable, network/auth failure, or `-SkipFetch` used); record "Remote Reality: BLOCKED — [reason]" in PAUSE.md |
+
+### A) Session Close — Required Evidence
+
+Before declaring "ready to pause," "done," or handing off, produce evidence or a BLOCKED declaration covering:
+
+    1. git fetch --all --prune                                                     → OK / FAILED / BLOCKED
+    2. git status --porcelain=v1 -uall                                            → CLEAN / DIRTY
+    3. git branch -vv                                                              → branch + upstream + ahead/behind
+    4. git rev-list --left-right --count origin/<default>...HEAD                  → behind N / ahead N
+    5. gh pr list --state open --json number,title,headRefName,baseRefName,url    → table or "none"
+    6. Active branch classification (see §B)                                      → one status per branch
+    7. NEXT.md vs remote: does active story describe uncommitted work?            → CURRENT / STALE
+
+        Remote Reality: PASS | WARN | BLOCKED
+
+The `run-vibe -Tool end-session` script surfaces items 1–5 automatically when `gh` is available.
+
+### B) Active Branch Classification (Required per Branch at Session Close)
+
+For every branch returned by `git branch --no-merged origin/<default>`, record one classification:
+
+- **ACTIVE** — work in progress on this branch (no PR yet)
+- **PR OPEN** — open pull request exists for this branch
+- **PARKED** — no open PR; intentionally paused; document last commit date in branches.md
+- **MERGED** — already merged remotely; local branch pending deletion
+- **OBSOLETE** — no PR, no recent activity; ready to delete
+
+Unclassified branches = automatic **WARN** condition.
+
+### C) Session Start — Remote Reality Check (After Break)
+
+After resuming from PAUSE.md, before starting new work:
+
+    1. git fetch origin
+    2. NEXT.md currency: is ACTIVE STORY branch still open (not yet merged)?
+       → gh pr list --state open --json number,title,headRefName | filter for active branch
+    3. branches.md currency: do listed branches match remote state?
+
+    Status: PASS | WARN (repair or document as debt) | BLOCKED (gh unavailable — note in PAUSE.md)
+
+### D) Acceptable and Unacceptable Closure Language
+
+**Acceptable** (with Remote Reality evidence cited):
+- "Remote Reality: PASS. NEXT.md current. Open PRs: [list]. Branch [name]: behind 0 / ahead 0."
+- "Remote Reality: WARN. Branch [name] ahead 2 of origin/<default> — pushed before close."
+- "Remote Reality: BLOCKED — gh auth unavailable. Local state clean. Noted in PAUSE.md."
+
+**Not acceptable** without Remote Reality evidence:
+- "Repo is clean." — local-only claim; does not establish remote truth
+- "We're in good shape." — no evidence cited
+- "Ready to continue next session." — no NEXT.md or PR check documented
+- "Safe to pause." — no remote fetch evidence
 
 ---
 
