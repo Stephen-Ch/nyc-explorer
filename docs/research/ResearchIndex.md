@@ -18,8 +18,8 @@ Method: Index-in-place (no physical moves in this pass).
 | Audits | 2 |
 | Testing / Environment | 5 |
 | Audits (cross-repo) | 1 |
-| Data Provenance | 5 |
-| **Total indexed** | **41** |
+| Data Provenance | 6 |
+| **Total indexed** | **42** |
 
 ---
 
@@ -118,6 +118,7 @@ Method: Index-in-place (no physical moves in this pass).
 | R-037 | Unified interest taxonomy v0 (POI tags + Events interest_tags + AA/Irish) | [docs/research/R-037-Unified-Interest-Taxonomy-v0.md](R-037-Unified-Interest-Taxonomy-v0.md) | Open |
 | R-038 | Data promotion v0: AllYears CSV → runtime poi.v1.json (+ interests/time) | [docs/research/R-038-Data-Promotion-CSV-to-POIJSON-v0.md](R-038-Data-Promotion-CSV-to-POIJSON-v0.md) | Open |
 | R-039 | PWA + mobile readiness audit (manifest, SW, installability, viewport, responsive map) | [docs/research/R-039-PWA-Mobile-Readiness-Audit.md](R-039-PWA-Mobile-Readiness-Audit.md) | Open |
+| R-049 | Historical data inventory for POI promotion (data/historical filesystem survey, candidate tiers, enrichment gaps) | [docs/research/R-049-Historical-Data-Inventory-for-POI-Promotion.md](R-049-Historical-Data-Inventory-for-POI-Promotion.md) | Complete |
 | R-040 | Along-route detour feasibility (walking corridor, polyline/Turf.js, provider options) | [docs/research/R-040-Along-Route-Detour-Feasibility.md](R-040-Along-Route-Detour-Feasibility.md) | Open |
 | R-041 | Eric MVP requirements snapshot (closed decisions + open questions + gap table) | [docs/research/R-041-Eric-MVP-Requirements-Snapshot.md](R-041-Eric-MVP-Requirements-Snapshot.md) | Open |
 | R-042 | PWA installability minimal plan (manifest/icons/SW + mobile head tags) | [docs/research/R-042-PWA-Installable-Minimal-Plan.md](R-042-PWA-Installable-Minimal-Plan.md) | Open |
