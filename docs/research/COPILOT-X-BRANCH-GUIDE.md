@@ -2,23 +2,36 @@
 
 This is a brief guide for Copilot's role in x-branch spike mode. X-branch mode is optional and does not replace normal story execution. See X-BRANCH-MODE.md for the full workflow description.
 
+X-branch spikes are **cloud-agent-only**. The local VS Code workspace is used for dispatch and orchestration only — **not** for spike implementation. There is **no local fallback**.
+
 ## Copilot's Job in X-Branch Mode
 
-When Stephen or ChatGPT initiates an x-branch spike, Copilot:
+Copilot in VS Code handles **local dispatch/orchestration**:
 
-1. Creates the x-branch from main.
-2. Initiates the agent and begins the spike work.
-3. Runs the spike (code, tests, experiments) on the branch.
-4. Runs gates (`npm run typecheck` and `npm run e2e:auto`) and records results.
-5. Drafts the spike report using the X-BRANCH-REPORT-TEMPLATE.md format.
-6. Opens or updates the PR with the spike report in the description.
+1. Creates the remote x-branch from main HEAD.
+2. Launches the GitHub cloud coding agent with the spike prompt.
+3. Opens or updates the remote PR as a review envelope.
+
+The **GitHub cloud coding agent** handles **remote execution**:
+
+4. Performs the spike work (code, tests, experiments) on the remote x-branch.
+5. Runs gates (`npm run typecheck` and `npm run e2e:auto`) remotely and records results.
+6. Drafts the spike report using the X-BRANCH-REPORT-TEMPLATE.md format.
+7. Updates the PR with the spike report.
+
+Copilot (local) does **not**:
+- Run spike code locally.
+- Check out the x-branch locally.
+- Run gate commands locally for the spike.
+- Fall back to local execution if the cloud agent is unavailable — the spike must **STOP**.
 
 ## Branch Rules
 
 - Branch naming pattern: `agent/spike-<topic>`
 - One question per spike, one branch per spike.
-- The branch is created from current main HEAD.
+- The branch is a **remote branch** created for the cloud agent. It is not checked out locally.
 - X-branches never merge to main.
+- No local spike implementation is permitted.
 
 ## Prompt Structure
 
@@ -47,10 +60,11 @@ Before opening the PR, Copilot must verify:
 | `npm run typecheck` | PASS (0 errors) |
 | `npm run e2e:auto` | PASS (no new failures) |
 | Spike report drafted | Yes — uses X-BRANCH-REPORT-TEMPLATE.md |
-| Hostile scrutiny gate | All 5 questions answered YES (Copilot drafts; ChatGPT reviews adversarially; Stephen approves) |
+| Hostile scrutiny gate | All 5 questions answered YES (cloud agent drafts; ChatGPT reviews adversarially; Stephen approves) |
 | No `docs/project/*` edits | Confirmed |
 | No quarantine skips removed | Confirmed |
 | All new tests fixture-backed | Confirmed |
+| Execution mode | Cloud agent / remote branch (no local spike implementation) |
 
 ## Promotion Reminder
 
@@ -62,4 +76,8 @@ Nothing from the spike branch crosses to main automatically. If the spike produc
 
 ## PR Reminder
 
-The PR is a **review envelope**, not a merge path. It exists so Stephen can review the spike evidence, gate results, and report in GitHub's PR UI. The PR is closed without merging when review is complete.
+The PR is a **remote review envelope**, not a merge path. It exists so Stephen can review the spike evidence, gate results, and report in GitHub's PR UI. The PR is closed without merging when review is complete.
+
+## No Local Fallback
+
+If the GitHub cloud coding agent cannot be launched, the spike must **STOP**. Do not attempt to perform spike implementation in the local VS Code workspace. The local workspace is reserved for main-line development and dispatch/orchestration only.

@@ -12,6 +12,10 @@ Use this template for every x-branch spike report in NYC Explorer. Copy into the
 | Branch | `agent/spike-<topic>` |
 | Spike question | _One clear question this spike set out to answer._ |
 | Verdict | A / B / C / D |
+| Execution mode | Cloud agent / remote PR workflow |
+| Remote branch | `agent/spike-<topic>` |
+| PR | #_number_ |
+| Local spike implementation used | NO — cloud-agent-only |
 
 ## What Was Attempted
 
@@ -50,15 +54,16 @@ Based on the verdict, state the recommended next step:
 
 Copilot drafts the answers below as part of the spike report. The gate is **not self-certified**: ChatGPT reviews the answers adversarially, and the report is not accepted until Stephen approves the outcome.
 
-Answer each question YES or NO. All must be YES for the report to be accepted.
+Answer each question YES or NO. All 6 must be YES for the report to be accepted.
 
 | # | Question | Answer |
 |---|----------|--------|
 | 1 | **Question integrity** — Was the spike question well-formed, narrow, and answerable in a single spike? | YES / NO |
 | 2 | **Evidence** — Is the evidence (gate results, code behavior, failure logs) sufficient to support the verdict? | YES / NO |
 | 3 | **Constraint compliance** — Were all x-branch constraints followed (no main merge, fixture-backed tests, no docs/project/* edits, no quarantine removal)? | YES / NO |
-| 4 | **Learning quality** — Is the key learning clearly articulated and actionable? | YES / NO |
-| 5 | **Promotion decision** — Is the A/B/C/D verdict justified by the evidence above? | YES / NO |
+| 4 | **Execution mode** — Was the spike performed by the cloud agent on a remote branch with no local spike implementation? | YES / NO |
+| 5 | **Learning quality** — Is the key learning clearly articulated and actionable? | YES / NO |
+| 6 | **Promotion decision** — Is the A/B/C/D verdict justified by the evidence above? | YES / NO |
 
 **Verdict options:**
 

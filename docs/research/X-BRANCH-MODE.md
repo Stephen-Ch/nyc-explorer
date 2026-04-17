@@ -13,6 +13,8 @@ X-branch mode lets the team explore risky technical questions in disposable bran
 3. This mode is **optional** — it does not affect session-start, doc-audit, startup reading, normal VISION/EPICS/NEXT flow, or any kit-required workflow.
 4. X-branch work does not modify `docs/project/*`.
 5. X-branch work does not remove quarantine skips.
+6. Spike implementation is **cloud-agent-only** — no local spike implementation in the VS Code workspace.
+7. There is **no local fallback**. If the GitHub cloud coding agent is unavailable, the spike must STOP.
 
 ## When to Use X-Branch Mode
 
@@ -23,11 +25,24 @@ X-branch mode lets the team explore risky technical questions in disposable bran
 
 Do **not** use x-branch mode for normal story execution, docs-only work, or anything that belongs on main.
 
+## Execution Model
+
+X-branch spikes use a **cloud-agent-only, remote branch/PR workflow**:
+
+- Copilot in VS Code may **dispatch** the spike task (create the remote branch, launch the cloud agent, open the PR).
+- The **GitHub cloud coding agent** performs the actual spike implementation on the remote branch.
+- The local VS Code workspace is **not** used for spike implementation. No local spike code, no local test runs on the x-branch, no local commits to the x-branch.
+- The x-branch is a **remote branch** used exclusively by the cloud agent.
+- The PR is a **remote review envelope**.
+- A spike is not considered started until the remote x-branch and PR exist.
+- If cloud agent launch is unavailable, **STOP** — there is no local fallback.
+
 ## Roles
 
 | Role | Responsibility |
 |------|----------------|
-| **Copilot** | Creates the x-branch, initiates the agent, runs the spike, runs gates, drafts the spike report (including hostile scrutiny answers), opens/updates the PR. Copilot is the experiment executor — it does not make adoption decisions. |
+| **Copilot (local VS Code)** | Dispatches the spike: creates the remote branch, launches the GitHub cloud coding agent, opens the PR. Copilot does not perform spike implementation locally — it is the orchestrator, not the executor. It does not make adoption decisions. |
+| **GitHub cloud coding agent** | Performs the spike implementation on the remote x-branch: writes code, runs gates, drafts the spike report (including hostile scrutiny answers), and updates the PR. |
 | **ChatGPT** | Writes the spike prompt, performs hostile scrutiny review of the report, and recommends an adoption verdict (A/B/C/D). ChatGPT does not make the final decision. |
 | **Stephen** | Keeps working on main in parallel. Reviews the PR as a review envelope. Makes the final adoption decision (A/B/C/D) and approves or rejects promotion of learning back to main. |
 
@@ -35,8 +50,10 @@ Do **not** use x-branch mode for normal story execution, docs-only work, or anyt
 
 - Branch naming: `agent/spike-<topic>`
 - One question per spike, one branch per spike.
-- The PR is a **review envelope**, not a merge path. It exists so Stephen can review the spike evidence, gate results, and report in GitHub's PR UI.
+- The branch is a **remote branch** created and used by the GitHub cloud coding agent. It is not checked out locally.
+- The PR is a **remote review envelope**, not a merge path. It exists so Stephen can review the spike evidence, gate results, and report in GitHub's PR UI.
 - PRs from x-branches are closed without merging.
+- No local spike implementation is permitted. If evidence of local spike execution is found, the spike must be re-evaluated.
 
 ## Completion Signal
 
