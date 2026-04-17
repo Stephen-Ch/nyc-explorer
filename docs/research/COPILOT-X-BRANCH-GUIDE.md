@@ -55,14 +55,14 @@ Each spike prompt should contain:
 
 ## Required Self-Review Output
 
-Before opening the PR, Copilot must verify:
+Before marking the PR ready for review, the cloud agent must verify:
 
 | Check | Expected |
 |-------|----------|
 | `npm run typecheck` | PASS (0 errors) |
 | `npm run e2e:auto` | PASS (no new failures) |
 | Spike report drafted | Yes — uses X-BRANCH-REPORT-TEMPLATE.md |
-| Hostile scrutiny gate | All 5 questions answered YES (cloud agent drafts; ChatGPT reviews adversarially; Stephen approves) |
+| Hostile scrutiny gate | All 6 questions answered YES (cloud agent drafts; ChatGPT reviews adversarially; Stephen approves) |
 | No `docs/project/*` edits | Confirmed |
 | No quarantine skips removed | Confirmed |
 | All new tests fixture-backed | Confirmed |

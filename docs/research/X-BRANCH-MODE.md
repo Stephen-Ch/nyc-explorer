@@ -118,10 +118,11 @@ The gate asks:
 1. Was the spike question well-formed and narrow?
 2. Is the evidence sufficient to support the verdict?
 3. Were all x-branch constraints followed?
-4. Is the learning clearly articulated and actionable?
-5. Is the promotion decision (A/B/C/D) justified by the evidence?
+4. Was the spike performed by the cloud agent on a remote branch with no local spike implementation?
+5. Is the learning clearly articulated and actionable?
+6. Is the promotion decision (A/B/C/D) justified by the evidence?
 
-If any answer is NO, the report must be revised before adoption. If ChatGPT and Stephen disagree on any answer, Stephen's judgment is final.
+All 6 must be YES. If any answer is NO, the report must be revised before adoption. If ChatGPT and Stephen disagree on any answer, Stephen's judgment is final.
 
 ## Promotion Rules for Tests and Fixtures
 
