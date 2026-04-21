@@ -23,6 +23,7 @@
 - Non-zero exit → smallest fix
 - Evidence contradicts prompt → [STOP/PIVOT](protocol-v7.md#d-stop--pivot-rule-when-evidence-contradicts-prompt)
 - Drift trigger → Reset Ritual → [Focus Control](protocol-v7.md#focus-control)
+- **Project-identity mismatch → STOP** — Before acting on a prompt, verify it targets the current repo/workspace. If the prompt names another project, references paths/docs/branches/story IDs that belong elsewhere, or is otherwise inconsistent with the current workspace identity, STOP and report the mismatch. Do not proceed until resolved.
 
 ## Confidence Thresholds
 
