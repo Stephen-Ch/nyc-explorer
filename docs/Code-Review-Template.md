@@ -1,3 +1,5 @@
+> Retired Oct 19 2026: the vibe-coding kit is no longer used. Start at CURRENT-STATE.md.
+
 # Code-Review-Template — 10-24-25
 
 > Paste this into PR descriptions or use as a review comment scaffold.

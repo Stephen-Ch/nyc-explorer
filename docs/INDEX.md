@@ -1,3 +1,5 @@
+> Retired Oct 19 2026: the vibe-coding kit is no longer used. Start at CURRENT-STATE.md.
+
 # Documentation Index — NYC Explorer
 
 > **This file is a legacy redirect.** Canonical entry points:

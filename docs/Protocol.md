@@ -1,3 +1,5 @@
+> Retired Oct 19 2026: the vibe-coding kit is no longer used. Start at CURRENT-STATE.md.
+
 # Protocol (Legacy Entry Point)
 
 This file is retained for backward compatibility with older links and prompts.

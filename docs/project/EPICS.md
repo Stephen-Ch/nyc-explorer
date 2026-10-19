@@ -1,3 +1,5 @@
+> Retired Oct 19 2026: the vibe-coding kit is no longer used. Start at CURRENT-STATE.md.
+
 # NYC Explorer — Epics
 
 ## EPIC-001 — Manhattan Explorer MVP
@@ -69,6 +71,6 @@
 ## EPIC-005 — Workflow, Quality Gates, and Documentation
 **Status:** IN PROGRESS
 
-**Description:** Keep development safe and repeatable via the vibe-coding kit, clear Control Deck docs (VISION/EPICS/NEXT), and a small set of enforceable gates. Success means contributors can start a session, run the Doc Audit, and follow a consistent prompt-only loop without drift.
+**Description:** Keep development safe and repeatable. Since Oct 19 2026 the workflow is in CURRENT-STATE.md (Claude as product owner, hostile-reviewed numbered plans); the vibe-coding kit is retired.
 
 Last updated: 2026-07-13
