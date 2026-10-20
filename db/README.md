@@ -14,9 +14,10 @@ PostgreSQL + PostGIS on Neon (project `explorerwalks`, branch `production`, data
 - `event`, `interest` and their link tables.
 - View `v_place_in_year`: approved places with a point, by city and snapshot year.
 - `schema_migrations`: one row per applied migration.
+- Added in 0002: `research.run_file` (each night's research files as written), `research.promotion` (which core rows each research packet produced), `place_version_lot_ref` (today's lot found by address, before shapes are traced).
 
 ## Applying a migration
-1. Rehearse on a throwaway Neon branch: run the migration, then its file in `db/smoke/`. It must end with `ALL PASS`. Delete the branch.
+1. Rehearse on a throwaway Neon branch: run the migration, then its own smoke test in `db/smoke/` right after it (each smoke test checks only its own migration). It must end with `ALL PASS`. Let the branch expire.
 2. Create a restore branch (`pre-NNNN`) from `production`.
 3. Run the migration on `production`. Never run smoke tests there.
 4. Each migration file is all-or-nothing (BEGIN/COMMIT) and adds its row to `schema_migrations`.
