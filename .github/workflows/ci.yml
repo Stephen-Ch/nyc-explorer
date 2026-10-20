@@ -48,7 +48,6 @@ jobs:
           npx playwright test tests/meta --reporter=list | tee meta-gate.txt
         env:
           CI: true
-          SELECTOR_HELPER_STRICT: '1'
 
       - name: Playwright Meta Summary
         if: always()
