@@ -1,3 +1,5 @@
+> Retired Oct 19 2026: the vibe-coding kit is no longer used. Start at CURRENT-STATE.md.
+
 # Stephen ↔ ChatGPT ↔ Copilot Workflow (Prompt-only)
 
 ## Roles

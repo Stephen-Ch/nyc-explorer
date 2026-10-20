@@ -19,3 +19,6 @@ wwwroot/js/typeahead.js
 # build / dev artifacts
 apps/web-mvc/build-errors.json
 route-inline-trimmed.js
+
+# python caches
+scripts/draft/__pycache__/

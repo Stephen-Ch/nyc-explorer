@@ -1,3 +1,5 @@
+> Retired Oct 19 2026: the vibe-coding kit is no longer used. Start at CURRENT-STATE.md.
+
 # Overlay Index
 
 Overlays hold repo-specific truths (branch names, merge ownership, build commands, hot-file lists) so the vibe-coding kit stays generic and portable across repositories.

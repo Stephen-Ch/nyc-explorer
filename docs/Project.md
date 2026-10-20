@@ -1,3 +1,5 @@
+> Retired Oct 19 2026: the vibe-coding kit is no longer used. Start at CURRENT-STATE.md.
+
 # NYC Explorer — Project Charter (v0.1)
 
 **One‑liner:** A Manhattan‑only, map‑based walking guide—launching around **Union Square + Flatiron**—with curated walking routes that cap density at **≤ 3 POIs per block frontage**.

@@ -1,3 +1,5 @@
+> Retired Oct 19 2026: the vibe-coding kit is no longer used. Start at CURRENT-STATE.md.
+
 # Working With Stephen — Lite Guide (10-24-25)
 
 > **What this is:** People & style guide for collaborating with Stephen.  

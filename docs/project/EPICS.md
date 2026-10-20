@@ -1,3 +1,5 @@
+> Retired Oct 19 2026: the vibe-coding kit is no longer used. Start at CURRENT-STATE.md.
+
 # NYC Explorer — Epics
 
 ## EPIC-001 — Manhattan Explorer MVP
@@ -61,14 +63,14 @@
 
 **Description:** Lock the content contract (schema v1) with validation tests and clear upgrade rules so UI and data can evolve without silent breakage. Success means schema changes are deliberate, additive when possible, and verified through tests and documentation.
 
-## EPIC-004 — Historical TimeWalk Expansion (Future)
-**Status:** PLANNED
+## EPIC-004 — Historical TimeWalk Expansion
+**Status:** IN PROGRESS (started 2026-07-13, was PLANNED)
 
-**Description:** Extend the product into year-specific, source-backed storytelling and routing aligned with TimeWalk research materials. Success means the project can add historically grounded context while maintaining rights clarity, attribution, and measurable coverage.
+**Description:** Extend the product into year-specific, source-backed storytelling and routing aligned with TimeWalk research materials. Success means the project can add historically grounded context while maintaining rights clarity, attribution, and measurable coverage. First slice (place/event data model) is active — see docs/handoffs/HANDOFF-Historical-Places-Events-2026-07-13.md and docs/project/NEXT.md.
 
 ## EPIC-005 — Workflow, Quality Gates, and Documentation
 **Status:** IN PROGRESS
 
-**Description:** Keep development safe and repeatable via the vibe-coding kit, clear Control Deck docs (VISION/EPICS/NEXT), and a small set of enforceable gates. Success means contributors can start a session, run the Doc Audit, and follow a consistent prompt-only loop without drift.
+**Description:** Keep development safe and repeatable. Since Oct 19 2026 the workflow is in CURRENT-STATE.md (Claude as product owner, hostile-reviewed numbered plans); the vibe-coding kit is retired.
 
-Last updated: 2026-04-17
+Last updated: 2026-07-13
