@@ -55,7 +55,7 @@ END$$;
 -- 6. delete of a place in use is refused
 DO $$BEGIN
   BEGIN DELETE FROM core.place WHERE place_id='nyc-smoke-church'; RAISE EXCEPTION 'delete allowed!';
-  EXCEPTION WHEN foreign_key_violation THEN NULL; END;
+  EXCEPTION WHEN foreign_key_violation OR restrict_violation THEN NULL; END;
   RAISE NOTICE 'PASS delete rules';
 END$$;
 SELECT 'ALL PASS' AS result;  -- only reached if every check above passed
