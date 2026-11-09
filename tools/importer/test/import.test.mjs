@@ -1,4 +1,5 @@
-// Tests for the plan 05 importer. Needs a local PostgreSQL 16+ where:
+// Tests for the plan 05 importer. Run ONLY on a throwaway PostgreSQL 16+ server used for nothing else, with
+// IMPORT_TEST_ISOLATED=1 set (the tests create and drop the server-wide role 'importer'). The server needs:
 //   - IMPORT_TEST_PGHOST (default /tmp) is reachable as superuser IMPORT_TEST_PGSUPER (default postgres) without a password,
 //   - role 'importer' can log in without a password (trust auth), which 0004 creates.
 // Each test gets a fresh database with migrations 0001-0004 and runs the importer AS the importer role.
@@ -30,20 +31,23 @@ async function superQuery(db, sql) {
   await c.connect();
   try { return await c.query(sql); } finally { await c.end(); }
 }
-// every test database (also ones left by an earlier interrupted run), then the shared importer role
+// Only on a server set aside for these tests (ChatGPT build review 2, finding 2)
+before(() => {
+  if (process.env.IMPORT_TEST_ISOLATED !== '1') throw new Error('set IMPORT_TEST_ISOLATED=1, and only on a throwaway test server: these tests drop the role importer');
+});
+const ident = n => '"' + n.replace(/"/g, '""') + '"';
+// only the databases this run made, then the server-wide importer role
 async function dropTestDbs() {
-  made.length = 0;
-  for (const { datname } of (await superQuery('postgres', `SELECT datname FROM pg_database WHERE datname LIKE 'imp\\_t\\_%'`)).rows)
-    await superQuery('postgres', `DROP DATABASE IF EXISTS ${datname} WITH (FORCE)`);
-  await superQuery('postgres', 'DROP ROLE IF EXISTS importer');
+  for (const d of made.splice(0)) await superQuery('postgres', `DROP DATABASE IF EXISTS ${ident(d)} WITH (FORCE)`);
+  try { await superQuery('postgres', 'DROP ROLE IF EXISTS importer'); }
+  catch (e) { throw new Error(`role importer is still used by a database this run did not make (${e.message}); clean the test server by hand`); }
 }
 async function freshDb() {
   // 0004 now refuses a role that already exists (ChatGPT build review 1, finding 4): drop earlier test
   // databases and the role first, so each test starts from a server with no importer role.
   await dropTestDbs();
   const name = `imp_t_${process.pid}_${++dbCount}`;
-  await superQuery('postgres', `DROP DATABASE IF EXISTS ${name}`);
-  await superQuery('postgres', `CREATE DATABASE ${name}`);
+  await superQuery('postgres', `CREATE DATABASE ${ident(name)}`);
   made.push(name);
   const c = new pg.Client({ host: HOST, user: SUPER, database: name });
   await c.connect();
@@ -54,7 +58,7 @@ async function freshDb() {
   await c.end();
   return name;
 }
-after(async () => { for (const d of made) await superQuery('postgres', `DROP DATABASE IF EXISTS ${d}`).catch(() => {}); });
+after(async () => { for (const d of made) await superQuery('postgres', `DROP DATABASE IF EXISTS ${ident(d)} WITH (FORCE)`).catch(() => {}); });
 
 // one temp world per test: sync folder, imports root, config
 function world(db, { tryDb = db, prodDb = db } = {}) {
@@ -73,11 +77,17 @@ function putFile(w, name, text) {
   return { drive_id: 'd-' + name.replace(/[^A-Za-z0-9]/g, '').slice(-40), name, md5: md5(b), size: b.length,
            modified_utc: '2026-11-04T10:00:00Z', revision: null };
 }
-function manifest(w, m) {
+// manifest.json, plus drive-listing.json = the raw remote Drive folder listing (by default: exactly the manifest files)
+function manifest(w, m, { listing } = {}) {
   const dir = path.join(w.imports, `2026-11-09-${m.unit}-${++w.n}`);
   fs.mkdirSync(dir);
-  const full = { created_utc: new Date(Date.now() - 1000 * (100 - w.n)).toISOString(), city: 'nyc', ...m };
+  const created = new Date(Date.now() - 1000 * (100 - w.n)).toISOString();
+  const full = { created_utc: created, city: 'nyc', ...m };
   fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(full, null, 2));
+  if (!m.unit.startsWith('TAB-') && listing !== null) {
+    const files = listing ?? (m.files ?? []).map(f => ({ id: f.drive_id, name: f.name, md5Checksum: f.md5 }));
+    fs.writeFileSync(path.join(dir, 'drive-listing.json'), JSON.stringify({ listed_utc: created, folder_id: '1FBC1-UVjPWVjPyRUX-nzY4HQiV3JOSoD', files }));
+  }
   return dir;
 }
 const pk = (cand, extra = {}) => JSON.stringify({ candidate_id: cand, place_id: cand.replace(/^us-1852-/, ''), unit_id: 'US-1852',
@@ -99,7 +109,7 @@ function putCsv(w, dir, text) {
   return crypto.createHash('sha256').update(b).digest('hex');
 }
 function tabManifest(w, text) {
-  const dir = manifest(w, { unit: 'TAB-STORIES', tab: 'STORIES', csv: 'STORIES.csv', csv_sha256: 'later', sheet_read_utc: '2026-11-09T12:00:00Z' });
+  const dir = manifest(w, { unit: 'TAB-STORIES', tab: 'STORIES', csv: 'STORIES.csv', csv_sha256: 'later', sheet_read_utc: new Date(Date.now() - 600e3).toISOString() });
   const sha = putCsv(w, dir, text);
   const mf = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.json'), 'utf8')); mf.csv_sha256 = sha;
   fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(mf));
@@ -451,7 +461,7 @@ test('0004 refuses to run when a role named importer already exists', async () =
   const name = `imp_t_${process.pid}_${++dbCount}`;
   await dropTestDbs();
   await superQuery('postgres', 'CREATE ROLE importer LOGIN');
-  await superQuery('postgres', `CREATE DATABASE ${name}`); made.push(name);
+  await superQuery('postgres', `CREATE DATABASE ${ident(name)}`); made.push(name);
   const c = new pg.Client({ host: HOST, user: SUPER, database: name }); await c.connect();
   try {
     for (const m of MIGRATIONS.slice(0, 3)) await c.query(m);
@@ -499,6 +509,36 @@ test('the session gets lock, statement and idle time limits', async () => {
   } });
   assert.equal(r.status, 'PASS', r.error);
   for (const v of Object.values(seen)) assert.notEqual(v, '0', JSON.stringify(seen));
+});
+
+// ---------------------------------------------------------------- ChatGPT build review 2
+test('remote Drive listing: required, and its unit files must equal the manifest by Drive id, name and md5', async () => {
+  const db = await freshDb(); const w = world(db);
+  const a = putFile(w, `US-1852__${RUN1}.jsonl`, pk('us-1852-a') + '\n');
+  const b = putFile(w, `US-1852__${RUN1}.md`, 'notes\n');
+  fs.unlinkSync(path.join(w.sync, b.name));                         // on Drive, not yet synced to the PC
+  const L = f => ({ id: f.drive_id, name: f.name, md5Checksum: f.md5 });
+  const other = { id: 'd-otherunitfile0123456789', name: `US-1877__${RUN1}.md`, md5Checksum: '1'.repeat(32) };
+  // no listing
+  manifest(w, { unit: 'US-1852', files: [a] }, { listing: null });
+  assert.match((await go(w)).error ?? '', /drive-listing/);
+  // the listing has a unit file the manifest left out (and the PC hasn't synced it): refused, named
+  manifest(w, { unit: 'US-1852', files: [a] }, { listing: [L(a), L(b), other] });
+  const r = await go(w);
+  assert.match(r.error ?? '', /not in the manifest/); assert.match(r.error, /US-1852__run-20261104T050256Z\.md/);
+  // same name, different Drive id
+  manifest(w, { unit: 'US-1852', files: [a] }, { listing: [{ ...L(a), id: 'd-someotherid0123456789xyz' }] });
+  assert.match((await go(w)).error ?? '', /Drive id/);
+  // md5 differs between listing and manifest
+  manifest(w, { unit: 'US-1852', files: [a] }, { listing: [{ ...L(a), md5Checksum: '2'.repeat(32) }] });
+  assert.match((await go(w)).error ?? '', /md5/);
+  // a manifest file the listing does not have
+  manifest(w, { unit: 'US-1852', files: [a] }, { listing: [other] });
+  assert.match((await go(w)).error ?? '', /not in the Drive listing/);
+  assert.equal((await q(db, `SELECT count(*)::int n FROM research.import_batch`))[0].n, 0);
+  // listing = manifest (other units ignored): PASS
+  manifest(w, { unit: 'US-1852', files: [a] }, { listing: [L(a), other] });
+  assert.equal((await go(w)).status, 'PASS');
 });
 
 test('the .cmd files: CRLF, every jump has one label, and each exit code has its own banner', () => {
