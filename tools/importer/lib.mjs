@@ -92,6 +92,34 @@ function checkInventory(syncFolder, m) {
   if (extra.length) stop(`${extra.length} ${m.unit} file(s) in the Drive folder are not in the manifest: ${extra.slice(0, 5).join(', ')}${extra.length > 5 ? ', ...' : ''}. Ask Claude to prepare the import again`);
 }
 
+// The remote Drive folder listing Claude saved beside the manifest (raw Drive API answer: id, name, md5Checksum).
+// This unit's files in it must equal the manifest exactly, by name, Drive id and md5 (ChatGPT build review 2,
+// finding 1). Together with checkInventory this catches a file left out of the manifest whether or not the PC
+// has synced it yet.
+function checkDriveListing(dir, m) {
+  const p = path.join(dir, 'drive-listing.json');
+  if (!fs.existsSync(p)) stop('drive-listing.json is missing from the import folder; ask Claude to prepare the import again');
+  let L; try { L = JSON.parse(fs.readFileSync(p, 'utf8')); } catch { stop('drive-listing.json is not valid JSON'); }
+  const t = Date.parse(L?.listed_utc);
+  if (!Number.isFinite(t) || Date.now() - t > MAX_MANIFEST_AGE_MS || t > Date.now() + 5 * 60 * 1000) stop('drive-listing.json listed_utc is missing, older than 24 hours or in the future');
+  if (!Array.isArray(L.files)) stop('drive-listing.json has no files list');
+  const remote = new Map();
+  for (const e of L.files) {
+    if (typeof e?.name !== 'string' || !e.name.startsWith(m.unit + '__')) continue;
+    if (remote.has(e.name)) stop(`the Drive folder has two files named ${e.name}; fix the folder first`);
+    remote.set(e.name, e);
+  }
+  const byName = new Map(m.files.map(f => [f.name, f]));
+  const extra = [...remote.keys()].filter(n => !byName.has(n)).sort();
+  if (extra.length) stop(`${extra.length} ${m.unit} file(s) on Drive are not in the manifest: ${extra.slice(0, 5).join(', ')}${extra.length > 5 ? ', ...' : ''}. Ask Claude to prepare the import again`);
+  for (const f of m.files) {
+    const e = remote.get(f.name);
+    if (!e) stop(`${f.name} is in the manifest but not in the Drive listing`);
+    if (e.id !== f.drive_id) stop(`${f.name}: Drive id in the listing differs from the manifest`);
+    if (e.md5Checksum !== f.md5) stop(`${f.name}: md5 in the Drive listing differs from the manifest`);
+  }
+}
+
 // Packet columns from one jsonl line. The line itself is stored as sent (cast to jsonb in SQL, never re-stringified).
 const GRADES = new Set(['A', 'B', 'C']);
 const SKEPTIC = new Set(['none', 'downgraded', 'dropped']);
@@ -247,6 +275,7 @@ export async function runImport({ config, target, password, quiet = false, confi
       if (hash('sha256', buf) !== m.csv_sha256) stop(`${m.csv}: sha256 differs from the manifest; ask Claude to prepare the import again`);
       tab = { name: m.tab, ...readTab(buf, m.tab) };
     } else {
+      checkDriveListing(dir, m);
       files = m.files.map(f => readRunFile(config.syncFolder, f));
       checkInventory(config.syncFolder, m);
       for (const f of files.filter(x => x.kind === 'packets')) {
