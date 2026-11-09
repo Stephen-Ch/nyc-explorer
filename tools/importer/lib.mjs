@@ -26,6 +26,8 @@ const DRIVE_ID_RE = /^[A-Za-z0-9_-]{20,80}$/;
 // branch's compute, so the trial target can never be this endpoint.
 export const PROD_ENDPOINT = 'ep-morning-hill-b4nfx1pk';
 const NEON_HOST_RE = /^(ep-[a-z0-9-]+)(\.[a-z0-9-]+)*\.neon\.tech$/;
+// Drive folder NYC Explorer/overnight, where the run files live (ChatGPT build review 3)
+export const OVERNIGHT_FOLDER_ID = '1FBC1-UVjPWVjPyRUX-nzY4HQiV3JOSoD';
 const ISO_UTC_RE = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\.[0-9]+)?)?Z$/;
 // Time limits for the import session (ChatGPT build review 1, finding 6)
 const TIMEOUTS = { lockMs: 120000, statementMs: 300000, idleMs: 300000 };
@@ -102,6 +104,9 @@ function checkDriveListing(dir, m) {
   let L; try { L = JSON.parse(fs.readFileSync(p, 'utf8')); } catch { stop('drive-listing.json is not valid JSON'); }
   const t = Date.parse(L?.listed_utc);
   if (!Number.isFinite(t) || Date.now() - t > MAX_MANIFEST_AGE_MS || t > Date.now() + 5 * 60 * 1000) stop('drive-listing.json listed_utc is missing, older than 24 hours or in the future');
+  if (L.folder_id !== OVERNIGHT_FOLDER_ID) stop(`drive-listing.json is not a listing of the overnight folder ${OVERNIGHT_FOLDER_ID}`);
+  // Claude saves next_page_token from the last Drive page: null proves every page was read
+  if (!('next_page_token' in L) || L.next_page_token !== null) stop('drive-listing.json is incomplete (Drive had more pages, or no next_page_token recorded); ask Claude to list the folder again');
   if (!Array.isArray(L.files)) stop('drive-listing.json has no files list');
   const remote = new Map();
   for (const e of L.files) {
