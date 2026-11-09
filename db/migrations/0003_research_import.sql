@@ -1,4 +1,4 @@
--- ExplorerWalks database, migration 0003 v5 (after code review 3 and two ChatGPT reviews): research import (plan 05, draft 3 rev 1).
+-- ExplorerWalks database, migration 0003 v6 (after code review 3 and three ChatGPT reviews): research import (plan 05, draft 3 rev 1).
 -- Research area only. The only core change is the interest list (22 slugs).
 -- Target: Neon PostgreSQL 18 + PostGIS 3.6. All or nothing.
 BEGIN;
@@ -344,11 +344,12 @@ BEGIN
     RAISE EXCEPTION 'check 0 failed: batch % stores no new files', p_batch;
   END IF;
 
-  -- check 1: every listed file is stored (in this batch, or by an earlier applied batch) with the listed sha256,
+  -- check 1: every listed file is stored (in this batch, or by an earlier applied batch of the same city and unit) with the listed sha256,
   -- and every file stored in this batch is listed.
   FOR k, v IN SELECT * FROM jsonb_each(coalesce(bt.inputs->'files', '{}')) LOOP
     IF NOT EXISTS (SELECT 1 FROM research.run_file rf JOIN research.import_batch b ON b.batch_id = rf.import_batch_id
                    WHERE rf.drive_file_id = k AND rf.sha256 = v->>'sha256'
+                     AND rf.city_id = bt.city_id AND rf.unit_id = bt.unit_id
                      AND (rf.import_batch_id = p_batch OR b.state = 'applied')) THEN
       RAISE EXCEPTION 'check 1 failed: file % not stored with the listed sha256', k;
     END IF;
