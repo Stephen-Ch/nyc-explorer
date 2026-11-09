@@ -30,7 +30,17 @@ async function superQuery(db, sql) {
   await c.connect();
   try { return await c.query(sql); } finally { await c.end(); }
 }
+// every test database (also ones left by an earlier interrupted run), then the shared importer role
+async function dropTestDbs() {
+  made.length = 0;
+  for (const { datname } of (await superQuery('postgres', `SELECT datname FROM pg_database WHERE datname LIKE 'imp\\_t\\_%'`)).rows)
+    await superQuery('postgres', `DROP DATABASE IF EXISTS ${datname} WITH (FORCE)`);
+  await superQuery('postgres', 'DROP ROLE IF EXISTS importer');
+}
 async function freshDb() {
+  // 0004 now refuses a role that already exists (ChatGPT build review 1, finding 4): drop earlier test
+  // databases and the role first, so each test starts from a server with no importer role.
+  await dropTestDbs();
   const name = `imp_t_${process.pid}_${++dbCount}`;
   await superQuery('postgres', `DROP DATABASE IF EXISTS ${name}`);
   await superQuery('postgres', `CREATE DATABASE ${name}`);
@@ -248,6 +258,7 @@ test('targets: equal or empty hosts refused; unknown target refused; not logged 
   const sup = structuredClone(w.config); sup.user = SUPER;
   assert.match((await runImport({ config: sup, target: 'try', password: 'x', quiet: true })).error, /importer/);
   const ssl = structuredClone(w.config); ssl.targets.try.host = 'ep-x.neon.tech'; ssl.targets.try.ssl = false;
+  ssl.targets.prod = { host: 'ep-morning-hill-b4nfx1pk.c-6.us-east-2.aws.neon.tech', database: 'neondb' };
   assert.match((await runImport({ config: ssl, target: 'try', password: 'x', quiet: true })).error, /ssl/);
   assert.match((await runImport({ config: w.config, target: 'try', password: '', quiet: true })).error, /NYC_IMPORT_PW/);
 });
@@ -338,7 +349,7 @@ test('a packet from the same run already stored (different Drive id) stops the i
   const f = putFile(w, `US-1852__${RUN1}.jsonl`, pk('us-1852-a') + '\n');
   manifest(w, { unit: 'US-1852', files: [f] });
   assert.equal((await go(w)).status, 'PASS');
-  const g = putFile(w, `US-1852__${RUN1}.jsonl`, pk('us-1852-a', { n: 2 }) + '\n'); g.drive_id = 'd-other';
+  const g = putFile(w, `US-1852__${RUN1}.jsonl`, pk('us-1852-a', { n: 2 }) + '\n'); g.drive_id = 'd-other-file-id-0123456789abc';
   manifest(w, { unit: 'US-1852', files: [g] });
   assert.match((await go(w)).error, /same run/);
 });
@@ -379,6 +390,115 @@ test('a failed COMMIT is reported as UNKNOWN with the batch id, not as "nothing 
   assert.equal(r.status, 'UNKNOWN', r.error);
   assert.match(r.error, /batch [0-9]+/);
   assert.match(fs.readFileSync(path.join(dir, 'import-log.txt'), 'utf8'), /UNKNOWN/);
+});
+
+// ---------------------------------------------------------------- ChatGPT build review 1
+test('inventory: a unit file in the Drive folder that the manifest leaves out stops the import', async () => {
+  const db = await freshDb(); const w = world(db);
+  const a = putFile(w, `US-1852__${RUN1}.jsonl`, pk('us-1852-a') + '\n');
+  putFile(w, `US-1852__${RUN1}__skeptic-1.md`, 'skeptic\n');          // in the folder, not in the manifest
+  putFile(w, `US-1877__${RUN1}.md`, 'other unit\n');                    // other units are not this import's business
+  manifest(w, { unit: 'US-1852', files: [a] });
+  const r = await go(w);
+  assert.match(r.error ?? '', /not in the manifest/); assert.match(r.error, /skeptic-1/);
+  // a unit file whose name the importer can't read also stops it
+  fs.unlinkSync(path.join(w.sync, `US-1852__${RUN1}__skeptic-1.md`));
+  fs.writeFileSync(path.join(w.sync, `US-1852__${RUN1}__story-sources.md`), 'x');
+  manifest(w, { unit: 'US-1852', files: [a] });
+  assert.match((await go(w)).error ?? '', /story-sources/);
+  fs.unlinkSync(path.join(w.sync, `US-1852__${RUN1}__story-sources.md`));
+  manifest(w, { unit: 'US-1852', files: [a] });
+  assert.equal((await go(w)).status, 'PASS');
+  assert.equal((await q(db, `SELECT count(*)::int n FROM research.import_batch`))[0].n, 1);
+});
+
+test('manifest: a blank or malformed Drive id is refused before the database is touched', async () => {
+  const db = await freshDb(); const w = world(db);
+  for (const bad of ['', '   ', 'short', 'has space in it 0123456789', null, 42]) {
+    const f = putFile(w, `US-1852__${RUN1}.md`, 'x\n'); f.drive_id = bad;
+    manifest(w, { unit: 'US-1852', files: [f] });
+    assert.match((await go(w)).error ?? '', /Drive id/, String(bad));
+  }
+  assert.equal((await q(db, `SELECT count(*)::int n FROM research.import_batch`))[0].n, 0);
+});
+
+test('targets: production endpoint is pinned; trial can never point at it; only Neon hosts', async () => {
+  const db = await freshDb(); const w = world(db);
+  const f = putFile(w, `US-1852__${RUN1}.md`, 'x\n');
+  manifest(w, { unit: 'US-1852', files: [f] });
+  const PROD = 'ep-morning-hill-b4nfx1pk.c-6.us-east-2.aws.neon.tech';
+  const run = c => runImport({ config: c, target: 'try', password: 'x', quiet: true });
+  const c = structuredClone(w.config);
+  // trial mistakenly set to production, production set to some other endpoint
+  c.targets.try = { host: PROD, database: 'neondb' };
+  c.targets.prod = { host: 'ep-other-b4aaaaaa.c-6.us-east-2.aws.neon.tech', database: 'neondb' };
+  assert.match((await run(c)).error ?? '', /production/);
+  // production host that is not the pinned endpoint
+  c.targets.try = { host: 'ep-try-b4bbbbbb.c-6.us-east-2.aws.neon.tech', database: 'neondb' };
+  assert.match((await run(c)).error ?? '', /production/);
+  // a host that is not Neon
+  c.targets.prod = { host: PROD, database: 'neondb' };
+  c.targets.try = { host: 'db.example.com', database: 'neondb' };
+  assert.match((await run(c)).error ?? '', /Neon/);
+  c.targets.try = { host: 'ep-try-b4bbbbbb.neon.tech.evil.com', database: 'neondb' };
+  assert.match((await run(c)).error ?? '', /Neon/);
+  // one local, one Neon: refused (local hosts are for tests only)
+  c.targets.try = { host: 'localhost', database: 'neondb', ssl: false };
+  assert.match((await run(c)).error ?? '', /Neon/);
+});
+
+test('0004 refuses to run when a role named importer already exists', async () => {
+  const name = `imp_t_${process.pid}_${++dbCount}`;
+  await dropTestDbs();
+  await superQuery('postgres', 'CREATE ROLE importer LOGIN');
+  await superQuery('postgres', `CREATE DATABASE ${name}`); made.push(name);
+  const c = new pg.Client({ host: HOST, user: SUPER, database: name }); await c.connect();
+  try {
+    for (const m of MIGRATIONS.slice(0, 3)) await c.query(m);
+    await assert.rejects(c.query(MIGRATIONS[3]), /already exists/);
+    await c.query('ROLLBACK');
+    assert.equal((await c.query(`SELECT count(*)::int n FROM core.schema_migrations WHERE version='0004'`)).rows[0].n, 0);
+  } finally { await c.end(); }
+});
+
+test('tab: sheet_read_utc must be a valid UTC time, not in the future, not after the manifest', async () => {
+  const db = await freshDb(); const w = world(db);
+  const row = (id, hook) => { const r = Array(STORY_HEADERS.length).fill(''); r[0] = id; r[10] = hook; return r; };
+  for (const bad of [undefined, '', 'yesterday', '2026-11-09 12:00', new Date(Date.now() + 3600e3).toISOString()]) {
+    const dir = tabManifest(w, stories([row('ST001', 'one')]));
+    const mf = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.json'), 'utf8'));
+    if (bad === undefined) delete mf.sheet_read_utc; else mf.sheet_read_utc = bad;
+    fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(mf));
+    assert.match((await go(w)).error ?? '', /sheet_read_utc/, String(bad));
+  }
+  assert.equal((await q(db, `SELECT count(*)::int n FROM research.import_batch`))[0].n, 0);
+});
+
+test('a second import gives up cleanly when the lock wait passes the time limit', async () => {
+  const db = await freshDb(); const w = world(db);
+  const f = putFile(w, `US-1852__${RUN1}.jsonl`, pk('us-1852-a') + '\n');
+  manifest(w, { unit: 'US-1852', files: [f] });
+  let release; const hold = new Promise(r => { release = r; });
+  let entered; const inA = new Promise(r => { entered = r; });
+  const A = go(w, 'try', { afterBegin: async () => { entered(); await hold; } });
+  await inA;
+  const B = await go(w, 'try', { timeouts: { lockMs: 800 } });
+  assert.equal(B.status, 'FAIL'); assert.match(B.error, /another import/);
+  release();
+  assert.equal((await A).status, 'PASS');
+});
+
+test('the session gets lock, statement and idle time limits', async () => {
+  const db = await freshDb(); const w = world(db);
+  const f = putFile(w, `US-1852__${RUN1}.md`, 'x\n');
+  manifest(w, { unit: 'US-1852', files: [f] });
+  let seen;
+  const r = await go(w, 'try', { afterBegin: async (client) => {
+    seen = (await client.query(`SELECT current_setting('lock_timeout') l, current_setting('statement_timeout') s,
+      current_setting('idle_in_transaction_session_timeout') i`)).rows[0];
+  } });
+  assert.equal(r.status, 'PASS', r.error);
+  for (const v of Object.values(seen)) assert.notEqual(v, '0', JSON.stringify(seen));
 });
 
 test('the .cmd files: CRLF, every jump has one label, and each exit code has its own banner', () => {
