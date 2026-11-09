@@ -170,6 +170,10 @@ function connectionFor(config, target, password) {
   if (!['try', 'prod'].includes(target) || !targets[target]) stop(`unknown target ${target} (use try or prod)`);
   const hTry = targets.try?.host, hProd = targets.prod?.host;
   if (!hTry || !hProd || hTry === hProd) stop('config hosts for try and prod must both be set and differ');
+  // Neon endpoint id = first label of the host; a pooled name ("-pooler") reaches the same database (review 1, finding 7)
+  const endpoint = h => h.toLowerCase().split('.')[0].replace(/-pooler$/, '');
+  if ([hTry, hProd].some(h => /-pooler\./i.test(h))) stop('config uses a pooled host (-pooler); use the direct host');
+  if (endpoint(hTry) === endpoint(hProd)) stop('config try and prod hosts are the same Neon endpoint');
   if (!password) stop('password not found: set NYC_IMPORT_PW in Windows environment variables, then open a new window');
   const t = targets[target];
   const local = t.host.startsWith('/') || ['localhost', '127.0.0.1'].includes(t.host);
@@ -180,7 +184,7 @@ function connectionFor(config, target, password) {
 }
 
 // ---------------------------------------------------------------- the import
-export async function runImport({ config, target, password, quiet = false, confirmUnit, afterBegin, log: logFn }) {
+export async function runImport({ config, target, password, quiet = false, confirmUnit, afterBegin, beforeCommit, log: logFn }) {
   const started = Date.now();
   const say = s => { if (!quiet) (logFn ?? console.log)(s); };
   let dir = null, m = null, client = null, batchId = null;
@@ -188,7 +192,7 @@ export async function runImport({ config, target, password, quiet = false, confi
     const res = { status, target, unit: m?.unit, batchId, minutes: +((Date.now() - started) / 60000).toFixed(1), ...extra };
     if (dir) {
       const line = [new Date().toISOString(), `unit=${m?.unit}`, `target=${target}`, `batch=${batchId ?? '-'}`,
-        status === 'PASS' ? `PASS ${JSON.stringify(extra.counts)}` : status === 'NOTHING_NEW' ? 'PASS NOTHING NEW (nothing kept)' : `FAIL ${extra.error}`,
+        status === 'PASS' ? `PASS ${JSON.stringify(extra.counts)}` : status === 'NOTHING_NEW' ? 'PASS NOTHING NEW (nothing kept)' : `${status} ${extra.error}`,
         `minutes=${res.minutes}`].join(' ');
       try { fs.appendFileSync(path.join(dir, 'import-log.txt'), line + '\n'); } catch { /* log is best-effort */ }
     }
@@ -230,6 +234,8 @@ export async function runImport({ config, target, password, quiet = false, confi
 
     // ---- one transaction
     client = new pg.Client(conn);
+    // a dropped connection must surface as a failed query, not crash the process
+    client.on('error', e => say(`connection error: ${e.message}`));
     await client.connect();
     const who = (await client.query(`SELECT current_user::text cu, session_user::text su,
         EXISTS (SELECT 1 FROM pg_catalog.pg_auth_members WHERE member = current_user::regrole) member_of_any,
@@ -252,7 +258,15 @@ export async function runImport({ config, target, password, quiet = false, confi
     }
     await readBack(client, batchId, tab, files);
     const counts = (await client.query('SELECT research.finish_import($1) AS c', [batchId])).rows[0].c;
-    await client.query('COMMIT');
+    if (beforeCommit) await beforeCommit(client);
+    try {
+      await client.query('COMMIT');
+    } catch (e) {
+      // The server may or may not have committed: never report this as "nothing kept" (review 1, finding 5)
+      const msg = `COMMIT did not confirm (${e.message}); batch ${batchId} may or may not be saved. Claude must check the database before anything else`;
+      say(`UNKNOWN: ${msg}`);
+      return finish('UNKNOWN', { error: msg });
+    }
     say(`PASS: batch ${batchId} ${JSON.stringify(counts)}`);
     return finish('PASS', { counts });
   } catch (e) {

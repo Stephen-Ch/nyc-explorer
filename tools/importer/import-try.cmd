@@ -17,7 +17,16 @@ if errorlevel 1 goto :npmfail
 node import.mjs try
 set "RC=%errorlevel%"
 if "%RC%"=="0" goto :ok
-if "%RC%"=="2" goto :nothing
+if "%RC%"=="2" goto :unknown
+color 6F
+echo.
+echo  ==================================================
+echo   UNKNOWN: the save may or may not have finished. Tell Claude NOW;
+echo   do not run the import again until Claude has checked.
+echo  ==================================================
+goto :end
+:nothing
+if "%RC%"=="3" goto :unknown
 color 4F
 echo.
 echo  ==================================================

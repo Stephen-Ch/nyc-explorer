@@ -22,7 +22,7 @@ EXCEPTION WHEN dependent_objects_still_exist THEN
   RAISE NOTICE 'role importer kept: another database still grants it rights';
 END$$;
 
-ALTER DEFAULT PRIVILEGES IN SCHEMA research GRANT EXECUTE ON FUNCTIONS TO PUBLIC;
+ALTER DEFAULT PRIVILEGES GRANT EXECUTE ON FUNCTIONS TO PUBLIC;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA research TO PUBLIC;
 
 ALTER FUNCTION research.begin_import(text, text, jsonb, timestamptz) SECURITY INVOKER RESET search_path;

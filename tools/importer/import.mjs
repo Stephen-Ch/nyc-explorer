@@ -16,6 +16,6 @@ const confirmUnit = async unit => {
 };
 const r = await runImport({ config, target, password: process.env.NYC_IMPORT_PW ?? '', confirmUnit });
 console.log('');
-console.log(r.status === 'FAIL' ? `  FAILED: ${r.error}` : r.status === 'NOTHING_NEW' ? '  NOTHING NEW: nothing kept.' :
+console.log(r.status === 'FAIL' || r.status === 'UNKNOWN' ? `  ${r.status === 'FAIL' ? 'FAILED' : 'UNKNOWN'}: ${r.error}` : r.status === 'NOTHING_NEW' ? '  NOTHING NEW: nothing kept.' :
   `  DONE: batch ${r.batchId}, ${r.counts.run_files} files, ${r.counts.packets} packets, ${r.counts.tab_rows} tab rows (${r.minutes} min)`);
-process.exitCode = r.status === 'FAIL' ? 1 : r.status === 'NOTHING_NEW' ? 2 : 0;
+process.exitCode = r.status === 'UNKNOWN' ? 3 : r.status === 'FAIL' ? 1 : r.status === 'NOTHING_NEW' ? 2 : 0;

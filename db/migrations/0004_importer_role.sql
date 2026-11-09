@@ -52,7 +52,9 @@ ALTER FUNCTION research.has_blank_key(jsonb) SET search_path = pg_catalog, pg_te
 
 -- ---------- 4. EXECUTE: nobody by default; the importer only what inserts need ----------
 REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA research FROM PUBLIC;
-ALTER DEFAULT PRIVILEGES IN SCHEMA research REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
+-- Functions the owner creates LATER are not callable by PUBLIC either. Must be the global form:
+-- a per-schema default can only add rights, never remove the built-in PUBLIC EXECUTE (review 1, finding 1).
+ALTER DEFAULT PRIVILEGES REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION research.begin_import(text, text, jsonb, timestamptz) TO importer;
 GRANT EXECUTE ON FUNCTION research.finish_import(bigint) TO importer;
 -- called by CHECKs and the generated row_sha256 column, which run with the inserting user's rights
