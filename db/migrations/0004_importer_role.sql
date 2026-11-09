@@ -18,17 +18,15 @@ DO $$BEGIN
 END$$;
 
 -- ---------- 1. the role ----------
+-- A role named importer that already exists is never reused: its grants, owned objects or rights outside
+-- research can't all be audited here (ChatGPT build review 1, finding 4). Delete it first, then run 0004.
 DO $$BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'importer') THEN
-    CREATE ROLE importer LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS NOINHERIT;
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'importer') THEN
+    RAISE EXCEPTION 'role importer already exists; 0004 makes it fresh. Delete it (after checking what it owns) and run 0004 again';
   END IF;
-  -- a role made earlier (for example in the console) must not carry admin rights
-  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'importer'
-             AND (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin)) THEN
-    RAISE EXCEPTION 'role importer has admin attributes or cannot log in; delete it and run 0004 again';
-  END IF;
+  CREATE ROLE importer LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS NOINHERIT;
   IF EXISTS (SELECT 1 FROM pg_auth_members WHERE member = 'importer'::regrole) THEN
-    RAISE EXCEPTION 'role importer is a member of another role (e.g. neon_superuser); delete it and run 0004 again';
+    RAISE EXCEPTION 'role importer was given a membership on creation (e.g. neon_superuser); stopping';
   END IF;
 END$$;
 
