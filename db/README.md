@@ -15,6 +15,7 @@ PostgreSQL + PostGIS on Neon (project `explorerwalks`, branch `production`, data
 - View `v_place_in_year`: approved places with a point, by city and snapshot year.
 - `schema_migrations`: one row per applied migration.
 - Added in 0002: `research.run_file` (each night's research files as written), `research.promotion` (which core rows each research packet produced), `place_version_lot_ref` (today's lot found by address, before shapes are traced).
+- Added in 0003 (plan 05): `research.import_batch` (one import of one unit or one tracker tab), `research.tab_row` (STORIES and DELIGHTS rows as read; views `research.story`, `research.delight_1852`), functions `research.begin_import`, `finish_import` (checks; raises on any failure) and `undo_import` (newest batch first). Guard triggers keep research rows write-once. View `research.v_promotable` is the only list a later approval plan may offer. Interests are now exactly the 22. Known limits are listed at the top of the guard section in `0003_research_import.sql`; the promotion plan must take the shared import advisory lock first.
 
 ## Applying a migration
 1. Rehearse on a throwaway Neon branch: run the migration, then its own smoke test in `db/smoke/` right after it (each smoke test checks only its own migration). It must end with `ALL PASS`. Let the branch expire.
