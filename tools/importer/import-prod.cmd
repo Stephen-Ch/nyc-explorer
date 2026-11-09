@@ -1,6 +1,7 @@
 @echo off
 setlocal EnableExtensions DisableDelayedExpansion
 rem import-prod.cmd  Import research into Neon PRODUCTION (plan 05). Double-click.
+rem Exit codes from import.mjs: 0 PASS, 1 FAILED, 2 NOTHING NEW, 3 UNKNOWN (COMMIT not confirmed).
 cd /d "%~dp0"
 title NYC import - PRODUCTION
 echo.
@@ -17,15 +18,7 @@ if errorlevel 1 goto :npmfail
 node import.mjs prod
 set "RC=%errorlevel%"
 if "%RC%"=="0" goto :ok
-if "%RC%"=="2" goto :unknown
-color 6F
-echo.
-echo  ==================================================
-echo   UNKNOWN: the save may or may not have finished. Tell Claude NOW;
-echo   do not run the import again until Claude has checked.
-echo  ==================================================
-goto :end
-:nothing
+if "%RC%"=="2" goto :nothing
 if "%RC%"=="3" goto :unknown
 color 4F
 echo.
@@ -45,6 +38,14 @@ color 1F
 echo.
 echo  ==================================================
 echo   NOTHING NEW to import. Nothing was kept.
+echo  ==================================================
+goto :end
+:unknown
+color 6F
+echo.
+echo  ==================================================
+echo   UNKNOWN: the save may or may not have finished.
+echo   Tell Claude NOW. Do not run the import again until Claude has checked.
 echo  ==================================================
 goto :end
 :nonode

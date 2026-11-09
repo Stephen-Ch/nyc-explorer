@@ -380,3 +380,17 @@ test('a failed COMMIT is reported as UNKNOWN with the batch id, not as "nothing 
   assert.match(r.error, /batch [0-9]+/);
   assert.match(fs.readFileSync(path.join(dir, 'import-log.txt'), 'utf8'), /UNKNOWN/);
 });
+
+test('the .cmd files: CRLF, every jump has one label, and each exit code has its own banner', () => {
+  for (const t of ['try', 'prod']) {
+    const s = fs.readFileSync(path.join(import.meta.dirname, '..', `import-${t}.cmd`), 'utf8');
+    assert.ok(!/[^\r]\n/.test(s), `${t}: LF without CR`);
+    const labels = [...s.matchAll(/^:(\w+)\r?$/gm)].map(m => m[1]);
+    assert.equal(new Set(labels).size, labels.length, `${t}: duplicate label`);
+    for (const [, g] of s.matchAll(/goto :(\w+)/g)) assert.ok(labels.includes(g), `${t}: goto :${g} has no label`);
+    assert.match(s, /"%RC%"=="0" goto :ok/); assert.match(s, /"%RC%"=="2" goto :nothing/); assert.match(s, /"%RC%"=="3" goto :unknown/);
+    assert.match(s, new RegExp(`node import\\.mjs ${t}\\r?\\n`));
+    const ok = s.slice(s.indexOf('\n:ok')), unknown = s.slice(s.indexOf('\n:unknown'));
+    assert.match(ok.slice(0, 200), /PASS/); assert.match(unknown.slice(0, 200), /UNKNOWN/);
+  }
+});
