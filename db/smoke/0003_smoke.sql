@@ -1,4 +1,4 @@
--- Smoke test for 0003 v5. Run only on a throwaway Neon branch (try-0003) right after 0003, never on production.
+-- Smoke test for 0003 v6. Run only on a throwaway Neon branch (try-0003) right after 0003, never on production.
 -- Ends with 'ALL PASS' only if every check passed. Leaves nothing behind (ROLLBACK).
 BEGIN;
 DO $$BEGIN
@@ -91,6 +91,13 @@ BEGIN
   bt := research.begin_import('nyc','US-1852', jsonb_build_object('files', jsonb_build_object(
           'd-j1', jsonb_build_object('sha256', research.utf8_sha256(j1), 'lines', 2))), now());
   PERFORM pg_temp.expect_fail(format('SELECT research.finish_import(%s)', bt), 'check 0 failed');
+  PERFORM research.undo_import(bt);
+  -- a batch of another unit can't claim an earlier unit's file
+  bt := research.begin_import('nyc','US-1877', jsonb_build_object('files', jsonb_build_object(
+          'd-j1', jsonb_build_object('sha256', research.utf8_sha256(j1)),
+          'd-n77', jsonb_build_object('sha256', research.utf8_sha256('n')))), now());
+  EXECUTE replace(format(ins_file,'US-1877','notes','d-n77','n',bt,'US-1877__run-20261104T080254Z.md',repeat('d',32),research.utf8_sha256('n'),'false'), 'run-20261104T080254Z', 'run-20261104T080254Z');
+  PERFORM pg_temp.expect_fail(format('SELECT research.finish_import(%s)', bt), 'check 1 failed');
   PERFORM research.undo_import(bt);
   RAISE NOTICE 'PASS batch 1 applied';
 
