@@ -86,7 +86,7 @@ function manifest(w, m, { listing } = {}) {
   fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(full, null, 2));
   if (!m.unit.startsWith('TAB-') && listing !== null) {
     const files = listing ?? (m.files ?? []).map(f => ({ id: f.drive_id, name: f.name, md5Checksum: f.md5 }));
-    fs.writeFileSync(path.join(dir, 'drive-listing.json'), JSON.stringify({ listed_utc: created, folder_id: '1FBC1-UVjPWVjPyRUX-nzY4HQiV3JOSoD', files }));
+    fs.writeFileSync(path.join(dir, 'drive-listing.json'), JSON.stringify({ listed_utc: created, folder_id: '1FBC1-UVjPWVjPyRUX-nzY4HQiV3JOSoD', next_page_token: null, files }));
   }
   return dir;
 }
@@ -538,6 +538,25 @@ test('remote Drive listing: required, and its unit files must equal the manifest
   assert.equal((await q(db, `SELECT count(*)::int n FROM research.import_batch`))[0].n, 0);
   // listing = manifest (other units ignored): PASS
   manifest(w, { unit: 'US-1852', files: [a] }, { listing: [L(a), other] });
+  assert.equal((await go(w)).status, 'PASS');
+});
+
+// ---------------------------------------------------------------- ChatGPT build review 3
+test('remote Drive listing: must be the overnight folder and a complete listing (no next page)', async () => {
+  const db = await freshDb(); const w = world(db);
+  const a = putFile(w, `US-1852__${RUN1}.md`, 'x\n');
+  const edit = (dir, change) => {
+    const p = path.join(dir, 'drive-listing.json'); const L = JSON.parse(fs.readFileSync(p, 'utf8'));
+    change(L); fs.writeFileSync(p, JSON.stringify(L));
+  };
+  edit(manifest(w, { unit: 'US-1852', files: [a] }), L => { L.folder_id = '1SomeOtherFolderId0123456789'; });
+  assert.match((await go(w)).error ?? '', /folder/);
+  edit(manifest(w, { unit: 'US-1852', files: [a] }), L => { L.next_page_token = 'more-pages-token'; });
+  assert.match((await go(w)).error ?? '', /incomplete|page/);
+  edit(manifest(w, { unit: 'US-1852', files: [a] }), L => { delete L.next_page_token; });
+  assert.match((await go(w)).error ?? '', /incomplete|page/);
+  assert.equal((await q(db, `SELECT count(*)::int n FROM research.import_batch`))[0].n, 0);
+  manifest(w, { unit: 'US-1852', files: [a] });
   assert.equal((await go(w)).status, 'PASS');
 });
 
