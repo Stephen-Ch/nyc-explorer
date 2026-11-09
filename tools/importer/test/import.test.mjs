@@ -310,3 +310,73 @@ test('tab refusals: CSV changed after its hash, half-filled row, header change, 
   assert.match((await go(w)).error, /twice/);
   assert.equal((await q(db, `SELECT count(*)::int n FROM research.import_batch`))[0].n, 0);
 });
+
+// ---------------------------------------------------------------- review 1 additions
+test('hosts: a pooled host, or the same Neon endpoint under two names, is refused', async () => {
+  const db = await freshDb(); const w = world(db);
+  const f = putFile(w, `US-1852__${RUN1}.md`, 'x\n');
+  manifest(w, { unit: 'US-1852', files: [f] });
+  const c1 = structuredClone(w.config);
+  c1.targets.prod = { host: 'ep-morning-hill-b4nfx1pk.c-6.us-east-2.aws.neon.tech', database: 'neondb' };
+  c1.targets.try = { host: 'ep-morning-hill-b4nfx1pk-pooler.c-6.us-east-2.aws.neon.tech', database: 'neondb' };
+  assert.match((await runImport({ config: c1, target: 'try', password: 'x', quiet: true })).error, /pooled|same Neon endpoint/);
+  c1.targets.try = { host: 'ep-other-b4aaaaaa-pooler.c-6.us-east-2.aws.neon.tech', database: 'neondb' };
+  assert.match((await runImport({ config: c1, target: 'try', password: 'x', quiet: true })).error, /pooled/);
+  c1.targets.try = { host: 'EP-MORNING-HILL-B4NFX1PK.c-6.us-east-2.aws.neon.tech', database: 'neondb' };
+  assert.match((await runImport({ config: c1, target: 'try', password: 'x', quiet: true })).error, /same Neon endpoint/);
+});
+
+test('tab: a header-only CSV with nothing stored is nothing new', async () => {
+  const db = await freshDb(); const w = world(db);
+  tabManifest(w, stories([]));
+  assert.equal((await go(w)).status, 'NOTHING_NEW');
+  assert.equal((await q(db, `SELECT count(*)::int n FROM research.import_batch`))[0].n, 0);
+});
+
+test('a packet from the same run already stored (different Drive id) stops the import', async () => {
+  const db = await freshDb(); const w = world(db);
+  const f = putFile(w, `US-1852__${RUN1}.jsonl`, pk('us-1852-a') + '\n');
+  manifest(w, { unit: 'US-1852', files: [f] });
+  assert.equal((await go(w)).status, 'PASS');
+  const g = putFile(w, `US-1852__${RUN1}.jsonl`, pk('us-1852-a', { n: 2 }) + '\n'); g.drive_id = 'd-other';
+  manifest(w, { unit: 'US-1852', files: [g] });
+  assert.match((await go(w)).error, /same run/);
+});
+
+test('a database refusal after some writes keeps nothing', async () => {
+  const db = await freshDb(); const w = world(db);
+  const files = [putFile(w, `US-1852__${RUN1}.md`, 'notes\n'),
+                 putFile(w, `US-1852__${RUN1}.jsonl`, pk('us-1852-a') + '\n' + pk('us-1852-b', { place_id: 'Bad_Id' }) + '\n')];
+  manifest(w, { unit: 'US-1852', files });
+  const r = await go(w);
+  assert.equal(r.status, 'FAIL'); assert.match(r.error, /check|23514/);
+  assert.deepEqual(await q(db, `SELECT (SELECT count(*) FROM research.import_batch)::int b, (SELECT count(*) FROM research.run_file)::int f`), [{ b: 0, f: 0 }]);
+});
+
+test('the password never reaches the result or the log; other secret patterns are refused', async () => {
+  const db = await freshDb(); const w = world(db);
+  const pw = 'S3cr%!^&"pw-xyz';
+  let f = putFile(w, `US-1852__${RUN1}.md`, 'x\n'); f.md5 = '0'.repeat(32);
+  const dir = manifest(w, { unit: 'US-1852', files: [f] });
+  const r = await runImport({ config: w.config, target: 'try', password: pw, quiet: true });
+  assert.ok(!JSON.stringify(r).includes(pw));
+  assert.ok(!fs.readFileSync(path.join(dir, 'import-log.txt'), 'utf8').includes(pw));
+  for (const text of ['host=x password=abc', 'token npg_AbCdEf123456', '-----BEGIN OPENSSH PRIVATE KEY-----']) {
+    f = putFile(w, `US-1852__${RUN1}.md`, text);
+    manifest(w, { unit: 'US-1852', files: [f] });
+    assert.match((await go(w)).error, /secret/, text);
+  }
+});
+
+test('a failed COMMIT is reported as UNKNOWN with the batch id, not as "nothing kept"', async () => {
+  const db = await freshDb(); const w = world(db);
+  const f = putFile(w, `US-1852__${RUN1}.md`, 'x\n');
+  const dir = manifest(w, { unit: 'US-1852', files: [f] });
+  const r = await go(w, 'try', { beforeCommit: async (client) => {
+    const pid = (await client.query('SELECT pg_backend_pid() p')).rows[0].p;
+    await q(db, 'SELECT pg_terminate_backend($1)', [pid]);
+  } });
+  assert.equal(r.status, 'UNKNOWN', r.error);
+  assert.match(r.error, /batch [0-9]+/);
+  assert.match(fs.readFileSync(path.join(dir, 'import-log.txt'), 'utf8'), /UNKNOWN/);
+});

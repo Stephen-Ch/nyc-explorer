@@ -43,6 +43,12 @@ BEGIN
       RAISE EXCEPTION 'importer EXECUTE on % is wrong', r.f;
     END IF;
   END LOOP;
+  -- a function the owner creates later is not callable by PUBLIC or the importer (rolled back below)
+  CREATE FUNCTION research.zz_smoke_later() RETURNS int LANGUAGE sql AS 'SELECT 1';
+  IF has_function_privilege('public', 'research.zz_smoke_later()', 'EXECUTE')
+     OR has_function_privilege('importer', 'research.zz_smoke_later()', 'EXECUTE') THEN
+    RAISE EXCEPTION 'a new research function is callable by PUBLIC or importer';
+  END IF;
   RAISE NOTICE 'PASS functions';
 
   -- schemas and tables
