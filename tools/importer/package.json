@@ -1,0 +1,13 @@
+{
+  "name": "nyc-explorer-importer",
+  "version": "1.0.0",
+  "description": "Imports NYC Explorer research run files and tracker tabs into Neon's research area (plan 05).",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": { "test": "node --test test/*.test.mjs" },
+  "dependencies": {
+    "csv-parse": "5.6.0",
+    "pg": "8.13.1"
+  }
+}
