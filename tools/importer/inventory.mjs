@@ -49,7 +49,7 @@ for (const name of unitFiles) {
     const unit = meta?.unit ?? name.split('__')[0];
     const run_id = meta?.run_id ?? rid;
     const f = { name, unit };
-    const lines = splitLines(text);
+    const lines = (text === '' || text === '\n') ? [] : splitLines(text);   // empty packets file: zero packets (lib.mjs)
     if (lines.some(x => x.trim() === '')) add('packets file has a blank line', name);
     const seen = new Set();
     lines.forEach((l, i) => {
