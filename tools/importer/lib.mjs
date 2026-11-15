@@ -19,8 +19,11 @@ export const TAB_HEADERS = {
     'interests','hold_reason'],
   STORY_TEXT: ['story_id','run_id','lead_id','story_text','date_note','style_check','followup_status'],
 };
-const TAB_KEY = { STORIES: { col: 'story_id', re: /^ST[0-9]{3,}$/ }, DELIGHTS: { col: 'delight_id', re: /^D[0-9]{3,}$/ },
-  INDEX: { col: 'candidate_id', re: /^[a-z0-9]+(-[a-z0-9]+)*$/ } };   // STORY_TEXT: key <story_id>@<run_id> (readTab)
+// Key patterns: must appear word for word in 0005's tab_row key check (a test compares them).
+export const KEY_PATTERNS = { STORIES: '^ST[0-9]{3,}$', DELIGHTS: '^D[0-9]{3,}$', INDEX: '^[a-z0-9]+(-[a-z0-9]+)*$',
+  STORY_TEXT_RUN: '^run-[0-9]{8}T[0-9]{6}Z$' };
+const TAB_KEY = { STORIES: { col: 'story_id', re: new RegExp(KEY_PATTERNS.STORIES) }, DELIGHTS: { col: 'delight_id', re: new RegExp(KEY_PATTERNS.DELIGHTS) },
+  INDEX: { col: 'candidate_id', re: new RegExp(KEY_PATTERNS.INDEX) } };   // STORY_TEXT: key <story_id>@<run_id> (readTab)
 // Must equal 0005 (a test compares them).
 export const UNIT_PATTERN = '^(MN[0-9]{2}-[0-9]{4}|US-[0-9]{4}|ST-(SQ|N|S|E|W)-[0-9]{4}|TAB-(STORIES|DELIGHTS|INDEX|STORY_TEXT))$';
 const UNIT_RE = new RegExp(UNIT_PATTERN);
@@ -32,7 +35,7 @@ export const RETRY_KINDS = ['skeptic', 'story-skeptic', 'story-fragments', 'blin
 const STAMP_RUN_RE = /^(run|backfill|holds)-([0-9]{8}T[0-9]{6}Z)$/;
 const DATE_HOLDS_RE = /^holds-[0-9]{8}$/;
 const RECHECK_RE = /^recheck-[a-z0-9]+(-[a-z0-9]+)*$/;
-const STORY_TEXT_RUN_RE = /^run-[0-9]{8}T[0-9]{6}Z$/;
+const STORY_TEXT_RUN_RE = new RegExp(KEY_PATTERNS.STORY_TEXT_RUN);
 const SECRETS = [/postgres(ql)?:\/\/[^\s:@/]+:[^\s@/]+@/i, /password=/i, /npg_[A-Za-z0-9]{8,}/, /-----BEGIN [A-Z ]*PRIVATE KEY-----/];
 const MAX_MANIFEST_AGE_MS = 24 * 3600 * 1000;
 // Google Drive file ids: letters, digits, '-' and '_' (ChatGPT build review 1, finding 2)
@@ -62,6 +65,11 @@ export function runTime(id, modifiedUtc) {
   } else if (DATE_HOLDS_RE.test(id ?? '')) {
     const v = modifiedUtc instanceof Date ? modifiedUtc.toISOString() : modifiedUtc;
     if (typeof v === 'string' && ISO_UTC_RE.test(v)) t = Date.parse(v);
+    // the Drive time must fall on the id's own New York date, so a file re-saved later cannot jump ahead
+    if (Number.isFinite(t)) {
+      const nyDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date(t)).replaceAll('-', '');
+      if (nyDate !== id.slice(6)) stop(`run id ${id}: its Drive time ${v} is not on that date in New York; Stephen decides`);
+    }
   }
   if (!Number.isFinite(t)) stop(`no run time can be worked out for run id ${id}; stopping (run order is never skipped)`);
   return t;
@@ -208,7 +216,7 @@ export function readTab(buf, tab) {
       // key <story_id>@<run_id>: a story can get more than one text row (plan 36 rewrites)
       const sid = cell(cells, 'story_id'), rid = cell(cells, 'run_id'), sc = cell(cells, 'style_check');
       if (!sid || !sid.trim()) stop(`${tab} row ${sheet_row} has cells but no story_id; fix the sheet`);
-      if (!/^ST[0-9]{3,}$/.test(sid)) stop(`${tab} row ${sheet_row}: bad story_id ${JSON.stringify(sid)}`);
+      if (!TAB_KEY.STORIES.re.test(sid)) stop(`${tab} row ${sheet_row}: bad story_id ${JSON.stringify(sid)}`);
       if (!rid) stop(`${tab} row ${sheet_row}: empty run_id`);
       if (!STORY_TEXT_RUN_RE.test(rid)) stop(`${tab} row ${sheet_row}: run_id ${JSON.stringify(rid)} is not run-<UTC stamp>`);
       runTime(rid);

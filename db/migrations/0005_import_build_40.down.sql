@@ -1,14 +1,17 @@
--- Undo 0005. Works only while no row uses a new kind, retry, tab or unit (undo those batches first, newest first).
+-- Undo 0005. Works only while no row uses a new kind, retry, tab or unit: undo those batches first, newest first.
+-- Undone or failed TAB-INDEX / TAB-STORY_TEXT batch records (no rows left) are deleted, since the 0004 unit check refuses them.
 BEGIN;
 DO $$BEGIN
   IF NOT EXISTS (SELECT 1 FROM core.schema_migrations WHERE version = '0005') THEN RAISE EXCEPTION '0005 not applied'; END IF;
   IF EXISTS (SELECT 1 FROM research.run_file WHERE kind IN ('story-sources','story-existing','blind','check')
              OR (retry AND kind NOT IN ('skeptic','story-skeptic')))
      OR EXISTS (SELECT 1 FROM research.tab_row WHERE tab IN ('INDEX','STORY_TEXT'))
-     OR EXISTS (SELECT 1 FROM research.import_batch WHERE unit_id IN ('TAB-INDEX','TAB-STORY_TEXT')) THEN
+     OR EXISTS (SELECT 1 FROM research.import_batch WHERE unit_id IN ('TAB-INDEX','TAB-STORY_TEXT') AND state IN ('open','applied')) THEN
     RAISE EXCEPTION 'rows of a 0005 kind, tab or unit exist; undo those batches first';
   END IF;
 END$$;
+
+DELETE FROM research.import_batch WHERE unit_id IN ('TAB-INDEX','TAB-STORY_TEXT') AND state IN ('undone','failed');
 
 DROP VIEW research.index_packet_mismatch, research.index_row, research.story_text_orphan, research.story_not_ready,
   research.story_ready, research.story_readiness, research.story_text_newest, research.story_text;

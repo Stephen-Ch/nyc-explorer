@@ -52,7 +52,8 @@ SELECT t.tab_row_id, t.import_batch_id, t.sheet_row,
   t.row_raw->>'story_id' AS story_id, t.row_raw->>'run_id' AS run_id, t.row_raw->>'lead_id' AS lead_id,
   t.row_raw->>'story_text' AS story_text, t.row_raw->>'date_note' AS date_note,
   t.row_raw->>'style_check' AS style_check, t.row_raw->>'followup_status' AS followup_status,
-  to_timestamp(substr(t.row_raw->>'run_id', 5, 15), 'YYYYMMDD"T"HH24MISS') AT TIME ZONE 'UTC' AS run_time_utc,
+  -- the stamp is UTC whatever the session time zone ('Z' read by the timestamptz input)
+  (substr(t.row_raw->>'run_id', 5, 15) || 'Z')::timestamptz AS run_time_utc,
   t.row_raw
 FROM research.tab_row t JOIN research.import_batch b ON b.batch_id = t.import_batch_id AND b.state = 'applied'
 WHERE t.tab = 'STORY_TEXT' AND t.live;

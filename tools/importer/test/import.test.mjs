@@ -10,7 +10,7 @@ import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import pg from 'pg';
-import { runImport, parseFileName, splitLines, runTime, KINDS, RETRY_KINDS, UNIT_PATTERN, TAB_HEADERS } from '../lib.mjs';
+import { runImport, parseFileName, splitLines, runTime, KINDS, RETRY_KINDS, UNIT_PATTERN, TAB_HEADERS, KEY_PATTERNS } from '../lib.mjs';
 
 const HOST = process.env.IMPORT_TEST_PGHOST || '/tmp';
 const SUPER = process.env.IMPORT_TEST_PGSUPER || 'postgres';
@@ -622,6 +622,10 @@ test('plan 40: new kinds, retries and run ids are understood; the rest refused',
   assert.equal(runTime('holds-20261116', '2026-11-16T10:55:00Z'), Date.parse('2026-11-16T10:55:00Z'));
   assert.throws(() => runTime('holds-20261116'), /time/);
   assert.throws(() => runTime('holds-20261116', 'not a time'), /time/);
+  // the Drive time must fall on the id's own New York date (a file re-saved later must not jump ahead)
+  assert.throws(() => runTime('holds-20261115', '2026-12-01T15:00:00Z'), /date/);
+  assert.throws(() => runTime('holds-20261115', '2026-11-16T06:00:00Z'), /date/);      // 1am Nov 16 in New York
+  assert.equal(runTime('holds-20261115', '2026-11-16T04:30:00Z'), Date.parse('2026-11-16T04:30:00Z'));   // 11:30pm Nov 15 in New York
   assert.throws(() => runTime('recheck-plan29'), /time/);
 });
 
@@ -747,18 +751,22 @@ test('plan 40: story_ready takes the newest text row; notes style fail and missi
     rowOf('STORIES', { story_id: 'ST005', 'tier (delight/record)': 'record', run_id: RUN1 }),
   ];
   const st = (id, run, style) => rowOf('STORY_TEXT', { story_id: id, run_id: run, story_text: 't', style_check: style });
-  const text = [st('ST001', RUN1, 'fail 2'), st('ST001', RUN3, 'ok'), st('ST002', RUN1, 'unchecked'), st('ST003', RUN1, 'ok'), st('ST009', RUN1, 'ok')];
+  // ST006: runs 45 minutes apart in the spring clock-change hour; the later (ok) row must win in any session time zone
+  stories.push(rowOf('STORIES', { story_id: 'ST006', 'tier (delight/record)': 'delight', run_id: RUN1 }));
+  const text = [st('ST006', 'run-20260308T031500Z', 'ok'), st('ST006', 'run-20260308T023000Z', 'fail 1'), st('ST001', RUN1, 'fail 2'), st('ST001', RUN3, 'ok'), st('ST002', RUN1, 'unchecked'), st('ST003', RUN1, 'ok'), st('ST009', RUN1, 'ok')];
   const answers = [];
   for (const order of [text, [...text].reverse()]) {
     const db = await freshDb(); const w = world(db);
     await importTabs(db, w, [['STORIES', stories], ['STORY_TEXT', order]]);
+    await q(db, `ALTER DATABASE ${ident(db)} SET timezone = 'America/New_York'`);
     answers.push({
       ready: (await q(db, `SELECT story_id FROM research.story_ready ORDER BY 1`)).map(x => x.story_id),
+      utc: (await q(db, `SELECT to_char(run_time_utc AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') t FROM research.story_text WHERE run_id = 'run-20260308T023000Z'`))[0].t,
       not: (await q(db, `SELECT story_id, reason FROM research.story_not_ready ORDER BY 1`)).map(x => `${x.story_id}:${x.reason}`),
       orphan: (await q(db, `SELECT story_id FROM research.story_text_orphan`)).map(x => x.story_id),
     });
   }
-  assert.deepEqual(answers[0], { ready: ['ST001'], not: ['ST002:unchecked', 'ST003:notes say style fail', 'ST004:no story text'], orphan: ['ST009'] });
+  assert.deepEqual(answers[0], { ready: ['ST001', 'ST006'], utc: '2026-03-08 02:30', not: ['ST002:unchecked', 'ST003:notes say style fail', 'ST004:no story text'], orphan: ['ST009'] });
   assert.deepEqual(answers[1], answers[0]);
 });
 
@@ -793,6 +801,7 @@ test('plan 40: lib.mjs lists equal 0005 lists', () => {
   assert.deepEqual([...retry].sort(), [...RETRY_KINDS].sort());
   const unit = /unit_id ~ '([^']+)'/.exec(sql)[1];
   assert.equal(unit, UNIT_PATTERN);
+  for (const re of Object.values(KEY_PATTERNS)) assert.ok(sql.includes(`'${re}'`), `0005 lacks key pattern ${re}`);
   const tabs = /tab IN \(([^)]*)\)/.exec(sql)[1].match(/'([^']+)'/g).map(x => x.slice(1, -1));
   assert.deepEqual([...tabs].sort(), Object.keys(TAB_HEADERS).sort());
 });
@@ -819,4 +828,15 @@ test('plan 40: the first real holds file (Nov 15, Huber\'s Museum) imports as a 
   assert.deepEqual(await q(db, `SELECT candidate_id, place_id_db, disposition_final::text d, skeptic_changed, run_id FROM research.packet`),
     [{ candidate_id: 'us-1902-hubers-museum', place_id_db: 'nyc-hubers-museum-106-east-14th-street', d: 'C', skeptic_changed: null, run_id: 'holds-20261115' }]);
   assert.equal((await q(db, `SELECT packet->>'skeptic_file_id' s FROM research.packet`))[0].s, '1bRu7TaZR3WwKux8Fc_rCyyToufl_f_As');
+});
+
+test('plan 40: the 0005 down file runs after the new batches are undone', async () => {
+  const db = await freshDb(); const w = world(db);
+  tabManifestFor(w, 'INDEX', csvOf(TAB_HEADERS.INDEX, [indexRow('us-1852-a')]));
+  const r = await go(w); assert.equal(r.status, 'PASS', r.error);
+  await assert.rejects(q(db, REPO_MIG('0005_import_build_40.down.sql')), /undo those batches first/);
+  await q(db, `SELECT research.undo_import($1)`, [r.batchId]);
+  await q(db, REPO_MIG('0005_import_build_40.down.sql'));
+  assert.equal((await q(db, `SELECT count(*)::int n FROM research.import_batch WHERE unit_id = 'TAB-INDEX'`))[0].n, 0);
+  await q(db, REPO_MIG('0005_import_build_40.sql'));
 });
