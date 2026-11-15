@@ -14,10 +14,28 @@ export const TAB_HEADERS = {
     'pointer_source (modern, credit only)','skeptic_verdict','grade','new_vs_index_wiki','notes','added','run_id','skeptic_file'],
   DELIGHTS: ['delight_id','kind','year','event_date','report_date','paper','printed_page','image_no','loc_link','quote',
     'spot_as_printed','cross_streets','zone','map_point','interests','hook','grade','second_source','check_result','notes'],
+  // plan 40: hf10 INDEX (holds live only here) and v1.3 STORY_TEXT
+  INDEX: ['candidate_id','place_id','name','address_in_year','cd','year','disposition','importance_suggested','unit_id','zone',
+    'interests','hold_reason'],
+  STORY_TEXT: ['story_id','run_id','lead_id','story_text','date_note','style_check','followup_status'],
 };
-const TAB_KEY = { STORIES: { col: 'story_id', re: /^ST[0-9]{3,}$/ }, DELIGHTS: { col: 'delight_id', re: /^D[0-9]{3,}$/ } };
-const UNIT_RE = /^(MN[0-9]{2}-[0-9]{4}|US-[0-9]{4}|ST-(SQ|N|S|E|W)-[0-9]{4}|TAB-(STORIES|DELIGHTS))$/;
-const RUN_RE = /^run-[0-9]{8}T[0-9]{6}Z$/;
+// Key patterns: must appear word for word in 0005's tab_row key check (a test compares them).
+export const KEY_PATTERNS = { STORIES: '^ST[0-9]{3,}$', DELIGHTS: '^D[0-9]{3,}$', INDEX: '^[a-z0-9]+(-[a-z0-9]+)*$',
+  STORY_TEXT_RUN: '^run-[0-9]{8}T[0-9]{6}Z$' };
+const TAB_KEY = { STORIES: { col: 'story_id', re: new RegExp(KEY_PATTERNS.STORIES) }, DELIGHTS: { col: 'delight_id', re: new RegExp(KEY_PATTERNS.DELIGHTS) },
+  INDEX: { col: 'candidate_id', re: new RegExp(KEY_PATTERNS.INDEX) } };   // STORY_TEXT: key <story_id>@<run_id> (readTab)
+// Must equal 0005 (a test compares them).
+export const UNIT_PATTERN = '^(MN[0-9]{2}-[0-9]{4}|US-[0-9]{4}|ST-(SQ|N|S|E|W)-[0-9]{4}|TAB-(STORIES|DELIGHTS|INDEX|STORY_TEXT))$';
+const UNIT_RE = new RegExp(UNIT_PATTERN);
+export const KINDS = ['packets', 'notes', 'sources', 'skeptic', 'story-claims', 'story-fragments', 'story-skeptic', 'story-notes',
+  'story-sources', 'story-existing', 'blind', 'check'];
+export const RETRY_KINDS = ['skeptic', 'story-skeptic', 'story-fragments', 'blind', 'check', 'sources'];
+// Run ids (plan 40 B): a UTC stamp, a date-only holds id (time = the file's Drive modified time),
+// or recheck-<label> (non-packets files only: it has no time, and only packets need run order).
+const STAMP_RUN_RE = /^(run|backfill|holds)-([0-9]{8}T[0-9]{6}Z)$/;
+const DATE_HOLDS_RE = /^holds-[0-9]{8}$/;
+const RECHECK_RE = /^recheck-[a-z0-9]+(-[a-z0-9]+)*$/;
+const STORY_TEXT_RUN_RE = new RegExp(KEY_PATTERNS.STORY_TEXT_RUN);
 const SECRETS = [/postgres(ql)?:\/\/[^\s:@/]+:[^\s@/]+@/i, /password=/i, /npg_[A-Za-z0-9]{8,}/, /-----BEGIN [A-Z ]*PRIVATE KEY-----/];
 const MAX_MANIFEST_AGE_MS = 24 * 3600 * 1000;
 // Google Drive file ids: letters, digits, '-' and '_' (ChatGPT build review 1, finding 2)
@@ -35,6 +53,28 @@ const TIMEOUTS = { lockMs: 120000, statementMs: 300000, idleMs: 300000 };
 export class Stop extends Error {}
 const stop = msg => { throw new Stop(msg); };
 
+// Run order uses a parsed time, never the text of the id (plan 40 B). Unknown time: stop.
+export function runTime(id, modifiedUtc) {
+  const m = STAMP_RUN_RE.exec(id ?? '');
+  let t = NaN;
+  if (m) {
+    const s = m[2];
+    const iso = `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}T${s.slice(9, 11)}:${s.slice(11, 13)}:${s.slice(13, 15)}Z`;
+    t = Date.parse(iso);
+    if (Number.isFinite(t) && new Date(t).toISOString().slice(0, 19) + 'Z' !== iso) t = NaN;   // no rolled-over dates
+  } else if (DATE_HOLDS_RE.test(id ?? '')) {
+    const v = modifiedUtc instanceof Date ? modifiedUtc.toISOString() : modifiedUtc;
+    if (typeof v === 'string' && ISO_UTC_RE.test(v)) t = Date.parse(v);
+    // the Drive time must fall on the id's own New York date, so a file re-saved later cannot jump ahead
+    if (Number.isFinite(t)) {
+      const nyDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date(t)).replaceAll('-', '');
+      if (nyDate !== id.slice(6)) stop(`run id ${id}: its Drive time ${v} is not on that date in New York; Stephen decides`);
+    }
+  }
+  if (!Number.isFinite(t)) stop(`no run time can be worked out for run id ${id}; stopping (run order is never skipped)`);
+  return t;
+}
+
 // ---------------------------------------------------------------- file names
 // <unit>__<run_id>[__<kind>[-N][-retry]].<ext>
 export function parseFileName(name) {
@@ -43,17 +83,18 @@ export function parseFileName(name) {
   if (!m) stop(`file name not understood: ${name}`);
   const [, unit, run_id, k, num, retryMark, ext] = m;
   if (!UNIT_RE.test(unit) || unit.startsWith('TAB-')) stop(`bad unit in file name: ${name}`);
-  if (!RUN_RE.test(run_id)) stop(`bad run id in file name (only run-YYYYMMDDTHHMMSSZ is imported): ${name}`);
+  const stamped = STAMP_RUN_RE.test(run_id) || DATE_HOLDS_RE.test(run_id), recheck = RECHECK_RE.test(run_id);
+  if (!stamped && !recheck) stop(`bad run id in file name (run-, backfill- or holds-<UTC stamp>, holds-<date>, recheck-<label>): ${name}`);
   let kind;
   if (!k) kind = ext === 'jsonl' ? 'packets' : 'notes';
   else if (ext !== 'md') kind = null;
-  else if (k === 'sources' && !num) kind = 'sources';
-  else if (k === 'skeptic' && num) kind = 'skeptic';
-  else if (k === 'story-skeptic' && num) kind = 'story-skeptic';
-  else if (['story-claims', 'story-fragments', 'story-notes'].includes(k) && !num) kind = k;
+  else if (k === 'skeptic') kind = 'skeptic';                                   // old MN01 files have no number
+  else if (['story-skeptic', 'blind', 'check'].includes(k) && num) kind = k;
+  else if (['sources', 'story-claims', 'story-fragments', 'story-notes', 'story-sources', 'story-existing'].includes(k) && !num) kind = k;
   if (!kind) stop(`unknown file kind (not allowed by the database): ${name}`);
+  if (recheck && kind === 'packets') stop(`a recheck run id has no time, so it is not allowed on a packets file: ${name}`);
   const retry = !!retryMark;
-  if (retry && !['skeptic', 'story-skeptic'].includes(kind)) stop(`only skeptic files can be retries: ${name}`);
+  if (retry && !RETRY_KINDS.includes(kind)) stop(`this kind of file cannot be a retry: ${name}`);
   return { unit, run_id, kind, retry };
 }
 
@@ -64,7 +105,7 @@ export function splitLines(content) {
 
 // ---------------------------------------------------------------- reading files
 const hash = (algo, buf) => crypto.createHash(algo).update(buf).digest('hex');
-function decodeChecked(buf, label) {
+export function decodeChecked(buf, label) {
   if (buf.length >= 3 && buf[0] === 0xef && buf[1] === 0xbb && buf[2] === 0xbf) stop(`${label} starts with a byte-order mark`);
   if (buf.includes(0)) stop(`${label} contains a NUL byte`);
   let text;
@@ -98,7 +139,7 @@ function checkInventory(syncFolder, m) {
 // This unit's files in it must equal the manifest exactly, by name, Drive id and md5 (ChatGPT build review 2,
 // finding 1). Together with checkInventory this catches a file left out of the manifest whether or not the PC
 // has synced it yet.
-function checkDriveListing(dir, m) {
+export function checkDriveListing(dir, m) {
   const p = path.join(dir, 'drive-listing.json');
   if (!fs.existsSync(p)) stop('drive-listing.json is missing from the import folder; ask Claude to prepare the import again');
   let L; try { L = JSON.parse(fs.readFileSync(p, 'utf8')); } catch { stop('drive-listing.json is not valid JSON'); }
@@ -128,12 +169,20 @@ function checkDriveListing(dir, m) {
 // Packet columns from one jsonl line. The line itself is stored as sent (cast to jsonb in SQL, never re-stringified).
 const GRADES = new Set(['A', 'B', 'C']);
 const SKEPTIC = new Set(['none', 'downgraded', 'dropped']);
-function packetColumns(line, file, n) {
+export function packetColumns(line, file, n) {
   let j;
   try { j = JSON.parse(line); } catch { stop(`${file.name} line ${n} is not JSON`); }
   if (!j || typeof j !== 'object' || Array.isArray(j)) stop(`${file.name} line ${n} is not a JSON object`);
   if (typeof j.candidate_id !== 'string') stop(`${file.name} line ${n} has no candidate_id`);
   if (!j.candidate_id.startsWith(file.unit.toLowerCase() + '-')) stop(`${file.name} line ${n}: candidate ${j.candidate_id} does not belong to ${file.unit}`);
+  const place_id_db = j.place_id == null ? null : 'nyc-' + j.place_id;
+  // plan 40 C: a daily hold review restore line (holds- run id)
+  if (/^holds-/.test(file.run_id ?? '')) {
+    if ('disposition' in j) stop(`${file.name} line ${n}: a holds line must have no disposition`);
+    if (!GRADES.has(j.grade)) stop(`${file.name} line ${n}: holds grade must be A, B or C, not ${JSON.stringify(j.grade)}`);
+    if (!Array.isArray(j.flags) || !j.flags.includes('day-restore')) stop(`${file.name} line ${n}: holds line has no day-restore flag`);
+    return { line, line_no: n, candidate_id: j.candidate_id, place_id_db, disposition_final: j.grade, skeptic_changed: null, restore: true };
+  }
   let disposition_final = null, skeptic_changed = null;
   if (GRADES.has(j.disposition)) disposition_final = j.disposition;
   else if (j.disposition === 'dropped') skeptic_changed = 'dropped';
@@ -143,7 +192,6 @@ function packetColumns(line, file, n) {
     if (skeptic_changed === 'dropped' && j.skeptic.changed !== 'dropped') stop(`${file.name} line ${n}: dropped, but skeptic says ${j.skeptic.changed}`);
     skeptic_changed = j.skeptic.changed;
   }
-  const place_id_db = j.place_id == null ? null : 'nyc-' + j.place_id;
   return { line, line_no: n, candidate_id: j.candidate_id, place_id_db, disposition_final, skeptic_changed };
 }
 
@@ -158,16 +206,30 @@ export function readTab(buf, tab) {
   if (new Set(headers).size !== headers.length) stop(`${tab}.csv has duplicate headers`);
   if (headers.some(h => h.trim() === '')) stop(`${tab}.csv has a blank header`);
   if (JSON.stringify(headers) !== JSON.stringify(TAB_HEADERS[tab])) stop(`${tab}.csv headers differ from the fixed list; nothing imported`);
-  const { col, re } = TAB_KEY[tab];
-  const rows = [], seen = new Set();
+  const rows = [], seen = new Map();
+  const cell = (cells, h) => cells[headers.indexOf(h)];
   recs.slice(1).forEach((cells, i) => {
     const sheet_row = i + 2;
     if (cells.every(c => c === '')) return;              // fully blank row
-    const key = cells[headers.indexOf(col)];
-    if (!key || !key.trim()) stop(`${tab} row ${sheet_row} has cells but no ${col}; fix the sheet`);
-    if (!re.test(key)) stop(`${tab} row ${sheet_row}: bad ${col} ${JSON.stringify(key)}`);
-    if (seen.has(key)) stop(`${tab}: ${key} appears twice`);
-    seen.add(key);
+    let key;
+    if (tab === 'STORY_TEXT') {
+      // key <story_id>@<run_id>: a story can get more than one text row (plan 36 rewrites)
+      const sid = cell(cells, 'story_id'), rid = cell(cells, 'run_id'), sc = cell(cells, 'style_check');
+      if (!sid || !sid.trim()) stop(`${tab} row ${sheet_row} has cells but no story_id; fix the sheet`);
+      if (!TAB_KEY.STORIES.re.test(sid)) stop(`${tab} row ${sheet_row}: bad story_id ${JSON.stringify(sid)}`);
+      if (!rid) stop(`${tab} row ${sheet_row}: empty run_id`);
+      if (!STORY_TEXT_RUN_RE.test(rid)) stop(`${tab} row ${sheet_row}: run_id ${JSON.stringify(rid)} is not run-<UTC stamp>`);
+      runTime(rid);
+      if (!(sc === 'ok' || sc === 'unchecked' || /^fail ./.test(sc))) stop(`${tab} row ${sheet_row}: bad style_check ${JSON.stringify(sc)} (ok, unchecked or fail <rules>)`);
+      key = `${sid}@${rid}`;
+    } else {
+      const { col, re } = TAB_KEY[tab];
+      key = cell(cells, col);
+      if (!key || !key.trim()) stop(`${tab} row ${sheet_row} has cells but no ${col}; fix the sheet`);
+      if (!re.test(key)) stop(`${tab} row ${sheet_row}: bad ${col} ${JSON.stringify(key)}`);
+    }
+    if (seen.has(key)) stop(`${tab}: ${key} appears twice (rows ${seen.get(key)} and ${sheet_row})`);
+    seen.set(key, sheet_row);
     const raw = {}; headers.forEach((h, k) => { raw[h] = cells[k] ?? ''; });
     rows.push({ key, sheet_row, raw: JSON.stringify(raw) });
   });
@@ -189,7 +251,7 @@ export function findManifest(importsRoot) {
   found.sort((a, b) => String(b.m.created_utc).localeCompare(String(a.m.created_utc)));
   return found[0];
 }
-function checkManifest(m) {
+export function checkManifest(m) {
   const t = Date.parse(m.created_utc);
   if (!Number.isFinite(t)) stop('manifest has no valid created_utc');
   if (Date.now() - t > MAX_MANIFEST_AGE_MS) stop('manifest is older than 24 hours; ask Claude to prepare it again');
@@ -284,7 +346,8 @@ export async function runImport({ config, target, password, quiet = false, confi
       files = m.files.map(f => readRunFile(config.syncFolder, f));
       checkInventory(config.syncFolder, m);
       for (const f of files.filter(x => x.kind === 'packets')) {
-        f.lines = splitLines(f.content);
+        // an empty packets file (a run that kept nothing) is stored with zero packets (plan 40, step 0 answer 3)
+        f.lines = (f.content === '' || f.content === '\n') ? [] : splitLines(f.content);
         if (f.lines.some(x => x.trim() === '')) stop(`${f.name} has a blank line`);
         f.packets = f.lines.map((l, i) => packetColumns(l, f, i + 1));
         const c = new Set();
@@ -292,7 +355,11 @@ export async function runImport({ config, target, password, quiet = false, confi
       }
       const runs = files.filter(f => f.kind === 'packets').map(f => f.run_id);
       if (new Set(runs).size !== runs.length) stop('two packets files share one run id');
-      files.sort((a, b) => a.run_id.localeCompare(b.run_id) || a.name.localeCompare(b.name));
+      // run order by parsed time, never by the text of the id (plan 40 B); equal times stop
+      for (const f of files) f.time = f.kind === 'packets' ? runTime(f.run_id, f.modified_utc) : null;
+      const pt = files.filter(f => f.kind === 'packets').map(f => f.time);
+      if (new Set(pt).size !== pt.length) stop('two packets files have the same time; Stephen decides the order');
+      files.sort((a, b) => (a.time ?? 0) - (b.time ?? 0) || a.name.localeCompare(b.name));
     }
 
     const inputs = tab
@@ -367,12 +434,15 @@ async function writeFiles(client, b, m, files) {
 
   // no stored live copy may come from a newer run
   for (const f of fresh.filter(x => x.kind === 'packets')) {
-    const r = await client.query(`SELECT candidate_id, run_id FROM research.packet
-        WHERE city_id = $1 AND candidate_id = ANY($2) AND review_state IN ('pending','promoted')`,
+    const r = await client.query(`SELECT p.candidate_id, p.run_id, rf.drive_modified_utc AS modified FROM research.packet p
+        JOIN research.run_file rf ON rf.run_file_id = p.run_file_id
+        WHERE p.city_id = $1 AND p.candidate_id = ANY($2) AND p.review_state IN ('pending','promoted')`,
       [m.city, f.packets.map(p => p.candidate_id)]);
     for (const row of r.rows) {
-      if (row.run_id > f.run_id) stop(`${row.candidate_id}: a newer run (${row.run_id}) is already stored than ${f.run_id}`);
       if (row.run_id === f.run_id) stop(`${row.candidate_id}: same run ${f.run_id} already stored`);
+      const t = runTime(row.run_id, row.modified);
+      if (t > f.time) stop(`${row.candidate_id}: a newer run (${row.run_id}) is already stored than ${f.run_id}`);
+      if (t === f.time) stop(`${row.candidate_id}: stored run ${row.run_id} has the same time as ${f.run_id}; Stephen decides`);
     }
   }
 
@@ -387,6 +457,12 @@ async function writeFiles(client, b, m, files) {
   // oldest run first: supersede the live copy FIRST, then insert (the one-live-copy index is not deferrable)
   for (const f of fresh.filter(x => x.kind === 'packets')) {
     for (const p of f.packets) {
+      if (p.restore) {
+        // a restore never replaces a kept place (plan 40 C)
+        const live = (await client.query(`SELECT disposition_final::text d FROM research.packet
+            WHERE city_id = $1 AND candidate_id = $2 AND review_state IN ('pending','promoted')`, [m.city, p.candidate_id])).rows[0];
+        if (live && live.d) stop(`${p.candidate_id}: a restore would replace a kept place (graded ${live.d}); Stephen decides`);
+      }
       await client.query(`UPDATE research.packet SET review_state = 'superseded', superseded_by_batch_id = $1
           WHERE city_id = $2 AND candidate_id = $3 AND review_state = 'pending'`, [b, m.city, p.candidate_id]);
       await client.query(`INSERT INTO research.packet (city_id, candidate_id, unit_id, run_id, drive_file_id, packet, import_batch_id,

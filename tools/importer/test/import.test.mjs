@@ -10,12 +10,12 @@ import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import pg from 'pg';
-import { runImport, parseFileName, splitLines } from '../lib.mjs';
+import { runImport, parseFileName, splitLines, runTime, KINDS, RETRY_KINDS, UNIT_PATTERN, TAB_HEADERS, KEY_PATTERNS } from '../lib.mjs';
 
 const HOST = process.env.IMPORT_TEST_PGHOST || '/tmp';
 const SUPER = process.env.IMPORT_TEST_PGSUPER || 'postgres';
 const REPO = path.resolve(import.meta.dirname, '../../..');
-const MIGRATIONS = ['0001_init.sql', '0002_before_import.sql', '0003_research_import.sql', '0004_importer_role.sql']
+const MIGRATIONS = ['0001_init.sql', '0002_before_import.sql', '0003_research_import.sql', '0004_importer_role.sql', '0005_import_build_40.sql']
   .map(f => fs.readFileSync(path.join(REPO, 'db/migrations', f), 'utf8'));
 
 const md5 = b => crypto.createHash('md5').update(b).digest('hex');
@@ -124,8 +124,8 @@ test('file names map to kinds; unknown kinds and run ids are refused', () => {
   assert.deepEqual(parseFileName('US-1852__run-20261104T050256Z__skeptic-3-retry.md'), { unit: 'US-1852', run_id: RUN1, kind: 'skeptic', retry: true });
   assert.equal(parseFileName('ST-N-1852__run-20261109T145045Z__story-skeptic-6.md').kind, 'story-skeptic');
   assert.equal(parseFileName('ST-N-1852__run-20261109T145045Z__story-fragments.md').kind, 'story-fragments');
-  assert.throws(() => parseFileName('ST-SQ-1852__run-20261108T212944Z__story-sources.md'), /kind/);
-  assert.throws(() => parseFileName('MN06-1852__backfill-20261030T180544Z.jsonl'), /run id/);
+  assert.throws(() => parseFileName('ST-SQ-1852__run-20261108T212944Z__story-gossip.md'), /kind/);
+  assert.throws(() => parseFileName('MN06-1852__redo-20261030T180544Z.jsonl'), /run id/);
   assert.throws(() => parseFileName('US-1852__run-20261104T050256Z (1).jsonl'), /copy/);
 });
 test('lines split like the database (one final newline dropped, CR trimmed)', () => {
@@ -572,4 +572,305 @@ test('the .cmd files: CRLF, every jump has one label, and each exit code has its
     const ok = s.slice(s.indexOf('\n:ok')), unknown = s.slice(s.indexOf('\n:unknown'));
     assert.match(ok.slice(0, 200), /PASS/); assert.match(unknown.slice(0, 200), /UNKNOWN/);
   }
+});
+
+// ================================================================ plan 40 (import build)
+const REPO_MIG = f => fs.readFileSync(path.join(REPO, 'db/migrations', f), 'utf8');
+const csvOf = (headers, rows) => {
+  const esc = v => /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  return [headers.map(esc).join(','), ...rows.map(r => headers.map((h, i) => esc(r[i] ?? '')).join(','))].join('\r\n') + '\r\n';
+};
+const rowOf = (tab, vals) => TAB_HEADERS[tab].map(h => vals[h] ?? '');
+function tabManifestFor(w, tab, text) {
+  const dir = manifest(w, { unit: `TAB-${tab}`, tab, csv: `${tab}.csv`, csv_sha256: 'later', sheet_read_utc: new Date(Date.now() - 600e3).toISOString() });
+  const b = Buffer.from(text, 'utf8');
+  fs.writeFileSync(path.join(dir, `${tab}.csv`), b);
+  const mf = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.json'), 'utf8'));
+  mf.csv_sha256 = crypto.createHash('sha256').update(b).digest('hex');
+  fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(mf));
+  return dir;
+}
+const indexRow = (cand, vals = {}) => rowOf('INDEX', { candidate_id: cand, place_id: cand.replace(/^us-1852-/, ''), name: cand, year: '1852',
+  disposition: 'B', unit_id: 'US-1852', zone: 'S', ...vals });
+const holdLine = (cand, extra = {}) => JSON.stringify({ candidate_id: cand, place_id: cand.replace(/^us-1852-/, ''), grade: 'B', zone: 'S',
+  block: '14th-15th', flags: ['block-from-number-table', 'day-restore'], skeptic_file_id: 'x', ...extra });
+const putAt = (w, name, text, modified_utc) => ({ ...putFile(w, name, text), modified_utc });
+
+test('plan 40: new kinds, retries and run ids are understood; the rest refused', () => {
+  const k = n => parseFileName(n).kind;
+  assert.equal(k('ST-SQ-1852__run-20261108T212944Z__story-sources.md'), 'story-sources');
+  assert.equal(k('ST-S-1877__run-20261115T101557Z__story-existing.md'), 'story-existing');
+  assert.equal(k('MN01-1877__run-20261020T140121Z__skeptic.md'), 'skeptic');
+  assert.equal(k('MN06-1877__run-20261030T202651Z__blind-1.md'), 'blind');
+  assert.equal(k('MN06-1877__run-20261030T202651Z__check-2.md'), 'check');
+  assert.deepEqual(parseFileName('MN06-1877__run-20261030T202651Z__sources-retry.md'), { unit: 'MN06-1877', run_id: 'run-20261030T202651Z', kind: 'sources', retry: true });
+  assert.equal(parseFileName('ST-S-1852__run-20261114T071632Z__story-fragments-retry.md').retry, true);
+  assert.equal(parseFileName('MN06-1877__run-20261030T202651Z__blind-1-retry.md').retry, true);
+  assert.equal(parseFileName('MN06-1852__backfill-20261030T180544Z.jsonl').kind, 'packets');
+  assert.equal(parseFileName('US-1852__holds-20261116T104100Z.jsonl').run_id, 'holds-20261116T104100Z');
+  assert.equal(parseFileName('US-1852__holds-20261116.jsonl').kind, 'packets');
+  assert.equal(parseFileName('ST-N-1877__recheck-plan29__story-skeptic-1.md').run_id, 'recheck-plan29');
+  assert.throws(() => parseFileName('ST-N-1877__recheck-plan29.jsonl'), /recheck/);
+  assert.throws(() => parseFileName('US-1852__run-20261104T050256Z__notes-retry.md'), /kind|retr/);
+  assert.throws(() => parseFileName('US-1852__run-20261104T050256Z-retry.md'), /run id|retr|understood/);
+  assert.throws(() => parseFileName('US-1852__run-20261104T050256Z__blind.md'), /kind/);
+  assert.throws(() => parseFileName('US-1852__run-20261104T050256Z__story-sources-2.md'), /kind/);
+  assert.throws(() => parseFileName('US-1852__holds-2026111.jsonl'), /run id/);
+  // run time: from the stamp; date-only holds ids need the Drive time; never the text of the id
+  assert.equal(runTime('run-20261104T050256Z'), Date.parse('2026-11-04T05:02:56Z'));
+  assert.equal(runTime('holds-20261116T104100Z'), Date.parse('2026-11-16T10:41:00Z'));
+  assert.equal(runTime('holds-20261116', '2026-11-16T10:55:00Z'), Date.parse('2026-11-16T10:55:00Z'));
+  assert.throws(() => runTime('holds-20261116'), /time/);
+  assert.throws(() => runTime('holds-20261116', 'not a time'), /time/);
+  // the Drive time must fall on the id's own New York date (a file re-saved later must not jump ahead)
+  assert.throws(() => runTime('holds-20261115', '2026-12-01T15:00:00Z'), /date/);
+  assert.throws(() => runTime('holds-20261115', '2026-11-16T06:00:00Z'), /date/);      // 1am Nov 16 in New York
+  assert.equal(runTime('holds-20261115', '2026-11-16T04:30:00Z'), Date.parse('2026-11-16T04:30:00Z'));   // 11:30pm Nov 15 in New York
+  assert.throws(() => runTime('recheck-plan29'), /time/);
+});
+
+test('plan 40: every new kind and retry is stored (0005 checks agree with lib.mjs)', async () => {
+  const db = await freshDb(); const w = world(db);
+  const R = 'run-20261108T212944Z', u = 'ST-SQ-1852';
+  const files = ['story-sources', 'story-existing', 'skeptic', 'story-fragments-retry', 'sources-retry', 'blind-1', 'check-2', 'blind-1-retry', 'check-2-retry', 'notes']
+    .map(s => putFile(w, s === 'notes' ? `${u}__${R}.md` : `${u}__${R}__${s}.md`, s + '\n'));
+  files.push(putFile(w, `${u}__recheck-plan29__story-skeptic-1.md`, 'recheck\n'));
+  manifest(w, { unit: u, files });
+  const r = await go(w);
+  assert.equal(r.status, 'PASS', r.error);
+  assert.equal(r.counts.run_files, files.length);
+  assert.deepEqual((await q(db, `SELECT kind, count(*)::int n, bool_or(retry) r FROM research.run_file GROUP BY 1 ORDER BY 1`)).map(x => `${x.kind}:${x.n}:${x.r}`),
+    ['blind:2:true', 'check:2:true', 'notes:1:false', 'skeptic:1:false', 'sources:1:true', 'story-existing:1:false', 'story-fragments:1:true', 'story-skeptic:1:false', 'story-sources:1:false']);
+});
+
+test('plan 40: an empty packets file is stored with zero packets', async () => {
+  const db = await freshDb(); const w = world(db);
+  const files = [putFile(w, `US-1877__run-20261114T184429Z.jsonl`, '\n'), putFile(w, `US-1877__run-20261114T184429Z.md`, 'kept nothing\n')];
+  manifest(w, { unit: 'US-1877', files });
+  const r = await go(w);
+  assert.equal(r.status, 'PASS', r.error);
+  assert.equal(r.counts.packets ?? 0, 0); assert.equal(r.counts.run_files, 2);
+  // a file with two empty lines is still a blank-line refusal
+  const w2 = world(db);
+  manifest(w2, { unit: 'US-1877', files: [putFile(w2, `US-1877__run-20261115T000000Z.jsonl`, '\n\n')] });
+  assert.match((await go(w2)).error, /blank line/);
+});
+
+test('plan 40: run order is by time, not by the text of the id', async () => {
+  const db = await freshDb(); const w = world(db);
+  // a newer holds file (date-only id, Drive time Nov 15) is stored first
+  const h = putAt(w, 'US-1852__holds-20261115.jsonl', holdLine('us-1852-a') + '\n', '2026-11-15T15:40:00Z');
+  manifest(w, { unit: 'US-1852', files: [h] });
+  let r = await go(w); assert.equal(r.status, 'PASS', r.error);
+  // an older run- file for the same candidate now stops (text order would have let 'run-' beat 'holds-')
+  manifest(w, { unit: 'US-1852', files: [h, putFile(w, `US-1852__${RUN2}.jsonl`, pk('us-1852-a') + '\n')] });
+  r = await go(w); assert.equal(r.status, 'FAIL'); assert.match(r.error, /newer run/);
+  // two packets files with the same time in one batch stop
+  const w2 = world(db);
+  manifest(w2, { unit: 'US-1852', files: [
+    putFile(w2, 'US-1852__run-20261120T100000Z.jsonl', pk('us-1852-z') + '\n'),
+    putFile(w2, 'US-1852__holds-20261120T100000Z.jsonl', holdLine('us-1852-y') + '\n')] });
+  r = await go(w2); assert.equal(r.status, 'FAIL'); assert.match(r.error, /same time/);
+  // backfill ids sort by their stamp too
+  const w3 = world(db);
+  manifest(w3, { unit: 'US-1852', files: [putFile(w3, 'US-1852__backfill-20261030T180544Z.jsonl', pk('us-1852-q') + '\n')] });
+  assert.equal((await go(w3)).status, 'PASS');
+});
+
+test('plan 40: holds restore supersedes a live dropped packet, in two batches and in one', async () => {
+  const db = await freshDb(); const w = world(db);
+  const dropped = pk('us-1852-a', { disposition: 'dropped', skeptic: { checked: true, changed: 'dropped' } });
+  const d1 = putFile(w, `US-1852__${RUN1}.jsonl`, dropped + '\n');
+  manifest(w, { unit: 'US-1852', files: [d1] });
+  assert.equal((await go(w)).status, 'PASS');
+  manifest(w, { unit: 'US-1852', files: [d1, putAt(w, 'US-1852__holds-20261116.jsonl', holdLine('us-1852-a', { grade: 'C' }) + '\n', '2026-11-16T10:50:00Z')] });
+  const r = await go(w); assert.equal(r.status, 'PASS', r.error);
+  assert.deepEqual(await q(db, `SELECT run_id, disposition_final::text d, skeptic_changed, review_state FROM research.packet ORDER BY packet_row_id`),
+    [{ run_id: RUN1, d: null, skeptic_changed: 'dropped', review_state: 'superseded' },
+     { run_id: 'holds-20261116', d: 'C', skeptic_changed: null, review_state: 'pending' }]);
+  // one batch with both files
+  const db2 = await freshDb(); const w2 = world(db2);
+  manifest(w2, { unit: 'US-1852', files: [putFile(w2, `US-1852__${RUN1}.jsonl`, dropped + '\n'),
+    putFile(w2, 'US-1852__holds-20261116T104100Z.jsonl', holdLine('us-1852-a') + '\n')] });
+  const r2 = await go(w2); assert.equal(r2.status, 'PASS', r2.error);
+  assert.deepEqual((await q(db2, `SELECT run_id FROM research.packet WHERE review_state='pending'`)).map(x => x.run_id), ['holds-20261116T104100Z']);
+});
+
+test('plan 40: holds lines must be clean restores; never over a kept place', async () => {
+  const db = await freshDb(); const w = world(db);
+  manifest(w, { unit: 'US-1852', files: [putFile(w, `US-1852__${RUN1}.jsonl`, pk('us-1852-a', { disposition: 'A' }) + '\n')] });
+  assert.equal((await go(w)).status, 'PASS');
+  const tryHolds = async (line, name = 'US-1852__holds-20261116T104100Z.jsonl') => {
+    const wx = world(db); manifest(wx, { unit: 'US-1852', files: [putFile(wx, name, line + '\n')] }); return go(wx);
+  };
+  let r = await tryHolds(holdLine('us-1852-a')); assert.equal(r.status, 'FAIL'); assert.match(r.error, /kept place|graded A/);
+  r = await tryHolds(holdLine('us-1852-b', { disposition: 'B' })); assert.match(r.error, /disposition/);
+  r = await tryHolds(holdLine('us-1852-b', { grade: 'D' })); assert.match(r.error, /grade/);
+  r = await tryHolds(holdLine('us-1852-b', { flags: ['block-from-number-table'] })); assert.match(r.error, /day-restore/);
+  r = await tryHolds(holdLine('us-1877-b')); assert.match(r.error, /belong/);
+  assert.equal((await q(db, `SELECT count(*)::int n FROM research.import_batch`))[0].n, 1);
+});
+
+test('plan 40: TAB-INDEX stores holds and every other row as read; duplicate or bad ids stop', async () => {
+  const db = await freshDb(); const w = world(db);
+  tabManifestFor(w, 'INDEX', csvOf(TAB_HEADERS.INDEX, [indexRow('us-1852-a'), indexRow('us-1852-h', { disposition: 'hold', hold_reason: 'address unparsed' })]));
+  const r = await go(w); assert.equal(r.status, 'PASS', r.error);
+  assert.deepEqual(await q(db, `SELECT row_key, row_raw->>'hold_reason' h FROM research.tab_row WHERE tab='INDEX' ORDER BY 1`),
+    [{ row_key: 'us-1852-a', h: '' }, { row_key: 'us-1852-h', h: 'address unparsed' }]);
+  tabManifestFor(w, 'INDEX', csvOf(TAB_HEADERS.INDEX, [indexRow('us-1852-a'), indexRow('us-1852-b'), indexRow('us-1852-a')]));
+  let x = await go(w); assert.equal(x.status, 'FAIL'); assert.match(x.error, /us-1852-a.*rows 2 and 4/);
+  tabManifestFor(w, 'INDEX', csvOf(TAB_HEADERS.INDEX, [indexRow('US-1852-A')]));
+  x = await go(w); assert.match(x.error, /bad candidate_id/);
+  tabManifestFor(w, 'INDEX', csvOf(TAB_HEADERS.INDEX.slice(0, 11), [indexRow('us-1852-a').slice(0, 11)]));
+  x = await go(w); assert.match(x.error, /headers/);
+});
+
+test('plan 40: TAB-STORY_TEXT keys on story and run; bad rows stop', async () => {
+  const db = await freshDb(); const w = world(db);
+  const st = (id, run, style, text = 'text') => rowOf('STORY_TEXT', { story_id: id, run_id: run, lead_id: 'l1', story_text: text, style_check: style });
+  tabManifestFor(w, 'STORY_TEXT', csvOf(TAB_HEADERS.STORY_TEXT, [st('ST001', RUN1, 'ok'), st('ST001', RUN2, 'fail 2 5'), st('ST002', RUN1, 'unchecked', '')]));
+  const r = await go(w); assert.equal(r.status, 'PASS', r.error);
+  assert.deepEqual((await q(db, `SELECT row_key FROM research.tab_row ORDER BY 1`)).map(x => x.row_key), [`ST001@${RUN1}`, `ST001@${RUN2}`, `ST002@${RUN1}`]);
+  const bad = async (rows, re) => { tabManifestFor(w, 'STORY_TEXT', csvOf(TAB_HEADERS.STORY_TEXT, rows)); const x = await go(w); assert.equal(x.status, 'FAIL'); assert.match(x.error, re); };
+  await bad([st('ST001', RUN1, 'ok'), st('ST001', RUN1, 'ok')], /twice/);
+  await bad([st('ST001', '', 'ok')], /run_id/);
+  await bad([st('ST001', RUN1, 'failed')], /style_check/);
+  await bad([st('ST001', 'recheck-plan29', 'ok')], /run_id/);
+  await bad([st('S001', RUN1, 'ok')], /story_id/);
+});
+
+async function importTabs(db, w, tabs) {
+  for (const [tab, rows] of tabs) { tabManifestFor(w, tab, csvOf(TAB_HEADERS[tab], rows)); const r = await go(w); assert.equal(r.status, 'PASS', `${tab}: ${r.error}`); }
+}
+test('plan 40: story_ready takes the newest text row; notes style fail and missing text are not ready; sort order does not matter', async () => {
+  const stories = [
+    rowOf('STORIES', { story_id: 'ST001', 'tier (delight/record)': 'delight', run_id: RUN1 }),
+    rowOf('STORIES', { story_id: 'ST002', 'tier (delight/record)': 'delight', run_id: RUN1 }),
+    rowOf('STORIES', { story_id: 'ST003', 'tier (delight/record)': 'delight', run_id: RUN1, notes: 'v1.3 style fail 4' }),
+    rowOf('STORIES', { story_id: 'ST004', 'tier (delight/record)': 'delight', run_id: RUN1 }),
+    rowOf('STORIES', { story_id: 'ST005', 'tier (delight/record)': 'record', run_id: RUN1 }),
+  ];
+  const st = (id, run, style) => rowOf('STORY_TEXT', { story_id: id, run_id: run, story_text: 't', style_check: style });
+  // ST006: runs 45 minutes apart in the spring clock-change hour; the later (ok) row must win in any session time zone
+  stories.push(rowOf('STORIES', { story_id: 'ST006', 'tier (delight/record)': 'delight', run_id: RUN1 }));
+  stories.push(rowOf('STORIES', { story_id: 'ST007', 'tier (delight/record)': 'delight', run_id: RUN1 }));
+  const text = [rowOf('STORY_TEXT', { story_id: 'ST007', run_id: RUN1, story_text: ' \t\r\n\t ', style_check: 'ok' }), st('ST006', 'run-20260308T031500Z', 'ok'), st('ST006', 'run-20260308T023000Z', 'fail 1'), st('ST001', RUN1, 'fail 2'), st('ST001', RUN3, 'ok'), st('ST002', RUN1, 'unchecked'), st('ST003', RUN1, 'ok'), st('ST009', RUN1, 'ok')];
+  const answers = [];
+  for (const order of [text, [...text].reverse()]) {
+    const db = await freshDb(); const w = world(db);
+    await importTabs(db, w, [['STORIES', stories], ['STORY_TEXT', order]]);
+    await q(db, `ALTER DATABASE ${ident(db)} SET timezone = 'America/New_York'`);
+    answers.push({
+      ready: (await q(db, `SELECT story_id FROM research.story_ready ORDER BY 1`)).map(x => x.story_id),
+      utc: (await q(db, `SELECT to_char(run_time_utc AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') t FROM research.story_text WHERE run_id = 'run-20260308T023000Z'`))[0].t,
+      not: (await q(db, `SELECT story_id, reason FROM research.story_not_ready ORDER BY 1`)).map(x => `${x.story_id}:${x.reason}`),
+      orphan: (await q(db, `SELECT story_id FROM research.story_text_orphan`)).map(x => x.story_id),
+    });
+  }
+  assert.deepEqual(answers[0], { ready: ['ST001', 'ST006'], utc: '2026-03-08 02:30', not: ['ST002:unchecked', 'ST003:notes say style fail', 'ST004:no story text', 'ST007:empty story text'], orphan: ['ST009'] });
+  assert.deepEqual(answers[1], answers[0]);
+});
+
+test('plan 40: INDEX check finds grades with no or a different live packet, only for imported units', async () => {
+  const db = await freshDb(); const w = world(db);
+  manifest(w, { unit: 'US-1852', files: [putFile(w, `US-1852__${RUN1}.jsonl`, [
+    pk('us-1852-a', { disposition: 'B' }), pk('us-1852-d', { disposition: 'dropped', skeptic: { checked: true, changed: 'dropped' } })].join('\n') + '\n')] });
+  assert.equal((await go(w)).status, 'PASS');
+  await importTabs(db, w, [['INDEX', [indexRow('us-1852-a'), indexRow('us-1852-d', { disposition: 'A' }), indexRow('us-1852-n', { disposition: 'A' }),
+    indexRow('us-1852-h', { disposition: 'hold', hold_reason: 'edge, check address' }), indexRow('us-1877-z', { unit_id: 'US-1877', disposition: 'A' }),
+    indexRow('us-1852-x', { unit_id: 'US-1877', disposition: 'A' }), indexRow('us-1852-w', { unit_id: 'US-1852%', disposition: 'A' })]]]);
+  assert.deepEqual((await q(db, `SELECT candidate_id, index_grade, packet_grade, problem FROM research.index_packet_mismatch ORDER BY 1`)),
+    [{ candidate_id: 'us-1852-d', index_grade: 'A', packet_grade: null, problem: 'grade differs' },
+     { candidate_id: 'us-1852-n', index_grade: 'A', packet_grade: null, problem: 'no live packet' },
+     { candidate_id: 'us-1852-w', index_grade: 'A', packet_grade: null, problem: 'unit_id does not match candidate' },
+     { candidate_id: 'us-1852-x', index_grade: 'A', packet_grade: null, problem: 'unit_id does not match candidate' }]);
+});
+
+test('plan 40: a 1,500-row INDEX imports inside the statement time limit', async () => {
+  const db = await freshDb(); const w = world(db);
+  const rows = Array.from({ length: 1500 }, (_, i) => indexRow(`us-1852-p${i}`, { address_in_year: `${i} East 14th St`, interests: 'a, b' }));
+  tabManifestFor(w, 'INDEX', csvOf(TAB_HEADERS.INDEX, rows));
+  const t = Date.now();
+  const r = await go(w);
+  assert.equal(r.status, 'PASS', r.error);
+  assert.equal(r.counts.tab_rows, 1500);
+  assert.ok(Date.now() - t < 300000, `took ${Date.now() - t} ms`);
+});
+
+test('plan 40: lib.mjs lists equal 0005 lists', () => {
+  const sql = REPO_MIG('0005_import_build_40.sql');
+  const kinds = /run_file_kind_check CHECK \(kind IN\s*\(([^)]*)\)\)/.exec(sql)[1].match(/'([^']+)'/g).map(x => x.slice(1, -1));
+  assert.deepEqual([...kinds].sort(), [...KINDS].sort());
+  const retry = /run_file_retry_check[\s\S]*?kind IN \(([^)]*)\)/.exec(sql)[1].match(/'([^']+)'/g).map(x => x.slice(1, -1));
+  assert.deepEqual([...retry].sort(), [...RETRY_KINDS].sort());
+  const unit = /import_batch_unit_check_0005\s+CHECK \(unit_id ~ '([^']+)'/.exec(sql)[1];
+  assert.equal(unit, UNIT_PATTERN);
+  for (const re of Object.values(KEY_PATTERNS)) assert.ok(sql.includes(`'${re}'`), `0005 lacks key pattern ${re}`);
+  const tabs = /tab IN \(([^)]*)\)/.exec(sql)[1].match(/'([^']+)'/g).map(x => x.slice(1, -1));
+  assert.deepEqual([...tabs].sort(), Object.keys(TAB_HEADERS).sort());
+});
+
+test('plan 40: 0005 keeps the 0004 function settings; its down file undoes it on an empty database', async () => {
+  const db = await freshDb();
+  const settings = async () => q(db, `SELECT p.oid::regprocedure::text f, p.prosecdef, p.proconfig FROM pg_proc p
+      JOIN pg_namespace n ON n.oid = p.pronamespace WHERE n.nspname = 'research' ORDER BY 1`);
+  const withFive = await settings();
+  await q(db, REPO_MIG('0005_import_build_40.down.sql'));
+  const withFour = await settings();
+  assert.deepEqual(withFive, withFour);
+  assert.equal((await q(db, `SELECT count(*)::int n FROM core.schema_migrations WHERE version='0005'`))[0].n, 0);
+  assert.equal((await q(db, `SELECT count(*)::int n FROM pg_views WHERE schemaname='research' AND viewname='story_ready'`))[0].n, 0);
+  await q(db, REPO_MIG('0005_import_build_40.sql'));
+  assert.deepEqual(await settings(), withFive);
+});
+
+test('plan 40: the first real holds file (Nov 15, Huber\'s Museum) imports as a C restore', async () => {
+  const db = await freshDb(); const w = world(db);
+  const text = fs.readFileSync(path.join(import.meta.dirname, 'fixtures', 'US-1902__holds-20261115.jsonl'));
+  manifest(w, { unit: 'US-1902', files: [putAt(w, 'US-1902__holds-20261115.jsonl', text, '2026-11-15T17:04:11.831Z')] });
+  const r = await go(w); assert.equal(r.status, 'PASS', r.error);
+  assert.deepEqual(await q(db, `SELECT candidate_id, place_id_db, disposition_final::text d, skeptic_changed, run_id FROM research.packet`),
+    [{ candidate_id: 'us-1902-hubers-museum', place_id_db: 'nyc-hubers-museum-106-east-14th-street', d: 'C', skeptic_changed: null, run_id: 'holds-20261115' }]);
+  assert.equal((await q(db, `SELECT packet->>'skeptic_file_id' s FROM research.packet`))[0].s, '1bRu7TaZR3WwKux8Fc_rCyyToufl_f_As');
+});
+
+test('plan 40: the 0005 down file runs after the new batches are undone', async () => {
+  const db = await freshDb(); const w = world(db);
+  tabManifestFor(w, 'INDEX', csvOf(TAB_HEADERS.INDEX, [indexRow('us-1852-a')]));
+  const r = await go(w); assert.equal(r.status, 'PASS', r.error);
+  await assert.rejects(q(db, REPO_MIG('0005_import_build_40.down.sql')), /undo those batches first/);
+  await q(db, `SELECT research.undo_import($1)`, [r.batchId]);
+  await q(db, REPO_MIG('0005_import_build_40.down.sql'));
+  assert.equal((await q(db, `SELECT count(*)::int n FROM research.import_batch WHERE unit_id = 'TAB-INDEX'`))[0].n, 0);
+  await q(db, REPO_MIG('0005_import_build_40.sql'));
+});
+
+test('plan 40: 0005 stops when a check it replaces is not exactly the 0003 definition (schema drift)', async () => {
+  await dropTestDbs();
+  const name = `imp_t_${process.pid}_${++dbCount}`;
+  await superQuery('postgres', `CREATE DATABASE ${ident(name)}`); made.push(name);
+  for (const m of MIGRATIONS.slice(0, 4)) await q(name, m);
+  await q(name, `ALTER TABLE research.tab_row DROP CONSTRAINT tab_row_tab_check`);
+  await q(name, `ALTER TABLE research.tab_row ADD CONSTRAINT custom_tab_check CHECK (tab = ANY (ARRAY['STORIES'::text, 'DELIGHTS'::text, 'X'::text]))`);
+  await assert.rejects(q(name, REPO_MIG('0005_import_build_40.sql')), /expected one check/);
+  assert.equal((await q(name, `SELECT count(*)::int n FROM core.schema_migrations WHERE version='0005'`))[0].n, 0);
+});
+
+test('plan 40: inventory reports research-like names it cannot read, and lists every other file', async () => {
+  const { execFileSync } = await import('node:child_process');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'inv-'));
+  fs.writeFileSync(path.join(dir, `US-1852__${RUN1}.md`), 'notes\n');
+  fs.writeFileSync(path.join(dir, `us-1852__${RUN1}.jsonl`), pk('us-1852-a') + '\n');
+  fs.writeFileSync(path.join(dir, 'nyc-decisions-20261115.md'), 'x\n');
+  fs.writeFileSync(path.join(dir, 'US-1852_run-20261104.jsonl'), 'x\n');               // one underscore
+  fs.writeFileSync(path.join(dir, 'MN01-1852 run.md'), 'x\n');                        // unit-like start, no __
+  for (let i = 0; i < 45; i++) fs.writeFileSync(path.join(dir, `other-${String(i).padStart(2, '0')}.txt`), 'x\n');
+  const out = path.join(dir, 'report.md');
+  execFileSync(process.execPath, [path.join(import.meta.dirname, '..', 'inventory.mjs'), dir, out]);
+  const rep = fs.readFileSync(out, 'utf8');
+  assert.match(rep, /looks like a research file but its name is not understood: 3 \(3 files\)/);
+  assert.match(rep, /3 have at least one refusal/);
+  assert.match(rep, /Other files \(not research, 46\): .*nyc-decisions-20261115\.md/);
+  assert.match(rep, /other-44\.txt/);                                                     // every other file is listed
+  assert.doesNotMatch(rep, /\.\.\./);
 });
