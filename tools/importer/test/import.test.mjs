@@ -754,7 +754,7 @@ test('plan 40: story_ready takes the newest text row; notes style fail and missi
   // ST006: runs 45 minutes apart in the spring clock-change hour; the later (ok) row must win in any session time zone
   stories.push(rowOf('STORIES', { story_id: 'ST006', 'tier (delight/record)': 'delight', run_id: RUN1 }));
   stories.push(rowOf('STORIES', { story_id: 'ST007', 'tier (delight/record)': 'delight', run_id: RUN1 }));
-  const text = [rowOf('STORY_TEXT', { story_id: 'ST007', run_id: RUN1, story_text: '  ', style_check: 'ok' }), st('ST006', 'run-20260308T031500Z', 'ok'), st('ST006', 'run-20260308T023000Z', 'fail 1'), st('ST001', RUN1, 'fail 2'), st('ST001', RUN3, 'ok'), st('ST002', RUN1, 'unchecked'), st('ST003', RUN1, 'ok'), st('ST009', RUN1, 'ok')];
+  const text = [rowOf('STORY_TEXT', { story_id: 'ST007', run_id: RUN1, story_text: ' \t\r\n\t ', style_check: 'ok' }), st('ST006', 'run-20260308T031500Z', 'ok'), st('ST006', 'run-20260308T023000Z', 'fail 1'), st('ST001', RUN1, 'fail 2'), st('ST001', RUN3, 'ok'), st('ST002', RUN1, 'unchecked'), st('ST003', RUN1, 'ok'), st('ST009', RUN1, 'ok')];
   const answers = [];
   for (const order of [text, [...text].reverse()]) {
     const db = await freshDb(); const w = world(db);
@@ -778,10 +778,11 @@ test('plan 40: INDEX check finds grades with no or a different live packet, only
   assert.equal((await go(w)).status, 'PASS');
   await importTabs(db, w, [['INDEX', [indexRow('us-1852-a'), indexRow('us-1852-d', { disposition: 'A' }), indexRow('us-1852-n', { disposition: 'A' }),
     indexRow('us-1852-h', { disposition: 'hold', hold_reason: 'edge, check address' }), indexRow('us-1877-z', { unit_id: 'US-1877', disposition: 'A' }),
-    indexRow('us-1852-x', { unit_id: 'US-1877', disposition: 'A' })]]]);
+    indexRow('us-1852-x', { unit_id: 'US-1877', disposition: 'A' }), indexRow('us-1852-w', { unit_id: 'US-1852%', disposition: 'A' })]]]);
   assert.deepEqual((await q(db, `SELECT candidate_id, index_grade, packet_grade, problem FROM research.index_packet_mismatch ORDER BY 1`)),
     [{ candidate_id: 'us-1852-d', index_grade: 'A', packet_grade: null, problem: 'grade differs' },
      { candidate_id: 'us-1852-n', index_grade: 'A', packet_grade: null, problem: 'no live packet' },
+     { candidate_id: 'us-1852-w', index_grade: 'A', packet_grade: null, problem: 'unit_id does not match candidate' },
      { candidate_id: 'us-1852-x', index_grade: 'A', packet_grade: null, problem: 'unit_id does not match candidate' }]);
 });
 
@@ -861,9 +862,15 @@ test('plan 40: inventory reports research-like names it cannot read, and lists e
   fs.writeFileSync(path.join(dir, `US-1852__${RUN1}.md`), 'notes\n');
   fs.writeFileSync(path.join(dir, `us-1852__${RUN1}.jsonl`), pk('us-1852-a') + '\n');
   fs.writeFileSync(path.join(dir, 'nyc-decisions-20261115.md'), 'x\n');
+  fs.writeFileSync(path.join(dir, 'US-1852_run-20261104.jsonl'), 'x\n');               // one underscore
+  fs.writeFileSync(path.join(dir, 'MN01-1852 run.md'), 'x\n');                        // unit-like start, no __
+  for (let i = 0; i < 45; i++) fs.writeFileSync(path.join(dir, `other-${String(i).padStart(2, '0')}.txt`), 'x\n');
   const out = path.join(dir, 'report.md');
   execFileSync(process.execPath, [path.join(import.meta.dirname, '..', 'inventory.mjs'), dir, out]);
   const rep = fs.readFileSync(out, 'utf8');
-  assert.match(rep, /unit part is not understood: 1 \(1 files\) e\.g\. us-1852__/);
-  assert.match(rep, /Other files \(not research, 1\): nyc-decisions-20261115\.md/);
+  assert.match(rep, /looks like a research file but its name is not understood: 3 \(3 files\)/);
+  assert.match(rep, /3 have at least one refusal/);
+  assert.match(rep, /Other files \(not research, 46\): .*nyc-decisions-20261115\.md/);
+  assert.match(rep, /other-44\.txt/);                                                     // every other file is listed
+  assert.doesNotMatch(rep, /\.\.\./);
 });

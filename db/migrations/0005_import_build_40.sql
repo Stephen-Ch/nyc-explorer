@@ -66,7 +66,7 @@ CREATE VIEW research.story_readiness AS
 SELECT s.story_id, s.tab_row_id, n.run_id AS text_run_id, n.style_check,
   CASE WHEN n.story_id IS NULL THEN 'no story text'
        WHEN coalesce(s.notes, '') ILIKE '%style fail%' THEN 'notes say style fail'
-       WHEN btrim(coalesce(n.story_text, '')) = '' THEN 'empty story text'
+       WHEN coalesce(n.story_text, '') !~ '[^[:space:]]' THEN 'empty story text'   -- no visible character (tabs, newlines too)
        WHEN n.style_check = 'ok' THEN 'ready'
        ELSE n.style_check END AS reason
 FROM research.story s LEFT JOIN research.story_text_newest n ON n.story_id = s.story_id
@@ -96,14 +96,16 @@ CREATE VIEW research.index_packet_mismatch AS
 SELECT i.candidate_id, i.unit_id, i.sheet_row, i.disposition AS index_grade, NULL::text AS packet_grade, NULL::text AS packet_run_id,
   'unit_id does not match candidate'::text AS problem
 FROM research.index_row i
-WHERE i.unit_id IS NULL OR i.candidate_id NOT LIKE lower(i.unit_id) || '-%'
+WHERE i.unit_id IS NULL OR i.unit_id !~ '^(MN[0-9]{2}-[0-9]{4}|US-[0-9]{4}|ST-(SQ|N|S|E|W)-[0-9]{4})$'
+   OR NOT starts_with(i.candidate_id, lower(i.unit_id) || '-')
 UNION ALL
 SELECT i.candidate_id, i.unit_id, i.sheet_row, i.disposition AS index_grade, p.disposition_final::text AS packet_grade,
   p.run_id AS packet_run_id, CASE WHEN p.packet_row_id IS NULL THEN 'no live packet' ELSE 'grade differs' END AS problem
 FROM research.index_row i
 LEFT JOIN (SELECT p.* FROM research.packet p JOIN research.import_batch b ON b.batch_id = p.import_batch_id AND b.state = 'applied'
            WHERE p.review_state IN ('pending','promoted')) p ON p.candidate_id = i.candidate_id AND p.city_id = i.city_id
-WHERE i.disposition IN ('A','B','C') AND i.candidate_id LIKE lower(i.unit_id) || '-%'
+WHERE i.disposition IN ('A','B','C') AND i.unit_id ~ '^(MN[0-9]{2}-[0-9]{4}|US-[0-9]{4}|ST-(SQ|N|S|E|W)-[0-9]{4})$'
+  AND starts_with(i.candidate_id, lower(i.unit_id) || '-')
   AND EXISTS (SELECT 1 FROM research.import_batch b WHERE b.unit_id = i.unit_id AND b.city_id = i.city_id AND b.state = 'applied')
   AND (p.packet_row_id IS NULL OR p.disposition_final::text IS DISTINCT FROM i.disposition);
 
