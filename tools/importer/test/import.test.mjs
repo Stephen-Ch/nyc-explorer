@@ -810,3 +810,13 @@ test('plan 40: 0005 keeps the 0004 function settings; its down file undoes it on
   await q(db, REPO_MIG('0005_import_build_40.sql'));
   assert.deepEqual(await settings(), withFive);
 });
+
+test('plan 40: the first real holds file (Nov 15, Huber\'s Museum) imports as a C restore', async () => {
+  const db = await freshDb(); const w = world(db);
+  const text = fs.readFileSync(path.join(import.meta.dirname, 'fixtures', 'US-1902__holds-20261115.jsonl'));
+  manifest(w, { unit: 'US-1902', files: [putAt(w, 'US-1902__holds-20261115.jsonl', text, '2026-11-15T17:04:11.831Z')] });
+  const r = await go(w); assert.equal(r.status, 'PASS', r.error);
+  assert.deepEqual(await q(db, `SELECT candidate_id, place_id_db, disposition_final::text d, skeptic_changed, run_id FROM research.packet`),
+    [{ candidate_id: 'us-1902-hubers-museum', place_id_db: 'nyc-hubers-museum-106-east-14th-street', d: 'C', skeptic_changed: null, run_id: 'holds-20261115' }]);
+  assert.equal((await q(db, `SELECT packet->>'skeptic_file_id' s FROM research.packet`))[0].s, '1bRu7TaZR3WwKux8Fc_rCyyToufl_f_As');
+});
