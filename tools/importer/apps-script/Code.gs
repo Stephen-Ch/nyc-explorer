@@ -19,7 +19,9 @@ function listOvernight() {
   const listedUtc = new Date().toISOString();
   const q = "'" + FOLDER_ID + "' in parents and trashed = false";
   const a = readAll_(q), b2 = readAll_(q);
-  const key = function (r) { return r.files.map(function (f) { return f.id + ':' + f.md5Checksum; }).sort().join(','); };
+  // both reads must agree on every field the builder uses, not only id and md5
+  const key = function (r) { return r.files.map(function (f) {
+    return JSON.stringify([f.id, f.name, f.md5Checksum, f.size, f.modifiedTime, f.mimeType, f.parents, f.trashed]); }).sort().join('\n'); };
   if (key(a) !== key(b2)) throw new Error('folder changed while listing; run again in 15 minutes');
   if (!a.files.length) throw new Error('no files in the folder; tell Claude');
   const pages = a.pages, files = a.files;

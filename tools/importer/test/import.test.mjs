@@ -753,7 +753,8 @@ test('plan 40: story_ready takes the newest text row; notes style fail and missi
   const st = (id, run, style) => rowOf('STORY_TEXT', { story_id: id, run_id: run, story_text: 't', style_check: style });
   // ST006: runs 45 minutes apart in the spring clock-change hour; the later (ok) row must win in any session time zone
   stories.push(rowOf('STORIES', { story_id: 'ST006', 'tier (delight/record)': 'delight', run_id: RUN1 }));
-  const text = [st('ST006', 'run-20260308T031500Z', 'ok'), st('ST006', 'run-20260308T023000Z', 'fail 1'), st('ST001', RUN1, 'fail 2'), st('ST001', RUN3, 'ok'), st('ST002', RUN1, 'unchecked'), st('ST003', RUN1, 'ok'), st('ST009', RUN1, 'ok')];
+  stories.push(rowOf('STORIES', { story_id: 'ST007', 'tier (delight/record)': 'delight', run_id: RUN1 }));
+  const text = [rowOf('STORY_TEXT', { story_id: 'ST007', run_id: RUN1, story_text: '  ', style_check: 'ok' }), st('ST006', 'run-20260308T031500Z', 'ok'), st('ST006', 'run-20260308T023000Z', 'fail 1'), st('ST001', RUN1, 'fail 2'), st('ST001', RUN3, 'ok'), st('ST002', RUN1, 'unchecked'), st('ST003', RUN1, 'ok'), st('ST009', RUN1, 'ok')];
   const answers = [];
   for (const order of [text, [...text].reverse()]) {
     const db = await freshDb(); const w = world(db);
@@ -766,7 +767,7 @@ test('plan 40: story_ready takes the newest text row; notes style fail and missi
       orphan: (await q(db, `SELECT story_id FROM research.story_text_orphan`)).map(x => x.story_id),
     });
   }
-  assert.deepEqual(answers[0], { ready: ['ST001', 'ST006'], utc: '2026-03-08 02:30', not: ['ST002:unchecked', 'ST003:notes say style fail', 'ST004:no story text'], orphan: ['ST009'] });
+  assert.deepEqual(answers[0], { ready: ['ST001', 'ST006'], utc: '2026-03-08 02:30', not: ['ST002:unchecked', 'ST003:notes say style fail', 'ST004:no story text', 'ST007:empty story text'], orphan: ['ST009'] });
   assert.deepEqual(answers[1], answers[0]);
 });
 
@@ -776,10 +777,12 @@ test('plan 40: INDEX check finds grades with no or a different live packet, only
     pk('us-1852-a', { disposition: 'B' }), pk('us-1852-d', { disposition: 'dropped', skeptic: { checked: true, changed: 'dropped' } })].join('\n') + '\n')] });
   assert.equal((await go(w)).status, 'PASS');
   await importTabs(db, w, [['INDEX', [indexRow('us-1852-a'), indexRow('us-1852-d', { disposition: 'A' }), indexRow('us-1852-n', { disposition: 'A' }),
-    indexRow('us-1852-h', { disposition: 'hold', hold_reason: 'edge, check address' }), indexRow('us-1877-z', { unit_id: 'US-1877', disposition: 'A' })]]]);
+    indexRow('us-1852-h', { disposition: 'hold', hold_reason: 'edge, check address' }), indexRow('us-1877-z', { unit_id: 'US-1877', disposition: 'A' }),
+    indexRow('us-1852-x', { unit_id: 'US-1877', disposition: 'A' })]]]);
   assert.deepEqual((await q(db, `SELECT candidate_id, index_grade, packet_grade, problem FROM research.index_packet_mismatch ORDER BY 1`)),
     [{ candidate_id: 'us-1852-d', index_grade: 'A', packet_grade: null, problem: 'grade differs' },
-     { candidate_id: 'us-1852-n', index_grade: 'A', packet_grade: null, problem: 'no live packet' }]);
+     { candidate_id: 'us-1852-n', index_grade: 'A', packet_grade: null, problem: 'no live packet' },
+     { candidate_id: 'us-1852-x', index_grade: 'A', packet_grade: null, problem: 'unit_id does not match candidate' }]);
 });
 
 test('plan 40: a 1,500-row INDEX imports inside the statement time limit', async () => {
@@ -799,7 +802,7 @@ test('plan 40: lib.mjs lists equal 0005 lists', () => {
   assert.deepEqual([...kinds].sort(), [...KINDS].sort());
   const retry = /run_file_retry_check[\s\S]*?kind IN \(([^)]*)\)/.exec(sql)[1].match(/'([^']+)'/g).map(x => x.slice(1, -1));
   assert.deepEqual([...retry].sort(), [...RETRY_KINDS].sort());
-  const unit = /unit_id ~ '([^']+)'/.exec(sql)[1];
+  const unit = /import_batch_unit_check_0005\s+CHECK \(unit_id ~ '([^']+)'/.exec(sql)[1];
   assert.equal(unit, UNIT_PATTERN);
   for (const re of Object.values(KEY_PATTERNS)) assert.ok(sql.includes(`'${re}'`), `0005 lacks key pattern ${re}`);
   const tabs = /tab IN \(([^)]*)\)/.exec(sql)[1].match(/'([^']+)'/g).map(x => x.slice(1, -1));
@@ -839,4 +842,28 @@ test('plan 40: the 0005 down file runs after the new batches are undone', async 
   await q(db, REPO_MIG('0005_import_build_40.down.sql'));
   assert.equal((await q(db, `SELECT count(*)::int n FROM research.import_batch WHERE unit_id = 'TAB-INDEX'`))[0].n, 0);
   await q(db, REPO_MIG('0005_import_build_40.sql'));
+});
+
+test('plan 40: 0005 stops when a check it replaces is not exactly the 0003 definition (schema drift)', async () => {
+  await dropTestDbs();
+  const name = `imp_t_${process.pid}_${++dbCount}`;
+  await superQuery('postgres', `CREATE DATABASE ${ident(name)}`); made.push(name);
+  for (const m of MIGRATIONS.slice(0, 4)) await q(name, m);
+  await q(name, `ALTER TABLE research.tab_row DROP CONSTRAINT tab_row_tab_check`);
+  await q(name, `ALTER TABLE research.tab_row ADD CONSTRAINT custom_tab_check CHECK (tab = ANY (ARRAY['STORIES'::text, 'DELIGHTS'::text, 'X'::text]))`);
+  await assert.rejects(q(name, REPO_MIG('0005_import_build_40.sql')), /expected one check/);
+  assert.equal((await q(name, `SELECT count(*)::int n FROM core.schema_migrations WHERE version='0005'`))[0].n, 0);
+});
+
+test('plan 40: inventory reports research-like names it cannot read, and lists every other file', async () => {
+  const { execFileSync } = await import('node:child_process');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'inv-'));
+  fs.writeFileSync(path.join(dir, `US-1852__${RUN1}.md`), 'notes\n');
+  fs.writeFileSync(path.join(dir, `us-1852__${RUN1}.jsonl`), pk('us-1852-a') + '\n');
+  fs.writeFileSync(path.join(dir, 'nyc-decisions-20261115.md'), 'x\n');
+  const out = path.join(dir, 'report.md');
+  execFileSync(process.execPath, [path.join(import.meta.dirname, '..', 'inventory.mjs'), dir, out]);
+  const rep = fs.readFileSync(out, 'utf8');
+  assert.match(rep, /unit part is not understood: 1 \(1 files\) e\.g\. us-1852__/);
+  assert.match(rep, /Other files \(not research, 1\): nyc-decisions-20261115\.md/);
 });

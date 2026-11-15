@@ -29,6 +29,7 @@ function connectorIds(conn, unit) {
     for (const f of pg.files) {
       if (typeof f?.name !== 'string' || !f.name.startsWith(unit + '__')) continue;   // exact prefix, in code
       if (typeof f.id !== 'string') stop(`connector-raw.json: ${f.name} has no id`);
+      if (ids.has(f.id) && ids.get(f.id) !== f.name) stop(`connector-raw.json: id ${f.id} has two names`);
       ids.set(f.id, f.name);
     }
   }
@@ -88,6 +89,9 @@ export function buildManifest({ unit, listingsDir, connectorPath, importsRoot, n
   const listIds = new Set(unitFiles.map(f => f.id));
   const missing = [...listIds].filter(id => !connIds.has(id)), extra = [...connIds.keys()].filter(id => !listIds.has(id));
   if (missing.length || extra.length) stop(`connector and listing ${unit} ids differ (${missing.length} only in the listing, ${extra.length} only in the connector)`);
+  // the name decides run identity and order, so each id must carry the same name in both (renamed in between: stop)
+  const renamed = unitFiles.filter(f => connIds.get(f.id) !== f.name);
+  if (renamed.length) stop(`connector and listing names differ for ${renamed.length} ${unit} file(s), e.g. ${renamed[0].name}; list again`);
 
   const created = new Date(now).toISOString();
   const dir = path.join(importsRoot, `${created.slice(0, 10)}-${unit}`);

@@ -78,4 +78,6 @@ test('builder: connector ids must equal the listing ids for the unit; other file
   const realNow = Date.now; Date.now = () => NOW;
   try { assert.equal(buildManifest(w).files, 3); } finally { Date.now = realNow; }
   fails(world({ conn: { pages: [] } }), /saved_utc/);
+  // same id, different name (renamed between the connector answer and the listing)
+  fails(world({ conn: ids([UF[0], UF[1], { id: UF[2].id, name: 'US-1852__holds-20261117.jsonl' }]) }), /names differ|ids differ/);
 });

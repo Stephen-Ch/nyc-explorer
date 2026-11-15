@@ -24,6 +24,10 @@ const norm = (msg, name) => msg.split(name).join('<file>')
 
 const all = fs.readdirSync(folder).sort();
 const unitFiles = all.filter(n => /^[A-Z0-9-]+__/.test(n));
+// nothing is skipped silently: a research-like name (has "__") whose unit part is not understood is a refusal,
+// and every other file is listed by name
+const oddNames = all.filter(n => n.includes('__') && !/^[A-Z0-9-]+__/.test(n));
+const otherFiles = all.filter(n => !n.includes('__'));
 const counts = { total: all.length, unitFiles: unitFiles.length, ok: 0, refused: 0, packetsLines: 0 };
 const kinds = new Map(), runPrefixes = new Map();
 const packetsRuns = new Map();                                // unit -> Map(run_id -> [file])
@@ -69,6 +73,7 @@ for (const name of unitFiles) {
   const after = [...reasons.values()].reduce((s, r) => s + r.n, 0);
   if (after > before) counts.refused++; else counts.ok++;
 }
+for (const n of oddNames) add('looks like a research file but the unit part is not understood', n);
 for (const [, m] of packetsRuns) for (const [, files] of m) if (files.length > 1) for (const n of files) add('two packets files share one run id (lib.mjs:294)', n);
 
 // ---------------------------------------------------------------- tabs
@@ -128,6 +133,7 @@ const lines = [];
 lines.push(`# Import inventory ${now.toISOString().slice(0, 10)} (plan 40 step 0, read-only)`, '');
 lines.push(`Folder: ${folder}. Made ${now.toISOString()}.`);
 lines.push(`Files: ${counts.total} in folder, ${counts.unitFiles} unit files; ${counts.ok} pass every check, ${counts.refused} have at least one refusal. Packet lines read: ${counts.packetsLines}.`);
+lines.push(`Other files (not research, ${otherFiles.length}): ${otherFiles.slice(0, 40).join(', ')}${otherFiles.length > 40 ? ', ...' : ''}.`);
 lines.push(`Kinds understood: ${[...kinds].map(([k, n]) => `${k} ${n}`).join(', ')}.`);
 lines.push(`Run id prefixes: ${[...runPrefixes].map(([k, n]) => `${k} ${n}`).join(', ')}.`, '');
 lines.push('## Refusal reasons (count = occurrences; files = up to 5 names)', '');

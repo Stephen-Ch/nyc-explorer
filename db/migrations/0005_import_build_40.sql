@@ -12,18 +12,18 @@ DO $$BEGIN
   END IF;
 END$$;
 
--- drop exactly one check of a table whose definition matches a pattern; stop if there is not exactly one
+-- drop each 0003 check this replaces, found by its exact full definition; stop unless exactly one matches (schema drift)
 DO $$DECLARE r record; n int;
 BEGIN
   FOR r IN SELECT * FROM (VALUES
-      ('research.import_batch', '%unit_id ~%TAB-(STORIES|DELIGHTS)%'),
-      ('research.tab_row',      '%tab = ANY%'),
-      ('research.tab_row',      '%row_key ~%story_id%')) AS v(tbl, pat) LOOP
-    SELECT count(*) INTO n FROM pg_constraint WHERE conrelid = r.tbl::regclass AND contype = 'c'
-      AND pg_get_constraintdef(oid) LIKE r.pat AND conname NOT LIKE '%_0005';
-    IF n <> 1 THEN RAISE EXCEPTION '0005: expected one check on % like %, found %', r.tbl, r.pat, n; END IF;
+      ('research.import_batch', $d$CHECK ((unit_id ~ '^(MN[0-9]{2}-[0-9]{4}|US-[0-9]{4}|ST-(SQ|N|S|E|W)-[0-9]{4}|TAB-(STORIES|DELIGHTS))$'::text))$d$),
+      ('research.tab_row',      $d$CHECK ((tab = ANY (ARRAY['STORIES'::text, 'DELIGHTS'::text])))$d$),
+      ('research.tab_row',      $d$CHECK ((((tab = 'STORIES'::text) AND (row_key ~ '^ST[0-9]{3,}$'::text) AND (NOT (row_key IS DISTINCT FROM (row_raw ->> 'story_id'::text)))) OR ((tab = 'DELIGHTS'::text) AND (row_key ~ '^D[0-9]{3,}$'::text) AND (NOT (row_key IS DISTINCT FROM (row_raw ->> 'delight_id'::text))))))$d$)
+    ) AS v(tbl, def) LOOP
+    SELECT count(*) INTO n FROM pg_constraint WHERE conrelid = r.tbl::regclass AND contype = 'c' AND pg_get_constraintdef(oid) = r.def;
+    IF n <> 1 THEN RAISE EXCEPTION '0005: expected one check on % exactly as 0003 made it, found %; nothing changed', r.tbl, n; END IF;
     EXECUTE (SELECT format('ALTER TABLE %s DROP CONSTRAINT %I', r.tbl, conname) FROM pg_constraint
-             WHERE conrelid = r.tbl::regclass AND contype = 'c' AND pg_get_constraintdef(oid) LIKE r.pat AND conname NOT LIKE '%_0005');
+             WHERE conrelid = r.tbl::regclass AND contype = 'c' AND pg_get_constraintdef(oid) = r.def);
   END LOOP;
 END$$;
 
@@ -66,6 +66,7 @@ CREATE VIEW research.story_readiness AS
 SELECT s.story_id, s.tab_row_id, n.run_id AS text_run_id, n.style_check,
   CASE WHEN n.story_id IS NULL THEN 'no story text'
        WHEN coalesce(s.notes, '') ILIKE '%style fail%' THEN 'notes say style fail'
+       WHEN btrim(coalesce(n.story_text, '')) = '' THEN 'empty story text'
        WHEN n.style_check = 'ok' THEN 'ready'
        ELSE n.style_check END AS reason
 FROM research.story s LEFT JOIN research.story_text_newest n ON n.story_id = s.story_id
@@ -89,14 +90,20 @@ SELECT t.tab_row_id, t.import_batch_id, t.city_id, t.sheet_row, t.row_key AS can
 FROM research.tab_row t JOIN research.import_batch b ON b.batch_id = t.import_batch_id AND b.state = 'applied'
 WHERE t.tab = 'INDEX' AND t.live;
 
--- INDEX rows graded A/B/C whose unit has an applied batch, with no live packet or a live packet of another grade
+-- INDEX rows whose unit_id does not match their candidate_id (any disposition), plus rows graded A/B/C whose unit
+-- has an applied batch, with no live packet or a live packet of another grade
 CREATE VIEW research.index_packet_mismatch AS
+SELECT i.candidate_id, i.unit_id, i.sheet_row, i.disposition AS index_grade, NULL::text AS packet_grade, NULL::text AS packet_run_id,
+  'unit_id does not match candidate'::text AS problem
+FROM research.index_row i
+WHERE i.unit_id IS NULL OR i.candidate_id NOT LIKE lower(i.unit_id) || '-%'
+UNION ALL
 SELECT i.candidate_id, i.unit_id, i.sheet_row, i.disposition AS index_grade, p.disposition_final::text AS packet_grade,
   p.run_id AS packet_run_id, CASE WHEN p.packet_row_id IS NULL THEN 'no live packet' ELSE 'grade differs' END AS problem
 FROM research.index_row i
 LEFT JOIN (SELECT p.* FROM research.packet p JOIN research.import_batch b ON b.batch_id = p.import_batch_id AND b.state = 'applied'
            WHERE p.review_state IN ('pending','promoted')) p ON p.candidate_id = i.candidate_id AND p.city_id = i.city_id
-WHERE i.disposition IN ('A','B','C')
+WHERE i.disposition IN ('A','B','C') AND i.candidate_id LIKE lower(i.unit_id) || '-%'
   AND EXISTS (SELECT 1 FROM research.import_batch b WHERE b.unit_id = i.unit_id AND b.city_id = i.city_id AND b.state = 'applied')
   AND (p.packet_row_id IS NULL OR p.disposition_final::text IS DISTINCT FROM i.disposition);
 
