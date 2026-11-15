@@ -131,7 +131,7 @@ function checkInventory(syncFolder, m) {
 // This unit's files in it must equal the manifest exactly, by name, Drive id and md5 (ChatGPT build review 2,
 // finding 1). Together with checkInventory this catches a file left out of the manifest whether or not the PC
 // has synced it yet.
-function checkDriveListing(dir, m) {
+export function checkDriveListing(dir, m) {
   const p = path.join(dir, 'drive-listing.json');
   if (!fs.existsSync(p)) stop('drive-listing.json is missing from the import folder; ask Claude to prepare the import again');
   let L; try { L = JSON.parse(fs.readFileSync(p, 'utf8')); } catch { stop('drive-listing.json is not valid JSON'); }
@@ -243,7 +243,7 @@ export function findManifest(importsRoot) {
   found.sort((a, b) => String(b.m.created_utc).localeCompare(String(a.m.created_utc)));
   return found[0];
 }
-function checkManifest(m) {
+export function checkManifest(m) {
   const t = Date.parse(m.created_utc);
   if (!Number.isFinite(t)) stop('manifest has no valid created_utc');
   if (Date.now() - t > MAX_MANIFEST_AGE_MS) stop('manifest is older than 24 hours; ask Claude to prepare it again');
