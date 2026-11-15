@@ -64,7 +64,7 @@ export function splitLines(content) {
 
 // ---------------------------------------------------------------- reading files
 const hash = (algo, buf) => crypto.createHash(algo).update(buf).digest('hex');
-function decodeChecked(buf, label) {
+export function decodeChecked(buf, label) {
   if (buf.length >= 3 && buf[0] === 0xef && buf[1] === 0xbb && buf[2] === 0xbf) stop(`${label} starts with a byte-order mark`);
   if (buf.includes(0)) stop(`${label} contains a NUL byte`);
   let text;
@@ -128,7 +128,7 @@ function checkDriveListing(dir, m) {
 // Packet columns from one jsonl line. The line itself is stored as sent (cast to jsonb in SQL, never re-stringified).
 const GRADES = new Set(['A', 'B', 'C']);
 const SKEPTIC = new Set(['none', 'downgraded', 'dropped']);
-function packetColumns(line, file, n) {
+export function packetColumns(line, file, n) {
   let j;
   try { j = JSON.parse(line); } catch { stop(`${file.name} line ${n} is not JSON`); }
   if (!j || typeof j !== 'object' || Array.isArray(j)) stop(`${file.name} line ${n} is not a JSON object`);
