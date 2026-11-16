@@ -56,6 +56,9 @@ test.describe('PLAN-41 slice 1a — 1877 stories', () => {
     await expect(page.locator('.leaflet-marker-icon')).toHaveCount(3);
     await expect(pin(page, 'fixture-union-square')).toHaveAttribute('aria-label', /Union Square/);
 
+    await pin(page, 'fixture-union-square').click();
+    await expect(card(page)).toBeVisible();
+
     await pickEra(page, 'today');
     await expect(page.locator('[data-testid="story-pin"]')).toHaveCount(0);
     expect(await page.locator('[data-testid="poi-marker"]').count()).toBeGreaterThan(0);
@@ -110,6 +113,7 @@ test.describe('PLAN-41 slice 1a — 1877 stories', () => {
     await page.waitForLoadState('networkidle');
     await pickEra(page, '1877');
 
+    await expect(page.locator('[data-testid="story-pin"]')).toHaveCount(3);
     const era1877 = page.locator('[data-testid="era-option"][data-era="1877"]');
     await era1877.focus();
     let reached = false;
@@ -124,7 +128,7 @@ test.describe('PLAN-41 slice 1a — 1877 stories', () => {
     await expect(card(page)).toBeVisible();
     await expect(page.getByTestId('story-card-close')).toBeFocused();
     await expect(page.getByTestId('story-status')).toHaveAttribute('aria-live', 'polite');
-    await expect(page.getByTestId('story-status')).toContainText('Union Square');
+    await expect(page.getByTestId('story-status')).toHaveText('Showing 2 stories at Union Square');
 
     await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
@@ -198,6 +202,7 @@ test.describe('PLAN-41 slice 1a — 1877 stories', () => {
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('era-picker')).toBeVisible();
+    await expect(page.getByTestId('poi-error')).toBeVisible();
     await expect(page.getByTestId('poi-error')).toContainText('Unable to load POIs.');
     await expect(page.locator('body')).not.toHaveText('Failed to load POIs');
   });
