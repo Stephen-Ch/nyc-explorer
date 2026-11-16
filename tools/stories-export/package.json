@@ -1,0 +1,12 @@
+{
+  "name": "nyc-explorer-stories-export",
+  "version": "1.0.0",
+  "description": "Exports the frozen 1877 story list to content/stories.v1.json (plan 41 step 3).",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": { "test": "node --test test/*.test.mjs" },
+  "dependencies": {
+    "csv-parse": "5.6.0"
+  }
+}

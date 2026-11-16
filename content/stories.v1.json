@@ -1,0 +1,705 @@
+{
+  "version": 1,
+  "era": 1877,
+  "attribution": "Map positions use OpenStreetMap data, (c) OpenStreetMap contributors (ODbL).",
+  "groups": [
+    {
+      "id": "a-t-stewart-store-770-broadway",
+      "name": "A. T. Stewart & Co.",
+      "lat": 40.73122,
+      "lng": -73.991121,
+      "approx": true,
+      "stories": [
+        {
+          "id": "ST243",
+          "hook": "The Sun reported the death of Mr. Stewart as that of another New York millionaire, after a long and successful career in mercantile pursuits.",
+          "text": "On 11 April 1876 The Sun's front page reported the death of Mr. Stewart, the dying merchant of its account, as the death of another New York millionaire. It called him a remarkable man, with a long and successful career in mercantile pursuits.",
+          "source": "The Sun (New York), 1876-04-11, page 1, obituary of A. T. Stewart",
+          "link": "https://www.loc.gov/resource/sn83030272/1876-04-11/ed-1/?sp=1"
+        }
+      ]
+    },
+    {
+      "id": "abraham-lincoln-statue-union-square-park",
+      "name": "Lincoln statue",
+      "lat": 40.735045,
+      "lng": -73.990803,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST064",
+          "hook": "A bronze Abraham Lincoln, eleven feet tall and holding the Emancipation Proclamation, was raised in Union Square on 16 September 1870 without any inauguration ceremony.",
+          "text": "On 16 September 1870 the Lincoln statue in Union Square, \"so long talked about,\" was raised to its place at the southwest corner of the square, near Broadway and University Place, the New York Herald reported the next day. There were no inauguration ceremonies, and the paper said passers-by showed very little interest; the remark, it said, was that if ever a man deserved a statue it was Lincoln. The bronze figure is eleven feet tall and holds the Emancipation Proclamation. The Herald's writer found the statue \"extremely disappointing\" beside the noble figure of Washington at the opposite corner.",
+          "source": "New York Herald, September 17, 1870, page 5 (image 5)",
+          "link": "https://www.loc.gov/resource/sn83030313/1870-09-17/ed-1/?sp=5"
+        }
+      ]
+    },
+    {
+      "id": "academy-of-music-east-14th-street-irving-place",
+      "name": "Academy of Music",
+      "lat": 40.734026,
+      "lng": -73.988525,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST003",
+          "hook": "Two firemen, Peter H. Walsh and the foreman of Engine Company No. 5, died in the fire in May 1866.",
+          "text": "The fire in the Academy of Music on a Monday in May 1866 destroyed two human lives, the New York Herald reported on 23 May. The body of Peter H. Walsh, a private of the engine company, was found below the central portion of the stage. The remains of Waters, foreman of Engine Company No. 5, were also recovered.",
+          "source": "New York Herald, 23 May 1866, p.8 and p.5",
+          "link": "https://www.loc.gov/resource/sn83030313/1866-05-23/ed-1/?sp=5"
+        },
+        {
+          "id": "ST008",
+          "hook": "Strakosch brought Verdi's Aida before it had been heard in Paris or London, the Tribune noted.",
+          "text": "From Cairo the opera had gone to Milan, but it had never been heard in Paris or London, and Mr. Strakosch brought it to New-York. He procured most of his properties, dresses and scenery in Italy.",
+          "source": "New-York Tribune, 27 Nov 1873, p.6",
+          "link": "https://www.loc.gov/resource/sn83030214/1873-11-27/ed-1/?sp=6"
+        },
+        {
+          "id": "ST010",
+          "hook": "Mr. Mapleson was jubilant to a degree before the curtain rose as his old adherents took their seats.",
+          "text": "The season of Italian opera was opened on the evening of 22 October 1883 at the Metropolitan Opera House and at the Academy of Music, the New-York Tribune reported the next day. The Academy of Music also had a full attendance, and its audience greeted Madame Gerster. Mrs. Paran Stevens was the first box-holder to arrive, and as one after another of his old adherents took their seats, Mr. Mapleson's spirits rose until before the curtain rose he was jubilant to a degree.",
+          "source": "New-York Tribune, 23 Oct 1883, p.5",
+          "link": "https://www.loc.gov/resource/sn83030214/1883-10-23/ed-1/?sp=5"
+        }
+      ]
+    },
+    {
+      "id": "all-souls-church-fourth-avenue-east-20th-street",
+      "name": "Church of All Souls",
+      "lat": 40.738128,
+      "lng": -73.987617,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST172",
+          "hook": "The funeral of the wife of the Hon. Peter Cooper was conducted at All Souls' Church, Twentieth Street and Fourth Avenue.",
+          "text": "The Sun reported on 23 December 1869 that the funeral of the wife of the Hon. Peter Cooper had been conducted at All Souls' Church, Twentieth Street and Fourth Avenue.",
+          "source": "The Sun (New York), 1869-12-23, page 1",
+          "link": "https://www.loc.gov/resource/sn83030272/1869-12-23/ed-1/?sp=1"
+        },
+        {
+          "id": "ST403",
+          "hook": "Dr. Bellows, who had preached for twenty years in the Church of All Souls, died on 30 January 1882.",
+          "text": "Dr. Bellows died on Monday, 30 January 1882. A sermon printed the same year said that for twenty years before his death \"he preached in the magnificent Church of All Souls\". It said: \"He might drop fainting in his pulpit, and did so from sheer overwork\". Of the Sanitary Commission, the sermon said: \"He was its creative spirit\".",
+          "source": "John W. Chadwick, Henry W. Bellows: His Life and Character (sermon), New York: S. W. Green's Son, 1882, note and pp. 9-16",
+          "link": "https://archive.org/details/3649772"
+        },
+        {
+          "id": "ST404",
+          "hook": "Rev. H. W. Bellows preached on the death of President Garfield at the Church of All Souls on 25 September 1881.",
+          "text": "On Sunday morning, 25 September 1881, the Rev. H. W. Bellows took The Death of President Garfield as the topic of his sermon in the Unitarian Church of All Souls. Referring to the accession of President Arthur, he said the President had been known for the contempt in which he had held all civil service reform.",
+          "source": "The New-York Times, 26 September 1881, 'President Arthur's Duty. Sermon by the Rev. Dr. Bellows yesterday morning.'",
+          "link": "https://archive.org/details/sim_new-york-times_1881-09-26_31_9376"
+        }
+      ]
+    },
+    {
+      "id": "arnold-constable-and-co-881-broadway",
+      "name": "Arnold Constable & Co.",
+      "lat": 40.738348,
+      "lng": -73.989951,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST194",
+          "hook": "Arnold, Constable & Co. opened its new iron and marble store on the corner of Broadway and Nineteenth Street, looking over Union Square's trees, on 29 March 1869.",
+          "text": "The New-York Tribune announced on 29 March 1869 that Arnold, Constable & Co.'s new store opened that day on the corner of Broadway and Nineteenth Street. Looking over the trees of Union Square, the paper said, one saw its iron columns and marble facade towering above the buildings around it, \"a white house in the skies.\" The building itself cost $400,000, the Tribune reported. On the Saturday evening before, the firm gave its clerks an elegant supper and presented each of them with a suit of clothes, a testimonial the paper put at over $5,000 in all.",
+          "source": "New-York Tribune, 1869-03-29, p. 5",
+          "link": "https://www.loc.gov/resource/sn83030214/1869-03-29/ed-1/?sp=5"
+        }
+      ]
+    },
+    {
+      "id": "b-altman-and-co-621-sixth-avenue",
+      "name": "B. Altman & Co.",
+      "lat": 40.740216,
+      "lng": -73.994961,
+      "approx": true,
+      "stories": [
+        {
+          "id": "ST441",
+          "hook": "On 16 April 1877 B. Altman & Co. opened its new store at Sixth Avenue and Nineteenth Street, showing gowns by Worth and Pingat.",
+          "text": "On 16 April 1877 B. Altman & Co., just moved into its new building at Sixth Avenue and Nineteenth Street, held its spring opening, the New-York Tribune reported the next day. Only two floors were open to the public. The first floor held general dry goods. The second floor held costumes, with dresses by Worth and Pingat and other French artists. The store did not close that night until 9 o'clock, and the whole week was to be kept as a gala week.",
+          "source": "New-York Tribune, 17 April 1877, p5, 'A Sixth-Ave. Dry Goods Palace'",
+          "link": "https://www.loc.gov/resource/sn83030214/1877-04-17/ed-1/?sp=5"
+        }
+      ]
+    },
+    {
+      "id": "booths-theatre-sixth-avenue-23rd-street",
+      "name": "Booth's Theatre",
+      "lat": 40.742704,
+      "lng": -73.992702,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST164",
+          "hook": "Booth's Theatre on Twenty-third Street advertised Edwin Booth in Romeo and Juliet on 14 February 1869, with seats secured six days in advance.",
+          "text": "On 14 February 1869 the New York Herald carried an advertisement for Booth's Theatre, Twenty-third Street, between Fifth and Sixth avenues: Edwin Booth in the tragedy of Romeo and Juliet, with Edwin Adams in what the advertisement called an excellent cast. Seats could be secured six days in advance at the box office. A second notice on the same page announced that Booth would give his first matinee performance of Romeo and Juliet. The advertisements back only what the theatre announced.",
+          "source": "New York Herald, 1869-02-14, page 2, amusements advertisement",
+          "link": "https://www.loc.gov/resource/sn83030313/1869-02-14/ed-1/?sp=2"
+        },
+        {
+          "id": "ST199",
+          "hook": "Booth's Theatre drilled its ushers to open the doors at a second's notice, and all its doors led outward, the New York Herald reported.",
+          "text": "On 8 December 1876 the New York Herald described Booth's Theatre on Twenty-third Street. The ushers were drilled to open the doors at a second's notice, and all the doors led outward. A regular fire brigade was organized from the stage employees.",
+          "source": "New York Herald, 1876-12-08, page 4 (theatre safety survey after the Brooklyn Theatre fire)",
+          "link": "https://www.loc.gov/resource/sn83030313/1876-12-08/ed-1/?sp=4"
+        },
+        {
+          "id": "ST360",
+          "hook": "Booth and Adams were to take turns in the Moor at Booth's Theatre through the week, The Sun reported on 17 May 1869.",
+          "text": "The Sun's amusements column of Monday 17 May 1869 said that at Booth's Theatre the Moor would go through fierce paroxysms of jealousy all week, with Booth and Adams. The column backs only what was announced for the week.",
+          "source": "The Sun (New York), 1869-05-17, p. 1, amusements column",
+          "link": "https://www.loc.gov/resource/sn83030272/1869-05-17/ed-1/?sp=1"
+        },
+        {
+          "id": "ST397",
+          "hook": "Booth's Theatre, the Concord granite playhouse at Twenty-third Street and Sixth Avenue, was sold for $385,000 on 3 December 1874, a city guidebook recorded.",
+          "text": "A guidebook to New York, in its chronology of city events for 1874, listed under Dec. 3 that Booth's Theatre was sold for $385,000. The entry follows the death of Mayor Wm. F. Havemeyer on Nov. 30 and the dispersal by the police of a workingmen's mass meeting at Tompkins Square on Jan. 13. Elsewhere the same guide sent walkers west along Twenty-third Street to Sixth Avenue to see Booth's Theatre, of Concord granite, and said it would seat an audience of three thousand.",
+          "source": "Centennial: How to See New York (guidebook, 1875), chronology p. 26 and walking tour p. 64",
+          "link": "https://archive.org/details/centennial01maco"
+        },
+        {
+          "id": "ST398",
+          "hook": "Sarah Bernhardt made her debut at Booth's Theatre on a Monday evening in November 1880, the Musical and Dramatic Courier reported.",
+          "text": "The Musical and Dramatic Courier said the début of Sarah Bernhardt at Booth's Theatre on Monday evening had been the ruling subject. Of the role of Adrienne, the Courier judged it not a great part. In its dramatic notes it added that her success in Frou-Frou was at least as great as in Adrienne. The same issue called Mr. Booth's appearance in London a dramatic event. Reported on 12 November 1880.",
+          "source": "Musical and Dramatic Courier, 12 Nov 1880 (Vol 1 Iss 41), editorial 'Sarah Bernhardt' and Dramatic Notes",
+          "link": "https://archive.org/details/sim_music-magazine-and-musical-courier_1880-11-12_1_41"
+        }
+      ]
+    },
+    {
+      "id": "brentanos-literary-emporium-33-union-square-west",
+      "name": "Brentano's",
+      "lat": 40.737096,
+      "lng": -73.990676,
+      "approx": true,
+      "stories": [
+        {
+          "id": "ST068",
+          "hook": "In September 1877 August Brentano announced his retirement from Brentano's Literary Emporium at No. 39 Union Square.",
+          "text": "In The Publishers' Weekly of 29 September 1877, August Brentano announced that he was retiring from business. He thanked his friends and the public for their liberal patronage over so many years, and asked them to stay with his successor, his nephew August Brentano, Jr. In a notice beside it, the nephew announced that he had succeeded his uncle as proprietor of Brentano's Literary Emporium, at No. 39 Union Square, and would carry on the business on the principles his predecessor had established.",
+          "source": "The Publishers' Weekly, Vol. 12 No. 13, September 29, 1877 (advertisement 'Literary Emporium')",
+          "link": "https://archive.org/details/sim_publishers-weekly_1877-09-29_12_13"
+        }
+      ]
+    },
+    {
+      "id": "calvary-church-277-park-avenue-south",
+      "name": "Calvary Church",
+      "lat": 40.738947,
+      "lng": -73.98702,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST408",
+          "hook": "The funeral of Dr. Edward A. Washburn, rector of Calvary Church, was held there on 5 February 1881 before a crowded church.",
+          "text": "Dr. Washburn's funeral took place at 10 o'clock in Calvary Church on 5 February 1881, the New-York Tribune reported, and the church was crowded with his parishioners. The paper printed his name as Edward A. Washburn, Born April 16, 1819. In the vestry room of the church, Bishop Potter and Phillips Brooks spoke.",
+          "source": "New-York Tribune, 1881-02-06, page 12",
+          "link": "https://www.loc.gov/resource/sn83030214/1881-02-06/ed-1/?sp=12"
+        }
+      ]
+    },
+    {
+      "id": "chickering-hall-130-fifth-avenue",
+      "name": "Chickering Hall",
+      "lat": 40.738686,
+      "lng": -73.991883,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST399",
+          "hook": "William Elliott Griffis, lately of the Imperial University in Tokio, spoke on Japan at Chickering Hall on 8 January 1878, with stereopticon views.",
+          "text": "On Tuesday evening, January 8th, the American Geographical Society held its annual meeting at Chickering Hall, corner Eighteenth Street and Fifth Avenue. After the business, the Rev. William Elliott Griffis, late of the Imperial University, Tokio, Japan, read a paper on “Japan: Geographical and Social, with Personal Experiences.” The talk was illustrated with stereopticon views, and the Society thanked Mr. Griffis for his able paper, according to its published transactions for 1878.",
+          "source": "Journal of the American Geographical Society of New York, vol. 10 (1878), Transactions of the Society for 1878, p. lvii-lviii",
+          "link": "https://archive.org/details/sim_american-geographical-society-of-new-york-bulletin_1878_10_contents"
+        },
+        {
+          "id": "ST400",
+          "hook": "The Earl of Dufferin, Governor General of Canada, was received by the American Geographical Society at Chickering Hall on 31 January 1878.",
+          "text": "On January 31, 1878, the American Geographical Society met at Chickering Hall to receive the Earl of Dufferin, then Governor General of Canada. Addresses were made by Chief-Justice Daly, Bayard Taylor, William Cullen Bryant, Lord Dufferin and Dr. Isaac I. Hayes. Lord Dufferin was elected an honorary member of the Society, and resolutions complimentary to Mr. H. M. Stanley were adopted, according to the Society's transactions for 1878.",
+          "source": "Journal of the American Geographical Society of New York, vol. 10 (1878), Transactions of the Society for 1878, p. lviii-lix",
+          "link": "https://archive.org/details/sim_american-geographical-society-of-new-york-bulletin_1878_10_contents"
+        },
+        {
+          "id": "ST410",
+          "hook": "Professor Felix Adler was announced to lecture before the Society for Ethical Culture at Chickering Hall on Sunday, 20 March 1881, on the subject Good God.",
+          "text": "A church-notices column in the New-York Tribune on 19 March 1881 announced that Professor Felix Adler would lecture before the Society for Ethical Culture at Chickering Hall on Sunday, March 20. The notice said doors would open at 10:30 and close at 11 a.m., and that all interested were invited to attend. The announced subject was \"Good God.\" The notice backs only the announcement, not that the lecture took place.",
+          "source": "New-York Tribune, 1881-03-19, page 3 (religious notices column)",
+          "link": "https://www.loc.gov/resource/sn83030214/1881-03-19/ed-1/?sp=3"
+        }
+      ]
+    },
+    {
+      "id": "church-of-the-ascension-36-fifth-avenue",
+      "name": "Church of the Ascension",
+      "lat": 40.733623,
+      "lng": -73.995586,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST423",
+          "hook": "The Midnight Mission held its sixth anniversary services at the Church of the Ascension on 30 March 1873.",
+          "text": "On the evening of 30 March 1873 the Midnight Mission held its sixth anniversary services in the Church of the Ascension, at Fifth Avenue and Tenth Street, the New York Herald reported. The mission's home then held 32 inmates, and that about $7,000 remained to be paid on the mortgage.",
+          "source": "The New York Herald, 1873-03-31, page 7",
+          "link": "https://www.loc.gov/resource/sn83030313/1873-03-31/ed-1/?sp=7"
+        }
+      ]
+    },
+    {
+      "id": "church-of-the-holy-communion-656-sixth-avenue",
+      "name": "Church of the Holy Communion",
+      "lat": 40.741078,
+      "lng": -73.99393,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST409",
+          "hook": "Friends of Mrs. Bowker were invited to her funeral at the Church of the Holy Communion in January 1876.",
+          "text": "A death notice reported on 26 January 1876 in the New York Herald invited relatives and friends to the funeral of Mrs. Bowker in the Church of the Holy Communion, corner of Twentieth street and Sixth avenue, on a Thursday. The notice said she was a native of England.",
+          "source": "New York Herald, 1876-01-26, page 6 (death notices column)",
+          "link": "https://www.loc.gov/resource/sn83030313/1876-01-26/ed-1/?sp=6"
+        },
+        {
+          "id": "ST412",
+          "hook": "The funeral of Francis A. Hart took place at the Church of the Holy Communion, Twentieth Street and Sixth Avenue, on 18 January 1877.",
+          "text": "The funeral of Francis A. Hart was held at the Church of the Holy Communion, at Twentieth Street and Sixth Avenue, on 18 January 1877, the New York Herald reported the next morning. His remains were taken to Naugatuck, Connecticut, for burial.",
+          "source": "New York Herald, 1877-01-19, page 6",
+          "link": "https://www.loc.gov/resource/sn83030313/1877-01-19/ed-1/?sp=6"
+        },
+        {
+          "id": "ST418",
+          "hook": "The funeral of the Rev. Scott, once pastor of the Church of the Redemption, was held at the Church of the Holy Communion on 27 December 1878.",
+          "text": "On 27 December 1878 the funeral of the Rev. Scott, formerly pastor of the Church of the Redemption, took place in the afternoon at the Church of the Holy Communion, Twentieth street and Sixth avenue, the Herald reported. The services were conducted by Rev. Dr. Lawrence. Masonic ceremonies followed those of the Episcopal Church. The body was taken to Towanda, Pa., for burial.",
+          "source": "New York Herald, 28 December 1878, page 10",
+          "link": "https://www.loc.gov/resource/sn83030313/1878-12-28/ed-1/?sp=10"
+        }
+      ]
+    },
+    {
+      "id": "clarendon-hotel-fourth-avenue-18th-street",
+      "name": "Clarendon Hotel",
+      "lat": 40.737155,
+      "lng": -73.988585,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST394",
+          "hook": "Colonel Fisk's appearance was the signal for a serenade to the Grand Duke outside the Clarendon Hotel wing he occupied on 21 November 1871.",
+          "text": "The Sun of 22 November 1871 reported that, while Union Square was a mass of humanity, the Grand Duke was conducted to his quarters in the Clarendon Hotel. A few moments after alighting he appeared on the balcony, surrounded by a brilliant suite. Last night, the paper said, he remained quietly in his rooms in the Clarendon. Music stools were arranged opposite the wing of the Clarendon which the Duke occupied, and the appearance of Col. Fisk was the signal for the commencement of the serenade. Afterwards the Duke thanked Colonel Fisk for the compliment.",
+          "source": "The Sun (New York), 22 November 1871, page 1",
+          "link": "https://www.loc.gov/resource/sn83030272/1871-11-22/ed-1/?sp=1"
+        }
+      ]
+    },
+    {
+      "id": "college-of-st-francis-xavier-30-west-16th-street",
+      "name": "College of St. Francis Xavier",
+      "lat": 40.737553,
+      "lng": -73.994174,
+      "approx": true,
+      "stories": [
+        {
+          "id": "ST331",
+          "hook": "Men, boys and many young women went to the new St. Francis Xavier college building on 14 March 1889 to view the body of Father Thiry.",
+          "text": "On 14 March 1889 men, boys and many young women went to the new college building of St. Francis Xavier to view the body of Father Thiry, which lay in the front parlor on the first floor, The Sun reported the next day. His funeral services were set for the morning of 15 March at St. Francis Xavier Church in West Sixteenth Street.",
+          "source": "The Sun (New York), 1889-03-15, p.1",
+          "link": "https://www.loc.gov/resource/sn83030272/1889-03-15/ed-1/?sp=1"
+        },
+        {
+          "id": "ST338",
+          "hook": "Bishop Machebeuf of Colorado presided at the twenty-sixth annual commencement of the College of St. Francis Xavier, Sixteenth Street, on 26 June 1876.",
+          "text": "The twenty-sixth annual commencement of the College of St. Francis Xavier, Sixteenth Street, was held on the evening of 26 June 1876, the New York Herald reported the next day. The college hall was decorated and densely crowded. Machebeuf, Bishop of Colorado, presided, with General Newton of the United States Army near him.",
+          "source": "New York Herald, 1876-06-27, p. 4",
+          "link": "https://www.loc.gov/resource/sn83030313/1876-06-27/ed-1/?sp=4"
+        }
+      ]
+    },
+    {
+      "id": "decker-brothers-warerooms-33-union-square-west",
+      "name": "Decker Brothers warerooms",
+      "lat": 40.73671,
+      "lng": -73.99087,
+      "approx": true,
+      "stories": [
+        {
+          "id": "ST122",
+          "hook": "Decker Brothers warned in its 1873 catalogue that others were selling worthless pianos as Decker Pianos, and said the firm had only one establishment, at 33 Union Square.",
+          "text": "An illustrated catalogue issued by Decker Brothers in New York in 1873 warned that unscrupulous parties had from time to time tried to palm off inferior or wholly worthless pianos on the public by calling them Decker Pianos. The firm, it said, had but one establishment, at 33 Union Square.",
+          "source": "Decker Brothers, Illustrated catalogue of grand, upright and square piano-fortes (New York, 1873), 'Caution to the Public'",
+          "link": "https://archive.org/details/illustratedcatal00deck"
+        }
+      ]
+    },
+    {
+      "id": "first-presbyterian-church-48-fifth-avenue",
+      "name": "First Presbyterian Church",
+      "lat": 40.734429,
+      "lng": -73.994988,
+      "approx": true,
+      "stories": [
+        {
+          "id": "ST431",
+          "hook": "The First Presbyterian Church at Fifth Avenue and Twelfth Street, established in 1717, used an organ at divine service for the first time on 13 November 1887.",
+          "text": "The Sun reported that the church, established in 1717, had held a tradition of no organ, and its tunes had been pitched with a tuning fork. On 13 November 1887 its grand organ accompanied divine service for the first time. The Sun wrote that the sonorous peals of music from the 3718 pipes of the organ drowned the few human voices.",
+          "source": "The Sun (New York), 14 November 1887, page 3",
+          "link": "https://www.loc.gov/resource/sn83030272/1887-11-14/ed-1/?sp=3"
+        },
+        {
+          "id": "ST432",
+          "hook": "The First Presbyterian Church at Fifth Avenue and Twelfth Street held the first of a series of recitals on its new organ on 13 February 1888.",
+          "text": "The Sun reported that the first of a series of recitals meant to show the public the qualities of the new organ in the First Presbyterian Church took place on the afternoon of 13 February 1888. There was no charge for admission and the church was crowded. Huntington Woodman of the First Presbyterian Church of Brooklyn presided. The next recital was set for Feb 20.",
+          "source": "The Sun (New York), 14 February 1888, page 3",
+          "link": "https://www.loc.gov/resource/sn83030272/1888-02-14/ed-1/?sp=3"
+        }
+      ]
+    },
+    {
+      "id": "lafayette-statue-union-square-park",
+      "name": "Lafayette statue",
+      "lat": 40.735923,
+      "lng": -73.989713,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST065",
+          "hook": "When the Lafayette statue was unveiled in Union Square on 6 September 1876, almost every tree and lamp-post in the square held a clinging spectator.",
+          "text": "The Lafayette statue in Union Square was unveiled on 6 September 1876, the New-York Tribune reported the next day. By 3 o'clock, the paper said, the streets around the square were almost impassable. People crowded the stoops of private houses, almost every tree and lamp-post in the square held its clinging occupant, and the space beneath the bronze horse of Washington was filled with spectators. The march itself started late, at nearly 3:30. Addresses were given by Mayor Wickham, F. R. Coudert and President Cattell of Lafayette College.",
+          "source": "New-York Tribune, September 7, 1876, page 5 (image 5)",
+          "link": "https://www.loc.gov/resource/sn83030214/1876-09-07/ed-1/?sp=5"
+        }
+      ]
+    },
+    {
+      "id": "manhattan-club-96-fifth-avenue",
+      "name": "Manhattan Club",
+      "lat": 40.736628,
+      "lng": -73.993372,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST329",
+          "hook": "Manton Marble, secretary of the Manhattan Club at 96 Fifth Avenue, asked delegates to the Democratic National Convention on 15 June 1868 to register at the club.",
+          "text": "A notice in the New York Herald of 16 June 1868, dated the day before and signed by Manton Marble as secretary, asked delegates to the Democratic National Convention to register their names and addresses at the office of the Manhattan Club, 96 Fifth Avenue, on their arrival in the city. The notice backs only what the club announced.",
+          "source": "New York Herald, 1868-06-16, p. 9 (club notice, Political column)",
+          "link": "https://www.loc.gov/resource/sn83030313/1868-06-16/ed-1/?sp=9"
+        }
+      ]
+    },
+    {
+      "id": "morton-house-broadway-14th-street",
+      "name": "Morton House",
+      "lat": 40.734788,
+      "lng": -73.990741,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST117",
+          "hook": "Craddock, owner of Craddock's Opera House in Dallas, Texas, advertised in June 1882 that he was at the Morton House, Union Square, booking the 1882-83 season.",
+          "text": "An advertisement in the New York Mirror of 17 June 1882 announced that Craddock, proprietor and manager of Craddock's Opera House in Dallas, Texas, was at the Morton House, Union Square, ready to negotiate with managers for the season of 1882-83. The advertisement backs only what he announced.",
+          "source": "The New York Mirror, 1882-06-17, Vol 7 Iss 181 (advertisement columns)",
+          "link": "https://archive.org/details/per_new-york-dramatic-mirror_the-new-york-mirror_1882-06-17_7_181"
+        }
+      ]
+    },
+    {
+      "id": "national-academy-of-design-fourth-avenue-23rd-street",
+      "name": "National Academy of Design",
+      "lat": 40.740374,
+      "lng": -73.9864,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST189",
+          "hook": "Forty or more newsboys gathered every afternoon in front of the Academy of Design's white building at Fourth Avenue and Twenty-third Street, The Evening World reported.",
+          "text": "The Evening World reported on 20 June 1889 that the corner of Fourth Avenue and Twenty-third Street was an uptown centre for evening papers. A gathering of forty or more bright little fellows who sold the evening papers in the neighbourhood could be seen every afternoon right in front of the white building of the Academy of Design. The report was part of a survey in which one hundred newsboys gave the figures of their total sales.",
+          "source": "The Evening World, 1889-06-20, p2",
+          "link": "https://www.loc.gov/resource/sn83030193/1889-06-20/ed-1/?sp=2"
+        },
+        {
+          "id": "ST392",
+          "hook": "The National Academy of Design opened its new building at Fourth Avenue and 23rd Street on 27 April 1865, designed by artists to look strange on purpose.",
+          "text": "On the evening of 27 April 1865 the National Academy of Design held the inauguration ceremonies of its new building. The Herald reported that it filled a lot at the northwest corner of Fourth Avenue and Twenty-third Street. Its style, the paper said, was Venetian Gothic. The artists, the Herald explained, designed it to be strange looking on purpose: a building that could not be mistaken for a bank, a church or a block of lawyers' offices. Everyone who saw it was expected to ask what it was, and once told it was the National Academy of Design, never to forget the structure or its location.",
+          "source": "New York Herald, 28 April 1865, page 4 (Fine Arts)",
+          "link": "https://www.loc.gov/resource/sn83030313/1865-04-28/ed-1/?sp=4"
+        }
+      ]
+    },
+    {
+      "id": "national-arts-club-15-gramercy-park-south",
+      "name": "Tilden House",
+      "lat": 40.737658,
+      "lng": -73.98634,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST165",
+          "hook": "Politicians came and went at Gov. Tilden's house in Gramercy Park like aids-de-camp bringing news and conveying commands, the New-York Tribune reported.",
+          "text": "The New-York Tribune reported on 1 December 1876 that the politicians who came and went at Mr. Tilden's house in Gramercy Park were like aids-de-camp bringing news and conveying commands. Partisans from all parts of the country, the paper said, made pilgrimages to New-York to hail him as dictator and ask for his orders, and it was believed that Gov. Tilden directed every move with any bearing on the result.",
+          "source": "New-York Tribune, 1876-12-01, page 1",
+          "link": "https://www.loc.gov/resource/sn83030214/1876-12-01/ed-1/?sp=1"
+        }
+      ]
+    },
+    {
+      "id": "new-york-hospital-8-west-16th-street",
+      "name": "New York Hospital",
+      "lat": 40.73712,
+      "lng": -73.993147,
+      "approx": true,
+      "stories": [
+        {
+          "id": "ST320",
+          "hook": "Peter Cooper was on the stage on 16 March 1877 as the New York Hospital's new home on Fifteenth Street was inaugurated.",
+          "text": "Among the distinguished people on the stage, the paper said, Peter Cooper's venerable face was particularly noticeable. After the inaugural address the audience adjourned to the new hospital building and spent an hour or so looking over what the Herald called this admirable institution.",
+          "source": "New York Herald, 1877-03-17, p. 10",
+          "link": "https://www.loc.gov/resource/sn83030313/1877-03-17/ed-1/?sp=10"
+        }
+      ]
+    },
+    {
+      "id": "new-york-society-library-67-university-place",
+      "name": "New York Society Library",
+      "lat": 40.733922,
+      "lng": -73.992792,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST370",
+          "hook": "Albert Welles advertised on 26 November 1878 that the party who borrowed an overcoat from the Society Library that day would receive a reward if he returned the papers.",
+          "text": "A notice in the New York Herald of 26 November 1878, signed Albert Welles, told the party who borrowed an overcoat from the Society Library that day that he would receive a reward if he returned the papers.",
+          "source": "New York Herald, 26 Nov 1878, p. 1 (Special notices)",
+          "link": "https://www.loc.gov/resource/sn83030313/1878-11-26/ed-1/?sp=1"
+        }
+      ]
+    },
+    {
+      "id": "r-h-macy-and-co-sixth-avenue-14th-street",
+      "name": "R. H. Macy & Co.",
+      "lat": 40.737166,
+      "lng": -73.996779,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST252",
+          "hook": "The Sun printed on 5 July 1880 a report on R. H. Macy & Co.'s stores at Fourteenth Street and Sixth Avenue, recommending iron doors.",
+          "text": "On 5 July 1880 The Sun printed a report on the stores occupied by R. H. Macy & Co. at Fourteenth Street and Sixth Avenue. The buildings were connected at the rear of the first stories and basements by a one-story building running through from Thirteenth Street to Fourteenth Street. The report recommended that the openings from the packing rooms to the salesroom be secured by iron doors.",
+          "source": "The Sun (New York), 1880-07-05, p. 3",
+          "link": "https://www.loc.gov/resource/sn83030272/1880-07-05/ed-1/?sp=3"
+        }
+      ]
+    },
+    {
+      "id": "st-anns-church-120-east-12th-street",
+      "name": "St. Ann's Church",
+      "lat": 40.732374,
+      "lng": -73.989375,
+      "approx": true,
+      "stories": [
+        {
+          "id": "ST373",
+          "hook": "The funeral and requiem mass of James Timoney were announced for St. Ann's Church, Twelfth Street, on the morning of 26 April 1871.",
+          "text": "A notice in the New York Herald of Wednesday 26 April 1871 announced the funeral of James Timoney, from St. Ann's Church, Twelfth Street, between Third and Fourth avenues, that morning, where a requiem mass would be celebrated for the repose of his soul. The notice backs only the announcement.",
+          "source": "New York Herald, 1871-04-26, page 4 (death notices)",
+          "link": "https://www.loc.gov/resource/sn83030313/1871-04-26/ed-1/?sp=4"
+        }
+      ]
+    },
+    {
+      "id": "st-denis-hotel-799-broadway",
+      "name": "St. Denis Hotel",
+      "lat": 40.732285,
+      "lng": -73.991253,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST242",
+          "hook": "Professor A. Bell lectured and showed his speaking telephone in a quiet parlor of the St. Denis Hotel on 11 May 1877, before President Barnard of Columbia College.",
+          "text": "On the evening of 11 May 1877, in one of the quiet parlors of the St. Denis Hotel, Professor A. Bell of Boston delivered a lecture on sound and electricity and gave a striking exhibition of his speaking telephone, the New York Herald reported the next day. Among the gentlemen present was President Barnard of Columbia College. The telephone was heard to talk, play and sing Hold the Fort, and a cornet player was present and would favor them with an air. The Herald's headline said the cornet solo was heard three miles away.",
+          "source": "New York Herald, 1877-05-12, page 10, 'The Speaking Telephone'",
+          "link": "https://www.loc.gov/resource/sn83030313/1877-05-12/ed-1/?sp=10"
+        }
+      ]
+    },
+    {
+      "id": "steinway-hall-109-east-14th-street",
+      "name": "Steinway Hall",
+      "lat": 40.734459,
+      "lng": -73.989692,
+      "approx": true,
+      "stories": [
+        {
+          "id": "ST005",
+          "hook": "Charles Dickens read at Steinway Hall on 9 December 1867, before what the Tribune called a great throng.",
+          "text": "Charles Dickens gave his readings on the evening of 9 December 1867, the New-York Tribune reported the next day. Its editorial said his audience heartily expressed its affectionate feeling, and that no one in all that great throng was unconscious of the privilege it enjoyed.",
+          "source": "New-York Tribune, 10 Dec 1867, p.4",
+          "link": "https://www.loc.gov/resource/sn83030214/1867-12-10/ed-1/?sp=4"
+        },
+        {
+          "id": "ST006",
+          "hook": "Speculators bought up many of the Dickens tickets and were hawking them about, the New-York Tribune warned on 11 December 1867.",
+          "text": "On 11 December 1867, the New-York Tribune printed an editorial against ticket speculators. Many of the Dickens tickets, it said, had been bought by speculators who were hawking them about. The paper hoped nobody would be foolish to buy them, since there would be other opportunities of hearing Mr. Dickens read.",
+          "source": "New-York Tribune, 11 Dec 1867, p.4",
+          "link": "https://www.loc.gov/resource/sn83030214/1867-12-11/ed-1/?sp=4"
+        }
+      ]
+    },
+    {
+      "id": "tiffany-and-co-15-union-square-west",
+      "name": "Tiffany & Co.",
+      "lat": 40.735979,
+      "lng": -73.99137,
+      "approx": true,
+      "stories": [
+        {
+          "id": "ST072",
+          "hook": "On 17 December 1870 Tiffany & Co. of Union Square advertised that it was daily opening its imports of holiday goods from London, Paris and Vienna.",
+          "text": "An advertisement in the New York Herald of 17 December 1870 announced that Tiffany & Co., Union Square, was daily opening its importations of London, Paris and Vienna holiday goods. The advertisement backs only what the firm announced.",
+          "source": "New York Herald, 1870-12-17, p.7 (advertisement)",
+          "link": "https://www.loc.gov/resource/sn83030313/1870-12-17/ed-1/?sp=7"
+        }
+      ]
+    },
+    {
+      "id": "union-club-fifth-avenue-21st-street",
+      "name": "Union Club",
+      "lat": 40.7402,
+      "lng": -73.989987,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST402",
+          "hook": "On 18 February 1879 the Times described the Union Club's house at Fifth Avenue and Twenty-first Street as the first building in the city designed solely for club purposes.",
+          "text": "Reported on 18 February 1879, a New-York Times editorial on new club-houses looked back at the Union Club's building on the north-west corner of Fifth-avenue and Twenty-first-street. The paper said that when the club began building it, a quarter of a century before, \"Old-fashioned, con- servative members were strongly opposed to building so far ** up town.\" The house was once \"facetiously called a\" Summer residence for the members, the Times said. Since then, it added, Fifth Avenue had become an avenue of clubs, and the paper called the Union Club's house \"the first building in this City de- signed solely for club purposes\".",
+          "source": "The New-York Times, 18 February 1879, editorial 'The New Club-House'",
+          "link": "https://archive.org/details/sim_new-york-times_1879-02-18_28_8561"
+        }
+      ]
+    },
+    {
+      "id": "union-square-park-union-square",
+      "name": "Union Square park",
+      "lat": 40.73593,
+      "lng": -73.990323,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST066",
+          "hook": "Workingmen paraded from Union Square on the morning of 5 September 1882, breaking up at Reservoir Park.",
+          "text": "On the morning of 5 September 1882 workingmen paraded through the city, the New-York Tribune reported the next day, though the parade was not nearly as large as had been expected. The line was about a mile and a half long. On leaving Union Square the procession went through Seventeenth Street to Fifth Avenue and on to Forty-second Street, where it broke up at Reservoir Park. About one-third of the men took the cars at once for Wendell's Park.",
+          "source": "New-York Tribune, September 6, 1882, page 8 (image 8), 'Workingmen out in force'",
+          "link": "https://www.loc.gov/resource/sn83030214/1882-09-06/ed-1/?sp=8"
+        },
+        {
+          "id": "ST115",
+          "hook": "George Bancroft delivered the oration at Union Square's ceremony for the assassinated President Lincoln on 25 April 1865, from a black-draped stand opposite the Maison Doree.",
+          "text": "The Common Council's book on the Lincoln obsequies prints both the plans and the event. Citizens were invited to assemble at Union Square, Fourteenth Street, on Tuesday the 25th at five o'clock. A large stand draped with black was put up in the square opposite the Maison Doree. The gathering assembled at Union Square before a large concourse of people, and George Bancroft pronounced the oration.",
+          "source": "Obsequies of Abraham Lincoln in the City of New York, under the auspices of the Common Council (D. T. Valentine, 1866), pp. 141-162",
+          "link": "https://archive.org/details/obsequiesofabrah00newy"
+        },
+        {
+          "id": "ST121",
+          "hook": "Harper's Weekly in 1888 printed Otto Stark's picture of Union Square during the Blizzard, on the same page as one titled Perils of Union Square.",
+          "text": "The 1888 index of Harper's Weekly lists an illustration by Otto Stark of Union Square during the Blizzard on page 218. The same page carried a picture titled Perils of Union Square.",
+          "source": "Harper's Weekly vol. 32 (1888) index, entries for p. 218",
+          "link": "https://archive.org/details/sim_harpers-weekly_1888_32_index"
+        }
+      ]
+    },
+    {
+      "id": "wallacks-theatre-844-broadway",
+      "name": "Wallack's Theatre",
+      "lat": 40.734095,
+      "lng": -73.990824,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST241",
+          "hook": "The Germania Theatre, late Wallack's, opened in September 1881 with Der Compagnon, and that December Friedrich Haase acted Shylock there.",
+          "text": "The New-York Tribune's record of the theatre year, printed on 26 December 1881, listed under September that the Germania Theatre, late Wallack's, was opened with Der Compagnon. Under December the same record noted that Friedrich Haase, at the Germania, acted Shylock.",
+          "source": "New-York Tribune, 1881-12-26, page 5 (year-in-review theatre chronicle)",
+          "link": "https://www.loc.gov/resource/sn83030214/1881-12-26/ed-1/?sp=5"
+        },
+        {
+          "id": "ST254",
+          "hook": "Wallack's Theatre, under Lester Wallack, advertised Dion Boucicault in The Shaughraun from Monday evening, 16 November 1874.",
+          "text": "An advertisement in the New-York Tribune of 16 November 1874, under Mr. Lester Wallack as manager, announced the Irish dramatist Mr. Dion Boucicault from Monday evening, Nov. 16, and every evening, in The Shaughraun.",
+          "source": "New-York Tribune, 1874-11-16, p. 8 (amusements advertisement)",
+          "link": "https://www.loc.gov/resource/sn83030214/1874-11-16/ed-1/?sp=8"
+        },
+        {
+          "id": "ST372",
+          "hook": "Mr. Wallack ended his engagement at his theatre, then promised the audience to stay their faithful servant in the new theatre as in the old.",
+          "text": "The New-York Tribune reported on 12 April 1881 that Mr. Wallack had ended his engagement at his theatre. There was enthusiastic and long-continued applause when the curtain fell, and Wallack came before the curtain to make a brief speech of farewell. \"In the new theatre as in the old,\" he said, he would always be the audience's zealous and faithful servant.",
+          "source": "New-York Tribune, 1881-04-12, p. 4 (drama column)",
+          "link": "https://www.loc.gov/resource/sn83030214/1881-04-12/ed-1/?sp=4"
+        }
+      ]
+    },
+    {
+      "id": "weber-piano-warerooms-fifth-avenue-16th-street",
+      "name": "Weber piano warerooms",
+      "lat": 40.737277,
+      "lng": -73.992897,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST330",
+          "hook": "A deputy sheriff tried to take possession of Albert Weber's piano warerooms at Sixteenth Street and Fifth Avenue, The Sun reported.",
+          "text": "On 9 June 1883 Judge Donohue granted an attachment against the private property of Albert Weber, the piano manufacturer, The Sun reported the next day. On the strength of the attachment a deputy sheriff attempted to take possession of the piano warerooms at Sixteenth Street and Fifth Avenue.",
+          "source": "The Sun (New York), 1883-06-10, p. 1",
+          "link": "https://www.loc.gov/resource/sn83030272/1883-06-10/ed-1/?sp=1"
+        }
+      ]
+    },
+    {
+      "id": "young-mens-christian-association-fourth-avenue-east-23rd-street",
+      "name": "YMCA Building",
+      "lat": 40.74012,
+      "lng": -73.986577,
+      "approx": false,
+      "stories": [
+        {
+          "id": "ST419",
+          "hook": "Dr. J. G. Holland lectured on The Elements of Personal Power in Association Hall on 27 December 1878, closing the Young Men's Christian Association's lecture series.",
+          "text": "On 27 December 1878 Dr. J. G. Holland lectured on The Elements of Personal Power in Association Hall, the Herald reported. The lecture had first been delivered in this city to an audience of teachers about four years before. That night the Young Men's Christian Association's series of ten lectures on popular subjects came to a close, and a series of ten medical lectures to young men was to follow shortly.",
+          "source": "New York Herald, 28 December 1878, page 10",
+          "link": "https://www.loc.gov/resource/sn83030313/1878-12-28/ed-1/?sp=10"
+        }
+      ]
+    },
+    {
+      "id": "young-womens-christian-association-7-east-15th-street",
+      "name": "YWCA",
+      "lat": 40.736496,
+      "lng": -73.992392,
+      "approx": true,
+      "stories": [
+        {
+          "id": "ST326",
+          "hook": "Morris K. Jesup presided on 30 March 1876 as the Young Women's Christian Association took possession of its new building at No. 7 East Fifteenth Street.",
+          "text": "The Young Women's Christian Association formally took possession of its new building at No. 7 East Fifteenth Street on the evening of 30 March 1876, the New-York Tribune reported the next day. The rooms were tastefully decorated with flowers. Morris K. Jesup presided and congratulated the Association on its removal from its old quarters in Irving Place to what the paper called its handsome and commodious building.",
+          "source": "New-York Tribune, 1876-03-31, p. 8, 'Woman's Work for Her Sex'",
+          "link": "https://www.loc.gov/resource/sn83030214/1876-03-31/ed-1/?sp=8"
+        },
+        {
+          "id": "ST327",
+          "hook": "Women's Christian Associations held the second day of their ninth biennial international conference at 7 East Fifteenth Street, The Evening World reported.",
+          "text": "The Evening World reported on 26 October 1887 that the second day's session of the ninth biennial international conference of the Women's Christian Association, at the Young Women's Christian Association building, 7 East Fifteenth Street, was a particularly interesting one. One of the papers read was on Amusements for Working Girls, by M. C. Thompson, Superintendent of the Philadelphia Women's Christian Association.",
+          "source": "The Evening World, 1887-10-26, p. 2",
+          "link": "https://www.loc.gov/resource/sn83030193/1887-10-26/ed-1/?sp=2"
+        },
+        {
+          "id": "ST337",
+          "hook": "The Young Women's Christian Association at 7 East Fifteenth Street gave free classes in typewriting and bookkeeping to self-supporting women, The Evening World reported.",
+          "text": "The Evening World reported on 20 April 1888 that the club-house of the Young Women's Christian Association, 7 East Fifteenth Street, gave free instruction in typewriting, bookkeeping and other subjects. The instruction was absolutely free to any woman who was, or was trying to become, self-supporting. Those applying had to give a satisfactory reference as to character and promise to conform to the rules of the establishment.",
+          "source": "The Evening World (New York), 1888-04-20, ed. 1, p. 2, \"Aiding Women in Life's Struggle\"",
+          "link": "https://www.loc.gov/resource/sn83030193/1888-04-20/ed-1/?sp=2"
+        }
+      ]
+    }
+  ]
+}
