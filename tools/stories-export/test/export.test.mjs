@@ -240,3 +240,14 @@ test('missing place row in the points file stops the export', () => {
   fs.writeFileSync(w.pointsCsv, fs.readFileSync(w.pointsCsv, 'utf8').split('\n').filter(l => !l.startsWith('place,store')).join('\n'));
   assert.throws(() => exportStories(w), /ST003: no point for group store/);
 });
+
+// Review round 2 (Nov 16): any hook_ok marker that can't be read means not approved.
+test('unreadable hook_ok marker anywhere in the cell means not approved', () => {
+  assert.equal(lastHookOk('hook_ok yes; later hook_ok — no'), 'no');
+  assert.equal(lastHookOk('hook_ok yes; later hook_ok – no'), 'no');
+  assert.equal(lastHookOk('hook_ok yes; then hook_ok pending'), null);
+  assert.equal(lastHookOk('hook_ok yes/no pending'), null);
+  assert.equal(lastHookOk('HOOK_OK Yes'), 'yes');
+  const out = exportStories(world({ stories: [story('ST001', { notes: 'hook_ok yes; hook_ok ?' }), story('ST002'), story('ST003')] }));
+  assert.deepEqual(out.dropped, [{ id: 'ST001', reason: 'hook_ok not yes' }]);
+});
