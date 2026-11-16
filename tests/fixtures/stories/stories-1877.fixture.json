@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "era": 1877,
+  "attribution": "Map positions use OpenStreetMap data, (c) OpenStreetMap contributors (ODbL).",
+  "groups": [
+    {
+      "id": "fixture-union-square",
+      "name": "Union Square",
+      "lat": 40.7359,
+      "lng": -73.9906,
+      "approx": false,
+      "stories": [
+        {
+          "id": "FX001",
+          "hook": "A crowd filled the square for the fixture parade.",
+          "text": "Fixture text one. It is plain text.",
+          "source": "The Sun (New York), 1877-05-01, page 2",
+          "link": "https://www.loc.gov/resource/fixture-1/"
+        },
+        {
+          "id": "FX002",
+          "hook": "The fountain ran dry in the fixture summer.",
+          "text": null,
+          "source": "New-York Tribune, 1877-07-04",
+          "link": null
+        }
+      ]
+    },
+    {
+      "id": "fixture-academy-of-music",
+      "name": "Academy of Music",
+      "lat": 40.7339,
+      "lng": -73.9887,
+      "approx": true,
+      "stories": [
+        {
+          "id": "FX003",
+          "hook": "Bold <b>claim</b> <img src=x onerror=\"window.__storyXss=1\">",
+          "text": "Text with <script>window.__storyXss=2</script> inside.",
+          "source": "Fixture Herald, 1877-10-10, page 1",
+          "link": "https://www.loc.gov/resource/fixture-3/"
+        }
+      ]
+    },
+    {
+      "id": "fixture-tiffany",
+      "name": "Tiffany & Co.",
+      "lat": 40.7365,
+      "lng": -73.9907,
+      "approx": false,
+      "stories": [
+        {
+          "id": "FX004",
+          "hook": "A fixture clock was set above the door.",
+          "text": "Fixture text four.",
+          "source": "Fixture Times, 1877-03-03, page 8",
+          "link": "javascript:window.__storyXss=3"
+        }
+      ]
+    }
+  ]
+}
