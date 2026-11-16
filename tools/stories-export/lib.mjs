@@ -9,6 +9,7 @@ const NEED = {
   text: ['story_id', 'story_text', 'style_check'],
   points: ['kind', 'id', 'place_id', 'name', 'confidence', 'in_box'],
   latlon: ['kind', 'id', 'place_id', 'lat', 'lon', 'confidence'],
+  names: ['place_id', 'era', 'name', 'evidence'],
 };
 
 function readCsv(file, kind) {
@@ -67,7 +68,24 @@ const req = (v, what, id) => {
   return s;
 };
 
-export function exportStories({ storyList, storiesCsv, storyTextCsv, pointsCsv, latlonCsv }) {
+// Amendment A1: per-era pin names. Returns Map place_id -> name for this era.
+function readEraNames(file, era, points) {
+  const out = new Map(), seen = new Set();
+  if (!file) return out;
+  for (const r of readCsv(file, 'names')) {
+    const pid = r.place_id.trim(), e = r.era.trim();
+    if (!/^\d{4}$/.test(e)) throw new Error(`era names: bad era "${r.era}" for ${pid}`);
+    const name = req(r.name, 'name', pid);
+    req(r.evidence, 'evidence', pid);
+    if (seen.has(pid + '|' + e)) throw new Error(`era names: duplicate ${pid} ${e}`);
+    seen.add(pid + '|' + e);
+    if (!points.has('place|' + pid)) throw new Error(`era names: ${pid} is not a place in the points file`);
+    if (Number(e) === era) out.set(pid, name);
+  }
+  return out;
+}
+
+export function exportStories({ storyList, storiesCsv, storyTextCsv, pointsCsv, latlonCsv, eraNamesCsv }) {
   const { era, ids } = readList(storyList);
   const stories = uniqueBy(readCsv(storiesCsv, 'stories'), 'story_id', 'stories');
   const newestText = new Map();
@@ -76,6 +94,7 @@ export function exportStories({ storyList, storiesCsv, storyTextCsv, pointsCsv, 
   const points = uniqueBy(readCsv(pointsCsv, 'points').map(r => ({ ...r, k: key(r) })), 'k', 'points');
   const latlon = uniqueBy(readCsv(latlonCsv, 'latlon').map(r => ({ ...r, k: key(r) })), 'k', 'latlon');
 
+  const eraNames = readEraNames(eraNamesCsv, era, points);
   const dropped = [], linksDropped = [], groups = new Map();
   for (const id of ids) {
     const s = stories.get(id);
@@ -107,7 +126,13 @@ export function exportStories({ storyList, storiesCsv, storyTextCsv, pointsCsv, 
     groups.get(gid).stories.push({ id, hook, text, source, link });
   }
 
+  let namesReplaced = 0;
+  for (const [pid, name] of eraNames) {
+    const g = groups.get(pid);
+    if (!g) throw new Error(`era names: ${pid} has no exported group in ${era}`);
+    g.name = name; namesReplaced++;
+  }
   const sorted = [...groups.values()].sort((a, b) => a.id.localeCompare(b.id));
   for (const g of sorted) g.stories.sort((a, b) => a.id.localeCompare(b.id));
-  return { version: 1, era, groups: sorted, dropped, linksDropped };
+  return { version: 1, era, groups: sorted, dropped, linksDropped, namesReplaced };
 }
