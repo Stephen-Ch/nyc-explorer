@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import * as path from 'path';
+import * as fs from 'fs';
 
 // Plan 41 slice 1b step 1: walk graph builder (tools/walk-graph, CommonJS).
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -13,17 +14,18 @@ const BOX = { minLat: 40.0, maxLat: 41.0, minLng: -74.5, maxLng: -73.5 };
 
 const fixture = (elements: unknown[]) => ({ elements });
 
-test('keeps street kinds, skips footway, service, cycleway', () => {
-  const osm = fixture([
-    node(1, 40.730), node(2, 40.731), node(3, 40.732), node(4, 40.733), node(5, 40.734),
-    way(10, [1, 2], { highway: 'residential' }),
-    way(11, [2, 3], { highway: 'footway' }),
-    way(12, [3, 4], { highway: 'service' }),
-    way(13, [4, 5], { highway: 'cycleway' }),
-  ]);
-  const g = lib.buildGraph(osm, { box: BOX });
-  expect(g.edges.length).toBe(1);
-  expect(g.nodes.map((n: { id: number }) => n.id).sort()).toEqual([1, 2]);
+test('keeps every D10 street kind, drops footway, service, cycleway, secondary_link', () => {
+  const kept = ['residential', 'primary', 'secondary', 'tertiary', 'living_street', 'unclassified', 'pedestrian'];
+  const dropped = ['footway', 'service', 'cycleway', 'secondary_link'];
+  for (const kind of kept) {
+    const g = lib.buildGraph(fixture([node(1, 40.730), node(2, 40.731), way(10, [1, 2], { highway: kind })]), { box: BOX });
+    expect(g.edges.length, kind).toBe(1);
+  }
+  for (const kind of dropped) {
+    const g = lib.buildGraph(fixture([node(1, 40.730), node(2, 40.731), way(10, [1, 2], { highway: kind })]), { box: BOX });
+    expect(g.edges.length, kind).toBe(0);
+  }
+  expect([...lib.KINDS].sort()).toEqual([...kept].sort());
 });
 
 test('skips pedestrian plaza outlines tagged area=yes, keeps plain pedestrian', () => {
@@ -60,15 +62,16 @@ test('drops edges with an end outside the box', () => {
 
 test('keeps only the largest connected piece and reports what was dropped', () => {
   const osm = fixture([
-    node(1, 40.730), node(2, 40.731), node(3, 40.732),
     node(7, 40.735, -73.98), node(8, 40.736, -73.98),
-    way(10, [1, 2, 3], { highway: 'residential' }),
     way(11, [7, 8], { highway: 'residential' }),
+    node(1, 40.730), node(2, 40.731), node(3, 40.732),
+    way(10, [1, 2, 3], { highway: 'residential' }),
   ]);
   const g = lib.buildGraph(osm, { box: BOX });
-  expect(g.nodes.length).toBe(3);
+  expect(g.nodes.map((n: { id: number }) => n.id)).toEqual([1, 2, 3]);
   expect(g.dropped.pieces).toBe(1);
   expect(g.dropped.nodes).toBe(2);
+  expect(g.dropped.list).toEqual([{ size: 2, sampleNodeId: 7 }]);
 });
 
 test('edge length is real distance: 0.001 deg latitude is about 111 m', () => {
@@ -95,13 +98,15 @@ test('place distance is measured to the nearest point on a street, not the neare
   expect(Math.abs(d - 25.3)).toBeLessThan(2);
 });
 
-test('checkPlaces stops when a place is over 150 m from any street', () => {
-  const osm = fixture([node(1, 40.730), node(2, 40.731), way(10, [1, 2], { highway: 'residential' })]);
+test('checkPlaces: 150 m limit is a named setting; about 140 m passes, about 160 m stops', () => {
+  expect(lib.MAX_PLACE_M).toBe(150);
+  const osm = fixture([node(1, 40.728), node(2, 40.734), way(10, [1, 2], { highway: 'residential' })]);
   const g = lib.buildGraph(osm, { box: BOX });
-  const near = [{ id: 'near', name: 'Near', lat: 40.7305, lng: LNG + 0.0005 }];
-  const far = [{ id: 'far', name: 'Far', lat: 40.7305, lng: LNG + 0.003 }];
-  expect(lib.checkPlaces(g, near, 150).worst.id).toBe('near');
-  expect(() => lib.checkPlaces(g, far, 150)).toThrow(/far/);
+  const mPerDegLng = 111195 * Math.cos((40.731 * Math.PI) / 180);
+  const at = (m: number, id: string) => ({ id, name: id, lat: 40.731, lng: LNG + m / mPerDegLng });
+  const ok = lib.checkPlaces(g, [at(140, 'p140')], lib.MAX_PLACE_M);
+  expect(Math.abs(ok.worst.m - 140)).toBeLessThan(1);
+  expect(() => lib.checkPlaces(g, [at(140, 'p140'), at(160, 'p160')], lib.MAX_PLACE_M)).toThrow(/p160/);
 });
 
 test('output file has version, attribution and rounded coordinates, no secrets', () => {
@@ -114,4 +119,39 @@ test('output file has version, attribution and rounded coordinates, no secrets',
   expect(out.nodes[0]).toEqual([1, 40.730123, -73.990123]);
   expect(out.edges[0][2]).toBe(Math.round(out.edges[0][2] * 10) / 10);
   expect(JSON.stringify(out)).not.toMatch(/password|token|apikey|secret/i);
+});
+
+test('committed content/walk-graph.v1.json: ends exist, one piece, all 34 places within the limit', () => {
+  const root = path.join(__dirname, '..', '..');
+  const out = JSON.parse(fs.readFileSync(path.join(root, 'content', 'walk-graph.v1.json'), 'utf8'));
+  const stories = JSON.parse(fs.readFileSync(path.join(root, 'content', 'stories.v1.json'), 'utf8'));
+  const ids = new Set(out.nodes.map((n: number[]) => n[0]));
+  expect(ids.size).toBe(out.nodes.length);
+  const seen = new Set<string>();
+  const adj = new Map<number, number[]>();
+  for (const [a, b, m] of out.edges as number[][]) {
+    expect(ids.has(a) && ids.has(b)).toBe(true);
+    expect(a).not.toBe(b);
+    expect(m).toBeGreaterThan(0);
+    const key = `${Math.min(a, b)}-${Math.max(a, b)}`;
+    expect(seen.has(key)).toBe(false);
+    seen.add(key);
+    adj.set(a, [...(adj.get(a) || []), b]);
+    adj.set(b, [...(adj.get(b) || []), a]);
+  }
+  const start = out.nodes[0][0];
+  const reached = new Set<number>([start]);
+  const queue = [start];
+  while (queue.length) {
+    const cur = queue.pop() as number;
+    for (const nxt of adj.get(cur) || []) if (!reached.has(nxt)) { reached.add(nxt); queue.push(nxt); }
+  }
+  expect(reached.size).toBe(out.nodes.length);
+  const graph = {
+    nodes: out.nodes.map((n: number[]) => ({ id: n[0], lat: n[1], lng: n[2] })),
+    edges: out.edges.map((e: number[]) => ({ a: e[0], b: e[1], m: e[2] })),
+  };
+  expect(stories.groups.length).toBe(34);
+  const res = lib.checkPlaces(graph, stories.groups, lib.MAX_PLACE_M);
+  expect(res.rows.length).toBe(34);
 });
