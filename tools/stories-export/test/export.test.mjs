@@ -184,7 +184,7 @@ test('CLI writes the JSON file and prints the dropped list', () => {
   const outFile = path.join(w.dir, 'stories.v1.json');
   const log = execFileSync(process.execPath, [path.join(HERE, '..', 'export.mjs'),
     '--story-list', w.storyList, '--stories', w.storiesCsv, '--story-text', w.storyTextCsv,
-    '--points', w.pointsCsv, '--latlon', w.latlonCsv, '--out', outFile], { encoding: 'utf8' });
+    '--points', w.pointsCsv, '--latlon', w.latlonCsv, '--era-names', names(w, []), '--out', outFile], { encoding: 'utf8' });
   const data = JSON.parse(fs.readFileSync(outFile, 'utf8'));
   assert.equal(data.version, 1);
   assert.equal(data.groups.flatMap(g => g.stories).length, 2);
@@ -250,4 +250,55 @@ test('unreadable hook_ok marker anywhere in the cell means not approved', () => 
   assert.equal(lastHookOk('HOOK_OK Yes'), 'yes');
   const out = exportStories(world({ stories: [story('ST001', { notes: 'hook_ok yes; hook_ok ?' }), story('ST002'), story('ST003')] }));
   assert.deepEqual(out.dropped, [{ id: 'ST001', reason: 'hook_ok not yes' }]);
+});
+
+// Amendment A1 (Nov 16): per-era pin names.
+const NAMES_H = ['place_id', 'era', 'name', 'evidence'];
+function names(w, rows, header = NAMES_H) {
+  const f = path.join(w.dir, 'era-names.csv');
+  fs.writeFileSync(f, csv(header, rows));
+  return f;
+}
+const nm = (extra = {}) => ({ place_id: 'store', era: '1877', name: 'Old Store & Co.', evidence: 'Paper 1878', ...extra });
+
+test('era name replaces the group name for that era only', () => {
+  const w = world();
+  const out = exportStories({ ...w, eraNamesCsv: names(w, [nm(), nm({ place_id: 'academy', era: '1902', name: 'Later Name' })]) });
+  assert.equal(out.groups.find(g => g.id === 'store').name, 'Old Store & Co.');
+  assert.equal(out.groups.find(g => g.id === 'academy').name, 'Academy of Music');
+  assert.equal(out.namesReplaced, 1);
+});
+
+test('era name: place_id is trimmed', () => {
+  const w = world();
+  const out = exportStories({ ...w, eraNamesCsv: names(w, [nm({ place_id: ' store ' })]) });
+  assert.equal(out.groups.find(g => g.id === 'store').name, 'Old Store & Co.');
+});
+
+test('era name stop cases', () => {
+  const cases = [
+    [[nm({ name: ' ' })], /empty required field name/],
+    [[nm({ evidence: '' })], /empty required field evidence/],
+    [[nm(), nm({ name: 'Other' })], /duplicate.*store.*1877/],
+    [[nm({ place_id: 'stor' })], /stor.*not a place/],
+    [[nm({ era: '1877.0' })], /era/],
+  ];
+  for (const [rows, re] of cases) {
+    const w = world();
+    assert.throws(() => exportStories({ ...w, eraNamesCsv: names(w, rows) }), re);
+  }
+  const w = world();
+  assert.throws(() => exportStories({ ...w, eraNamesCsv: names(w, [nm()], ['place_id', 'era', 'name']) }), /missing header "evidence"/);
+});
+
+test('era name for this era that matches no exported group stops the export', () => {
+  const w = world({ stories: [story('ST001'), story('ST002'), story('ST003', { notes: 'hook_ok no' })] });
+  assert.throws(() => exportStories({ ...w, eraNamesCsv: names(w, [nm()]) }), /store.*no exported group/);
+});
+
+test('CLI requires --era-names', () => {
+  const w = world();
+  assert.throws(() => execFileSync(process.execPath, [path.join(HERE, '..', 'export.mjs'),
+    '--story-list', w.storyList, '--stories', w.storiesCsv, '--story-text', w.storyTextCsv,
+    '--points', w.pointsCsv, '--latlon', w.latlonCsv, '--out', path.join(w.dir, 'o.json')], { stdio: 'pipe' }), /era-names/);
 });
