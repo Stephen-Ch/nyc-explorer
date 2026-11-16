@@ -8,6 +8,9 @@ const KINDS = new Set(['residential', 'primary', 'secondary', 'tertiary', 'livin
 // Story area (34 places: lat 40.7312-40.7427, lng -73.9968 to -73.9863) plus about 250 m.
 const DEFAULT_BOX = { minLat: 40.729, maxLat: 40.745, minLng: -73.9995, maxLng: -73.983 };
 
+// Build stops if any story place is farther than this from a street (plan 41 slice 1b).
+const MAX_PLACE_M = 150;
+
 const R = 6371008.8;
 const rad = (d) => (d * Math.PI) / 180;
 
@@ -82,11 +85,19 @@ function buildGraph(osm, opts) {
   const edges = [...edgeMap.values()]
     .filter((e) => keepIds.has(e.a))
     .sort((x, y) => x.a - y.a || x.b - y.b);
-  const droppedPieces = sizes.size === 0 ? 0 : sizes.size - 1;
+  const firstNode = new Map();
+  for (const id of [...parent.keys()].sort((x, y) => x - y)) {
+    const r = find(id);
+    if (!firstNode.has(r)) firstNode.set(r, id);
+  }
+  const list = [...sizes]
+    .filter(([r]) => r !== best)
+    .map(([r, size]) => ({ size, sampleNodeId: firstNode.get(r) }))
+    .sort((x, y) => y.size - x.size || x.sampleNodeId - y.sampleNodeId);
   return {
     nodes,
     edges,
-    dropped: { pieces: droppedPieces, nodes: parent.size - keepIds.size },
+    dropped: { pieces: list.length, nodes: parent.size - keepIds.size, list },
   };
 }
 
@@ -115,7 +126,7 @@ function distanceToGraph(graph, lat, lng) {
 }
 
 // Each place's distance to the network. Throws (naming the places) if any is over maxM.
-function checkPlaces(graph, places, maxM) {
+function checkPlaces(graph, places, maxM = MAX_PLACE_M) {
   const rows = places.map((p) => ({ id: p.id, name: p.name, m: distanceToGraph(graph, p.lat, p.lng) }));
   const tooFar = rows.filter((r) => !(r.m <= maxM));
   if (tooFar.length) {
@@ -136,4 +147,4 @@ function toOutput(graph, downloadDate) {
   };
 }
 
-module.exports = { KINDS, DEFAULT_BOX, haversine, buildGraph, distanceToGraph, checkPlaces, toOutput };
+module.exports = { KINDS, MAX_PLACE_M, DEFAULT_BOX, haversine, buildGraph, distanceToGraph, checkPlaces, toOutput };

@@ -14,10 +14,11 @@ const osm = JSON.parse(fs.readFileSync(osmPath, 'utf8'));
 const downloadDate = fs.readFileSync(datePath, 'utf8').trim();
 const stories = JSON.parse(fs.readFileSync(storiesPath, 'utf8'));
 const graph = lib.buildGraph(osm, { box: lib.DEFAULT_BOX });
-const { rows, worst } = lib.checkPlaces(graph, stories.groups, 150);
+const { rows, worst } = lib.checkPlaces(graph, stories.groups, lib.MAX_PLACE_M);
 
 fs.writeFileSync(outPath, `${JSON.stringify(lib.toOutput(graph, downloadDate))}\n`);
 console.log(`nodes ${graph.nodes.length}, edges ${graph.edges.length}`);
 console.log(`dropped pieces ${graph.dropped.pieces} (${graph.dropped.nodes} nodes)`);
+for (const d of graph.dropped.list) console.log(`  dropped piece: ${d.size} nodes, e.g. node ${d.sampleNodeId}`);
 console.log(`places ${rows.length}, worst ${worst.id} ${Math.round(worst.m)} m`);
 for (const r of rows.sort((a, b) => b.m - a.m)) console.log(`  ${Math.round(r.m)} m  ${r.id}`);
