@@ -191,3 +191,52 @@ test('CLI writes the JSON file and prints the dropped list', () => {
   assert.match(log, /ST002.*hook_ok not yes/);
   assert.ok(!('dropped' in data), 'dropped list is printed, not shipped');
 });
+
+// Review round 1 fixes (diff review, Nov 16): red tests.
+test('blank or out-of-area coordinates stop the export', () => {
+  const w = world();
+  fs.writeFileSync(w.latlonCsv, fs.readFileSync(w.latlonCsv, 'utf8').replace(/place,academy,academy,40\.7340,-73\.9885/, 'place,academy,academy,,'));
+  assert.throws(() => exportStories(w), /academy.*lat\/lng/);
+  const w2 = world();
+  fs.writeFileSync(w2.latlonCsv, fs.readFileSync(w2.latlonCsv, 'utf8').replace(/place,store,store,40\.7351,-73\.9885/, 'place,store,store,0,0'));
+  assert.throws(() => exportStories(w2), /store.*lat\/lng/);
+});
+
+test('hook_ok marker with punctuation is read; last marker still wins', () => {
+  assert.equal(lastHookOk('hook_ok yes but later hook_ok: no'), 'no');
+  assert.equal(lastHookOk('hook_ok yes; then hook_ok - no'), 'no');
+  assert.equal(lastHookOk('hook_ok=yes'), 'yes');
+  assert.equal(lastHookOk('nothook_ok yes'), null);
+  assert.equal(lastHookOk('hook_ok yesterday'), null);
+  const out = exportStories(world({ stories: [story('ST001', { notes: 'hook_ok yes; re-check hook_ok: no' }), story('ST002'), story('ST003')] }));
+  assert.deepEqual(out.dropped, [{ id: 'ST001', reason: 'hook_ok not yes' }]);
+});
+
+test('duplicate header stops the export', () => {
+  const w = world();
+  fs.writeFileSync(w.storiesCsv, fs.readFileSync(w.storiesCsv, 'utf8').replace('notes\n', 'notes,notes\n'));
+  assert.throws(() => exportStories(w), /duplicate header.*notes/);
+});
+
+test('cleanLink rejects whitespace, credentials and markup; returns the parsed URL', () => {
+  assert.equal(cleanLink('https://x.com/a"><script>'), null);
+  assert.equal(cleanLink('https://x.com/a b'), null);
+  assert.equal(cleanLink('https://x.com/a\nb'), null);
+  assert.equal(cleanLink('https://user:pass@host.com/x'), null);
+  assert.equal(cleanLink('  https://archive.org/x  '), 'https://archive.org/x');
+  assert.equal(cleanLink('https:/x.com'), null);
+});
+
+test('missing header in text, points or latlon file stops the export', () => {
+  for (const [f, h] of [['storyTextCsv', 'style_check'], ['pointsCsv', 'in_box'], ['latlonCsv', 'confidence']]) {
+    const w = world();
+    fs.writeFileSync(w[f], fs.readFileSync(w[f], 'utf8').replace(h, h + '_x'));
+    assert.throws(() => exportStories(w), new RegExp('missing header "' + h + '"'));
+  }
+});
+
+test('missing place row in the points file stops the export', () => {
+  const w = world();
+  fs.writeFileSync(w.pointsCsv, fs.readFileSync(w.pointsCsv, 'utf8').split('\n').filter(l => !l.startsWith('place,store')).join('\n'));
+  assert.throws(() => exportStories(w), /ST003: no point for group store/);
+});
