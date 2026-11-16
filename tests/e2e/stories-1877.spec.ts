@@ -286,4 +286,47 @@ test.describe('PLAN-41 slice 1a — review fixes', () => {
     await pickEra(page, '1877');
     await expect(page.locator('[data-testid="story-pin"]')).toHaveCount(3);
   });
+
+  test('focus trap: Shift+Tab from outside the open card lands inside it', async ({ page }) => {
+    await stubStories(page);
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await pickEra(page, '1877');
+    await pin(page, 'fixture-union-square').click();
+    await page.locator('#map').focus();
+    await page.keyboard.press('Shift+Tab');
+    const inCard = await page.evaluate(() => !!document.activeElement?.closest('[data-testid="story-card"]'));
+    expect(inCard).toBe(true);
+  });
+
+  test('keyboard focus on a story pin shows an outline', async ({ page }) => {
+    await stubStories(page);
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await pickEra(page, '1877');
+    await pin(page, 'fixture-union-square').focus();
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Tab');
+    const style = await page.evaluate(() => getComputedStyle(document.activeElement as Element).outlineStyle);
+    expect(style).toBe('solid');
+  });
+
+  test('present-day POI markers keep their name popups', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    const result = await page.evaluate(() => {
+      let markers = 0;
+      let withPopup = 0;
+      (window as any).__nycMap.eachLayer((layer: any) => {
+        if (layer.getLatLng) {
+          markers += 1;
+          if (layer.getPopup && layer.getPopup()) withPopup += 1;
+        }
+      });
+      return { markers, withPopup };
+    });
+    expect(result.markers).toBeGreaterThan(0);
+    expect(result.withPopup).toBe(result.markers);
+  });
 });
+
