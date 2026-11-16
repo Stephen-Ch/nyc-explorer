@@ -3,7 +3,7 @@
   "importsRoot": "C:\\Users\\schur\\OneDrive\\Documents\\_Projects\\NYC-Explorer\\planning\\imports",
   "user": "importer",
   "targets": {
-    "try":  { "host": "", "database": "neondb", "note": "import-try branch; Claude fills this in when the branch is made" },
+    "try":  { "host": "ep-ancient-mode-b4mlcp2h.c-6.us-east-2.aws.neon.tech", "database": "neondb", "note": "import-try branch (br-lively-term-b4g7on2q), direct (not pooled)" },
     "prod": { "host": "ep-morning-hill-b4nfx1pk.c-6.us-east-2.aws.neon.tech", "database": "neondb", "note": "production branch, direct (not pooled)" }
   }
 }
