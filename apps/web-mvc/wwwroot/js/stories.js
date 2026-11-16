@@ -264,7 +264,7 @@
     button.setAttribute('data-point-id', group.id);
     button.setAttribute('aria-label', `${group.name}, ${getStoryCountLabel(group.stories.length)}`);
     button.setAttribute('tabindex', '0');
-    button.style.cssText = 'position:absolute; width:28px; height:28px; border:none; border-radius:50%; background:transparent; pointer-events:auto; cursor:pointer; z-index:651;';
+    button.style.cssText = 'position:absolute; width:25px; height:41px; border:none; border-radius:12px; background:transparent; pointer-events:auto; cursor:pointer; z-index:651;';
     button.addEventListener('click', () => openStoryCard(group, button));
     button.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') {
@@ -283,8 +283,13 @@
       }
 
       const point = map.latLngToContainerPoint([group.lat, group.lng]);
-      button.style.left = `${point.x - 14}px`;
-      button.style.top = `${point.y - 14}px`;
+      // Cover the Leaflet pin picture (25x41, tip at the point), not just its tip.
+      button.style.left = `${point.x - 12}px`;
+      button.style.top = `${point.y - 41}px`;
+      // Same stacking as Leaflet draws the pins: the lower pin is on top.
+      const marker = storyMarkers[index];
+      const iconZ = marker && marker._icon ? Number(marker._icon.style.zIndex) || 0 : 0;
+      button.style.zIndex = String(100000 + iconZ);
     });
   }
 

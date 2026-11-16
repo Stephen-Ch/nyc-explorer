@@ -328,5 +328,55 @@ test.describe('PLAN-41 slice 1a — review fixes', () => {
     expect(result.markers).toBeGreaterThan(0);
     expect(result.withPopup).toBe(result.markers);
   });
+
+  test('clicking the visible pin picture opens its card (Stephen look, Nov 16)', async ({ page }) => {
+    await stubStories(page);
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await pickEra(page, '1877');
+    await expect(page.locator('[data-testid="story-pin"]')).toHaveCount(3);
+
+    const icons = page.locator('.leaflet-marker-icon');
+    for (let i = 0; i < 3; i += 1) {
+      const box = await icons.nth(i).boundingBox();
+      expect(box).not.toBeNull();
+      await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height * 0.35);
+      await expect(card(page)).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(card(page)).toBeHidden();
+    }
+  });
+
+  test('real data: clicking any visible 1877 pin opens that pin\'s own card', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await pickEra(page, '1877');
+    const pins = page.locator('[data-testid="story-pin"]');
+    await expect(pins).not.toHaveCount(0);
+    const count = await pins.count();
+    const names: string[] = [];
+    for (let i = 0; i < count; i += 1) names.push((await pins.nth(i).getAttribute('aria-label'))!.split(',')[0]);
+
+    const wrong: string[] = [];
+    const icons = page.locator('.leaflet-marker-icon');
+    for (let i = 0; i < count; i += 1) {
+      const b = (await icons.nth(i).boundingBox())!;
+      const x = b.x + b.width / 2;
+      const y = b.y + b.height * 0.35;
+      // The pin drawn on top at this spot is the one the walker sees.
+      const topIdx = await page.evaluate(([px, py]) => {
+        const hits = Array.from(document.querySelectorAll('.leaflet-marker-icon'))
+          .map((el, k) => ({ k, r: el.getBoundingClientRect(), z: Number(getComputedStyle(el).zIndex) || 0 }))
+          .filter((h) => px >= h.r.left && px <= h.r.right && py >= h.r.top && py <= h.r.bottom);
+        hits.sort((a, c) => c.z - a.z || c.k - a.k);
+        return hits[0].k;
+      }, [x, y]);
+      await page.mouse.click(x, y);
+      const title = await page.getByTestId('story-card-title').textContent({ timeout: 2000 }).catch(() => 'none');
+      if (title !== names[topIdx]) wrong.push(`${names[topIdx]} -> ${title}`);
+      await page.keyboard.press('Escape');
+    }
+    expect(wrong).toEqual([]);
+  });
 });
 
