@@ -30,8 +30,16 @@ function uniqueBy(rows, key, label) {
 }
 
 export function lastHookOk(notes) {
-  const all = [...String(notes).matchAll(/\bhook_ok\b[\s:=\-]*(yes|no)\b/gi)];
-  return all.length ? all[all.length - 1][1].toLowerCase() : null;
+  // Every hook_ok marker must read cleanly as yes or no; one unreadable marker = not approved.
+  const s = String(notes);
+  const marks = [...s.matchAll(/\bhook_ok\b/gi)];
+  let last = null;
+  for (const m of marks) {
+    const v = s.slice(m.index + m[0].length).match(/^[\s:=\-–—]*(yes|no)(?![\w/])/i);
+    if (!v) return null;
+    last = v[1].toLowerCase();
+  }
+  return last;
 }
 
 export function cleanLink(raw) {
