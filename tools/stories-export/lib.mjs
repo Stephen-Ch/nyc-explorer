@@ -14,6 +14,8 @@ const NEED = {
 function readCsv(file, kind) {
   const rows = parse(fs.readFileSync(file, 'utf8'), { bom: true, relax_column_count: true });
   const header = rows[0] ?? [];
+  const dup = header.find((h, i) => h !== '' && header.indexOf(h) !== i);
+  if (dup) throw new Error(`${kind}: duplicate header "${dup}" in ${file}`);
   for (const h of NEED[kind]) if (!header.includes(h)) throw new Error(`${kind}: missing header "${h}" in ${file}`);
   return rows.slice(1).filter(r => r.some(c => c !== '')).map(r => Object.fromEntries(header.map((h, i) => [h, r[i] ?? ''])));
 }
@@ -28,16 +30,18 @@ function uniqueBy(rows, key, label) {
 }
 
 export function lastHookOk(notes) {
-  const all = [...String(notes).matchAll(/hook_ok\s+(yes|no)\b/gi)];
+  const all = [...String(notes).matchAll(/\bhook_ok\b[\s:=\-]*(yes|no)\b/gi)];
   return all.length ? all[all.length - 1][1].toLowerCase() : null;
 }
 
 export function cleanLink(raw) {
   let s = String(raw ?? '').trim();
   if (s.startsWith('http://www.loc.gov/')) s = 'https://' + s.slice('http://'.length);
+  if (!s.startsWith('https://') || /[\s"'<>`\\]/.test(s)) return null;
   let u;
   try { u = new URL(s); } catch { return null; }
-  return u.protocol === 'https:' && s.startsWith('https://') ? s : null;
+  if (u.protocol !== 'https:' || u.username || u.password) return null;
+  return u.href;
 }
 
 function readList(file) {
@@ -86,8 +90,9 @@ export function exportStories({ storyList, storiesCsv, storyTextCsv, pointsCsv, 
     const text = t && /^ok\b/i.test(t.style_check.trim()) && t.story_text.trim() ? t.story_text : null;
 
     if (!groups.has(gid)) {
-      const lat = Number(gl.lat), lng = Number(gl.lon);
-      if (!Number.isFinite(lat) || !Number.isFinite(lng)) throw new Error(`${gid}: bad lat/lng`);
+      const lat = gl.lat.trim() === '' ? NaN : Number(gl.lat), lng = gl.lon.trim() === '' ? NaN : Number(gl.lon);
+      // Launch area is around Union Square; anything far outside Manhattan is a data error.
+      if (!(lat > 40.6 && lat < 40.9 && lng > -74.1 && lng < -73.9)) throw new Error(`${gid}: bad lat/lng "${gl.lat}", "${gl.lon}"`);
       const conf = req(gl.confidence, 'confidence', gid).toLowerCase();
       groups.set(gid, { id: gid, name: req(gp.name, 'name', gid), lat, lng, approx: conf !== 'high', stories: [] });
     }
