@@ -207,3 +207,83 @@ test.describe('PLAN-41 slice 1a — 1877 stories', () => {
     await expect(page.locator('body')).not.toHaveText('Failed to load POIs');
   });
 });
+
+test.describe('PLAN-41 slice 1a — review fixes', () => {
+  test('switching back to Today before stories load leaves no story pins', async ({ page }) => {
+    await page.route('**/content/stories.v1.json', async (route) => {
+      await new Promise((r) => setTimeout(r, 1500));
+      await route.fulfill({ status: 200, contentType: 'application/json', body: FIXTURE });
+    });
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    const poiCount = await page.locator('[data-testid="poi-marker"]').count();
+
+    await pickEra(page, '1877');
+    await pickEra(page, 'today');
+    await page.waitForTimeout(2500);
+    await expect(page.locator('[data-testid="story-pin"]')).toHaveCount(0);
+    await expect(page.locator('.leaflet-marker-icon')).toHaveCount(poiCount);
+  });
+
+  test('panning the map keeps the pin, so Esc returns focus to it', async ({ page }) => {
+    await stubStories(page);
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await pickEra(page, '1877');
+
+    const before = await pin(page, 'fixture-union-square').elementHandle();
+    await pin(page, 'fixture-union-square').click();
+    await expect(card(page)).toBeVisible();
+    await page.evaluate(() => (window as any).__nycMap.panBy([40, 0], { animate: false }));
+    const same = await page.evaluate((el) => el?.isConnected === true, before);
+    expect(same).toBe(true);
+    await page.keyboard.press('Escape');
+    await expect(pin(page, 'fixture-union-square')).toBeFocused();
+  });
+
+  test('phone width: card sits at the bottom, at most 60% of the screen high', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await stubStories(page);
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await pickEra(page, '1877');
+    await pin(page, 'fixture-union-square').dispatchEvent('click');
+
+    const box = await card(page).boundingBox();
+    expect(box).not.toBeNull();
+    expect(Math.round(box!.y + box!.height)).toBe(844);
+    expect(box!.height).toBeLessThanOrEqual(844 * 0.6 + 1);
+    expect(box!.width).toBeGreaterThanOrEqual(389);
+  });
+
+  test('opening cards adds only one stylesheet', async ({ page }) => {
+    await stubStories(page);
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await pickEra(page, '1877');
+    for (const id of ['fixture-union-square', 'fixture-academy-of-music', 'fixture-tiffany']) {
+      await pin(page, id).click();
+      await page.keyboard.press('Escape');
+    }
+    const styles = await page.evaluate(
+      () => Array.from(document.querySelectorAll('style')).filter((s) => (s.textContent || '').includes('story-card')).length,
+    );
+    expect(styles).toBe(1);
+  });
+
+  test('a failed stories load is retried the next time 1877 is picked', async ({ page }) => {
+    let calls = 0;
+    await page.route('**/content/stories.v1.json', async (route) => {
+      calls += 1;
+      if (calls === 1) await route.fulfill({ status: 404, body: 'missing' });
+      else await route.fulfill({ status: 200, contentType: 'application/json', body: FIXTURE });
+    });
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await pickEra(page, '1877');
+    await expect(page.getByTestId('stories-error')).toHaveText('Unable to load 1877 stories.');
+    await pickEra(page, 'today');
+    await pickEra(page, '1877');
+    await expect(page.locator('[data-testid="story-pin"]')).toHaveCount(3);
+  });
+});
