@@ -17,6 +17,7 @@
   let activeCard = null;
   let activePin = null;
   let storyData = null;
+  let keptIds = null; // A4: after a walk, only these group ids keep their pins (null = all)
 
   function ensureNode(testId, tagName, attrName, attrValue) {
     let node = document.querySelector(`[data-testid="${testId}"]`);
@@ -312,12 +313,29 @@
       storyOverlay.appendChild(button);
     });
 
-    positionStoryButtons();
+    applyKept();
     if (typeof window.__nycMap === 'object') {
       ['move', 'zoom', 'resize'].forEach((eventName) => {
         map.on(eventName, positionStoryButtons);
       });
     }
+  }
+
+  function applyKept() {
+    storyButtons.forEach((button, index) => {
+      const group = storyGroups[index];
+      const marker = storyMarkers[index];
+      const show = !keptIds || (group && keptIds.has(group.id));
+      if (marker) {
+        if (show && !map.hasLayer(marker)) {
+          marker.addTo(map);
+        } else if (!show && map.hasLayer(marker)) {
+          map.removeLayer(marker);
+        }
+      }
+      button.hidden = !show;
+    });
+    positionStoryButtons();
   }
 
   function loadStories() {
@@ -334,6 +352,7 @@
           }
 
           storyData = payload;
+          document.dispatchEvent(new CustomEvent('nyc:stories-loaded'));
           return payload;
         })
         .catch((error) => {
@@ -372,8 +391,43 @@
     loadStories();
   }
 
+  window.__nycGetStoryGroups = () => (storyData && Array.isArray(storyData.groups) ? storyData.groups : null);
+  window.__nycCloseStoryCard = () => closeCard(false);
+  window.__nycShowOnlyStoryPins = (ids) => {
+    keptIds = Array.isArray(ids) ? new Set(ids) : null;
+    applyKept();
+  };
+  window.__nycOpenStoryGroup = (id, openerEl) => {
+    if (!storyData || !Array.isArray(storyData.groups)) {
+      return false;
+    }
+    const group = storyData.groups.find((item) => item.id === id);
+    if (!group) {
+      return false;
+    }
+    if (activeCard && currentGroup && currentGroup.id === group.id) {
+      activePin = openerEl || null;
+      const closeButton = activeCard.querySelector('[data-testid="story-card-close"]');
+      if (closeButton) {
+        closeButton.focus();
+      }
+      return true;
+    }
+    openStoryCard(group, openerEl || null);
+    return true;
+  };
 
   window.__nycOnEra(handleEraChange);
+
+  const walkCoreScript = document.createElement('script');
+  walkCoreScript.src = '/js/walk-core.js';
+  walkCoreScript.async = false;
+  document.body.appendChild(walkCoreScript);
+
+  const walkScript = document.createElement('script');
+  walkScript.src = '/js/walk.js';
+  walkScript.async = false;
+  document.body.appendChild(walkScript);
 
   if (window.__nycGetEra && window.__nycGetEra() === '1877') {
     loadStories();

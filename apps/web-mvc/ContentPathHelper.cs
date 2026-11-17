@@ -25,4 +25,14 @@ public static class ContentPathHelper
 
         return Path.Combine(env.ContentRootPath, "..", "..", "content", "stories.v1.json");
     }
+
+    public static string GetWalkGraphFilePath(IWebHostEnvironment env)
+    {
+        if (env is null)
+        {
+            throw new ArgumentNullException(nameof(env));
+        }
+
+        return Path.Combine(env.ContentRootPath, "..", "..", "content", "walk-graph.v1.json");
+    }
 }

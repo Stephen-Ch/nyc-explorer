@@ -1,0 +1,206 @@
+{
+ "version": 1,
+ "era": 1877,
+ "attribution": "Fixture stories for walk tests.",
+ "groups": [
+  {
+   "id": "fx-astor",
+   "name": "Astor Hall",
+   "lat": 40.735001,
+   "lng": -73.992903,
+   "approx": false,
+   "stories": [
+    {
+     "id": "fx-astor-1",
+     "hook": "Astor Hall fixture hook 1.",
+     "text": "Astor Hall fixture text 1.",
+     "source": "Fixture Paper, 1877-01-01, page 1",
+     "link": null
+    }
+   ]
+  },
+  {
+   "id": "fx-bowery",
+   "name": "Bowery Bank",
+   "lat": 40.737879,
+   "lng": -73.993069,
+   "approx": false,
+   "stories": [
+    {
+     "id": "fx-bowery-1",
+     "hook": "Bowery Bank fixture hook 1.",
+     "text": "Bowery Bank fixture text 1.",
+     "source": "Fixture Paper, 1877-01-01, page 1",
+     "link": null
+    }
+   ]
+  },
+  {
+   "id": "fx-cooper",
+   "name": "Cooper Club",
+   "lat": 40.73626,
+   "lng": -73.992499,
+   "approx": false,
+   "stories": [
+    {
+     "id": "fx-cooper-1",
+     "hook": "Cooper Club fixture hook 1.",
+     "text": "Cooper Club fixture text 1.",
+     "source": "Fixture Paper, 1877-01-01, page 1",
+     "link": null
+    },
+    {
+     "id": "fx-cooper-2",
+     "hook": "Cooper Club fixture hook 2.",
+     "text": "Cooper Club fixture text 2.",
+     "source": "Fixture Paper, 1877-01-01, page 1",
+     "link": null
+    }
+   ]
+  },
+  {
+   "id": "fx-delmonico",
+   "name": "Delmonico Room",
+   "lat": 40.736619,
+   "lng": -73.992321,
+   "approx": false,
+   "stories": [
+    {
+     "id": "fx-delmonico-1",
+     "hook": "Delmonico Room fixture hook 1.",
+     "text": "Delmonico Room fixture text 1.",
+     "source": "Fixture Paper, 1877-01-01, page 1",
+     "link": null
+    }
+   ]
+  },
+  {
+   "id": "fx-echo",
+   "name": "Echo Hall",
+   "lat": 40.736979,
+   "lng": -73.99333,
+   "approx": false,
+   "stories": [
+    {
+     "id": "fx-echo-1",
+     "hook": "Echo Hall fixture hook 1.",
+     "text": "Echo Hall fixture text 1.",
+     "source": "Fixture Paper, 1877-01-01, page 1",
+     "link": null
+    }
+   ]
+  },
+  {
+   "id": "fx-fable",
+   "name": "Fable House",
+   "lat": 40.736979,
+   "lng": -73.992618,
+   "approx": false,
+   "stories": [
+    {
+     "id": "fx-fable-1",
+     "hook": "Fable House fixture hook 1.",
+     "text": "Fable House fixture text 1.",
+     "source": "Fixture Paper, 1877-01-01, page 1",
+     "link": null
+    }
+   ]
+  },
+  {
+   "id": "fx-grange",
+   "name": "Grange Inn",
+   "lat": 40.736984,
+   "lng": -73.992855,
+   "approx": false,
+   "stories": [
+    {
+     "id": "fx-grange-1",
+     "hook": "Grange Inn fixture hook 1.",
+     "text": "Grange Inn fixture text 1.",
+     "source": "Fixture Paper, 1877-01-01, page 1",
+     "link": null
+    }
+   ]
+  },
+  {
+   "id": "fx-hudson",
+   "name": "Hudson Hotel",
+   "lat": 40.735963,
+   "lng": -73.98882,
+   "approx": false,
+   "stories": [
+    {
+     "id": "fx-hudson-1",
+     "hook": "Hudson Hotel fixture hook 1.",
+     "text": "Hudson Hotel fixture text 1.",
+     "source": "Fixture Paper, 1877-01-01, page 1",
+     "link": null
+    }
+   ]
+  },
+  {
+   "id": "fx-irving",
+   "name": "Irving Place Inn",
+   "lat": 40.73563,
+   "lng": -73.990007,
+   "approx": false,
+   "stories": [
+    {
+     "id": "fx-irving-1",
+     "hook": "Irving Place Inn fixture hook 1.",
+     "text": "Irving Place Inn fixture text 1.",
+     "source": "Fixture Paper, 1877-01-01, page 1",
+     "link": null
+    }
+   ]
+  },
+  {
+   "id": "fx-jumel",
+   "name": "Jumel House",
+   "lat": 40.7359,
+   "lng": -73.9906,
+   "approx": false,
+   "stories": [
+    {
+     "id": "fx-jumel-1",
+     "hook": "Jumel House fixture hook 1.",
+     "text": "Jumel House fixture text 1.",
+     "source": "Fixture Paper, 1877-01-01, page 1",
+     "link": null
+    }
+   ]
+  },
+  {
+   "id": "fx-knick",
+   "name": "Knickerbocker",
+   "lat": 40.738238,
+   "lng": -73.988286,
+   "approx": false,
+   "stories": [
+    {
+     "id": "fx-knick-1",
+     "hook": "Knickerbocker fixture hook 1.",
+     "text": "Knickerbocker fixture text 1.",
+     "source": "Fixture Paper, 1877-01-01, page 1",
+     "link": null
+    }
+   ]
+  },
+  {
+   "id": "fx-lafayette",
+   "name": "Lafayette Hall",
+   "lat": 40.737699,
+   "lng": -73.987752,
+   "approx": false,
+   "stories": [
+    {
+     "id": "fx-lafayette-1",
+     "hook": "Lafayette Hall fixture hook 1.",
+     "text": "Lafayette Hall fixture text 1.",
+     "source": "Fixture Paper, 1877-01-01, page 1",
+     "link": null
+    }
+   ]
+  }
+ ]
+}
