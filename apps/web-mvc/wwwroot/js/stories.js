@@ -334,6 +334,7 @@
           }
 
           storyData = payload;
+          document.dispatchEvent(new CustomEvent('nyc:stories-loaded'));
           return payload;
         })
         .catch((error) => {
@@ -372,8 +373,39 @@
     loadStories();
   }
 
+  window.__nycGetStoryGroups = () => (storyData && Array.isArray(storyData.groups) ? storyData.groups : null);
+  window.__nycCloseStoryCard = () => closeCard(false);
+  window.__nycOpenStoryGroup = (id, openerEl) => {
+    if (!storyData || !Array.isArray(storyData.groups)) {
+      return false;
+    }
+    const group = storyData.groups.find((item) => item.id === id);
+    if (!group) {
+      return false;
+    }
+    if (activeCard && currentGroup && currentGroup.id === group.id) {
+      activePin = openerEl || null;
+      const closeButton = activeCard.querySelector('[data-testid="story-card-close"]');
+      if (closeButton) {
+        closeButton.focus();
+      }
+      return true;
+    }
+    openStoryCard(group, openerEl || null);
+    return true;
+  };
 
   window.__nycOnEra(handleEraChange);
+
+  const walkCoreScript = document.createElement('script');
+  walkCoreScript.src = '/js/walk-core.js';
+  walkCoreScript.async = false;
+  document.body.appendChild(walkCoreScript);
+
+  const walkScript = document.createElement('script');
+  walkScript.src = '/js/walk.js';
+  walkScript.async = false;
+  document.body.appendChild(walkScript);
 
   if (window.__nycGetEra && window.__nycGetEra() === '1877') {
     loadStories();

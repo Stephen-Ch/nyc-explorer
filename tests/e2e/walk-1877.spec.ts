@@ -281,6 +281,36 @@ test.describe('PLAN-41 slice 1b — walk in 1877', () => {
     expect(calls).toBe(2);
   });
 
+  test('switching to Today while Go waits for the walk file draws nothing (diff review)', async ({ page }) => {
+    await page.route('**/content/stories.v1.json', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: STORIES }),
+    );
+    await page.route('**/content/walk-graph.v1.json', async (route) => {
+      await new Promise((r) => setTimeout(r, 800));
+      await route.fulfill({ status: 200, contentType: 'application/json', body: GRAPH });
+    });
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await pickEra(page, '1877');
+    await page.getByTestId('walk-from').locator('option[value="fx-astor"]').waitFor({ state: 'attached' });
+    await page.getByTestId('walk-from').selectOption('fx-astor');
+    await page.getByTestId('walk-to').selectOption('fx-bowery');
+    await page.getByTestId('walk-go').click();
+    await pickEra(page, 'today');
+    await page.waitForTimeout(1500);
+    await expect(page.locator('[data-testid="walk-line"]')).toHaveCount(0);
+    await expect(page.locator('path[stroke="#b5651d"]')).toHaveCount(0);
+  });
+
+  test('a missing walk file leaves no uncaught error in the page (diff review)', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(String(e)));
+    await open1877(page, 404);
+    await expect(page.getByTestId('walk-message')).toHaveText('Walks are not available right now.');
+    await page.waitForTimeout(300);
+    expect(errors).toEqual([]);
+  });
+
   test('walk file is fetched once, however often 1877 is picked', async ({ page }) => {
     let graphFetches = 0;
     page.on('request', (r) => {
