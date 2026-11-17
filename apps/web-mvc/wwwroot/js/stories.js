@@ -17,6 +17,7 @@
   let activeCard = null;
   let activePin = null;
   let storyData = null;
+  let keptIds = null; // A4: after a walk, only these group ids keep their pins (null = all)
 
   function ensureNode(testId, tagName, attrName, attrValue) {
     let node = document.querySelector(`[data-testid="${testId}"]`);
@@ -312,12 +313,29 @@
       storyOverlay.appendChild(button);
     });
 
-    positionStoryButtons();
+    applyKept();
     if (typeof window.__nycMap === 'object') {
       ['move', 'zoom', 'resize'].forEach((eventName) => {
         map.on(eventName, positionStoryButtons);
       });
     }
+  }
+
+  function applyKept() {
+    storyButtons.forEach((button, index) => {
+      const group = storyGroups[index];
+      const marker = storyMarkers[index];
+      const show = !keptIds || (group && keptIds.has(group.id));
+      if (marker) {
+        if (show && !map.hasLayer(marker)) {
+          marker.addTo(map);
+        } else if (!show && map.hasLayer(marker)) {
+          map.removeLayer(marker);
+        }
+      }
+      button.hidden = !show;
+    });
+    positionStoryButtons();
   }
 
   function loadStories() {
@@ -375,6 +393,10 @@
 
   window.__nycGetStoryGroups = () => (storyData && Array.isArray(storyData.groups) ? storyData.groups : null);
   window.__nycCloseStoryCard = () => closeCard(false);
+  window.__nycShowOnlyStoryPins = (ids) => {
+    keptIds = Array.isArray(ids) ? new Set(ids) : null;
+    applyKept();
+  };
   window.__nycOpenStoryGroup = (id, openerEl) => {
     if (!storyData || !Array.isArray(storyData.groups)) {
       return false;

@@ -12,6 +12,7 @@
   let fromSelect = null;
   let toSelect = null;
   let goButton = null;
+  let showAllButton = null;
   let message = null;
   let list = null;
   let walkLine = null;
@@ -26,7 +27,17 @@
     }
   };
 
+  const showAllPins = () => {
+    if (typeof window.__nycShowOnlyStoryPins === 'function') {
+      window.__nycShowOnlyStoryPins(null);
+    }
+    if (showAllButton) {
+      showAllButton.hidden = true;
+    }
+  };
+
   const clearWalkVisuals = () => {
+    showAllPins();
     if (walkLine) {
       map.removeLayer(walkLine);
       walkLine = null;
@@ -87,6 +98,24 @@
     goButton.textContent = 'Go';
     panel.appendChild(goButton);
 
+    showAllButton = document.createElement('button');
+    showAllButton.type = 'button';
+    showAllButton.setAttribute('data-testid', 'walk-show-all');
+    showAllButton.textContent = 'Show all places';
+    showAllButton.hidden = true;
+    showAllButton.addEventListener('click', () => {
+      goRunToken += 1;
+      if (typeof window.__nycCloseStoryCard === 'function') {
+        window.__nycCloseStoryCard();
+      }
+      clearWalkVisuals();
+      setMessage('');
+      if (goButton) {
+        goButton.focus();
+      }
+    });
+    panel.appendChild(showAllButton);
+
     message = document.createElement('div');
     message.setAttribute('data-testid', 'walk-message');
     message.setAttribute('aria-live', 'polite');
@@ -112,6 +141,7 @@
     fromSelect = null;
     toSelect = null;
     goButton = null;
+    showAllButton = null;
     message = null;
     list = null;
   };
@@ -332,8 +362,18 @@
       return;
     }
 
+    // A card may have been opened from a pin while the walk file loaded; its pin may now hide.
+    if (typeof window.__nycCloseStoryCard === 'function') {
+      window.__nycCloseStoryCard();
+    }
     drawWalk(plan.line);
     renderList(plan.list);
+    if (typeof window.__nycShowOnlyStoryPins === 'function') {
+      window.__nycShowOnlyStoryPins(plan.list.map((item) => item.id));
+    }
+    if (showAllButton) {
+      showAllButton.hidden = false;
+    }
     setMessage(`${plan.list.length} places on this walk`);
     if (goButton) {
       goButton.focus();
