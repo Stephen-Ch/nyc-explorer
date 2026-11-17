@@ -266,18 +266,15 @@
 
     let graphData = graph;
     if (!graphData) {
-      if (!graphPromise) {
-        void ensureGraph();
-      }
       try {
-        await graphPromise;
+        await ensureGraph();
       } catch {
         if (goButton) {
           goButton.focus();
         }
         return;
       }
-      if (runToken !== goRunToken) {
+      if (runToken !== goRunToken || !panel || window.__nycGetEra() !== '1877') {
         return;
       }
       clearWalkVisuals();
@@ -336,10 +333,12 @@
     }
     hideTodayControls();
     fillSelects(getStoryGroups());
-    void ensureGraph();
+    // Failure is already shown in the message; catch so the browser sees no unhandled rejection.
+    ensureGraph().catch(() => {});
   };
 
   const enterToday = () => {
+    goRunToken += 1; // a Go still waiting for the walk file must not draw after leaving 1877
     clearWalkVisuals();
     setMessage('');
     removePanel();
