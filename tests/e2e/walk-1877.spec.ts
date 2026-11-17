@@ -393,6 +393,7 @@ test.describe('PLAN-41 slice 1b — walk in 1877', () => {
     await expect(icons(page)).toHaveCount(3);
     const ids = await visiblePins(page).evaluateAll((els) => els.map((e) => e.getAttribute('data-point-id')).sort());
     expect(ids).toEqual(['fx-hudson', 'fx-knick', 'fx-lafayette']);
+    await expect(page.locator('[data-testid="story-pin"][data-point-id="fx-cooper"]')).toBeHidden();
 
     const showAll = page.getByTestId('walk-show-all');
     await expect(showAll).toBeVisible();
@@ -421,7 +422,6 @@ test.describe('PLAN-41 slice 1b — walk in 1877', () => {
     await open1877(page);
     await walk(page, 'fx-hudson', 'fx-knick');
     await pickEra(page, '1877');
-    await page.waitForTimeout(300);
     await expect(visiblePins(page)).toHaveCount(3);
     await expect(icons(page)).toHaveCount(3);
     await expect(page.getByTestId('walk-item')).toHaveCount(3);
@@ -465,6 +465,7 @@ test.describe('PLAN-41 slice 1b — walk in 1877', () => {
     await expect(page.getByTestId('walk-item')).toHaveCount(3);
     await expect(page.getByTestId('story-card')).toHaveCount(0);
     await expect(visiblePins(page)).toHaveCount(3);
+    await expect(page.getByTestId('walk-go')).toBeFocused();
   });
 
   test('A4: Tab from Show all never reaches a pin that is not on the walk', async ({ page }) => {
