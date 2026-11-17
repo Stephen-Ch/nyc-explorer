@@ -169,7 +169,7 @@ test.describe('PLAN-41 slice 1b — walk in 1877', () => {
     await expect(page.getByTestId('walk-item')).toHaveCount(0);
   });
 
-  test('keyboard: Tab goes From, To, Go, then the list buttons', async ({ page }) => {
+  test('keyboard: Tab goes From, To, Go, Show all, then the list buttons', async ({ page }) => {
     await open1877(page);
     await walk(page, 'fx-hudson', 'fx-knick');
     await page.getByTestId('walk-from').focus();
@@ -177,6 +177,8 @@ test.describe('PLAN-41 slice 1b — walk in 1877', () => {
     await expect(page.getByTestId('walk-to')).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(page.getByTestId('walk-go')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(page.getByTestId('walk-show-all')).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(page.locator('[data-testid="walk-item"][data-point-id="fx-hudson"]')).toBeFocused();
     await page.keyboard.press('Tab');
@@ -378,4 +380,110 @@ test.describe('PLAN-41 slice 1b — walk in 1877', () => {
     await expect(page.getByTestId('walk-panel').locator('img')).toHaveCount(0);
     expect(await page.evaluate(() => (window as unknown as { __walkXss?: number }).__walkXss)).toBeUndefined();
   });
+
+  // Amendment A4 (Stephen's look, Nov 16): after a walk, only that walk's pins stay on the map.
+  const visiblePins = (page: Page) => page.locator('[data-testid="story-pin"]:not([hidden])');
+  const icons = (page: Page) => page.locator('.leaflet-marker-icon');
+
+  test('A4: after a walk only its pins show; Show all brings every pin back', async ({ page }) => {
+    await open1877(page);
+    await expect(page.getByTestId('walk-show-all')).toBeHidden();
+    await walk(page, 'fx-hudson', 'fx-knick');
+    await expect(visiblePins(page)).toHaveCount(3);
+    await expect(icons(page)).toHaveCount(3);
+    const ids = await visiblePins(page).evaluateAll((els) => els.map((e) => e.getAttribute('data-point-id')).sort());
+    expect(ids).toEqual(['fx-hudson', 'fx-knick', 'fx-lafayette']);
+
+    const showAll = page.getByTestId('walk-show-all');
+    await expect(showAll).toBeVisible();
+    await expect(showAll).toHaveText('Show all places');
+    await showAll.click();
+    await expect(visiblePins(page)).toHaveCount(12);
+    await expect(icons(page)).toHaveCount(12);
+    await expect(showAll).toBeHidden();
+    await expect(page.locator('[data-testid="walk-line"]')).toHaveCount(0);
+    await expect(page.getByTestId('walk-item')).toHaveCount(0);
+    await expect(page.getByTestId('walk-go')).toBeFocused();
+  });
+
+  test('A4: a walk that ends in a message shows every pin', async ({ page }) => {
+    await open1877(page);
+    await walk(page, 'fx-hudson', 'fx-knick');
+    await expect(visiblePins(page)).toHaveCount(3);
+    await walk(page, 'fx-astor', 'fx-astor');
+    await expect(page.getByTestId('walk-message')).toHaveText('Pick two different places.');
+    await expect(visiblePins(page)).toHaveCount(12);
+    await expect(icons(page)).toHaveCount(12);
+    await expect(page.getByTestId('walk-show-all')).toBeHidden();
+  });
+
+  test('A4: Today then 1877 shows every pin; picking 1877 again keeps the walk', async ({ page }) => {
+    await open1877(page);
+    await walk(page, 'fx-hudson', 'fx-knick');
+    await pickEra(page, '1877');
+    await page.waitForTimeout(300);
+    await expect(visiblePins(page)).toHaveCount(3);
+    await expect(icons(page)).toHaveCount(3);
+    await expect(page.getByTestId('walk-item')).toHaveCount(3);
+    await expect(page.locator('[data-testid="walk-line"]')).toHaveCount(1);
+
+    await pickEra(page, 'today');
+    await pickEra(page, '1877');
+    await expect(visiblePins(page)).toHaveCount(12);
+    await expect(icons(page)).toHaveCount(12);
+    await expect(page.getByTestId('walk-show-all')).toBeHidden();
+  });
+
+  test('A4: Show all while a list card is open closes the card and focuses Go', async ({ page }) => {
+    await open1877(page);
+    await walk(page, 'fx-hudson', 'fx-knick');
+    await page.locator('[data-testid="walk-item"][data-point-id="fx-lafayette"]').click();
+    await expect(page.getByTestId('story-card')).toBeVisible();
+    await page.getByTestId('walk-show-all').click();
+    await expect(page.getByTestId('story-card')).toHaveCount(0);
+    await expect(page.getByTestId('walk-go')).toBeFocused();
+    await expect(visiblePins(page)).toHaveCount(12);
+  });
+
+  test('A4: a pin card opened while a slow walk file loads is closed when its pin is hidden', async ({ page }) => {
+    await page.route('**/content/stories.v1.json', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: STORIES }),
+    );
+    await page.route('**/content/walk-graph.v1.json', async (route) => {
+      await new Promise((r) => setTimeout(r, 1500));
+      await route.fulfill({ status: 200, contentType: 'application/json', body: GRAPH });
+    });
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await pickEra(page, '1877');
+    await page.getByTestId('walk-from').locator('option[value="fx-hudson"]').waitFor({ state: 'attached' });
+    await page.getByTestId('walk-from').selectOption('fx-hudson');
+    await page.getByTestId('walk-to').selectOption('fx-knick');
+    await page.getByTestId('walk-go').click();
+    await page.locator('[data-testid="story-pin"][data-point-id="fx-cooper"]').click();
+    await expect(page.getByTestId('story-card')).toBeVisible();
+    await expect(page.getByTestId('walk-item')).toHaveCount(3);
+    await expect(page.getByTestId('story-card')).toHaveCount(0);
+    await expect(visiblePins(page)).toHaveCount(3);
+  });
+
+  test('A4: Tab from Show all never reaches a pin that is not on the walk', async ({ page }) => {
+    await open1877(page);
+    await walk(page, 'fx-hudson', 'fx-knick');
+    await page.getByTestId('walk-show-all').focus();
+    const reached: string[] = [];
+    for (let i = 0; i < 30; i += 1) {
+      await page.keyboard.press('Tab');
+      const id = await page.evaluate(() => {
+        const el = document.activeElement as HTMLElement | null;
+        return el && el.getAttribute('data-testid') === 'story-pin' ? el.getAttribute('data-point-id') : null;
+      });
+      if (id) reached.push(id);
+    }
+    expect(reached.length).toBeGreaterThan(0);
+    for (const id of reached) {
+      expect(['fx-hudson', 'fx-lafayette', 'fx-knick']).toContain(id);
+    }
+  });
 });
+
