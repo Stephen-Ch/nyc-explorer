@@ -302,6 +302,43 @@ test.describe('PLAN-41 slice 1b — walk in 1877', () => {
     await expect(page.locator('path[stroke="#b5651d"]')).toHaveCount(0);
   });
 
+  test('changing From/To while Go waits for the walk file walks the new pair (diff review)', async ({ page }) => {
+    await page.route('**/content/stories.v1.json', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: STORIES }),
+    );
+    await page.route('**/content/walk-graph.v1.json', async (route) => {
+      await new Promise((r) => setTimeout(r, 1000));
+      await route.fulfill({ status: 200, contentType: 'application/json', body: GRAPH });
+    });
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await pickEra(page, '1877');
+    await page.getByTestId('walk-from').locator('option[value="fx-astor"]').waitFor({ state: 'attached' });
+    await page.getByTestId('walk-from').selectOption('fx-astor');
+    await page.getByTestId('walk-to').selectOption('fx-bowery');
+    await page.getByTestId('walk-go').click();
+    await page.getByTestId('walk-from').selectOption('fx-hudson');
+    await page.getByTestId('walk-to').selectOption('fx-knick');
+    await expect(page.getByTestId('walk-item')).toHaveText([
+      'Hudson Hotel, 1 story',
+      'Lafayette Hall, 1 story',
+      'Knickerbocker, 1 story',
+    ]);
+  });
+
+  test('a walk file with no streets counts as not available (diff review)', async ({ page }) => {
+    await page.route('**/content/stories.v1.json', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: STORIES }),
+    );
+    await page.route('**/content/walk-graph.v1.json', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: '{"version":1,"nodes":[],"edges":[]}' }),
+    );
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await pickEra(page, '1877');
+    await expect(page.getByTestId('walk-message')).toHaveText('Walks are not available right now.');
+  });
+
   test('a missing walk file leaves no uncaught error in the page (diff review)', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(String(e)));
