@@ -136,6 +136,7 @@
         return;
       }
       element.style.display = previousDisplay.has(id) ? previousDisplay.get(id) : '';
+      previousDisplay.delete(id);
     });
   };
 
@@ -190,7 +191,11 @@
           throw new Error(`walk graph request failed: ${response.status}`);
         }
         const payload = await response.json();
-        graph = WalkCore.prepareGraph(payload);
+        const prepared = WalkCore.prepareGraph(payload);
+        if (!prepared.edges.length) {
+          throw new Error('walk graph has no streets');
+        }
+        graph = prepared;
         return graph;
       })
       .catch((error) => {
@@ -253,14 +258,18 @@
       return;
     }
 
-    const fromId = fromSelect.value;
-    const toId = toSelect.value;
-    if (!fromId || !toId) {
-      setMessage('Pick a From and a To place.');
-      return;
-    }
-    if (fromId === toId) {
-      setMessage('Pick two different places.');
+    const checkChoice = () => {
+      if (!fromSelect.value || !toSelect.value) {
+        setMessage('Pick a From and a To place.');
+        return false;
+      }
+      if (fromSelect.value === toSelect.value) {
+        setMessage('Pick two different places.');
+        return false;
+      }
+      return true;
+    };
+    if (!checkChoice()) {
       return;
     }
 
@@ -269,6 +278,9 @@
       try {
         await ensureGraph();
       } catch {
+        if (runToken !== goRunToken) {
+          return;
+        }
         if (goButton) {
           goButton.focus();
         }
@@ -278,8 +290,15 @@
         return;
       }
       clearWalkVisuals();
+      // The walker may have changed From/To while the file loaded: use what is picked now.
+      if (!checkChoice()) {
+        return;
+      }
       graphData = graph;
     }
+
+    const fromId = fromSelect.value;
+    const toId = toSelect.value;
 
     if (!graphData) {
       setMessage('Walks are not available right now.');
