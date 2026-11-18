@@ -153,7 +153,7 @@ test('9: payload: shown text, __urls after each link column as JSON text (HYPERL
     QUEUE: [CLAIM_H], STORY_QUEUE: [CLAIM_H], REWRITE_QUEUE: [CLAIM_H],
   });
   const ctx = load(w, 'export.gs');
-  const p = ctx.readTab_(w.files.get(tr.id), 'STORIES');
+  const p = JSON.parse(JSON.stringify(ctx.readTab_(w.files.get(tr.id), 'STORIES')));   // out of the script's realm
   assert.deepEqual(p.headers, ['story_id', 'place', 'original_link', 'original_link__urls', 'pointer_source (modern, credit only)',
     'pointer_source (modern, credit only)__urls', 'notes']);
   assert.deepEqual(p.rows, [
