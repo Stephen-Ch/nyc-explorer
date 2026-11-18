@@ -1,0 +1,12 @@
+{
+  "name": "nyc-explorer-nightly",
+  "version": "1.0.0",
+  "description": "Plan 47: nightly export and alarm Apps Scripts, tested under node with fake Google services.",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test --test-concurrency=1 test/export.test.mjs test/alarm.test.mjs test/keygen.test.mjs test/session-check.test.mjs",
+    "test:db": "node --test --test-concurrency=1 test/db.test.mjs"
+  }
+}

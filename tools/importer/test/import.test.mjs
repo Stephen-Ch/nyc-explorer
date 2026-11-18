@@ -3,7 +3,7 @@
 //   - IMPORT_TEST_PGHOST (default /tmp) is reachable as superuser IMPORT_TEST_PGSUPER (default postgres) without a password,
 //   - role 'importer' can log in without a password (trust auth), which 0004 creates.
 // Each test gets a fresh database with migrations 0001-0004 and runs the importer AS the importer role.
-import { test, before, after } from 'node:test';
+import { test as nodeTest, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -15,7 +15,15 @@ import { runImport, parseFileName, splitLines, runTime, KINDS, RETRY_KINDS, UNIT
 const HOST = process.env.IMPORT_TEST_PGHOST || '/tmp';
 const SUPER = process.env.IMPORT_TEST_PGSUPER || 'postgres';
 const REPO = path.resolve(import.meta.dirname, '../../..');
-const MIGRATIONS = ['0001_init.sql', '0002_before_import.sql', '0003_research_import.sql', '0004_importer_role.sql', '0005_import_build_40.sql']
+// IMPORT_TEST_WITH_0006=1 (plan 47 test 12): also apply 0006 (the nightly door) and turn the importer's login on,
+// as Claude does at the start of an attended PC import. Door-tab imports (TAB-*) are then refused by design (test 18d).
+const WITH_0006 = process.env.IMPORT_TEST_WITH_0006 === '1';
+// Tests that import a door tab (TAB-*) or run 0005.down under 0006: refused by design after 0006 (plan 47 tests 18d, 13).
+const DOOR_TAB_TESTS = /^tab: (import,|a header-only)|TAB-INDEX|TAB-STORY_TEXT|story_ready|INDEX check|INDEX imports|0005 keeps|0005 down/;
+const test = (name, ...rest) => (WITH_0006 && DOOR_TAB_TESTS.test(name)
+  ? nodeTest.skip(`${name} [skipped with 0006: door tab, plan 47]`, ...rest) : nodeTest(name, ...rest));
+const MIGRATIONS = ['0001_init.sql', '0002_before_import.sql', '0003_research_import.sql', '0004_importer_role.sql', '0005_import_build_40.sql',
+  ...(WITH_0006 ? ['0006_nightly_api.sql'] : [])]
   .map(f => fs.readFileSync(path.join(REPO, 'db/migrations', f), 'utf8'));
 
 const md5 = b => crypto.createHash('md5').update(b).digest('hex');
@@ -39,6 +47,10 @@ const ident = n => '"' + n.replace(/"/g, '""') + '"';
 // only the databases this run made, then the server-wide importer role
 async function dropTestDbs() {
   for (const d of made.splice(0)) await superQuery('postgres', `DROP DATABASE IF EXISTS ${ident(d)} WITH (FORCE)`);
+  if (WITH_0006) {
+    for (const r of ['nyc_loader', 'nyc_door']) await superQuery('postgres', `DROP ROLE IF EXISTS ${r}`);
+    await superQuery('postgres', `DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticator') THEN CREATE ROLE authenticator LOGIN NOINHERIT; END IF; END$$`);
+  }
   try { await superQuery('postgres', 'DROP ROLE IF EXISTS importer'); }
   catch (e) { throw new Error(`role importer is still used by a database this run did not make (${e.message}); clean the test server by hand`); }
 }
@@ -55,6 +67,7 @@ async function freshDb() {
     // 0004 creates the role only if missing (roles are shared by all databases of the server)
     await c.query(m);
   }
+  if (WITH_0006) await c.query('ALTER ROLE importer LOGIN');
   await c.end();
   return name;
 }

@@ -1,0 +1,10 @@
+{
+  "name": "nyc-explorer-db-tests",
+  "version": "1.0.0",
+  "description": "SQL tests for db migrations (plan 47: 0006 nightly door). Local throwaway PostgreSQL 16 only.",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": { "test": "node --test --test-concurrency=1 0006/*.test.mjs" },
+  "dependencies": { "pg": "8.13.1" }
+}
