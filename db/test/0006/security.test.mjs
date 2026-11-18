@@ -137,16 +137,16 @@ test('0006 refuses to run twice, without 0005, or with roles already made', asyn
 // ---- 13: up, down, up; fingerprints of 0001-0005 objects ----
 const PRINT = `SELECT jsonb_build_object(
   'functions', (SELECT jsonb_agg(jsonb_build_array(p.oid::regprocedure::text, md5(pg_get_functiondef(p.oid)), p.proacl::text, p.proconfig::text,
-       pg_get_userbyid(p.proowner)) ORDER BY 1) FROM pg_proc p WHERE p.pronamespace IN ('research'::regnamespace,'core'::regnamespace) AND p.prokind = 'f'),
-  'checks', (SELECT jsonb_agg(jsonb_build_array(conrelid::regclass::text, conname, pg_get_constraintdef(oid)) ORDER BY 1, 2, 3)
+       pg_get_userbyid(p.proowner)) ORDER BY p.oid::regprocedure::text) FROM pg_proc p WHERE p.pronamespace IN ('research'::regnamespace,'core'::regnamespace) AND p.prokind = 'f'),
+  'checks', (SELECT jsonb_agg(jsonb_build_array(conrelid::regclass::text, conname, pg_get_constraintdef(oid)) ORDER BY conrelid::regclass::text, conname, pg_get_constraintdef(oid))
        FROM pg_constraint WHERE connamespace IN ('research'::regnamespace,'core'::regnamespace)),
-  'views', (SELECT jsonb_agg(jsonb_build_array(c.oid::regclass::text, md5(pg_get_viewdef(c.oid))) ORDER BY 1) FROM pg_class c
+  'views', (SELECT jsonb_agg(jsonb_build_array(c.oid::regclass::text, md5(pg_get_viewdef(c.oid))) ORDER BY c.oid::regclass::text) FROM pg_class c
        WHERE c.relkind = 'v' AND c.relnamespace IN ('research'::regnamespace,'core'::regnamespace)),
-  'triggers', (SELECT jsonb_agg(jsonb_build_array(tgrelid::regclass::text, tgname, md5(pg_get_triggerdef(oid))) ORDER BY 1, 2)
+  'triggers', (SELECT jsonb_agg(jsonb_build_array(tgrelid::regclass::text, tgname, md5(pg_get_triggerdef(oid))) ORDER BY tgrelid::regclass::text, tgname)
        FROM pg_trigger WHERE NOT tgisinternal),
-  'tables', (SELECT jsonb_agg(jsonb_build_array(c.oid::regclass::text, c.relacl::text) ORDER BY 1) FROM pg_class c
+  'tables', (SELECT jsonb_agg(jsonb_build_array(c.oid::regclass::text, c.relacl::text) ORDER BY c.oid::regclass::text) FROM pg_class c
        WHERE c.relkind = 'r' AND c.relnamespace IN ('research'::regnamespace,'core'::regnamespace)),
-  'columns', (SELECT jsonb_agg(jsonb_build_array(attrelid::regclass::text, attname, attacl::text) ORDER BY 1, 2) FROM pg_attribute
+  'columns', (SELECT jsonb_agg(jsonb_build_array(attrelid::regclass::text, attname, attacl::text) ORDER BY attrelid::regclass::text, attname) FROM pg_attribute
        WHERE attacl IS NOT NULL AND attrelid IN (SELECT oid FROM pg_class WHERE relnamespace = 'research'::regnamespace)),
   'importer', (SELECT jsonb_build_array(rolcanlogin, rolinherit) FROM pg_roles WHERE rolname = 'importer'),
   'migrations', (SELECT jsonb_agg(version ORDER BY version) FROM core.schema_migrations)) p`;
@@ -168,7 +168,11 @@ test('13: 0006 up, down, up: down restores 0001-0005 exactly; up changes only th
   assert.deepEqual(p3, p1, 'up again gives the same result');
   // what up changed against 0001-0005
   const old = new Map(p0.functions.map(f => [f[0], f]));
-  for (const f of p1.functions) if (old.has(f[0])) assert.deepEqual(f, old.get(f[0]), `0001-0005 function changed: ${f[0]}`);
+  // the only change to a 0001-0005 function is EXECUTE granted to nyc_door (section 7 of 0006)
+  const noDoor = f => [f[0], f[1], f[2] && f[2].replace(/,nyc_door=X\/[a-z_]+/, ''), f[3], f[4]];
+  for (const f of p1.functions) if (old.has(f[0])) assert.deepEqual(noDoor(f), old.get(f[0]), `0001-0005 function changed: ${f[0]}`);
+  assert.deepEqual(p1.functions.filter(f => /nyc_door=X/.test(f[2] || '')).map(f => f[0]).sort(),
+    ['research.begin_import(text,text,jsonb,timestamp with time zone)', 'research.finish_import(bigint)', 'research.has_blank_key(jsonb)', 'research.utf8_sha256(text)']);
   const c0 = p0.checks.filter(c => !REPLACED.includes(c[1]));
   const c1 = p1.checks.filter(c => !NEW_CHECKS.includes(c[1]) && /^research\.(import_batch|tab_row|run_file|packet)$|^core\./.test(c[0]));
   assert.deepEqual(c1, c0.filter(c => /^research\.(import_batch|tab_row|run_file|packet)$|^core\./.test(c[0])));
@@ -197,5 +201,10 @@ test('13u: keys valid under 0005 still pass after 0006 (run-file tabs keep their
     await q(db, `SELECT research.finish_import($1)`, [b]);
   }
   // and a STORY_TEXT key with a bad run_id is still refused by the constraint
-  await assert.rejects(q(db, `INSERT INTO research.tab_row (city_id, import_batch_id, tab, row_key, sheet_row, row_raw) VALUES ('nyc',1,'STORY_TEXT','ST001@x',3,'{"story_id":"ST001","run_id":"x"}')`), /check/);
+  const c = new pg.Client({ host: HOST, user: 'postgres', database: db }); await c.connect();
+  try {
+    await c.query('BEGIN');
+    const b = (await c.query(`SELECT research.begin_import('nyc', 'TAB-STORY_TEXT', '{}', now()) b`)).rows[0].b;
+    await assert.rejects(c.query(`INSERT INTO research.tab_row (city_id, import_batch_id, tab, row_key, sheet_row, row_raw) VALUES ('nyc',$1,'STORY_TEXT','ST001@x',3,'{"story_id":"ST001","run_id":"x"}')`, [b]), /tab_row_key_check_0006/);
+  } finally { await c.query('ROLLBACK'); await c.end(); }
 });

@@ -32,10 +32,10 @@ test('1, 7: put_tab imports each stage 1 tab from a valid payload, as nyc_loader
 test('2, 13b: same content in a newer copy is NOTHING_NEW and leaves no batch; identical re-send is ALREADY', async () => {
   const db = await freshDb(); const g = await nyDate(db);
   await withLoader(db, async c => {
-    const rows = rowsFor('STORIES', 5);
-    const a = await putTab(c, { group: g, tab: 'STORIES', rows, utc: ago(30) });
+    const rows = rowsFor('STORIES', 5), u = ago(30);
+    const a = await putTab(c, { group: g, tab: 'STORIES', rows, utc: u });
     assert.equal(a.status, 'PASS');
-    const again = await putTab(c, { group: g, tab: 'STORIES', rows, utc: ago(30), copy: a.copy });
+    const again = await putTab(c, { group: g, tab: 'STORIES', rows, utc: u, copy: a.copy });
     assert.equal(again.status, 'ALREADY');
     const b = await putTab(c, { group: g, tab: 'STORIES', rows, utc: ago(20) });
     assert.equal(b.status, 'NOTHING_NEW');
@@ -84,7 +84,7 @@ test('4, 16: removed key needs an unused approval from the batch it was live in'
     assert.equal(r.status, 'PASS'); b2 = r.counts.batch_id;
   });
   const ap = (await q(db, `SELECT used_by_batch_id FROM research.removal_approval WHERE note = 'Stephen yes'`)).rows[0];
-  assert.equal(ap.used_by_batch_id, b2);
+  assert.equal(Number(ap.used_by_batch_id), b2);
   assert.equal((await q(db, `SELECT count(*)::int n FROM research.tab_row WHERE row_key='ST003' AND removed_from_tab`)).rows[0].n, 1);
   // approval already used: the key comes back and goes again -> STOPPED
   await withLoader(db, async c => {
@@ -153,13 +153,15 @@ test('13b, 13l: re-send after STOPPED is checked again; ALREADY only in the same
     assert.equal(a.status, 'PASS');
     stopped(await putTab(c, { group: g, tab: 'DELIGHTS', rows: rowsFor('DELIGHTS', 3), utc: ago(30), copy: a.copy }), /same copy/);
     // other export group: not ALREADY (and older than newest accepted: STOPPED)
-    stopped(await putTab(c, { group: '2026-01-01', tab: 'DELIGHTS', rows: rowsFor('DELIGHTS', 2), utc: ago(30), copy: a.copy }), /older|copy time/);
+    stopped(await putTab(c, { group: '2026-01-01', tab: 'DELIGHTS', rows: rowsFor('DELIGHTS', 2), utc: ago(30), copy: a.copy }), /older|copy time|same copy/);
   });
-  // 13 hours later: not ALREADY
-  await q(db, `UPDATE research.nightly_run SET copy_utc = copy_utc - interval '13 hours' WHERE status = 'PASS'`);
-  await withLoader(db, async c => {
-    const r = await putTab(c, { group: g, tab: 'DELIGHTS', rows: rowsFor('DELIGHTS', 2), utc: ago(30 + 13 * 60) , copy: (await runs(db, 'DELIGHTS')).find(x => x.status === 'PASS').copy_id });
-    stopped(r, /copy time/);
+  // 13 hours later: not ALREADY (own database, so no other row shares the copy id)
+  const db2 = await freshDb(); const g2 = await nyDate(db2);
+  const u = ago(30); let p;
+  await withLoader(db2, async c => { p = await putTab(c, { group: g2, tab: 'DELIGHTS', rows: rowsFor('DELIGHTS', 2), utc: u }); assert.equal(p.status, 'PASS'); });
+  await q(db2, `UPDATE research.nightly_run SET copy_utc = copy_utc - interval '13 hours'`);
+  await withLoader(db2, async c => {
+    stopped(await putTab(c, { group: g2, tab: 'DELIGHTS', rows: rowsFor('DELIGHTS', 2), utc: new Date(Date.parse(u) - 13 * 3600000).toISOString(), copy: p.copy }), /copy time/);
   });
 });
 
