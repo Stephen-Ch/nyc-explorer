@@ -71,6 +71,82 @@ function verifyNow() {
   verifyRows_(st.copyName);
 }
 
+/** Live test 13g (amendment A3): Stephen runs this from the editor, never on a trigger. Three real calls through the
+ *  door with real tokens: tonight() (the 8 tabs), put_tab for a tab not on the list (STOPPED by the tab check, not the
+ *  guard) and record_result (one WAIT for NUMBER_MAP). Plus the STORIES size, read only. No copy, no real put_tab.
+ *  Results go to the "selftest" tab of the status sheet; throws at the end if any check failed. */
+function selfTest() {
+  var props = PropertiesService.getScriptProperties();
+  if (props.getProperty('paused')) throw new Error('paused: remove the Script Property paused first');
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(30000)) throw new Error('another export run is going; try again in a few minutes');
+  var results = [], cfg;
+  try {
+    cfg = config_(props);
+    var now = new Date();
+    var group = Utilities.formatDate(now, TZ, 'yyyy-MM-dd');
+    var stamp = Utilities.formatDate(now, 'UTC', "yyyyMMdd'T'HHmmss'Z'");
+    var hex = Utilities.getUuid().replace(/[^0-9a-f]/gi, '').slice(0, 8).toLowerCase();
+    var check = function (name, fn) {
+      try { var d = fn(); results.push([name, d.ok ? 'PASS' : 'FAIL', d.detail]); }
+      catch (e) { results.push([name, 'FAIL', selfTestHint_(name, e.message, results.length > 0 && results[0][1] === 'PASS')]); }
+    };
+    check('tonight', function () {
+      var a = callDb_(cfg, 'tonight', {});
+      var got = (a.tabs || []).map(function (t) { return t.tab; }).sort();
+      var want = Object.keys(KEY_COLUMNS).sort();
+      var ok = got.join(',') === want.join(',');
+      return { ok: ok, detail: 'tabs ' + got.join(',') + (ok ? '' : ' (expected ' + want.join(',') + ')') +
+        '; statement_timeout ' + a.statement_timeout + '; export_group ' + a.export_group };
+    });
+    check('put_tab', function () {
+      var r = callDb_(cfg, 'put_tab', { export_group: group, copy_id: 'selftest-' + stamp + '-' + hex, copy_utc: now.toISOString(),
+        tab: 'SELFTEST_13G', client_version: CLIENT_VERSION, headers: ['x'], rows: [] });
+      var reason = String(r.reason || '');
+      if (r.status === 'STOPPED' && reason.indexOf('is not on the list') >= 0) return { ok: true, detail: 'STOPPED: ' + reason };
+      if (r.status === 'STOPPED' && reason.indexOf('lock wait') === 0) return { ok: false, detail: reason + ' (another import held the lock: re-run selfTest)' };
+      return { ok: false, detail: 'expected STOPPED "is not on the list", got ' + JSON.stringify(r).slice(0, 300) };
+    });
+    check('record_result', function () {
+      var r = callDb_(cfg, 'record_result', { export_group: group, client_version: CLIENT_VERSION,
+        entries: [{ tab: 'NUMBER_MAP', status: 'WAIT', message: 'selftest 13g ' + stamp }] });
+      return { ok: r.status === 'LOGGED' && Number(r.count) === 1, detail: JSON.stringify(r).slice(0, 300) };
+    });
+    check('stories_size', function () {
+      var p = readTab_(SpreadsheetApp.openById(cfg.trackerId), 'STORIES');
+      var cells = 0;
+      p.rows.forEach(function (row) { cells += row.c.length; });
+      // the database measures the jsonb text form, which adds a space after each , and : (about 2 bytes per cell)
+      var bytes = Utilities.newBlob(JSON.stringify(p.rows)).getBytes().length + 2 * cells;
+      return { ok: bytes <= 1000000, detail: bytes + ' bytes, ' + p.rows.length + ' rows' + (bytes > 1000000 ? ' (over 1 MB: review the cap before verifyNow)' : '') };
+    });
+  } catch (e) {
+    results.push(['setup', 'FAIL', e.message]);
+  } finally {
+    lock.releaseLock();
+  }
+  var fails = results.filter(function (r) { return r[1] === 'FAIL'; }).length;
+  console.log('selfTest results: ' + JSON.stringify(results));    // in the execution log even if the sheet write fails
+  var sheetId = cfg ? cfg.statusId : props.getProperty('STATUS_SHEET_ID');
+  if (!sheetId) throw new Error('selfTest: Script Property STATUS_SHEET_ID is not set; results: ' + JSON.stringify(results));
+  var ss = SpreadsheetApp.openById(sheetId);
+  var out = ss.getSheetByName('selftest');
+  if (!out) { out = ss.insertSheet('selftest'); out.appendRow(['time_utc', 'check', 'result', 'detail']); }
+  var t = new Date().toISOString();
+  results.forEach(function (r) { out.appendRow([t, r[0], r[1], String(r[2]).slice(0, 45000)].map(function (v) { return "'" + v; })); });
+  out.appendRow(["'" + t, "'#done", "'" + fails, "'" + CLIENT_VERSION]);
+  if (fails) throw new Error('selfTest: ' + fails + ' check' + (fails > 1 ? 's' : '') + ' failed (see the selftest tab)');
+}
+
+// a 404 means different things depending on whether tonight() worked in this run (A3 review M1, Copilot)
+function selfTestHint_(name, message, tonightWorked) {
+  if (!/HTTP 404/.test(message)) return message;
+  if (name !== 'tonight' && tonightWorked) {
+    return message + ' (tonight() worked, so the argument names sent do not match the function: a code bug, not the cache)';
+  }
+  return message + ' (stale schema cache: change one Data API setting in Neon, then re-run)';
+}
+
 // ---------------------------------------------------------------- one run
 
 function runExport_(opts) {
