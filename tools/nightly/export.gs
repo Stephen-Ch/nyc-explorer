@@ -321,11 +321,15 @@ function writeStatus_(cfg, st, answer) {
  *  "verify". Every run has its own id; a run counts only once its last row "#complete" (with the row count) is written,
  *  so an older run or a half-written one is never read as the result (ChatGPT 3). */
 function verifyRows_(copyName) {
+  // only verifyNow calls this, with the copy the database was just filled from (ChatGPT r3-1)
+  if (!copyName || !/^c-\d{8}T\d{6}Z-/.test(copyName)) {
+    throw new Error('verifyRows_ needs the copy it checks; run verifyNow instead');
+  }
   var cfg = config_(PropertiesService.getScriptProperties());
   var answer = callDb_(cfg, 'tonight', {});
   var out = SpreadsheetApp.openById(cfg.statusId).getSheetByName('verify');
   // the run id names the copy the database was just filled from (ChatGPT r2-1)
-  var run = 'v-' + Utilities.formatDate(new Date(), 'UTC', "yyyyMMdd'T'HHmmss'Z'") + '-' + Utilities.getUuid().slice(0, 8) + '@' + (copyName || 'no-copy');
+  var run = 'v-' + Utilities.formatDate(new Date(), 'UTC', "yyyyMMdd'T'HHmmss'Z'") + '-' + Utilities.getUuid().slice(0, 8) + '@' + copyName;
   var lines = [];
   answer.tabs.forEach(function (t) {
     var res = Sheets.Spreadsheets.get(cfg.trackerId, { ranges: [t.tab], includeGridData: true,

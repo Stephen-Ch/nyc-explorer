@@ -95,7 +95,7 @@ test('13h: a changed cell in the tracker after the export shows as a different h
   for (const p of puts) await sendToDoor(db, p, g);
   // verify again after a sheet edit: one row must differ
   tr.sheets.DELIGHTS[1][2] = cell('edited');
-  ctx.verifyRows_();                       // a second run on the same verify tab, no reset (ChatGPT 3)
+  ctx.verifyRows_('c-20261119T070000Z-second01');    // a second run on the same verify tab, no reset (ChatGPT 3)
   const fromSheet = new Set(latestVerify(status));
   const fromDb = (await q(db, VERIFY_SQL)).rows.map(r => `${r.tab}|${r.row_key}|${r.sha256}`);
   assert.deepEqual(fromDb.filter(x => !fromSheet.has(x)).map(x => x.split('|')[1]), ['D001']);
@@ -120,7 +120,7 @@ test('ChatGPT 3: a run that fails half way is never read as complete', () => {
   let n = 0;
   const get = w.global.Sheets.Spreadsheets.get;
   ctx.Sheets = { Spreadsheets: { get: (id, o) => { if (++n === 2) throw new Error('Sheets API 500'); return get(id, o); } } };
-  assert.throws(() => ctx.verifyRows_(), /500/);
+  assert.throws(() => ctx.verifyRows_('c-20261119T070000Z-halfrun1'), /500/);
   assert.deepEqual(latestVerify(status), before);
   w.db = orig;
 });
@@ -140,4 +140,10 @@ test('ChatGPT r2-1: verifyNow writes no #complete unless a fresh copy was made a
   const done = status.sheets.verify.slice(1).map(r => r.map(c => c.v)).filter(r => r[1] === '#complete');
   assert.equal(done.length, 1);
   assert.match(done[0][0], /^v-.*@c-\d{8}T\d{6}Z-/);
+});
+
+test('ChatGPT r3-1: verifyRows_ refuses to run without the copy it checks (no @no-copy runs)', () => {
+  const { ctx, status } = sampleWorld();
+  for (const bad of [undefined, '', 'no-copy']) assert.throws(() => ctx.verifyRows_(bad), /copy/);
+  assert.equal(status.sheets.verify.length, 1);
 });
