@@ -41,10 +41,10 @@ test('13w: no role setting for nyc_loader; 14d: nyc_loader -> authenticator with
     await assert.rejects(a.query(`SELECT api.tonight()`), /permission denied/);
     await assert.rejects(a.query(`SELECT * FROM research.tab_row`), /permission denied/);
   } finally { await a.end(); }
-  // the temporary owner membership is gone; owner keeps ADMIN only (written down in the plan)
-  const own = (await q(db, `SELECT inherit_option, set_option FROM pg_auth_members m JOIN pg_roles r ON r.oid = m.member
+  // the temporary owner membership is gone (review m2): a superuser owner keeps no row at all
+  const own = (await q(db, `SELECT 1 FROM pg_auth_members m JOIN pg_roles r ON r.oid = m.member
       WHERE m.roleid = 'nyc_door'::regrole AND r.rolname = current_user`)).rows;
-  assert.ok(own.every(x => !x.inherit_option && !x.set_option), JSON.stringify(own));
+  assert.equal(own.length, 0, JSON.stringify(own));
   for (const role of ['nyc_door', 'nyc_loader']) {
     const p = (await q(db, `SELECT rolcanlogin, rolsuper, rolcreaterole, rolcreatedb, rolbypassrls FROM pg_roles WHERE rolname=$1`, [role])).rows[0];
     assert.deepEqual(p, { rolcanlogin: false, rolsuper: false, rolcreaterole: false, rolcreatedb: false, rolbypassrls: false }, role);
@@ -181,7 +181,7 @@ test('13: 0006 up, down, up: down restores 0001-0005 exactly; up changes only th
   assert.deepEqual(p1.importer, [false, false]); assert.deepEqual(p0.importer, [true, false]);
 });
 
-test('13: 0006.down refuses while door batches or nightly rows exist', async () => {
+test('13: 0006.down refuses while a batch of a new door tab exists', async () => {
   const db = await freshDb(); const g = await nyDate(db);
   await withLoader(db, async c => putTab(c, { group: g, tab: 'PEOPLE', rows: rowsFor('PEOPLE', 1), utc: ago(30) }));
   await assert.rejects(q(db, readMigration(M6_DOWN)), /undo/);
@@ -207,4 +207,29 @@ test('13u: keys valid under 0005 still pass after 0006 (run-file tabs keep their
     const b = (await c.query(`SELECT research.begin_import('nyc', 'TAB-STORY_TEXT', '{}', now()) b`)).rows[0].b;
     await assert.rejects(c.query(`INSERT INTO research.tab_row (city_id, import_batch_id, tab, row_key, sheet_row, row_raw) VALUES ('nyc',$1,'STORY_TEXT','ST001@x',3,'{"story_id":"ST001","run_id":"x"}')`, [b]), /tab_row_key_check_0006/);
   } finally { await c.query('ROLLBACK'); await c.end(); }
+});
+
+test('review m2: 0001-0006 as a non-superuser CREATEROLE owner (like Neon neondb_owner): owner keeps ADMIN only; the door works', async () => {
+  await q('postgres', `DROP ROLE IF EXISTS owner47`).catch(() => {});
+  await cleanup();                          // drops earlier test databases and roles
+  await q('postgres', `DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticator') THEN CREATE ROLE authenticator LOGIN NOINHERIT; END IF; END$$`);
+  await q('postgres', `CREATE ROLE owner47 LOGIN CREATEROLE`);
+  const name = `door_t_owner_${process.pid}`;
+  await q('postgres', `DROP DATABASE IF EXISTS ${name} WITH (FORCE)`);
+  await q('postgres', `CREATE DATABASE ${name} OWNER owner47`);
+  await q(name, `CREATE EXTENSION postgis`);              // Neon: preinstalled by the platform
+  try {
+    for (const f of ['0001_init.sql', '0002_before_import.sql', '0003_research_import.sql', '0004_importer_role.sql', '0005_import_build_40.sql', M6]) {
+      await q(name, readMigration(f), [], 'owner47');
+    }
+    const m = (await q(name, `SELECT admin_option, inherit_option, set_option FROM pg_auth_members
+        WHERE roleid = 'nyc_door'::regrole AND member = 'owner47'::regrole`)).rows;
+    assert.deepEqual(m, [{ admin_option: true, inherit_option: false, set_option: false }]);
+    const g = await nyDate(name);
+    await withLoader(name, async c => assert.equal((await putTab(c, { group: g, tab: 'INDEX', rows: rowsFor('INDEX', 2), utc: ago(5) })).status, 'PASS'));
+    await q(name, readMigration(M6_DOWN), [], 'owner47').catch(e => { throw new Error('down as owner47: ' + e.message); });
+  } finally {
+    await q('postgres', `DROP DATABASE IF EXISTS ${name} WITH (FORCE)`);
+    for (const r of ['nyc_loader', 'nyc_door', 'importer', 'owner47']) await q('postgres', `DROP ROLE IF EXISTS ${r}`).catch(() => {});
+  }
 });

@@ -306,3 +306,42 @@ test('status row: stuck claims, open batches, statement_timeout and client versi
   assert.equal(r[8], s.ctx.CLIENT_VERSION);
   assert.deepEqual(JSON.parse(r[3]).STORIES, { s: 'PASS', h: 0.2 });
 });
+
+// ---- after Claude code review 1 ----
+test('review M1: the 4:30 check is right before the put_tab call, after a slow tab read', () => {
+  const s = setup();
+  const start = s.w.clock.t;
+  s.w.db = (fn, body) => {
+    if (fn === 'tonight') return { code: 200, json: { export_group: '2026-11-19', statement_timeout: '8s', open_batches: [], tabs: TABS.map(t => ({ tab: t, status: 'MISSING' })) } };
+    if (fn === 'put_tab' && body.tab === 'STORIES') { s.w.clock.t = start + 260000; s.w.readMs = 15000; return { code: 200, json: { status: 'PASS' } }; }
+    if (fn === 'put_tab') return { code: 200, json: { status: 'PASS' } };
+    return { code: 200, json: { status: 'LOGGED' } };
+  };
+  s.ctx.nightly();
+  for (const c of s.w.calls.filter(c => c.fn === 'put_tab')) assert.ok(c.at - start <= 270000, `${c.body.tab} put_tab started at ${(c.at - start) / 1000} s`);
+  assert.deepEqual(s.w.calls.filter(c => c.fn === 'put_tab').map(c => c.body.tab), ['STORIES']);
+  assert.deepEqual(s.w.calls.find(c => c.fn === 'record_result').body.entries.map(e => [e.tab, e.status]), [['DELIGHTS', 'WAIT'], ['INDEX', 'WAIT']]);
+});
+
+test('review m3: a claimed_at_utc that is not ISO time with Z or an offset is unreadable: busy, and noted', () => {
+  const s = setup({ claims: { QUEUE: [['US-1852', 'claimed', '2026-11-19 03:00:00']] } });
+  s.ctx.nightly();
+  assert.equal(s.db.puts.length, 0);
+  assert.match(s.statusRows()[0][7], /unreadable claimed_at_utc/);
+});
+
+test('review m4: status row values are written as text (dates and numbers are not retyped by Sheets)', () => {
+  const s = setup();
+  s.ctx.CLIENT_VERSION = '1234567';
+  s.ctx.nightly();
+  const r = s.statusRows()[0];
+  assert.equal(r[1], '2026-11-19');
+  assert.match(r[0], /^2026-11-19T\d\d:\d\d:\d\d\.\d{3}Z$/);
+  assert.equal(r[8], '1234567');
+});
+
+test('review m6: a PEM private key whose line breaks were flattened to spaces still signs', () => {
+  const s = setup(); s.w.props.PRIVATE_KEY = KEYS.pem.replace(/\n/g, ' ');
+  s.ctx.nightly();
+  assert.equal(s.db.puts.length, 3);
+});

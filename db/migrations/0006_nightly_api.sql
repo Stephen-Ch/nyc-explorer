@@ -230,7 +230,8 @@ BEGIN
 
     -- 3. every row: shape, cell size, key (fixed CASE logic, no dynamic SQL)
     FOR r IN SELECT e FROM jsonb_array_elements(v_rows) WITH ORDINALITY AS x(e, o) ORDER BY o LOOP
-      IF jsonb_typeof(r) <> 'object' OR jsonb_typeof(r->'r') <> 'number' OR jsonb_typeof(r->'c') <> 'array'
+      IF jsonb_typeof(r) <> 'object' OR (SELECT count(*) FROM jsonb_object_keys(r)) <> 2
+         OR jsonb_typeof(r->'r') <> 'number' OR jsonb_typeof(r->'c') <> 'array'
          OR (r->>'r') !~ '^[0-9]{1,7}$' OR (r->>'r')::integer < 2 THEN
         RAISE EXCEPTION 'a row is not {r: sheet row >= 2, c: [cells]}';
       END IF;
@@ -281,6 +282,10 @@ BEGIN
       END IF;
       IF v_copy_utc > now() + interval '10 minutes' OR v_copy_utc < now() - interval '12 hours' THEN
         RAISE EXCEPTION 'copy time % is outside 10 minutes ahead to 12 hours behind the database clock', v_copy_utc;
+      END IF;
+      -- the night is the New York date of the copy, so no row can be filed under another night (review M2)
+      IF v_group <> (v_copy_utc AT TIME ZONE 'America/New_York')::date THEN
+        RAISE EXCEPTION 'export_group % is not the New York date of copy_utc (%)', v_group, (v_copy_utc AT TIME ZONE 'America/New_York')::date;
       END IF;
       v_newest := (SELECT max(n.copy_utc) FROM research.nightly_run n WHERE n.tab = v_tab AND n.status IN ('PASS','ALREADY','NOTHING_NEW'));
       IF v_newest IS NOT NULL AND v_copy_utc <= v_newest THEN
@@ -359,6 +364,8 @@ BEGIN
   v_limit := current_setting('statement_timeout');
   IF v_limit = '0' THEN v_reason := 'time limit missing: 0';
   ELSIF v_limit::interval > interval '15 seconds' THEN v_reason := 'time limit too long: ' || v_limit;
+  ELSIF coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb->>'sub' IS DISTINCT FROM 'nightly-export' THEN
+    v_reason := 'token sub is not nightly-export';
   END IF;
   IF v_reason IS NOT NULL THEN
     INSERT INTO research.nightly_run (export_group, tab, status, reason, client_version) VALUES (v_group, NULL, 'STOPPED', v_reason, v_version);
@@ -366,6 +373,9 @@ BEGIN
   END IF;
   IF v_group IS NULL OR jsonb_typeof(v_entries) IS DISTINCT FROM 'array' OR jsonb_array_length(v_entries) NOT BETWEEN 1 AND 60 THEN
     RAISE EXCEPTION 'record_result: export_group and 1-60 entries are required';
+  END IF;
+  IF v_group <> (now() AT TIME ZONE 'America/New_York')::date THEN
+    RAISE EXCEPTION 'record_result: export_group % is not tonight (New York date %)', v_group, (now() AT TIME ZONE 'America/New_York')::date;
   END IF;
   FOR e IN SELECT x FROM jsonb_array_elements(v_entries) x LOOP
     IF coalesce(e->>'status', '') NOT IN ('WAIT','SKIPPED','FAIL') THEN
@@ -426,8 +436,8 @@ GRANT USAGE ON SCHEMA api TO nyc_loader, nyc_door;
 
 -- end of the temporary rights
 REVOKE CREATE ON SCHEMA api FROM nyc_door;
-REVOKE INHERIT OPTION FOR nyc_door FROM CURRENT_USER;
-REVOKE SET OPTION FOR nyc_door FROM CURRENT_USER;
+-- removes only the grant made above; a non-superuser owner keeps the ADMIN it got by creating the role (review m2)
+REVOKE nyc_door FROM CURRENT_USER;
 
 INSERT INTO core.schema_migrations (version, note) VALUES ('0006', 'nightly door: api schema, tab_schema, nightly_run (plan 47)');
 COMMIT;

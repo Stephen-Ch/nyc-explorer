@@ -98,6 +98,8 @@ function runExport_(opts) {
       var p;
       try { p = readTab_(copy, tab); }
       catch (e) { st.fail = { tab: tab, message: 'read: ' + e.message }; st.wait = st.todo.slice(i + 1); break; }
+      // checked again right before the call: reading a big tab takes real seconds (review M1)
+      if (Date.now() - st.start > BUDGET_MS.lastTabStart) { st.wait = st.todo.slice(i); st.notes.push('time budget: ' + st.wait.join(',') + ' wait'); break; }
       var body = { export_group: st.group, copy_id: copyName, copy_utc: copyUtc.toISOString(), tab: tab,
                    client_version: CLIENT_VERSION, headers: p.headers, rows: p.rows };
       var r = putWithRetry_(cfg, body, st);
@@ -182,10 +184,9 @@ function b64url_(data) {
 function config_(props) {
   var need = ['DB_URL', 'PRIVATE_KEY', 'TRACKER_ID', 'STATUS_SHEET_ID'];
   need.forEach(function (k) { if (!props.getProperty(k)) throw new Error('Script Property ' + k + ' is not set'); });
-  var key = props.getProperty('PRIVATE_KEY').trim();
-  if (key.indexOf('BEGIN') < 0) {
-    key = '-----BEGIN PRIVATE KEY-----\n' + key.replace(/\s+/g, '').replace(/(.{64})/g, '$1\n').replace(/\n$/, '') + '\n-----END PRIVATE KEY-----\n';
-  }
+  // one line of base64 (keygen) or PEM, even with its line breaks flattened by the Script Properties editor (review m6)
+  var body = props.getProperty('PRIVATE_KEY').replace(/-----(BEGIN|END) PRIVATE KEY-----/g, '').replace(/\s+/g, '');
+  var key = '-----BEGIN PRIVATE KEY-----\n' + body.replace(/(.{64})/g, '$1\n').replace(/\n$/, '') + '\n-----END PRIVATE KEY-----\n';
   return { url: props.getProperty('DB_URL').replace(/\/+$/, ''), key: key,
            trackerId: props.getProperty('TRACKER_ID'), statusId: props.getProperty('STATUS_SHEET_ID') };
 }
@@ -244,7 +245,9 @@ function isBusy_(tracker, st) {
     if (si < 0 || ci < 0) { busy = true; addOnce_(st.notes, name + ' has no status or claimed_at_utc column'); return; }
     for (var i = 1; i < v.length; i++) {
       if (String(v[i][si]).trim() !== 'claimed') continue;
-      var t = Date.parse(v[i][ci]);
+      var raw = String(v[i][ci]).trim();
+      // only ISO time with Z or an offset: shown text without a zone would be read as local time (review m3)
+      var t = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/.test(raw) ? Date.parse(raw) : NaN;
       var label = name + ' ' + (v[i][0] || ('row ' + (i + 1)));
       if (isNaN(t)) { busy = true; addOnce_(st.notes, label + ': unreadable claimed_at_utc'); continue; }
       var minutes = Math.round((now - t) / 60000);
@@ -295,7 +298,8 @@ function writeStatus_(cfg, st, answer) {
   Object.keys(st.stopped).forEach(function (t) { st.notes.push(t + ' STOPPED: ' + st.stopped[t]); });
   var row = [new Date().toISOString(), answer ? answer.export_group : st.group, allGood ? 'yes' : 'no', JSON.stringify(tabs),
              st.stuck.join('; '), JSON.stringify(open), limit, st.notes.join(' | ').slice(0, 45000), CLIENT_VERSION];
-  SpreadsheetApp.openById(cfg.statusId).getSheetByName('status').appendRow(row);
+  // a leading ' keeps each value as text, so Sheets does not retype dates and numbers (review m4)
+  SpreadsheetApp.openById(cfg.statusId).getSheetByName('status').appendRow(row.map(function (v) { return "'" + v; }));
 }
 
 // ---------------------------------------------------------------- verify (done-proof)
@@ -307,12 +311,15 @@ function verifyRows_() {
   var out = SpreadsheetApp.openById(cfg.statusId).getSheetByName('verify');
   answer.tabs.forEach(function (t) {
     var res = Sheets.Spreadsheets.get(cfg.trackerId, { ranges: [t.tab], includeGridData: true,
-      fields: 'sheets(properties.title,data.rowData.values(formattedValue,userEnteredValue.formulaValue,textFormatRuns(startIndex,format.link.uri)))' });
+      fields: 'sheets(properties.title,data.rowData.values(formattedValue,hyperlink,userEnteredValue.formulaValue,textFormatRuns(startIndex,format.link.uri)))' });
     var rows = (res.sheets[0].data[0].rowData || []).map(function (rd) {
       return (rd.values || []).map(function (v) {
         var urls = cellUrls_(v.userEnteredValue && v.userEnteredValue.formulaValue, { getRuns: function () {
           return (v.textFormatRuns || []).map(function (run) { return { getLinkUrl: function () { return run.format && run.format.link ? run.format.link.uri : null; } }; });
         } });
+        // a whole-cell link may come back only as `hyperlink`, with no runs (review M3); the export path sees it as one run.
+        // INFERRED from the Sheets API reference; checked on the real tracker in step 4 (13g) and the done-proof.
+        if (!urls.length && v.hyperlink) urls.push(v.hyperlink);
         return { text: v.formattedValue == null ? '' : String(v.formattedValue), urls: urls };
       });
     });

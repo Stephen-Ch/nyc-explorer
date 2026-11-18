@@ -119,7 +119,7 @@ test('5: hours since last good counts NOTHING_NEW nights', async () => {
   const db = await freshDb(); const g = await nyDate(db);
   await withLoader(db, async c => {
     const rows = rowsFor('INDEX', 2);
-    await putTab(c, { group: g, tab: 'INDEX', rows, utc: ago(600) });
+    await putTab(c, { group: g, tab: 'INDEX', rows, utc: ago(60) });
     await putTab(c, { group: g, tab: 'INDEX', rows, utc: ago(5) });
   });
   await q(db, `UPDATE research.nightly_run SET logged_utc = now() - interval '30 hours' WHERE status = 'PASS'`);
@@ -153,7 +153,7 @@ test('13b, 13l: re-send after STOPPED is checked again; ALREADY only in the same
     assert.equal(a.status, 'PASS');
     stopped(await putTab(c, { group: g, tab: 'DELIGHTS', rows: rowsFor('DELIGHTS', 3), utc: ago(30), copy: a.copy }), /same copy/);
     // other export group: not ALREADY (and older than newest accepted: STOPPED)
-    stopped(await putTab(c, { group: '2026-01-01', tab: 'DELIGHTS', rows: rowsFor('DELIGHTS', 2), utc: ago(30), copy: a.copy }), /older|copy time|same copy/);
+    stopped(await putTab(c, { group: '2026-01-01', tab: 'DELIGHTS', rows: rowsFor('DELIGHTS', 2), utc: ago(30), copy: a.copy }), /older|copy time|same copy|export_group/);
   });
   // 13 hours later: not ALREADY (own database, so no other row shares the copy id)
   const db2 = await freshDb(); const g2 = await nyDate(db2);
@@ -453,4 +453,37 @@ test('23b: put_tab while another session holds the import lock: STOPPED in about
 test('put_tab: a token whose sub is not nightly-export is STOPPED (defense in depth)', async () => {
   const db = await freshDb(); const g = await nyDate(db);
   await withLoader(db, async c => stopped(await putTab(c, { group: g, tab: 'STORIES', rows: rowsFor('STORIES', 1), utc: ago(30) }), /token/), { sub: 'someone-else' });
+});
+
+// ---- after Claude code review 1 ----
+test('review M2: export_group must be the New York date of copy_utc (put_tab) and of now (record_result)', async () => {
+  const db = await freshDb(); const g = await nyDate(db);
+  await withLoader(db, async c => {
+    stopped(await putTab(c, { group: '2030-01-01', tab: 'INDEX', rows: rowsFor('INDEX', 1), utc: ago(30) }), /export_group/);
+    await assert.rejects(recordResult(c, '2030-01-01', [{ tab: 'INDEX', status: 'WAIT', message: 'x' }]), /export_group/);
+    assert.equal((await putTab(c, { group: g, tab: 'INDEX', rows: rowsFor('INDEX', 1), utc: ago(1) })).status, 'PASS');
+  });
+  assert.equal((await q(db, `SELECT count(*)::int n FROM research.nightly_run WHERE export_group = '2030-01-01' AND status <> 'STOPPED'`)).rows[0].n, 0);
+});
+
+test('review m1: record_result with a token whose sub is not nightly-export is STOPPED and logs nothing else', async () => {
+  const db = await freshDb(); const g = await nyDate(db);
+  await withLoader(db, async c => stopped(await recordResult(c, g, [{ tab: 'INDEX', status: 'FAIL', message: 'x' }]), /token/), { sub: 'someone-else' });
+  assert.deepEqual((await q(db, `SELECT status, tab FROM research.nightly_run`)).rows, [{ status: 'STOPPED', tab: null }]);
+});
+
+test('review m5: a row object with any field besides r and c is STOPPED', async () => {
+  const db = await freshDb(); const g = await nyDate(db);
+  const rows = rowsFor('INDEX', 1); rows[0].junk = 'x';
+  await withLoader(db, async c => stopped(await putTab(c, { group: g, tab: 'INDEX', rows, utc: ago(30) }), /a row is not/));
+});
+
+test('review m7: a database cancel is not caught: the call fails as an error and nothing is kept', async () => {
+  const db = await freshDb(); const g = await nyDate(db);
+  const rows = rowsFor('STORIES', 3000);
+  await withLoader(db, async c => {
+    await assert.rejects(putTab(c, { group: g, tab: 'STORIES', rows, utc: ago(30) }), /statement timeout/);
+  }, { timeout: '50ms' });
+  assert.equal((await q(db, `SELECT count(*)::int n FROM research.nightly_run`)).rows[0].n, 0);
+  assert.equal((await q(db, `SELECT count(*)::int n FROM research.import_batch`)).rows[0].n, 0);
 });

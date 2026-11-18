@@ -60,11 +60,19 @@ export function makeWorld({ now = '2026-11-19T06:05:00Z', props = {}, email = 's
     if (!(n in ss.sheets)) return null;
     return {
       getName: () => n,
-      getDataRange: () => fakeRange(ss.sheets[n]),
+      getDataRange: () => { clock.t += world.readMs || 0; return fakeRange(ss.sheets[n]); },
       getLastRow: () => ss.sheets[n].length,
+      // like Sheets: text that looks like a date or number is retyped and shown differently, unless it starts with '
       appendRow: vals => {
         if (world.sheetError) throw new Error(world.sheetError);
-        ss.sheets[n].push(vals.map(v => cell(v)));
+        ss.sheets[n].push(vals.map(v => {
+          const t = String(v);
+          if (t.startsWith("'")) return cell(t.slice(1));
+          const d = /^(\d{4})-(\d{2})-(\d{2})(T(\d{2}):(\d{2}):(\d{2}).*)?$/.exec(t);
+          if (d) return cell(`${+d[2]}/${+d[3]}/${d[1]}` + (d[4] ? ` ${+d[5]}:${d[6]}:${d[7]}` : ''));
+          if (/^-?\d+(\.\d+)?$/.test(t)) return cell(String(Number(t)));
+          return cell(t);
+        }));
       },
     };
   }
@@ -139,6 +147,7 @@ export function makeWorld({ now = '2026-11-19T06:05:00Z', props = {}, email = 's
           const hf = /^=HYPERLINK\("([^"]+)"/i.exec(c.f || '');
           if (hf) v.hyperlink = hf[1];
           if (c.f) v.userEnteredValue = { formulaValue: c.f };
+          if (c.apiHyperlinkOnly) { v.hyperlink = c.links[0]; return v; }   // whole-cell link reported only as hyperlink
           if (c.links.some(Boolean)) v.textFormatRuns = c.links.map((u, k) => ({ startIndex: k, format: u ? { link: { uri: u } } : {} }));
           return v;
         }) })) }] };

@@ -23,7 +23,7 @@ function sampleWorld() {
         original_link: cell('see', { f: '=HYPERLINK("https://h.example/1","see")', links: ['https://h.example/1'] }) }),
       row('ST002', { original_link: cell('two', { links: ['https://a.example/1', null, 'https://b.example/2'] }),
         'pointer_source (modern, credit only)': cell('https://p.example', { links: ['https://p.example'] }), notes: 'é ü 中   tab\tend', grade: '' }),
-      row('ST003', { notes: ' leading and trailing ' })],
+      row('ST003', { notes: ' leading and trailing ', original_link: cell('https://whole.example', { links: ['https://whole.example'], apiHyperlinkOnly: true }) })],
     DELIGHTS: [SHEET_HEADERS.DELIGHTS, SHEET_HEADERS.DELIGHTS.map(h => h === 'delight_id' ? 'D001' : `${h} 1`)],
     PLACE_HOOKS: [SHEET_HEADERS.PLACE_HOOKS,
       SHEET_HEADERS.PLACE_HOOKS.map(h => h === 'hook_id' ? 'PH0011' : h === 'run_id' ? 'plan42-pilot-20261117' : `${h} a`),
@@ -62,7 +62,7 @@ test('9: the payload export.gs sends arrives in tab_row identical, cell for cell
   assert.equal(stored[1].row_raw.original_link__urls, '["https://a.example/1","https://b.example/2"]');
   assert.equal(stored[0].row_raw.original_link__urls, '["https://h.example/1","https://h.example/1"]');
   assert.equal(stored[1].row_raw['pointer_source (modern, credit only)__urls'], '["https://p.example"]');
-  assert.equal(stored[2].row_raw.original_link__urls, '[]');
+  assert.equal(stored[2].row_raw.original_link__urls, '["https://whole.example"]');
   const ph = (await q(db, `SELECT row_key FROM research.tab_row WHERE tab = 'PLACE_HOOKS' AND live ORDER BY row_key`)).rows.map(r => r.row_key);
   assert.deepEqual(ph, ['PH0011@plan42-A1-recheck-20261117', 'PH0011@plan42-pilot-20261117']);
   assert.ok(w.calls.length > 0);
