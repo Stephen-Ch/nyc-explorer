@@ -284,8 +284,8 @@ test('copies: only stored ids are trashed, only if owned by the script owner and
   s.w.props.COPY_IDS = JSON.stringify([mine.id, notMine.id, wrongName.id, 'file-gone']);
   s.ctx.nightly();
   assert.ok(mine.trashed); assert.ok(!notMine.trashed); assert.ok(!wrongName.trashed);
-  // only trashed or gone ids leave the list (ChatGPT 4); the others stay and are reported every run
-  assert.deepEqual(JSON.parse(s.w.props.COPY_IDS), [notMine.id, wrongName.id]);
+  // only trashed ids leave the list (ChatGPT 4, round 2: a failed lookup is never proof of deletion)
+  assert.deepEqual(JSON.parse(s.w.props.COPY_IDS), [notMine.id, wrongName.id, 'file-gone']);
   assert.match(s.statusRows()[0][7], /not trashed/);
 });
 
@@ -365,4 +365,13 @@ test('ChatGPT 4: a copy whose trash fails keeps its id for the next run, and is 
   stuck.setTrashed = v => { stuck.trashed = v; };
   s.ctx.nightly();
   assert.ok(stuck.trashed); assert.equal(s.w.props.COPY_IDS, '[]');
+});
+
+// ---- after ChatGPT code review 2 ----
+test('ChatGPT r2-2: a lookup that fails (gone or no permission) keeps the id and reports it', () => {
+  const s = setup({ dbState: { STORIES: 'PASS', DELIGHTS: 'PASS', INDEX: 'PASS' } });
+  s.w.props.COPY_IDS = JSON.stringify(['file-no-access']);
+  s.ctx.nightly();
+  assert.deepEqual(JSON.parse(s.w.props.COPY_IDS), ['file-no-access']);
+  assert.match(s.statusRows()[0][7], /file-no-access not trashed/);
 });

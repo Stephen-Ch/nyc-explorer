@@ -21,9 +21,9 @@ migration 0006). Two standalone Apps Script projects, both owned by schurchville
    Triggers: `dailyCheck` daily 7:00am, `weeklyAlive` daily 7:05am. Authorize.
 5. Test 13g on import-try (real token, real URL): `tonight()`, `put_tab` on a disabled tab, `record_result`, and one real STORIES send.
 
-Session start (NYC) reads both tabs of the status sheet: `status` (newest row all good, from today) and `alarm` (a `checked` row today, no `mail error`).
+Session start (NYC): Claude reads both tabs of the status sheet (`status`, `alarm`) with the Sheets connector and runs `node tools/nightly/session-check.mjs <file.json>` on them. It applies the alarm's own rules to `status`, and reports an alarm with no `checked` row in 26 hours or a `mail error` in 7 days. Wired into the session start and the 7:30am outside check in step 4, when the sheet exists.
 
-To pause: Script Property `paused` = yes in the export project (stops `nightly` and `verifyNow`). To shut the door at once: `REVOKE nyc_loader FROM authenticator` (attended).
+To pause: Script Property `paused` = yes in the export project (stops `nightly` and `verifyNow`). `verifyNow` writes verify rows only after a fresh copy came back good for every tab. To shut the door at once: `REVOKE nyc_loader FROM authenticator` (attended).
 
 ## Tests
 - `npm test` here: export, alarm and keygen under fake Apps Script services and a fake clock (no database).

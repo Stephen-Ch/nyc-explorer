@@ -124,3 +124,20 @@ test('ChatGPT 3: a run that fails half way is never read as complete', () => {
   assert.deepEqual(latestVerify(status), before);
   w.db = orig;
 });
+
+test('ChatGPT r2-1: verifyNow writes no #complete unless a fresh copy was made and every enabled tab came back good', () => {
+  for (const bad of [{ code: 200, json: { status: 'STOPPED', reason: 'removed keys without approval: D009' } }, { code: 500, text: 'boom' }]) {
+    const { ctx, status, w } = sampleWorld();
+    const db0 = w.db;
+    w.db = (fn, body, ww, call) => (fn === 'put_tab' && body.tab === 'DELIGHTS' ? bad : db0(fn, body, ww, call));
+    assert.throws(() => ctx.verifyNow(), /verify not run/);
+    const rows = status.sheets.verify.slice(1).map(r => r.map(c => c.v));
+    assert.equal(rows.length, 0, JSON.stringify(rows));
+  }
+  // all tabs already good and nothing new: still a fresh copy, and the run id carries its copy id
+  const { ctx, status } = sampleWorld();
+  ctx.verifyNow();
+  const done = status.sheets.verify.slice(1).map(r => r.map(c => c.v)).filter(r => r[1] === '#complete');
+  assert.equal(done.length, 1);
+  assert.match(done[0][0], /^v-.*@c-\d{8}T\d{6}Z-/);
+});

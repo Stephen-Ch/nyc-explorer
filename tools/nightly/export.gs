@@ -62,15 +62,20 @@ function verifyNow() {
   if (PropertiesService.getScriptProperties().getProperty('paused')) throw new Error('paused: remove the Script Property paused first');
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(30000)) throw new Error('another export run is going; try again in a few minutes');
-  try { runExport_({ ignoreBusy: true, allTabs: true }); } finally { lock.releaseLock(); }
-  verifyRows_();
+  var st;
+  try { st = runExport_({ ignoreBusy: true, allTabs: true }); } finally { lock.releaseLock(); }
+  // the proof needs a fresh copy and a good answer for every enabled tab; otherwise no verify rows at all (ChatGPT r2-1)
+  var bad = !st || !st.copyId || !st.todo.length || st.fail || st.wait.length || st.skipped.length ||
+            Object.keys(st.stopped).length || st.todo.some(function (t) { return GOOD.indexOf(st.done[t]) < 0; });
+  if (bad) throw new Error('verify not run: the fresh export did not finish good for every tab (see the status sheet)');
+  verifyRows_(st.copyName);
 }
 
 // ---------------------------------------------------------------- one run
 
 function runExport_(opts) {
   var props = PropertiesService.getScriptProperties();
-  if (props.getProperty('paused')) return;                                   // pause stops every path (ChatGPT 1)
+  if (props.getProperty('paused')) return null;                              // pause stops every path (ChatGPT 1)
   var cfg = config_(props);
   var st = {
     start: Date.now(), group: Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd'),
@@ -93,7 +98,7 @@ function runExport_(opts) {
     addCopyId_(props, st.copyId);                                            // before reading it (F18)
     if (isBusy_(tracker, st) && !opts.ignoreBusy) return busyExit_(st);     // a claim appeared during the copy
     var copy = SpreadsheetApp.openById(st.copyId);
-    var copyName = 'c-' + Utilities.formatDate(copyUtc, 'UTC', "yyyyMMdd'T'HHmmss'Z'") + '-' + Utilities.getUuid().slice(0, 8);
+    var copyName = st.copyName = 'c-' + Utilities.formatDate(copyUtc, 'UTC', "yyyyMMdd'T'HHmmss'Z'") + '-' + Utilities.getUuid().slice(0, 8);
 
     for (var i = 0; i < st.todo.length; i++) {
       var tab = st.todo[i];
@@ -113,6 +118,7 @@ function runExport_(opts) {
   } finally {
     finish_(cfg, props, st);
   }
+  return st;
 }
 
 function busyExit_(st) {
@@ -285,8 +291,8 @@ function trashCopy_(props, id, st) {
     if (f.getOwner().getEmail() === me && f.getName().indexOf(COPY_PREFIX) === 0) { f.setTrashed(true); gone = true; }
     else st.notes.push('copy ' + id + ' not trashed (owner or name not as expected)');
   } catch (e) {
-    if (/No item with the given ID/i.test(e.message)) gone = true;
-    else st.notes.push('copy ' + id + ' not trashed: ' + e.message);
+    // a failed lookup can mean gone OR no access: never proof of deletion (ChatGPT r2-2); kept, retried, reported
+    st.notes.push('copy ' + id + ' not trashed: ' + e.message);
   }
   if (gone) props.setProperty('COPY_IDS', JSON.stringify(readIds_(props).filter(function (x) { return x !== id; })));
 }
@@ -314,11 +320,12 @@ function writeStatus_(cfg, st, answer) {
 /** Read the live tracker through the Sheets API (not SpreadsheetApp) and write run id, tab, key and hash per row to
  *  "verify". Every run has its own id; a run counts only once its last row "#complete" (with the row count) is written,
  *  so an older run or a half-written one is never read as the result (ChatGPT 3). */
-function verifyRows_() {
+function verifyRows_(copyName) {
   var cfg = config_(PropertiesService.getScriptProperties());
   var answer = callDb_(cfg, 'tonight', {});
   var out = SpreadsheetApp.openById(cfg.statusId).getSheetByName('verify');
-  var run = 'v-' + Utilities.formatDate(new Date(), 'UTC', "yyyyMMdd'T'HHmmss'Z'") + '-' + Utilities.getUuid().slice(0, 8);
+  // the run id names the copy the database was just filled from (ChatGPT r2-1)
+  var run = 'v-' + Utilities.formatDate(new Date(), 'UTC', "yyyyMMdd'T'HHmmss'Z'") + '-' + Utilities.getUuid().slice(0, 8) + '@' + (copyName || 'no-copy');
   var lines = [];
   answer.tabs.forEach(function (t) {
     var res = Sheets.Spreadsheets.get(cfg.trackerId, { ranges: [t.tab], includeGridData: true,
