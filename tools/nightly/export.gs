@@ -59,9 +59,10 @@ function nightly() {
 /** Done-proof (plan 47): Stephen runs this from the editor in a quiet hour. Export now, then hash the live tracker
  *  through the Sheets API (a separate read path) into the status sheet's "verify" tab. */
 function verifyNow() {
+  if (PropertiesService.getScriptProperties().getProperty('paused')) throw new Error('paused: remove the Script Property paused first');
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(30000)) throw new Error('another export run is going; try again in a few minutes');
-  try { runExport_({ ignoreBusy: true }); } finally { lock.releaseLock(); }
+  try { runExport_({ ignoreBusy: true, allTabs: true }); } finally { lock.releaseLock(); }
   verifyRows_();
 }
 
@@ -69,6 +70,7 @@ function verifyNow() {
 
 function runExport_(opts) {
   var props = PropertiesService.getScriptProperties();
+  if (props.getProperty('paused')) return;                                   // pause stops every path (ChatGPT 1)
   var cfg = config_(props);
   var st = {
     start: Date.now(), group: Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd'),
@@ -79,7 +81,8 @@ function runExport_(opts) {
     var first;
     try { first = callDb_(cfg, 'tonight', {}); }
     catch (e) { st.notes.push('database unreachable (first tonight): ' + e.message); return; }
-    st.todo = first.tabs.filter(function (t) { return GOOD.indexOf(t.status) < 0; }).map(function (t) { return t.tab; });
+    // verifyNow sends every enabled tab from a fresh copy, so the proof compares against a new snapshot (ChatGPT 2)
+    st.todo = first.tabs.filter(function (t) { return opts.allTabs || GOOD.indexOf(t.status) < 0; }).map(function (t) { return t.tab; });
     var tracker = SpreadsheetApp.openById(cfg.trackerId);
     var busy = isBusy_(tracker, st);              // also lists stuck claims for the status row on a done night
     if (!st.todo.length) return;
@@ -271,17 +274,21 @@ function readIds_(props) {
 function trashStoredCopies_(props, st) {
   readIds_(props).forEach(function (id) { trashCopy_(props, id, st); });
 }
-// trash only a stored id, only if the script owner owns it and its name starts with the copy prefix
+// trash only a stored id, only if the script owner owns it and its name starts with the copy prefix.
+// The id leaves the list only when the copy is trashed or no longer exists; otherwise it stays, is retried and
+// reported every run (ChatGPT 4).
 function trashCopy_(props, id, st) {
+  var gone = false;
   try {
     var f = DriveApp.getFileById(id);
     var me = Session.getEffectiveUser().getEmail();
-    if (f.getOwner().getEmail() === me && f.getName().indexOf(COPY_PREFIX) === 0) f.setTrashed(true);
+    if (f.getOwner().getEmail() === me && f.getName().indexOf(COPY_PREFIX) === 0) { f.setTrashed(true); gone = true; }
     else st.notes.push('copy ' + id + ' not trashed (owner or name not as expected)');
   } catch (e) {
-    if (!/No item with the given ID/i.test(e.message)) st.notes.push('copy ' + id + ': ' + e.message);
+    if (/No item with the given ID/i.test(e.message)) gone = true;
+    else st.notes.push('copy ' + id + ' not trashed: ' + e.message);
   }
-  props.setProperty('COPY_IDS', JSON.stringify(readIds_(props).filter(function (x) { return x !== id; })));
+  if (gone) props.setProperty('COPY_IDS', JSON.stringify(readIds_(props).filter(function (x) { return x !== id; })));
 }
 
 // ---------------------------------------------------------------- status sheet
@@ -304,11 +311,15 @@ function writeStatus_(cfg, st, answer) {
 
 // ---------------------------------------------------------------- verify (done-proof)
 
-/** Read the live tracker through the Sheets API (not SpreadsheetApp) and write key + hash per row to "verify". */
+/** Read the live tracker through the Sheets API (not SpreadsheetApp) and write run id, tab, key and hash per row to
+ *  "verify". Every run has its own id; a run counts only once its last row "#complete" (with the row count) is written,
+ *  so an older run or a half-written one is never read as the result (ChatGPT 3). */
 function verifyRows_() {
   var cfg = config_(PropertiesService.getScriptProperties());
   var answer = callDb_(cfg, 'tonight', {});
   var out = SpreadsheetApp.openById(cfg.statusId).getSheetByName('verify');
+  var run = 'v-' + Utilities.formatDate(new Date(), 'UTC', "yyyyMMdd'T'HHmmss'Z'") + '-' + Utilities.getUuid().slice(0, 8);
+  var lines = [];
   answer.tabs.forEach(function (t) {
     var res = Sheets.Spreadsheets.get(cfg.trackerId, { ranges: [t.tab], includeGridData: true,
       fields: 'sheets(properties.title,data.rowData.values(formattedValue,hyperlink,userEnteredValue.formulaValue,textFormatRuns(startIndex,format.link.uri)))' });
@@ -334,9 +345,11 @@ function verifyRows_() {
       });
       if (!any) continue;
       var key = (KEY_COLUMNS[t.tab] || []).map(function (k) { return named[k]; }).join('@');
-      out.appendRow([t.tab, key, canonicalHash_(cells)]);
+      lines.push([run, t.tab, key, canonicalHash_(cells)]);
     }
   });
+  lines.forEach(function (l) { out.appendRow(l.map(function (v) { return "'" + v; })); });
+  out.appendRow(["'" + run, "'#complete", "'" + lines.length, "'"]);
 }
 
 /** The one shared piece: sha256 hex of the row's cells in header order, each as <UTF-8 byte length>:<text>.

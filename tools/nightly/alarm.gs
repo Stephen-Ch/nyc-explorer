@@ -9,6 +9,9 @@
  *   ALERT_TO         optional; default the script owner
  *
  * Triggers: dailyCheck() every day at 7:00am; weeklyAlive() every day at 7:05am (does its work on Mondays only).
+ *
+ * Every check writes a row to the "alarm" tab (checked / mail error / weekly). NYC session start reads BOTH the
+ * "status" and "alarm" tabs (ChatGPT 6): a mail error, or no "checked" row today, means the alarm is not working.
  */
 
 var GOOD = ['PASS', 'ALREADY', 'NOTHING_NEW'];

@@ -15,12 +15,15 @@ migration 0006). Two standalone Apps Script projects, both owned by schurchville
 2. Export project: paste `export.gs` and `appsscript.json`; set `CLIENT_VERSION` to the commit. Script Properties:
    `DB_URL` (Data API URL ending `/rest/v1`), `PRIVATE_KEY` (from keygen), `TRACKER_ID`, `STATUS_SHEET_ID`.
    Triggers: `nightly` daily at 1, 2, 3, 4 and 5am. Authorize.
-3. Alarm project: paste `alarm.gs` and `alarm.appsscript.json` (as `appsscript.json`). Script Properties:
+3. Verify tab columns: run, tab, key, sha256; a run counts only once its `#complete` row is written.
+4. Alarm project: paste `alarm.gs` and `alarm.appsscript.json` (as `appsscript.json`). Script Properties:
    `STATUS_SHEET_ID`, `EXPECTED_TABS` = `STORIES,DELIGHTS,INDEX,STORY_TEXT,PLACE_HOOKS,PEOPLE,NAME_LINKS,NUMBER_MAP`.
    Triggers: `dailyCheck` daily 7:00am, `weeklyAlive` daily 7:05am. Authorize.
-4. Test 13g on import-try (real token, real URL): `tonight()`, `put_tab` on a disabled tab, `record_result`, and one real STORIES send.
+5. Test 13g on import-try (real token, real URL): `tonight()`, `put_tab` on a disabled tab, `record_result`, and one real STORIES send.
 
-To pause: Script Property `paused` = yes in the export project. To shut the door at once: `REVOKE nyc_loader FROM authenticator` (attended).
+Session start (NYC) reads both tabs of the status sheet: `status` (newest row all good, from today) and `alarm` (a `checked` row today, no `mail error`).
+
+To pause: Script Property `paused` = yes in the export project (stops `nightly` and `verifyNow`). To shut the door at once: `REVOKE nyc_loader FROM authenticator` (attended).
 
 ## Tests
 - `npm test` here: export, alarm and keygen under fake Apps Script services and a fake clock (no database).

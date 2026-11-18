@@ -284,7 +284,8 @@ test('copies: only stored ids are trashed, only if owned by the script owner and
   s.w.props.COPY_IDS = JSON.stringify([mine.id, notMine.id, wrongName.id, 'file-gone']);
   s.ctx.nightly();
   assert.ok(mine.trashed); assert.ok(!notMine.trashed); assert.ok(!wrongName.trashed);
-  assert.equal(s.w.props.COPY_IDS, '[]');
+  // only trashed or gone ids leave the list (ChatGPT 4); the others stay and are reported every run
+  assert.deepEqual(JSON.parse(s.w.props.COPY_IDS), [notMine.id, wrongName.id]);
   assert.match(s.statusRows()[0][7], /not trashed/);
 });
 
@@ -344,4 +345,24 @@ test('review m6: a PEM private key whose line breaks were flattened to spaces st
   const s = setup(); s.w.props.PRIVATE_KEY = KEYS.pem.replace(/\n/g, ' ');
   s.ctx.nightly();
   assert.equal(s.db.puts.length, 3);
+});
+
+// ---- after ChatGPT code review 1 ----
+test('ChatGPT 1: paused stops verifyNow too, before any call or copy', () => {
+  const s = setup(); s.w.props.paused = 'yes';
+  assert.throws(() => s.ctx.verifyNow(), /paused/);
+  assert.deepEqual(s.w.calls, []); assert.equal(copies(s.w).length, 0);
+});
+
+test('ChatGPT 4: a copy whose trash fails keeps its id for the next run, and is reported', () => {
+  const s = setup({ dbState: { STORIES: 'PASS', DELIGHTS: 'PASS', INDEX: 'PASS' } });
+  const stuck = s.w.makeSpreadsheet('nyc-export-copy-20261118T060500Z');
+  stuck.setTrashed = () => { throw new Error('Drive: internal error'); };
+  s.w.props.COPY_IDS = JSON.stringify([stuck.id]);
+  s.ctx.nightly();
+  assert.deepEqual(JSON.parse(s.w.props.COPY_IDS), [stuck.id]);
+  assert.match(s.statusRows()[0][7], /internal error/);
+  stuck.setTrashed = v => { stuck.trashed = v; };
+  s.ctx.nightly();
+  assert.ok(stuck.trashed); assert.equal(s.w.props.COPY_IDS, '[]');
 });

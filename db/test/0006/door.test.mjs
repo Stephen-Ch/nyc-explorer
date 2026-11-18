@@ -487,3 +487,12 @@ test('review m7: a database cancel is not caught: the call fails as an error and
   assert.equal((await q(db, `SELECT count(*)::int n FROM research.nightly_run`)).rows[0].n, 0);
   assert.equal((await q(db, `SELECT count(*)::int n FROM research.import_batch`)).rows[0].n, 0);
 });
+
+// ---- after ChatGPT code review 1 ----
+test('ChatGPT 5: record_result refuses two entries for the same tab in one call; nothing stored', async () => {
+  const db = await freshDb(); const g = await nyDate(db);
+  await withLoader(db, async c => {
+    await assert.rejects(recordResult(c, g, [{ tab: 'INDEX', status: 'FAIL', message: 'x' }, { tab: 'INDEX', status: 'WAIT', message: 'y' }]), /record_result: tab INDEX twice/);
+  });
+  assert.equal((await q(db, `SELECT count(*)::int n FROM research.nightly_run`)).rows[0].n, 0);
+});

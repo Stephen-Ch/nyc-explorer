@@ -377,6 +377,9 @@ BEGIN
   IF v_group <> (now() AT TIME ZONE 'America/New_York')::date THEN
     RAISE EXCEPTION 'record_result: export_group % is not tonight (New York date %)', v_group, (now() AT TIME ZONE 'America/New_York')::date;
   END IF;
+  -- one row per tab per call (ChatGPT 5)
+  SELECT x->>'tab' INTO v_reason FROM jsonb_array_elements(v_entries) x GROUP BY x->>'tab' HAVING count(*) > 1 LIMIT 1;
+  IF FOUND THEN RAISE EXCEPTION 'record_result: tab % twice in one call', left(coalesce(v_reason, 'none'), 40); END IF;
   FOR e IN SELECT x FROM jsonb_array_elements(v_entries) x LOOP
     IF coalesce(e->>'status', '') NOT IN ('WAIT','SKIPPED','FAIL') THEN
       RAISE EXCEPTION 'record_result: status % refused (only WAIT, SKIPPED, FAIL)', left(coalesce(e->>'status', 'none'), 20);

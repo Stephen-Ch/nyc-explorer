@@ -12,6 +12,15 @@ before(requireIsolated);
 after(cleanup);
 const KEYS = testKeys();
 const VERIFY_SQL = fs.readFileSync(path.resolve(import.meta.dirname, '../verify.sql'), 'utf8');
+// rows of the newest COMPLETE verify run: [run, tab, key, sha256]; a run counts only with its #complete row (ChatGPT 3)
+function latestVerify(status) {
+  const rows = status.sheets.verify.slice(1).map(r => r.map(c => c.v));
+  const done = rows.filter(r => r[1] === '#complete');
+  const run = done.length ? done[done.length - 1][0] : null;
+  const body = rows.filter(r => r[0] === run && r[1] !== '#complete');
+  assert.equal(String(body.length), done[done.length - 1][2], 'complete row counts the run');
+  return body.map(([, tab, key, sha]) => `${tab}|${key}|${sha}`);
+}
 
 // a sample STORIES sheet with every awkward case, plus DELIGHTS and PLACE_HOOKS
 function sampleWorld() {
@@ -73,7 +82,7 @@ test('13h: verifyNow() hashes (separate Sheets API read) equal the SQL hashes fr
   ctx.verifyNow();
   const db = await freshDb(); const g = await nyDate(db);
   for (const p of puts) assert.equal((await sendToDoor(db, p, g)).status, 'PASS', p.tab);
-  const fromSheet = status.sheets.verify.slice(1).map(r => r.map(c => c.v)).map(([tab, key, sha]) => `${tab}|${key}|${sha}`).sort();
+  const fromSheet = latestVerify(status).sort();
   const fromDb = (await q(db, VERIFY_SQL)).rows.map(r => `${r.tab}|${r.row_key}|${r.sha256}`).sort();
   assert.equal(fromSheet.length, 6);
   assert.deepEqual(fromSheet, fromDb);
@@ -86,9 +95,32 @@ test('13h: a changed cell in the tracker after the export shows as a different h
   for (const p of puts) await sendToDoor(db, p, g);
   // verify again after a sheet edit: one row must differ
   tr.sheets.DELIGHTS[1][2] = cell('edited');
-  status.sheets.verify = [[cell('tab')]];
-  ctx.verifyRows_();
-  const fromSheet = new Set(status.sheets.verify.slice(1).map(r => r.map(c => c.v).join('|')));
+  ctx.verifyRows_();                       // a second run on the same verify tab, no reset (ChatGPT 3)
+  const fromSheet = new Set(latestVerify(status));
   const fromDb = (await q(db, VERIFY_SQL)).rows.map(r => `${r.tab}|${r.row_key}|${r.sha256}`);
   assert.deepEqual(fromDb.filter(x => !fromSheet.has(x)).map(x => x.split('|')[1]), ['D001']);
+});
+
+test('ChatGPT 2: verifyNow makes a fresh copy and sends every enabled tab even when all are good tonight', () => {
+  const { ctx, puts, w } = sampleWorld();
+  ctx.nightly();
+  const first = puts.length;
+  assert.equal(first, 3);
+  w.clock.t += 3600000;
+  ctx.verifyNow();
+  assert.deepEqual(puts.slice(first).map(p => p.tab), ['STORIES', 'DELIGHTS', 'PLACE_HOOKS']);
+  assert.notEqual(puts[first].copy_id, puts[0].copy_id);
+});
+
+test('ChatGPT 3: a run that fails half way is never read as complete', () => {
+  const { ctx, status, w } = sampleWorld();
+  ctx.verifyNow();
+  const before = latestVerify(status);
+  const orig = w.db;
+  let n = 0;
+  const get = w.global.Sheets.Spreadsheets.get;
+  ctx.Sheets = { Spreadsheets: { get: (id, o) => { if (++n === 2) throw new Error('Sheets API 500'); return get(id, o); } } };
+  assert.throws(() => ctx.verifyRows_(), /500/);
+  assert.deepEqual(latestVerify(status), before);
+  w.db = orig;
 });
