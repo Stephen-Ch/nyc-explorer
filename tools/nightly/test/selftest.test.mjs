@@ -181,3 +181,10 @@ test('A3 code review m2: selftest tab missing: inserted with its header row firs
   assert.equal(status.sheets.selftest[0].map(c => c.v).join(','), 'time_utc,check,result,detail');
   assert.equal(status.sheets.selftest.length, 6);
 });
+
+test('A3 Copilot: tonight() and put_tab both 404: put_tab hint says stale cache, not wrong argument names', () => {
+  const { ctx, rows } = setup({ tonightCode: 404, put: { code: 404, text: 'Could not find the function api.put_tab' } });
+  assert.throws(() => ctx.selfTest(), /checks? failed/);
+  assert.match(byCheck(rows()).put_tab[3], /schema cache/);
+  assert.doesNotMatch(byCheck(rows()).put_tab[3], /argument names/);
+});

@@ -89,7 +89,7 @@ function selfTest() {
     var hex = Utilities.getUuid().replace(/[^0-9a-f]/gi, '').slice(0, 8).toLowerCase();
     var check = function (name, fn) {
       try { var d = fn(); results.push([name, d.ok ? 'PASS' : 'FAIL', d.detail]); }
-      catch (e) { results.push([name, 'FAIL', selfTestHint_(name, e.message)]); }
+      catch (e) { results.push([name, 'FAIL', selfTestHint_(name, e.message, results.length > 0 && results[0][1] === 'PASS')]); }
     };
     check('tonight', function () {
       var a = callDb_(cfg, 'tonight', {});
@@ -138,14 +138,13 @@ function selfTest() {
   if (fails) throw new Error('selfTest: ' + fails + ' check' + (fails > 1 ? 's' : '') + ' failed (see the selftest tab)');
 }
 
-// a 404 means different things for the first call and the others (A3 review M1)
-function selfTestHint_(name, message) {
-  if (/HTTP 404/.test(message)) {
-    return message + (name === 'tonight'
-      ? ' (stale schema cache: change one Data API setting in Neon, then re-run)'
-      : ' (tonight() worked, so the argument names sent do not match the function: a code bug, not the cache)');
+// a 404 means different things depending on whether tonight() worked in this run (A3 review M1, Copilot)
+function selfTestHint_(name, message, tonightWorked) {
+  if (!/HTTP 404/.test(message)) return message;
+  if (name !== 'tonight' && tonightWorked) {
+    return message + ' (tonight() worked, so the argument names sent do not match the function: a code bug, not the cache)';
   }
-  return message;
+  return message + ' (stale schema cache: change one Data API setting in Neon, then re-run)';
 }
 
 // ---------------------------------------------------------------- one run

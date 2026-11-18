@@ -160,11 +160,12 @@ async function callByName(c, fn, body) {
 }
 
 test('A3 T7: selfTest bodies through the real door: STOPPED "not on the list" and LOGGED; one STOPPED and one WAIT row; no batch', async () => {
-  const w = makeWorld({ now: new Date().toISOString() });     // record_result needs today's New York date
+  const db = await freshDb();
+  // record_result needs the database's New York date: noon New York on that date (17:00 UTC; 16:00 UTC in summer is still that date)
+  const w = makeWorld({ now: `${await nyDate(db)}T17:00:00Z` });
   const tr = tracker(w, { STORIES: [SHEET_HEADERS.STORIES, SHEET_HEADERS.STORIES.map(h => h === 'story_id' ? 'ST001' : `${h} 1`)] });
   const status = w.makeSpreadsheet('NYC nightly status', { status: [[cell('run_utc')]], selftest: [[cell('time_utc')]] });
   Object.assign(w.props, { DB_URL: 'https://db.example/rest/v1', PRIVATE_KEY: KEYS.der64, TRACKER_ID: tr.id, STATUS_SHEET_ID: status.id });
-  const db = await freshDb();
   const answers = {};
   w.db = (fn, body) => { answers[fn] = body; return fn === 'tonight'
     ? { code: 200, json: { tabs: Object.keys(SHEET_HEADERS).map(t => ({ tab: t, status: 'MISSING' })) } }
