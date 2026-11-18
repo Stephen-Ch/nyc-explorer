@@ -147,3 +147,38 @@ test('ChatGPT r3-1: verifyRows_ refuses to run without the copy it checks (no @n
   for (const bad of [undefined, '', 'no-copy']) assert.throws(() => ctx.verifyRows_(bad), /copy/);
   assert.equal(status.sheets.verify.length, 1);
 });
+
+// A3 T7: the bodies selfTest() sends, through the real door as nyc_loader (15 s limit, sub nightly-export), called by
+// NAMED arguments like PostgREST, whose names must equal the function's own argument names (A3 review M1).
+async function callByName(c, fn, body) {
+  const args = (await c.query(`SELECT a.n, format_type(a.t, NULL) AS t FROM pg_proc p,
+      unnest(p.proargnames, p.proargtypes::oid[]) AS a(n, t) WHERE p.oid = $1::regproc ORDER BY a.n`, [fn])).rows;
+  assert.deepEqual(Object.keys(body).sort(), args.map(a => a.n), `${fn}: body keys = the function's argument names`);
+  const vals = args.map(a => (a.t === 'jsonb' ? JSON.stringify(body[a.n]) : body[a.n]));
+  const sql = `SELECT ${fn}(${args.map((a, i) => `${a.n} => $${i + 1}::${a.t}`).join(', ')}) AS r`;
+  return (await c.query(sql, vals)).rows[0].r;
+}
+
+test('A3 T7: selfTest bodies through the real door: STOPPED "not on the list" and LOGGED; one STOPPED and one WAIT row; no batch', async () => {
+  const w = makeWorld({ now: new Date().toISOString() });     // record_result needs today's New York date
+  const tr = tracker(w, { STORIES: [SHEET_HEADERS.STORIES, SHEET_HEADERS.STORIES.map(h => h === 'story_id' ? 'ST001' : `${h} 1`)] });
+  const status = w.makeSpreadsheet('NYC nightly status', { status: [[cell('run_utc')]], selftest: [[cell('time_utc')]] });
+  Object.assign(w.props, { DB_URL: 'https://db.example/rest/v1', PRIVATE_KEY: KEYS.der64, TRACKER_ID: tr.id, STATUS_SHEET_ID: status.id });
+  const db = await freshDb();
+  const answers = {};
+  w.db = (fn, body) => { answers[fn] = body; return fn === 'tonight'
+    ? { code: 200, json: { tabs: Object.keys(SHEET_HEADERS).map(t => ({ tab: t, status: 'MISSING' })) } }
+    : { code: 200, json: fn === 'put_tab' ? { status: 'STOPPED', reason: 'tab SELFTEST_13G is not on the list' } : { status: 'LOGGED', count: 1 } }; };
+  load(w, 'export.gs').selfTest();
+  const before = Number((await q(db, 'SELECT count(*) n FROM research.import_batch')).rows[0].n);
+  const put = await withLoader(db, c => callByName(c, 'api.put_tab', answers.put_tab), { timeout: '15s' });
+  assert.equal(put.status, 'STOPPED'); assert.match(put.reason, /tab SELFTEST_13G is not on the list/);
+  const rr = await withLoader(db, c => callByName(c, 'api.record_result', answers.record_result), { timeout: '15s' });
+  assert.deepEqual(rr, { status: 'LOGGED', count: 1 });
+  const t = await withLoader(db, c => c.query('SELECT api.tonight() AS t').then(r => r.rows[0].t), { timeout: '15s' });
+  assert.ok(!t.tabs.some(x => x.tab === 'SELFTEST_13G'), 'tonight() never lists the selftest tab');
+  const logged = (await q(db, `SELECT tab, status, reason FROM research.nightly_run ORDER BY run_row_id`)).rows;
+  assert.deepEqual(logged.map(r => `${r.tab}:${r.status}`), ['SELFTEST_13G:STOPPED', 'NUMBER_MAP:WAIT']);
+  assert.match(logged[1].reason, /^selftest 13g /);
+  assert.equal(Number((await q(db, 'SELECT count(*) n FROM research.import_batch')).rows[0].n), before, 'no batch');
+});
