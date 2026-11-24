@@ -114,6 +114,16 @@ test('S2-2: trailing blank header columns are dropped (same hashes as without th
   assert.deepEqual(wide.verify().slice(0, 2).map(r => r[3]), plain.verify().slice(0, 2).map(r => r[3]));
 });
 
+test('S2-2 must-fail: an all-blank header row (or an empty tab) stops with an error; no #complete', () => {
+  for (const rows of [[['', ''], ['a-1', 'x']], []]) {
+    const s = setup({ tabs: { INDEX: rows } });
+    s.w.db = (fn) => (fn === 'tonight' ? { code: 200, json: { export_group: '2026-11-24', open_batches: [],
+      tabs: [{ tab: 'INDEX', status: 'PASS', copy_id: COPY, hours_since_good: 0 }] } } : { code: 500, text: 'no' });
+    assert.throws(() => s.ctx.verifyOnly(), /no header row/, JSON.stringify(rows));
+    assert.equal(s.complete().length, 0);
+  }
+});
+
 test('S2-2 must-fail: a blank header between real ones stops with an error; no #complete', () => {
   const s = setup({ tabs: { INDEX: [['candidate_id', '', 'name'], ['a-1', '', 'x']] } });
   assert.throws(() => s.ctx.verifyNow(), /blank header/);

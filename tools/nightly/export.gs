@@ -541,6 +541,7 @@ function verifyRows_(copyName, cfg, answer) {
     // (S2 item 2). The database insists the headers match exactly, so no header list is kept here.
     var lastReal = -1;
     sheetHeaders.forEach(function (h, k) { if (h !== '') lastReal = k; });
+    if (lastReal < 0) throw new Error('verify: ' + t.tab + ' has no header row (all headers blank)');
     for (var b = 0; b < lastReal; b++) {
       if (sheetHeaders[b] === '') throw new Error('verify: ' + t.tab + ' has a blank header in column ' + (b + 1) + ' between real ones');
     }
