@@ -165,8 +165,8 @@ test('S2-7: tabs from different copies: the label names each copy once; a copy i
     tonight: allGood(t => (t === 'INDEX' ? COPY : 'c-20261124T070000Z-ffff0000')) });
   s.ctx.verifyOnly();
   assert.match(s.complete()[0][0], /@c-20261124T070000Z-ffff0000\+c-20261124T150000Z-abcd1234$/);
-  const t = setup({ tonight: allGood(() => 'selftest-x') });
-  assert.throws(() => t.ctx.verifyOnly(), /copy/);
+  const t = setup({ tonight: allGood(() => 'drill-20261124T150000Z-abcd1234') });
+  assert.throws(() => t.ctx.verifyOnly(), /INDEX good copy drill-.* was not made by the export/);
   assert.equal(t.verify().length, 0);
 });
 
@@ -218,17 +218,17 @@ test('S2-8 + drill 2: the #monitor answer fed through the session-check rules gi
     : { status: 'NOTHING_NEW', reason: null, hours_since_good: 0.2 }));
   s.ctx.monitorCheck();
   const done = s.selftest().find(r => r[1] === '#monitor');
-  const m = JSON.parse(done[3]);
-  const row = [done[0], m.export_group, 'no', JSON.stringify(m.tabs), '', JSON.stringify(m.open_batches), m.statement_timeout, '', 'monitor'];
-  const p = sessionCheck({ status: [['run_utc'], row], alarm: [['t'], ['2026-11-24T12:48:33Z', 'checked', 'all good']], expected: EIGHT,
-    now: '2026-11-24T15:05:00Z' });
-  assert.deepEqual(p, ['NUMBER_MAP: STOPPED']);
+  const row = JSON.parse(done[3]);
+  assert.equal(row.length, 9, 'a full status row');
+  assert.equal(row[2], 'no'); assert.equal(row[7], 'monitorCheck');
+  const alarm = [['t'], ['2026-11-24T12:48:33Z', 'checked', 'all good']];
+  assert.deepEqual(sessionCheck({ status: [['run_utc'], row], alarm, expected: EIGHT, now: '2026-11-24T15:05:00Z' }), ['NUMBER_MAP: STOPPED']);
   // and an all-good answer gives no problem line
   const g = monitorWorld(() => ({ status: 'PASS', reason: null, hours_since_good: 0.2 }));
   g.ctx.monitorCheck();
-  const d2 = g.selftest().find(r => r[1] === '#monitor'); const m2 = JSON.parse(d2[3]);
-  assert.deepEqual(sessionCheck({ status: [['run_utc'], [d2[0], m2.export_group, 'yes', JSON.stringify(m2.tabs), '', '[]', '8s', '', 'm']],
-    alarm: [['t'], ['2026-11-24T12:48:33Z', 'checked', 'all good']], expected: EIGHT, now: '2026-11-24T15:05:00Z' }), []);
+  const row2 = JSON.parse(g.selftest().find(r => r[1] === '#monitor')[3]);
+  assert.equal(row2[2], 'yes');
+  assert.deepEqual(sessionCheck({ status: [['run_utc'], row2], alarm, expected: EIGHT, now: '2026-11-24T15:05:00Z' }), []);
 });
 
 test('S2-8: monitorCheck makes the selftest tab if it is missing', () => {
@@ -286,6 +286,8 @@ test('S2-4: drillStop refuses an unknown key, a key found twice, a tab not on th
     [NM, 'NUMBER_MAP', 'NM9999', /not found/],
     [[...NM, ['NM0002', 'dup', '9']], 'NUMBER_MAP', 'NM0002', /more than once/],
     [NM, 'SELFTEST', 'NM0002', /not a door tab/],
+    [NM, 'constructor', 'NM0002', /not a door tab/],
+    [NM, 'toString', 'NM0002', /not a door tab/],
   ];
   for (const [rows, tab, key, re] of cases) {
     const s = setup({ tabs: { NUMBER_MAP: rows }, dbUrl: IMPORT_TRY });

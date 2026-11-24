@@ -100,7 +100,12 @@ function verifyOnly() {
         (tabs.length ? notGood.map(function (t) { return t.tab + ' ' + t.status; }).join(', ') : 'none listed'));
     }
     var ids = [];
-    tabs.forEach(function (t) { if (ids.indexOf(t.copy_id) < 0) ids.push(t.copy_id); });
+    tabs.forEach(function (t) {
+      if (!COPY_LABEL.test(String(t.copy_id || ''))) {
+        throw new Error('verifyOnly not run: ' + t.tab + ' good copy ' + t.copy_id + ' was not made by the export (a drill or test send); run verifyNow');
+      }
+      if (ids.indexOf(t.copy_id) < 0) ids.push(t.copy_id);
+    });
     ids.sort();
     verifyRows_(ids.join('+'), cfg, answer);
   } finally {
@@ -109,8 +114,9 @@ function verifyOnly() {
 }
 
 /** Plan 47 finish S2 item 8: read-only monitoring check. Calls tonight() only (no put_tab, no record_result) and writes
- *  every tab's status, reason and hours to the "selftest" tab, then a "#monitor" row: the number of tabs not good and
- *  the answer in the status row's shape, ready for session-check.mjs (drill 2). */
+ *  every tab's status, reason and hours to the "selftest" tab, then a "#monitor" row: the number of tabs not good and,
+ *  as JSON, one status row exactly as writeStatus_ writes it (9 columns), so session-check.mjs can read it as
+ *  {"status": [["run_utc"], <that row>]} (drill 2). */
 function monitorCheck() {
   var cfg = config_(PropertiesService.getScriptProperties());
   var answer = callDb_(cfg, 'tonight', {});
@@ -122,8 +128,10 @@ function monitorCheck() {
     return [t, 'monitor ' + x.tab, x.status, 'reason ' + (x.reason == null ? '-' : x.reason) + '; hours ' + (h == null ? '-' : h) +
       '; copy ' + (x.copy_id || '-')];
   });
-  rows.push([t, '#monitor', notGood, JSON.stringify({ export_group: answer.export_group, statement_timeout: answer.statement_timeout || '',
-    tabs: tabs, open_batches: answer.open_batches || [] })]);
+  var open = answer.open_batches || [];
+  var statusRow = [t, answer.export_group, notGood || open.length ? 'no' : 'yes', JSON.stringify(tabs), '', JSON.stringify(open),
+                   answer.statement_timeout || '', 'monitorCheck', CLIENT_VERSION];
+  rows.push([t, '#monitor', notGood, JSON.stringify(statusRow)]);
   writeSelftest_(cfg.statusId, rows);
 }
 
@@ -136,7 +144,7 @@ function drillStop(tab, dropKey) {
   if (props.getProperty('DB_URL') !== IMPORT_TRY_URL) {
     throw new Error('drillStop runs only on import-try: Script Property DB_URL must be exactly ' + IMPORT_TRY_URL);
   }
-  if (!KEY_COLUMNS[tab]) throw new Error('drillStop: ' + tab + ' is not a door tab');
+  if (!Object.prototype.hasOwnProperty.call(KEY_COLUMNS, tab)) throw new Error('drillStop: ' + tab + ' is not a door tab');
   if (!dropKey) throw new Error('drillStop: no key to drop');
   var cfg = config_(props);
   var lock = LockService.getScriptLock();

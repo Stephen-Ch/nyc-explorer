@@ -184,31 +184,54 @@ test('A3 T7: selfTest bodies through the real door: STOPPED "not on the list" an
   assert.equal(Number((await q(db, 'SELECT count(*) n FROM research.import_batch')).rows[0].n), before, 'no batch');
 });
 
-// Plan 47 finish S2 + drill 2 rehearsal: the body drillStop() sends, through the real door with 0007, after a good
-// import: STOPPED 'removed keys without approval', nothing changed, and tonight() then shows NUMBER_MAP STOPPED.
-test('S2 drill 2: drillStop body through the real door (0007): STOPPED, live rows unchanged, tonight shows STOPPED', async () => {
+// Plan 47 finish S2, drills 2 and 3 rehearsed: the bodies drillStop() builds go through the real door with 0007 exactly
+// as built (export_group, copy_id, copy_utc from the script, the fake clock set to the database clock).
+// Drill 2: STOPPED 'removed keys without approval', nothing changed, tonight() shows STOPPED.
+// Drill 3: one removal_approval for that key from its live batch, a second drillStop: PASS, removed = 1, tonight() PASS.
+test('S2 drills 2 and 3: drillStop bodies as built through the real door (0007)', async () => {
   const db = await freshDb({ with7: true }); const g = await nyDate(db);
-  const w = makeWorld({ now: `${g}T17:00:00Z` });
+  const dbNow = (await q(db, `SELECT now() AS t`)).rows[0].t.toISOString();
+  const w = makeWorld({ now: dbNow });
   const H = SHEET_HEADERS.NUMBER_MAP;
   const row = id => H.map(h => (h === 'map_id' ? id : `${h} ${id}`));
   const tr = tracker(w, { NUMBER_MAP: [H, row('E14-1'), row('E14-2'), row('E14-3')] });
   const status = w.makeSpreadsheet('NYC nightly status', { status: [[cell('run_utc')]], selftest: [[cell('time_utc')]] });
   Object.assign(w.props, { DB_URL: 'https://ep-ancient-mode-b4mlcp2h.apirest.c-6.us-east-2.aws.neon.tech/neondb/rest/v1',
     PRIVATE_KEY: KEYS.der64, TRACKER_ID: tr.id, STATUS_SHEET_ID: status.id });
-  let body = null;
-  w.db = (fn, b) => { body = b; return { code: 200, json: { status: 'STOPPED', reason: 'x' } }; };
   const ctx = load(w, 'export.gs');
-  // the good import first: the full tab, as the nightly sends it
-  const full = { ...ctx.readTab_(tr, 'NUMBER_MAP'), copy_id: 'c-20261124T060000Z-good0001', client_version: 'test', tab: 'NUMBER_MAP' };
-  assert.equal((await sendToDoor(db, full, g)).status, 'PASS');
-  const liveBefore = (await q(db, `SELECT row_key FROM research.tab_row WHERE tab = 'NUMBER_MAP' AND live ORDER BY row_key`)).rows.map(r => r.row_key);
+  const bodies = [];
+  const send = b => withLoader(db, async c => (await c.query(`SELECT api.put_tab($1::date, $2, $3::timestamptz, $4, $5, $6::jsonb, $7::jsonb) AS r`,
+    [b.export_group, b.copy_id, b.copy_utc, b.tab, b.client_version, JSON.stringify(b.headers), JSON.stringify(b.rows)])).rows[0].r);
+  w.db = (fn, b) => { bodies.push(b); return { code: 200, json: { status: 'SENT' } }; };
+  const tonightNM = async () => (await withLoader(db, c => c.query('SELECT api.tonight() AS t').then(x => x.rows[0].t))).tabs.find(x => x.tab === 'NUMBER_MAP');
+  const live = async () => (await q(db, `SELECT row_key, import_batch_id FROM research.tab_row WHERE tab = 'NUMBER_MAP' AND live ORDER BY row_key`)).rows;
+
+  // the good import first: the full tab, as the nightly sends it, a little older than the drills
+  const full = { ...ctx.readTab_(tr, 'NUMBER_MAP'), export_group: g, copy_id: 'c-20261124T060000Z-good0001',
+    copy_utc: new Date(Date.parse(dbNow) - 120000).toISOString(), client_version: 'test', tab: 'NUMBER_MAP' };
+  assert.equal((await send(full)).status, 'PASS');
+  const before = await live();
+
+  // drill 2
   ctx.drillStop('NUMBER_MAP', 'E14-2');
-  assert.deepEqual(body.rows.map(r => r.c[0]), ['E14-1', 'E14-3']);
-  const r = await withLoader(db, async c => (await c.query(`SELECT api.put_tab($1::date, $2, now(), $3, $4, $5::jsonb, $6::jsonb) AS r`,
-    [g, body.copy_id, body.tab, body.client_version, JSON.stringify(body.headers), JSON.stringify(body.rows)])).rows[0].r);
-  assert.equal(r.status, 'STOPPED', JSON.stringify(r)); assert.match(r.reason, /removed keys without approval/);
-  const liveAfter = (await q(db, `SELECT row_key FROM research.tab_row WHERE tab = 'NUMBER_MAP' AND live ORDER BY row_key`)).rows.map(x => x.row_key);
-  assert.deepEqual(liveAfter, liveBefore);
-  const t = await withLoader(db, c => c.query('SELECT api.tonight() AS t').then(x => x.rows[0].t));
-  assert.equal(t.tabs.find(x => x.tab === 'NUMBER_MAP').status, 'STOPPED');
+  const b2 = bodies[0];
+  assert.equal(b2.export_group, g, 'the script\'s New York date equals the database\'s');
+  assert.deepEqual(b2.rows.map(r => r.c[0]), ['E14-1', 'E14-3']);
+  const r2 = await send(b2);
+  assert.equal(r2.status, 'STOPPED', JSON.stringify(r2)); assert.match(r2.reason, /removed keys without approval/);
+  assert.deepEqual(await live(), before);
+  const t2 = await tonightNM();
+  assert.equal(t2.status, 'STOPPED'); assert.match(t2.reason, /removed keys without approval/);
+
+  // drill 3: the approval from the batch the key is live in (looked up now), then a second send, newer and with a new id
+  const lb = before.find(x => x.row_key === 'E14-2').import_batch_id;
+  await q(db, `INSERT INTO research.removal_approval (city_id, tab, row_key, live_batch_id) VALUES ('nyc', 'NUMBER_MAP', 'E14-2', $1)`, [lb]);
+  w.clock.t += 61000;
+  ctx.drillStop('NUMBER_MAP', 'E14-2');
+  const b3 = bodies[1];
+  assert.notEqual(b3.copy_id, b2.copy_id); assert.ok(Date.parse(b3.copy_utc) > Date.parse(b2.copy_utc));
+  const r3 = await send(b3);
+  assert.equal(r3.status, 'PASS', JSON.stringify(r3)); assert.equal(Number(r3.counts.removed), 1, JSON.stringify(r3));
+  assert.deepEqual((await live()).map(x => x.row_key), ['E14-1', 'E14-3']);
+  assert.equal((await tonightNM()).status, 'PASS');
 });
