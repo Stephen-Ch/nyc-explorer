@@ -56,23 +56,53 @@ export function makeWorld({ now = '2026-11-19T06:05:00Z', props = {}, email = 's
     world.files.set(id, ss);
     return ss;
   }
+  // like Sheets: text that looks like a date or number is retyped and shown differently, unless it starts with '
+  function typed(v) {
+    const t = String(v);
+    if (t.startsWith("'")) return cell(t.slice(1));
+    const d = /^(\d{4})-(\d{2})-(\d{2})(T(\d{2}):(\d{2}):(\d{2}).*)?$/.exec(t);
+    if (d) return cell(`${+d[2]}/${+d[3]}/${d[1]}` + (d[4] ? ` ${+d[5]}:${d[6]}:${d[7]}` : ''));
+    if (/^-?\d+(\.\d+)?$/.test(t)) return cell(String(Number(t)));
+    return cell(t);
+  }
+  // a sheet has a size (rows x columns) like real Sheets: 1000 x 26 by default, or more if it already holds more.
+  // appendRow grows it; getRange past it throws; insertRowsAfter adds rows (plan 47 finish S2: bulk verify writes).
   function sheetApi(ss, n) {
     if (!(n in ss.sheets)) return null;
+    ss.size = ss.size || {};
+    const size = ss.size[n] = ss.size[n] || { rows: Math.max(1000, ss.sheets[n].length), cols: 26 };
     return {
       getName: () => n,
       getDataRange: () => { clock.t += world.readMs || 0; return fakeRange(ss.sheets[n]); },
       getLastRow: () => ss.sheets[n].length,
-      // like Sheets: text that looks like a date or number is retyped and shown differently, unless it starts with '
+      getMaxRows: () => size.rows,
+      getMaxColumns: () => size.cols,
+      insertRowsAfter: (after, count) => {
+        if (after < 1 || after > size.rows || count < 1) throw new Error(`insertRowsAfter: bad arguments ${after}, ${count}`);
+        size.rows += count; world.logs.push(`insertRowsAfter ${n} ${after} ${count}`);
+      },
       appendRow: vals => {
         if (world.sheetError) throw new Error(world.sheetError);
-        ss.sheets[n].push(vals.map(v => {
-          const t = String(v);
-          if (t.startsWith("'")) return cell(t.slice(1));
-          const d = /^(\d{4})-(\d{2})-(\d{2})(T(\d{2}):(\d{2}):(\d{2}).*)?$/.exec(t);
-          if (d) return cell(`${+d[2]}/${+d[3]}/${d[1]}` + (d[4] ? ` ${+d[5]}:${d[6]}:${d[7]}` : ''));
-          if (/^-?\d+(\.\d+)?$/.test(t)) return cell(String(Number(t)));
-          return cell(t);
-        }));
+        ss.sheets[n].push(vals.map(typed));
+        size.rows = Math.max(size.rows, ss.sheets[n].length);
+      },
+      getRange: (row, col, numRows = 1, numCols = 1) => {
+        if (row < 1 || col < 1 || numRows < 1 || numCols < 1 || row + numRows - 1 > size.rows || col + numCols - 1 > size.cols) {
+          throw new Error('The coordinates of the range are outside the dimensions of the sheet.');
+        }
+        return {
+          setValues: vals => {
+            world.writes = world.writes || [];
+            world.writes.push({ sheet: n, row, rows: vals.length, lockHeld: world.lockHeld, last: vals[vals.length - 1].map(String) });
+            if (world.sheetError) throw new Error(world.sheetError);
+            if (world.failWriteAt && world.writes.filter(x => x.sheet === n).length === world.failWriteAt) throw new Error('Service Spreadsheets failed');
+            if (vals.length !== numRows || vals.some(r => r.length !== numCols)) throw new Error('The number of rows or columns in the data does not match the range.');
+            if (numRows * numCols > 50000) throw new Error('TEST: over 50,000 cells in one write');
+            const g = ss.sheets[n];
+            while (g.length < row - 1) g.push([]);
+            vals.forEach((r, i) => { g[row - 1 + i] = r.map(typed); });
+          },
+        };
       },
     };
   }
