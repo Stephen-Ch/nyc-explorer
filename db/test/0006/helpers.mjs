@@ -14,6 +14,8 @@ const mig = f => fs.readFileSync(path.join(REPO, 'db/migrations', f), 'utf8');
 export const BASE = ['0001_init.sql', '0002_before_import.sql', '0003_research_import.sql', '0004_importer_role.sql', '0005_import_build_40.sql'];
 export const M6 = '0006_nightly_api.sql';
 export const M6_DOWN = '0006_nightly_api.down.sql';
+export const M7 = '0007_tonight_latest_bad.sql';
+export const M7_DOWN = '0007_tonight_latest_bad.down.sql';
 export const readMigration = mig;
 
 export function requireIsolated() {
@@ -43,8 +45,8 @@ async function dataApiRoles() {
   END$$`);
 }
 
-// A fresh database with 0001-0005, and 0006 unless with6 is false.
-export async function freshDb({ with6 = true } = {}) {
+// A fresh database with 0001-0005, and 0006 unless with6 is false; 0007 too when with7 is true.
+export async function freshDb({ with6 = true, with7 = false } = {}) {
   await dropAll();
   await dataApiRoles();
   const name = `door_t_${process.pid}_${++n}`;
@@ -55,6 +57,7 @@ export async function freshDb({ with6 = true } = {}) {
   try {
     for (const f of BASE) await c.query(mig(f));
     if (with6) await c.query(mig(M6));
+    if (with6 && with7) await c.query(mig(M7));
   } finally { await c.end(); }
   return name;
 }

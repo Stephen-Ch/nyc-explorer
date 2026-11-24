@@ -183,3 +183,32 @@ test('A3 T7: selfTest bodies through the real door: STOPPED "not on the list" an
   assert.match(logged[1].reason, /^selftest 13g /);
   assert.equal(Number((await q(db, 'SELECT count(*) n FROM research.import_batch')).rows[0].n), before, 'no batch');
 });
+
+// Plan 47 finish S2 + drill 2 rehearsal: the body drillStop() sends, through the real door with 0007, after a good
+// import: STOPPED 'removed keys without approval', nothing changed, and tonight() then shows NUMBER_MAP STOPPED.
+test('S2 drill 2: drillStop body through the real door (0007): STOPPED, live rows unchanged, tonight shows STOPPED', async () => {
+  const db = await freshDb({ with7: true }); const g = await nyDate(db);
+  const w = makeWorld({ now: `${g}T17:00:00Z` });
+  const H = SHEET_HEADERS.NUMBER_MAP;
+  const row = id => H.map(h => (h === 'map_id' ? id : `${h} ${id}`));
+  const tr = tracker(w, { NUMBER_MAP: [H, row('E14-1'), row('E14-2'), row('E14-3')] });
+  const status = w.makeSpreadsheet('NYC nightly status', { status: [[cell('run_utc')]], selftest: [[cell('time_utc')]] });
+  Object.assign(w.props, { DB_URL: 'https://ep-ancient-mode-b4mlcp2h.apirest.c-6.us-east-2.aws.neon.tech/neondb/rest/v1',
+    PRIVATE_KEY: KEYS.der64, TRACKER_ID: tr.id, STATUS_SHEET_ID: status.id });
+  let body = null;
+  w.db = (fn, b) => { body = b; return { code: 200, json: { status: 'STOPPED', reason: 'x' } }; };
+  const ctx = load(w, 'export.gs');
+  // the good import first: the full tab, as the nightly sends it
+  const full = { ...ctx.readTab_(tr, 'NUMBER_MAP'), copy_id: 'c-20261124T060000Z-good0001', client_version: 'test', tab: 'NUMBER_MAP' };
+  assert.equal((await sendToDoor(db, full, g)).status, 'PASS');
+  const liveBefore = (await q(db, `SELECT row_key FROM research.tab_row WHERE tab = 'NUMBER_MAP' AND live ORDER BY row_key`)).rows.map(r => r.row_key);
+  ctx.drillStop('NUMBER_MAP', 'E14-2');
+  assert.deepEqual(body.rows.map(r => r.c[0]), ['E14-1', 'E14-3']);
+  const r = await withLoader(db, async c => (await c.query(`SELECT api.put_tab($1::date, $2, now(), $3, $4, $5::jsonb, $6::jsonb) AS r`,
+    [g, body.copy_id, body.tab, body.client_version, JSON.stringify(body.headers), JSON.stringify(body.rows)])).rows[0].r);
+  assert.equal(r.status, 'STOPPED', JSON.stringify(r)); assert.match(r.reason, /removed keys without approval/);
+  const liveAfter = (await q(db, `SELECT row_key FROM research.tab_row WHERE tab = 'NUMBER_MAP' AND live ORDER BY row_key`)).rows.map(x => x.row_key);
+  assert.deepEqual(liveAfter, liveBefore);
+  const t = await withLoader(db, c => c.query('SELECT api.tonight() AS t').then(x => x.rows[0].t));
+  assert.equal(t.tabs.find(x => x.tab === 'NUMBER_MAP').status, 'STOPPED');
+});

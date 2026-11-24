@@ -29,7 +29,20 @@ migration 0006). Two standalone Apps Script projects, both owned by schurchville
 
 Session start (NYC): Claude reads both tabs of the status sheet (`status`, `alarm`) with the Sheets connector and runs `node tools/nightly/session-check.mjs <file.json>` on them. It applies the alarm's own rules to `status`, and reports an alarm with no `checked` row in 26 hours or a `mail error` in 7 days. Wired into the session start and the 7:30am outside check in step 4, when the sheet exists.
 
-To pause: Script Property `paused` = yes in the export project (stops `nightly` and `verifyNow`). `verifyNow` writes verify rows only after a fresh copy came back good for every tab. To shut the door at once: `REVOKE nyc_loader FROM authenticator` (attended).
+## Hand-run tools (plan 47 finish S2)
+- `verifyNow()`: export from a fresh copy, then the verify rows; holds the script lock until `#complete`. Verify rows are
+  written in bulk (5,000 rows per write, `#complete` last and alone); trailing blank header columns are dropped, a blank
+  header between real ones stops the run.
+- `verifyOnly()`: the verify rows with NO export, labelled with the copy id(s) of tonight's good rows; stops unless every
+  tab is good. No database write, so it runs while paused. Pause the tracker-writing tasks first.
+- `monitorCheck()`: read-only; writes each tab's status, reason and hours from `tonight()` to `selftest`, then a `#monitor`
+  row (tabs not good, and the answer in the status-row shape for `session-check.mjs`).
+- `drillStopRun()`: drills 2 and 3 on import-try only (`DB_URL` must be exactly the import-try URL). Reads Script
+  Properties `DRILL_TAB` and `DRILL_KEY`, sends that tab minus that key through `put_tab`, logs the answer to `selftest`.
+  Delete both properties after the drills.
+- Migration 0007 (`db/migrations`): `tonight()` shows a STOPPED or FAIL that comes after the day's good row.
+
+To pause: Script Property `paused` = yes in the export project (stops `nightly`, `verifyNow`, `selfTest` and `drillStop`). `verifyNow` writes verify rows only after a fresh copy came back good for every tab. To shut the door at once: `REVOKE nyc_loader FROM authenticator` (attended).
 
 ## Tests
 - `npm test` here: export, alarm and keygen under fake Apps Script services and a fake clock (no database).

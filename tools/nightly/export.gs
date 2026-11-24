@@ -13,8 +13,11 @@
  *   STATUS_SHEET_ID the "NYC nightly status" spreadsheet id (tabs: status, verify)
  *   paused          any value stops every run (way back: pause first)
  *   COPY_IDS        kept by the script: ids of copies it made and has not trashed yet
+ *   DRILL_TAB, DRILL_KEY  only during the plan 47 drills, for drillStopRun(); Stephen deletes both after the drills
  *
- * Triggers: nightly() daily at 1, 2, 3, 4 and 5am. verifyNow() only by hand from the editor (done-proof).
+ * Triggers: nightly() daily at 1, 2, 3, 4 and 5am. By hand from the editor only: verifyNow() (export, then the
+ * done-proof), verifyOnly() (the proof with no export), monitorCheck() (read-only status per tab), selfTest(),
+ * drillStopRun() (import-try only).
  */
 
 var CLIENT_VERSION = 'dev';   // replaced by the git commit of this file at install time (step 4)
@@ -43,6 +46,10 @@ var KEY_COLUMNS = {
   PLACE_HOOKS: ['hook_id', 'run_id'], PEOPLE: ['person_id'], NAME_LINKS: ['link_id'], NUMBER_MAP: ['map_id'],
 };
 var TOKEN = { role: 'nyc_loader', sub: 'nightly-export', aud: 'nyc-explorer-nightly', kid: 'export-1', lifetime: 300 };
+// plan 47 finish S2: the only DB_URL drillStop accepts (exact match, not a substring)
+var IMPORT_TRY_URL = 'https://ep-ancient-mode-b4mlcp2h.apirest.c-6.us-east-2.aws.neon.tech/neondb/rest/v1';
+var VERIFY_CHUNK_ROWS = 5000;                 // rows per verify write: 20,000 cells per call (S2 item 1)
+var COPY_LABEL = /^c-\d{8}T\d{6}Z-[A-Za-z0-9-]+$/;   // the copy name runExport_ makes and the database keeps as copy_id
 
 // ---------------------------------------------------------------- entry points
 
@@ -62,13 +69,115 @@ function verifyNow() {
   if (PropertiesService.getScriptProperties().getProperty('paused')) throw new Error('paused: remove the Script Property paused first');
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(30000)) throw new Error('another export run is going; try again in a few minutes');
-  var st;
-  try { st = runExport_({ ignoreBusy: true, allTabs: true }); } finally { lock.releaseLock(); }
-  // the proof needs a fresh copy and a good answer for every enabled tab; otherwise no verify rows at all (ChatGPT r2-1)
-  var bad = !st || !st.copyId || !st.todo.length || st.fail || st.wait.length || st.skipped.length ||
-            Object.keys(st.stopped).length || st.todo.some(function (t) { return GOOD.indexOf(st.done[t]) < 0; });
-  if (bad) throw new Error('verify not run: the fresh export did not finish good for every tab (see the status sheet)');
-  verifyRows_(st.copyName);
+  // the lock is kept until #complete is written, so no other run can change the database in between (S2 item 3)
+  try {
+    var st = runExport_({ ignoreBusy: true, allTabs: true });
+    // the proof needs a fresh copy and a good answer for every enabled tab; otherwise no verify rows at all (ChatGPT r2-1)
+    var bad = !st || !st.copyId || !st.todo.length || st.fail || st.wait.length || st.skipped.length ||
+              Object.keys(st.stopped).length || st.todo.some(function (t) { return GOOD.indexOf(st.done[t]) < 0; });
+    if (bad) throw new Error('verify not run: the fresh export did not finish good for every tab (see the status sheet)');
+    verifyRows_(st.copyName);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** Plan 47 finish S2 item 7: the done-proof with NO export first, so the check can never repair what it checks.
+ *  Hashes the live tracker into "verify", labelled with the copy id(s) of the database's newest good rows (tonight()).
+ *  Stops, with no verify rows, unless every enabled tab is good tonight. Makes no write call to the database, so it
+ *  also runs while paused. Pause the tracker-writing tasks first, so the tracker still equals the night's copy. */
+function verifyOnly() {
+  var props = PropertiesService.getScriptProperties();
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(30000)) throw new Error('another export run is going; try again in a few minutes');
+  try {
+    var cfg = config_(props);
+    var answer = callDb_(cfg, 'tonight', {});
+    var tabs = answer.tabs || [];
+    var notGood = tabs.filter(function (t) { return GOOD.indexOf(t.status) < 0; });
+    if (!tabs.length || notGood.length) {
+      throw new Error('verifyOnly not run: tabs not good tonight: ' +
+        (tabs.length ? notGood.map(function (t) { return t.tab + ' ' + t.status; }).join(', ') : 'none listed'));
+    }
+    var ids = [];
+    tabs.forEach(function (t) { if (ids.indexOf(t.copy_id) < 0) ids.push(t.copy_id); });
+    ids.sort();
+    verifyRows_(ids.join('+'), cfg, answer);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** Plan 47 finish S2 item 8: read-only monitoring check. Calls tonight() only (no put_tab, no record_result) and writes
+ *  every tab's status, reason and hours to the "selftest" tab, then a "#monitor" row: the number of tabs not good and
+ *  the answer in the status row's shape, ready for session-check.mjs (drill 2). */
+function monitorCheck() {
+  var cfg = config_(PropertiesService.getScriptProperties());
+  var answer = callDb_(cfg, 'tonight', {});
+  var t = new Date().toISOString(), tabs = {}, notGood = 0;
+  var rows = (answer.tabs || []).map(function (x) {
+    var h = x.hours_since_good == null ? null : Number(x.hours_since_good);
+    tabs[x.tab] = { s: x.status, h: h };
+    if (GOOD.indexOf(x.status) < 0) notGood++;
+    return [t, 'monitor ' + x.tab, x.status, 'reason ' + (x.reason == null ? '-' : x.reason) + '; hours ' + (h == null ? '-' : h) +
+      '; copy ' + (x.copy_id || '-')];
+  });
+  rows.push([t, '#monitor', notGood, JSON.stringify({ export_group: answer.export_group, statement_timeout: answer.statement_timeout || '',
+    tabs: tabs, open_batches: answer.open_batches || [] })]);
+  writeSelftest_(cfg.statusId, rows);
+}
+
+/** Plan 47 finish S2 item 4: drills 2 and 3 on import-try. Sends the tab's current rows minus one key through put_tab
+ *  with a fresh copy id, copy_utc now and tonight's New York date, and logs the answer to the "selftest" tab.
+ *  Refuses unless DB_URL is exactly the import-try URL. Editor only; the Run button uses drillStopRun(). */
+function drillStop(tab, dropKey) {
+  var props = PropertiesService.getScriptProperties();
+  if (props.getProperty('paused')) throw new Error('paused: remove the Script Property paused first');
+  if (props.getProperty('DB_URL') !== IMPORT_TRY_URL) {
+    throw new Error('drillStop runs only on import-try: Script Property DB_URL must be exactly ' + IMPORT_TRY_URL);
+  }
+  if (!KEY_COLUMNS[tab]) throw new Error('drillStop: ' + tab + ' is not a door tab');
+  if (!dropKey) throw new Error('drillStop: no key to drop');
+  var cfg = config_(props);
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(30000)) throw new Error('another export run is going; try again in a few minutes');
+  var body, answer, error;
+  try {
+    var p = readTab_(SpreadsheetApp.openById(cfg.trackerId), tab);
+    var cols = KEY_COLUMNS[tab].map(function (k) { return p.headers.indexOf(k); });
+    if (cols.some(function (i) { return i < 0; })) throw new Error('drillStop: ' + tab + ' has no ' + KEY_COLUMNS[tab].join(' or ') + ' column');
+    var hits = p.rows.filter(function (row) { return cols.map(function (i) { return row.c[i]; }).join('@') === dropKey; });
+    if (!hits.length) throw new Error('drillStop: key ' + dropKey + ' not found in ' + tab);
+    if (hits.length > 1) throw new Error('drillStop: key ' + dropKey + ' is in ' + tab + ' more than once');
+    var now = new Date();
+    var hex = Utilities.getUuid().replace(/[^0-9a-f]/gi, '').slice(0, 8).toLowerCase();
+    body = { export_group: Utilities.formatDate(now, TZ, 'yyyy-MM-dd'),
+      copy_id: 'drill-' + Utilities.formatDate(now, 'UTC', "yyyyMMdd'T'HHmmss'Z'") + '-' + hex, copy_utc: now.toISOString(),
+      tab: tab, client_version: CLIENT_VERSION, headers: p.headers, rows: p.rows.filter(function (row) { return row !== hits[0]; }) };
+    try { answer = callDb_(cfg, 'put_tab', body); } catch (e) { error = e; }
+  } finally {
+    lock.releaseLock();
+  }
+  var detail = 'drop ' + dropKey + '; copy ' + body.copy_id + '; ' + body.rows.length + ' rows sent; answer ' +
+    (error ? error.message : JSON.stringify(answer));
+  writeSelftest_(cfg.statusId, [[new Date().toISOString(), 'drillStop ' + tab, error ? 'ERROR' : String(answer && answer.status), detail]]);
+  if (error) throw error;
+}
+
+/** The editor's Run button passes no arguments: tab and key come from Script Properties DRILL_TAB and DRILL_KEY. */
+function drillStopRun() {
+  var props = PropertiesService.getScriptProperties();
+  var tab = props.getProperty('DRILL_TAB'), key = props.getProperty('DRILL_KEY');
+  if (!tab || !key) throw new Error('drillStopRun needs Script Properties DRILL_TAB and DRILL_KEY');
+  drillStop(tab, key);
+}
+
+// rows [time, check, result, detail] to the status sheet's "selftest" tab (made with its header row if missing), as text
+function writeSelftest_(sheetId, rows) {
+  var ss = SpreadsheetApp.openById(sheetId);
+  var out = ss.getSheetByName('selftest');
+  if (!out) { out = ss.insertSheet('selftest'); out.appendRow(['time_utc', 'check', 'result', 'detail']); }
+  rows.forEach(function (r) { out.appendRow(r.map(function (v) { return "'" + String(v).slice(0, 45000); })); });
 }
 
 /** Live test 13g (amendment A3): Stephen runs this from the editor, never on a trigger. Three real calls through the
@@ -129,12 +238,8 @@ function selfTest() {
   console.log('selfTest results: ' + JSON.stringify(results));    // in the execution log even if the sheet write fails
   var sheetId = cfg ? cfg.statusId : props.getProperty('STATUS_SHEET_ID');
   if (!sheetId) throw new Error('selfTest: Script Property STATUS_SHEET_ID is not set; results: ' + JSON.stringify(results));
-  var ss = SpreadsheetApp.openById(sheetId);
-  var out = ss.getSheetByName('selftest');
-  if (!out) { out = ss.insertSheet('selftest'); out.appendRow(['time_utc', 'check', 'result', 'detail']); }
   var t = new Date().toISOString();
-  results.forEach(function (r) { out.appendRow([t, r[0], r[1], String(r[2]).slice(0, 45000)].map(function (v) { return "'" + v; })); });
-  out.appendRow(["'" + t, "'#done", "'" + fails, "'" + CLIENT_VERSION]);
+  writeSelftest_(sheetId, results.map(function (r) { return [t, r[0], r[1], r[2]]; }).concat([[t, '#done', fails, CLIENT_VERSION]]));
   if (fails) throw new Error('selfTest: ' + fails + ' check' + (fails > 1 ? 's' : '') + ' failed (see the selftest tab)');
 }
 
@@ -396,13 +501,15 @@ function writeStatus_(cfg, st, answer) {
 /** Read the live tracker through the Sheets API (not SpreadsheetApp) and write run id, tab, key and hash per row to
  *  "verify". Every run has its own id; a run counts only once its last row "#complete" (with the row count) is written,
  *  so an older run or a half-written one is never read as the result (ChatGPT 3). */
-function verifyRows_(copyName) {
-  // only verifyNow calls this, with the copy the database was just filled from (ChatGPT r3-1)
-  if (!copyName || !/^c-\d{8}T\d{6}Z-/.test(copyName)) {
-    throw new Error('verifyRows_ needs the copy it checks; run verifyNow instead');
+function verifyRows_(copyName, cfg, answer) {
+  // only verifyNow (the copy the database was just filled from, ChatGPT r3-1) and verifyOnly (the copies of tonight's
+  // good rows, joined by +) call this
+  var parts = String(copyName || '').split('+');
+  if (!copyName || parts.some(function (c) { return !COPY_LABEL.test(c); })) {
+    throw new Error('verifyRows_ needs the copy it checks; run verifyNow or verifyOnly instead');
   }
-  var cfg = config_(PropertiesService.getScriptProperties());
-  var answer = callDb_(cfg, 'tonight', {});
+  cfg = cfg || config_(PropertiesService.getScriptProperties());
+  answer = answer || callDb_(cfg, 'tonight', {});
   var out = SpreadsheetApp.openById(cfg.statusId).getSheetByName('verify');
   // the run id names the copy the database was just filled from (ChatGPT r2-1)
   var run = 'v-' + Utilities.formatDate(new Date(), 'UTC', "yyyyMMdd'T'HHmmss'Z'") + '-' + Utilities.getUuid().slice(0, 8) + '@' + copyName;
@@ -422,6 +529,14 @@ function verifyRows_(copyName) {
       });
     });
     var sheetHeaders = (rows[0] || []).map(function (c) { return c.text; });
+    // formatted but empty columns at the right come back as blank headers: drop them; a blank one in between stops
+    // (S2 item 2). The database insists the headers match exactly, so no header list is kept here.
+    var lastReal = -1;
+    sheetHeaders.forEach(function (h, k) { if (h !== '') lastReal = k; });
+    for (var b = 0; b < lastReal; b++) {
+      if (sheetHeaders[b] === '') throw new Error('verify: ' + t.tab + ' has a blank header in column ' + (b + 1) + ' between real ones');
+    }
+    sheetHeaders = sheetHeaders.slice(0, lastReal + 1);
     var links = LINK_COLUMNS[t.tab] || [];
     for (var i = 1; i < rows.length; i++) {
       var cells = [], named = {}, any = false;
@@ -435,8 +550,16 @@ function verifyRows_(copyName) {
       lines.push([run, t.tab, key, canonicalHash_(cells)]);
     }
   });
-  lines.forEach(function (l) { out.appendRow(l.map(function (v) { return "'" + v; })); });
-  out.appendRow(["'" + run, "'#complete", "'" + lines.length, "'"]);
+  // bulk writes (S2 item 1, A4): one appendRow per line took about 0.37 s and hit the 6-minute cap at 922 rows.
+  // Chunks of VERIFY_CHUNK_ROWS rows, rows inserted first if the sheet is too short; #complete written last, alone.
+  var quote = function (l) { return l.map(function (v) { return "'" + v; }); };
+  var start = out.getLastRow() + 1, need = start + lines.length;           // the last row #complete goes in
+  if (need > out.getMaxRows()) out.insertRowsAfter(out.getMaxRows(), need - out.getMaxRows());
+  for (var i = 0; i < lines.length; i += VERIFY_CHUNK_ROWS) {
+    var chunk = lines.slice(i, i + VERIFY_CHUNK_ROWS).map(quote);
+    out.getRange(start + i, 1, chunk.length, 4).setValues(chunk);
+  }
+  out.getRange(start + lines.length, 1, 1, 4).setValues([quote([run, '#complete', lines.length, ''])]);
 }
 
 /** The one shared piece: sha256 hex of the row's cells in header order, each as <UTF-8 byte length>:<text>.
