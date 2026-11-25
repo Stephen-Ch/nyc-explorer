@@ -564,7 +564,7 @@ function verifyRows_(copyName, cfg, answer) {
       var key = (KEY_COLUMNS[t.tab] || []).map(function (k) { return named[k]; }).join('@');
       var hash;
       try { hash = canonicalHash_(cells); } catch (e) {
-        if (e && e.brokenCharacter) throw new Error('verify: ' + t.tab + ' ' + key + ' has a broken character');
+        if (e && e.brokenCharacter) throw new Error('verify: ' + t.tab + ' ' + key + ' has a broken character (sheet row ' + (i + 1) + ')');
         throw e;
       }
       lines.push([run, t.tab, key, hash]);

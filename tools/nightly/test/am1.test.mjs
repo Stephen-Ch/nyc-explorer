@@ -116,6 +116,8 @@ test('am1-2 must-fail: a lone high, lone low, high at the end, or reversed pair 
 // ---------------------------------------------------------------- hash pin
 
 // the hash as it was before amendment 1 (export.gs at acce971), kept here to pin "every hash stays the same"
+// Note (review): under the shim, newBlob is Node's own byte count, so (i) and (ii) are close to one check. Neither proves
+// the match with real Apps Script or PostgreSQL: npm run test:db (13h, emoji in the db fixture) and the live compare do.
 function oldCanonicalHash(Utilities, cells) {
   const s = cells.map(c => Utilities.newBlob(c).getBytes().length + ':' + c).join('');
   return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, s, Utilities.Charset.UTF_8)
@@ -154,7 +156,7 @@ test('am1-2 must-fail: a lone surrogate in a cell stops verify with its tab and 
   tabs.STORIES.push(SHEET_HEADERS.STORIES.map(h => h === 'story_id' ? 'ST009' : h === 'notes' ? 'broken \uD83D here' : 'x'));
   const s = setup({ tabs });
   assert.throws(() => s.ctx.verifyRows_(COPY, undefined, { tabs: [{ tab: 'STORIES', status: 'PASS', copy_id: COPY }] }),
-    /verify: STORIES ST009 has a broken character/);
+    /verify: STORIES ST009 has a broken character \(sheet row 6\)/);
   assert.equal(s.complete().length, 0);
   assert.equal(s.verify().length, 0);
 });
