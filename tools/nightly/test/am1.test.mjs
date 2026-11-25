@@ -62,7 +62,7 @@ function fixtureTabs() {
       row('ST001', { place: 'a, "quoted", comma', notes: 'line1\nline2\r\nline3', story_date: '1852-10-03', added: '1.5E+10',
         original_link: cell('see', { f: '=HYPERLINK("https://h.example/1","see")', links: ['https://h.example/1'] }) }),
       row('ST002', { original_link: cell('two', { links: ['https://a.example/1', null, 'https://b.example/2'] }),
-        'pointer_source (modern, credit only)': cell('https://p.example', { links: ['https://p.example'] }), notes: 'é ü 中   tab\tend', grade: '' }),
+        'pointer_source (modern, credit only)': cell('https://p.example', { links: ['https://p.example'] }), notes: 'é ü 中 \u2028 tab\tend', grade: '' }),
       row('ST003', { notes: ' leading and trailing ', original_link: cell('https://whole.example', { links: ['https://whole.example'], apiHyperlinkOnly: true }) }),
       row('ST004', { 'hook (fresh wording)': EMOJI, notes: ZWJ, original_quote: '﻿bom � replacement \u0000 nul' })],
     DELIGHTS: [SHEET_HEADERS.DELIGHTS, SHEET_HEADERS.DELIGHTS.map(h => h === 'delight_id' ? 'D001' : `${h} 1`)],
