@@ -6,7 +6,7 @@
   "type": "module",
   "engines": { "node": ">=20" },
   "scripts": {
-    "test": "node --test --test-concurrency=1 test/export.test.mjs test/alarm.test.mjs test/keygen.test.mjs test/session-check.test.mjs test/selftest.test.mjs test/s2.test.mjs",
+    "test": "node --test --test-concurrency=1 test/export.test.mjs test/alarm.test.mjs test/keygen.test.mjs test/session-check.test.mjs test/selftest.test.mjs test/s2.test.mjs test/am1.test.mjs",
     "test:db": "node --test --test-concurrency=1 test/db.test.mjs"
   }
 }
