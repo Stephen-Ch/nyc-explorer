@@ -516,13 +516,17 @@ function verifyRows_(copyName, cfg, answer) {
   if (!copyName || parts.some(function (c) { return !COPY_LABEL.test(c); })) {
     throw new Error('verifyRows_ needs the copy it checks; run verifyNow or verifyOnly instead');
   }
+  // amendment 1: a timer for each part, written as one row to the selftest tab after #complete
+  var clock = function () { return new Date().getTime(); };
+  var t0 = clock(), tonightMs = 'given', readMs = [], hashMs = 0;
   cfg = cfg || config_(PropertiesService.getScriptProperties());
-  answer = answer || callDb_(cfg, 'tonight', {});
+  if (!answer) { answer = callDb_(cfg, 'tonight', {}); tonightMs = clock() - t0; }
   var out = SpreadsheetApp.openById(cfg.statusId).getSheetByName('verify');
   // the run id names the copy the database was just filled from (ChatGPT r2-1)
   var run = 'v-' + Utilities.formatDate(new Date(), 'UTC', "yyyyMMdd'T'HHmmss'Z'") + '-' + Utilities.getUuid().slice(0, 8) + '@' + copyName;
   var lines = [];
   answer.tabs.forEach(function (t) {
+    var r0 = clock();
     var res = Sheets.Spreadsheets.get(cfg.trackerId, { ranges: [t.tab], includeGridData: true,
       fields: 'sheets(properties.title,data.rowData.values(formattedValue,hyperlink,userEnteredValue.formulaValue,textFormatRuns(startIndex,format.link.uri)))' });
     var rows = (res.sheets[0].data[0].rowData || []).map(function (rd) {
@@ -546,6 +550,8 @@ function verifyRows_(copyName, cfg, answer) {
       if (sheetHeaders[b] === '') throw new Error('verify: ' + t.tab + ' has a blank header in column ' + (b + 1) + ' between real ones');
     }
     sheetHeaders = sheetHeaders.slice(0, lastReal + 1);
+    readMs.push(t.tab + '=' + (clock() - r0));
+    var h0 = clock();
     var links = LINK_COLUMNS[t.tab] || [];
     for (var i = 1; i < rows.length; i++) {
       var cells = [], named = {}, any = false;
@@ -556,9 +562,16 @@ function verifyRows_(copyName, cfg, answer) {
       });
       if (!any) continue;
       var key = (KEY_COLUMNS[t.tab] || []).map(function (k) { return named[k]; }).join('@');
-      lines.push([run, t.tab, key, canonicalHash_(cells)]);
+      var hash;
+      try { hash = canonicalHash_(cells); } catch (e) {
+        if (e && e.brokenCharacter) throw new Error('verify: ' + t.tab + ' ' + key + ' has a broken character (sheet row ' + (i + 1) + ')');
+        throw e;
+      }
+      lines.push([run, t.tab, key, hash]);
     }
+    hashMs += clock() - h0;
   });
+  var w0 = clock();
   // bulk writes (S2 item 1, A4): one appendRow per line took about 0.37 s and hit the 6-minute cap at 922 rows.
   // Chunks of VERIFY_CHUNK_ROWS rows, rows inserted first if the sheet is too short; #complete written last, alone.
   var quote = function (l) { return l.map(function (v) { return "'" + v; }); };
@@ -569,12 +582,38 @@ function verifyRows_(copyName, cfg, answer) {
     out.getRange(start + i, 1, chunk.length, 4).setValues(chunk);
   }
   out.getRange(start + lines.length, 1, 1, 4).setValues([quote([run, '#complete', lines.length, ''])]);
+  var end = clock();
+  var detail = 'tonight=' + tonightMs + ' read ' + readMs.join(',') + ' hash=' + hashMs + ' write=' + (end - w0) +
+               ' total=' + (end - t0) + ' rows=' + lines.length;
+  // a failed timing write never turns a good verify into a failure (parent S5 step 11 treats a throw as one)
+  try { writeSelftest_(cfg.statusId, [[new Date().toISOString(), 'verify-timing', run, detail]]); }
+  catch (e) { console.log('verify-timing row not written: ' + e.message + ' (' + run + ' ' + detail + ')'); }
 }
 
 /** The one shared piece: sha256 hex of the row's cells in header order, each as <UTF-8 byte length>:<text>.
  *  verify.sql computes the same from research.tab_row. */
 function canonicalHash_(cells) {
-  var s = cells.map(function (c) { return Utilities.newBlob(c).getBytes().length + ':' + c; }).join('');
+  // amendment 1: utf8Len_ in plain JavaScript, not one Utilities.newBlob service call per cell; same numbers, same hash
+  var s = cells.map(function (c) { return utf8Len_(c) + ':' + c; }).join('');
   return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, s, Utilities.Charset.UTF_8)
     .map(function (b) { return ('0' + ((b + 256) % 256).toString(16)).slice(-2); }).join('');
+}
+
+/** Plan 47 finish amendment 1: the UTF-8 byte length of a string, counted by code unit: 1 byte below U+0080, 2 below
+ *  U+0800, 4 for a valid surrogate pair (counted once), 3 otherwise. A lone surrogate throws (the error carries
+ *  brokenCharacter, so verifyRows_ can name the tab and key). Equal to Buffer.byteLength for all other text (CI test). */
+function utf8Len_(s) {
+  var n = 0;
+  for (var i = 0; i < s.length; i++) {
+    var c = s.charCodeAt(i);
+    if (c < 0x80) n += 1;
+    else if (c < 0x800) n += 2;
+    else if (c >= 0xD800 && c <= 0xDBFF) {
+      var d = i + 1 < s.length ? s.charCodeAt(i + 1) : -1;
+      if (d < 0xDC00 || d > 0xDFFF) { var e = new Error('lone surrogate at position ' + i); e.brokenCharacter = true; throw e; }
+      n += 4; i++;
+    } else if (c >= 0xDC00 && c <= 0xDFFF) { var f = new Error('lone surrogate at position ' + i); f.brokenCharacter = true; throw f; }
+    else n += 3;
+  }
+  return n;
 }

@@ -31,7 +31,9 @@ function sampleWorld() {
       row('ST001', { place: 'a, "quoted", comma', notes: 'line1\nline2\r\nline3', story_date: '1852-10-03', added: '1.5E+10',
         original_link: cell('see', { f: '=HYPERLINK("https://h.example/1","see")', links: ['https://h.example/1'] }) }),
       row('ST002', { original_link: cell('two', { links: ['https://a.example/1', null, 'https://b.example/2'] }),
-        'pointer_source (modern, credit only)': cell('https://p.example', { links: ['https://p.example'] }), notes: 'é ü 中   tab\tend', grade: '' }),
+        'pointer_source (modern, credit only)': cell('https://p.example', { links: ['https://p.example'] }), notes: 'é ü 中   tab\tend', grade: '',
+        // plan 47 am1: 4-byte characters and a ZWJ sequence, so 13h checks them against verify.sql
+        'hook (fresh wording)': 'Grand 🎭 opening 🗽 family 👨‍👩‍👧‍👦 flag 🏳️‍🌈' }),
       row('ST003', { notes: ' leading and trailing ', original_link: cell('https://whole.example', { links: ['https://whole.example'], apiHyperlinkOnly: true }) })],
     DELIGHTS: [SHEET_HEADERS.DELIGHTS, SHEET_HEADERS.DELIGHTS.map(h => h === 'delight_id' ? 'D001' : `${h} 1`)],
     PLACE_HOOKS: [SHEET_HEADERS.PLACE_HOOKS,
